@@ -45,11 +45,13 @@
     box-shadow: var(--shadow);
     transition: all 0.3s ease;
     z-index: 997;
+    pointer-events: none;
 }
 
 .back-to-top.show {
     display: flex;
     animation: slideInUp 0.3s ease;
+    pointer-events: auto;
 }
 
 .back-to-top:hover {

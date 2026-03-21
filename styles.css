@@ -432,11 +432,13 @@
             opacity: 0;
             transform: scale(0.8);
             transition: all 0.3s;
+            pointer-events: none; /* KHÔNG chặn touch khi đóng */
         }
 
         .chat-widget.open {
             opacity: 1;
             transform: scale(1);
+            pointer-events: auto;
         }
 
         .chat-header {
@@ -792,9 +794,11 @@
             right: 20px;
             z-index: 9999;
             max-width: 400px;
+            pointer-events: none; /* container rỗng không chặn touch */
         }
 
         .toast {
+            pointer-events: auto; /* toast thật thì bấm được */
             background: white;
             padding: 1rem 1.5rem;
             border-radius: 8px;
