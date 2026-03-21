@@ -11,8 +11,10 @@ const PORT = process.env.PORT || 3001;
 
 app.use(cors({ origin: '*' }));
 app.use(express.json());
-// Serve frontend static files
-app.use(express.static(path.join(__dirname, '..')));
+// Serve frontend static files from project root
+const frontendPath = path.join(__dirname, '..');
+app.use(express.static(frontendPath));
+console.log('Serving static files from:', frontendPath);
 
 // Setup VAPID
 if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
