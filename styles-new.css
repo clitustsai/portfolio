@@ -215,6 +215,13 @@ html[data-theme="dark"] footer {
         height: 35px;
         font-size: 1rem;
         margin-left: 0.5rem;
+        position: relative;
+        z-index: 1200;
+    }
+
+    .lang-toggle {
+        position: relative;
+        z-index: 1200;
     }
 
     .back-to-top {

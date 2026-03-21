@@ -1134,17 +1134,23 @@
         // Hamburger menu
         const hamburger = document.getElementById('navHamburger');
         const navUl = document.querySelector('nav ul');
+        function closeMenu() {
+            hamburger && hamburger.classList.remove('open');
+            navUl && navUl.classList.remove('open');
+            document.body.style.overflow = '';
+        }
         if (hamburger && navUl) {
-            hamburger.addEventListener('click', () => {
-                hamburger.classList.toggle('open');
-                navUl.classList.toggle('open');
+            hamburger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isOpen = hamburger.classList.toggle('open');
+                navUl.classList.toggle('open', isOpen);
+                document.body.style.overflow = isOpen ? 'hidden' : '';
             });
-            navUl.querySelectorAll('a').forEach(a => {
-                a.addEventListener('click', () => {
-                    hamburger.classList.remove('open');
-                    navUl.classList.remove('open');
-                });
+            navUl.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
+            document.addEventListener('click', (e) => {
+                if (navUl.classList.contains('open') && !navUl.contains(e.target) && e.target !== hamburger) closeMenu();
             });
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
         }
     </script>
 </body>
