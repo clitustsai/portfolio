@@ -789,6 +789,12 @@ function openBlogEditor(post) {
     document.getElementById('blogContent').style.display = 'block';
     document.getElementById('blogEditorModal').style.display = 'flex';
 
+    // Auto-calculate reading time on content input
+    const contentEl = document.getElementById('blogContent');
+    contentEl.oninput = updateReadTimeFromContent;
+    // Tính ngay khi mở (nếu edit bài cũ)
+    if (post?.content) updateReadTimeFromContent();
+
     // Auto-generate slug from title
     document.getElementById('blogTitle').addEventListener('input', function() {
         if (!document.getElementById('blogEditId').value) {
@@ -861,6 +867,16 @@ function mdInsert(before, after, placeholder) {
     ta.focus();
     ta.selectionStart = start + before.length;
     ta.selectionEnd = start + before.length + selected.length;
+    // Auto-update reading time
+    updateReadTimeFromContent();
+}
+
+function updateReadTimeFromContent() {
+    const content = document.getElementById('blogContent')?.value || '';
+    const words = content.trim().split(/\s+/).filter(Boolean).length;
+    const rt = Math.max(1, Math.round(words / 200));
+    const rtInput = document.getElementById('blogReadTime');
+    if (rtInput) rtInput.value = rt;
 }
 
 function togglePreview() {
@@ -876,3 +892,5 @@ function togglePreview() {
         ta.focus();
     }
 }
+
+

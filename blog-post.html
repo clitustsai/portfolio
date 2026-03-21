@@ -234,7 +234,8 @@ Hooks giúp code React trở nên **ngắn gọn**, **dễ test** và **dễ tá
       document.getElementById('postTitle').textContent = p.title;
       document.getElementById('postTags').innerHTML = (p.tags||[]).map(t=>`<span class="blog-tag">${t}</span>`).join('');
       document.getElementById('postDate').innerHTML = `<i class="fas fa-calendar"></i> ${new Date(p.created_at).toLocaleDateString('vi-VN')}`;
-      document.getElementById('postReadTime').innerHTML = `<i class="fas fa-clock"></i> ${p.read_time||5} phút đọc`;
+      const rt = calcReadTime(p.content || '');
+      document.getElementById('postReadTime').innerHTML = `<i class="fas fa-clock"></i> ${rt} phút đọc`;
       document.getElementById('postViews').innerHTML = `<i class="fas fa-eye"></i> ${p.views||0} lượt đọc`;
       document.getElementById('postLikes').textContent = p.likes||0;
 
@@ -344,7 +345,7 @@ Hooks giúp code React trở nên **ngắn gọn**, **dễ test** và **dễ tá
 
     function renderRelated(posts) {
       document.getElementById('relatedPosts').innerHTML = posts.length
-        ? posts.map(p=>`<a href="blog-post.html?slug=${p.slug||p.id}" class="related-item"><span>${p.title}</span><small><i class="fas fa-clock"></i> ${p.read_time||5} phút</small></a>`).join('')
+        ? posts.map(p=>`<a href="blog-post.html?slug=${p.slug||p.id}" class="related-item"><span>${p.title}</span><small><i class="fas fa-clock"></i> ${calcReadTime(p.content) || p.read_time || 5} phút</small></a>`).join('')
         : '<p style="color:#aaa;font-size:0.85rem">Không có bài liên quan</p>';
     }
 
@@ -365,6 +366,11 @@ Hooks giúp code React trở nên **ngắn gọn**, **dễ test** và **dễ tá
     function showNotFound() {
       document.getElementById('postLoading').style.display = 'none';
       document.getElementById('postNotFound').style.display = 'flex';
+    }
+
+    function calcReadTime(content) {
+      const words = (content || '').trim().split(/\s+/).filter(Boolean).length;
+      return Math.max(1, Math.round(words / 200));
     }
 
     function timeAgo(d) {

@@ -189,7 +189,7 @@
             <h2 class="blog-card-title">${p.title}</h2>
             <p class="blog-card-excerpt">${p.excerpt}</p>
             <div class="blog-card-meta">
-              <span><i class="fas fa-clock"></i> ${p.read_time||5} phút đọc</span>
+              <span><i class="fas fa-clock"></i> ${calcReadTime(p.content) || p.read_time || 5} phút đọc</span>
               <span><i class="fas fa-eye"></i> ${p.views||0}</span>
               <span><i class="fas fa-heart"></i> ${p.likes||0}</span>
               <span class="blog-card-date">${timeAgo(p.created_at)}</span>
@@ -238,6 +238,11 @@
       if (tags.includes('TypeScript')||tags.includes('JavaScript')) return '📘';
       if (tags.includes('AI')) return '🤖';
       return '📝';
+    }
+
+    function calcReadTime(content) {
+      const words = (content || '').trim().split(/\s+/).filter(Boolean).length;
+      return Math.max(1, Math.round(words / 200));
     }
 
     function timeAgo(d) {
