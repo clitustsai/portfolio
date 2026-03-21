@@ -1648,6 +1648,7 @@
             { id: 'DWcJFNfaw9c', name: 'Nature Sounds' },
         ];
         let musicPlaying = false, currentTrackIdx = 0, ytPlayer = null, panelOpen = false;
+        let autoplayTriggered = false;
 
         // Load YouTube IFrame API
         const tag = document.createElement('script');
@@ -1658,9 +1659,13 @@
             ytPlayer = new YT.Player('musicIframe', {
                 height: '0', width: '0',
                 videoId: TRACKS[0].id,
-                playerVars: { autoplay: 0, controls: 0, loop: 1, playlist: TRACKS[0].id },
+                playerVars: { autoplay: 1, controls: 0, loop: 1, playlist: TRACKS[0].id, mute: 0 },
                 events: {
-                    onReady: (e) => { e.target.setVolume(50); document.getElementById('musicIframe').style.display = 'none'; },
+                    onReady: (e) => {
+                        e.target.setVolume(40);
+                        // Thử autoplay ngay — nếu browser cho phép
+                        e.target.playVideo();
+                    },
                     onStateChange: (e) => {
                         if (e.data === YT.PlayerState.PLAYING) setPlayingUI(true);
                         else if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED) setPlayingUI(false);
@@ -1669,10 +1674,28 @@
             });
         };
 
+        // Fallback: phát ngay khi user tương tác lần đầu (click/scroll/touch)
+        function tryAutoplay() {
+            if (autoplayTriggered || !ytPlayer) return;
+            autoplayTriggered = true;
+            try { ytPlayer.playVideo(); } catch(e) {}
+            // Xóa listeners sau khi đã trigger
+            ['click','touchstart','scroll','keydown'].forEach(ev =>
+                document.removeEventListener(ev, tryAutoplay)
+            );
+        }
+        ['click','touchstart','scroll','keydown'].forEach(ev =>
+            document.addEventListener(ev, tryAutoplay, { once: true, passive: true })
+        );
+
         function toggleMusic() {
             panelOpen = !panelOpen;
             const panel = document.getElementById('musicPanel');
             panel.classList.toggle('open', panelOpen);
+            // Mở panel lần đầu → thử phát
+            if (panelOpen && ytPlayer && !musicPlaying) {
+                try { ytPlayer.playVideo(); } catch(e) {}
+            }
         }
 
         function togglePlay() {
@@ -1683,6 +1706,7 @@
 
         function setPlayingUI(playing) {
             musicPlaying = playing;
+            if (playing) autoplayTriggered = true;
             const btn = document.getElementById('musicPlayBtn');
             const disc = document.getElementById('musicDisc');
             const musicBtn = document.getElementById('musicToggle');
