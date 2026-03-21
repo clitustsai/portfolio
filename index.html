@@ -25,8 +25,334 @@
     <link rel="stylesheet" href="testimonials.css">
     <link rel="stylesheet" href="interactions.css">
     <link rel="stylesheet" href="admin.css">
+    <style>
+    /* ============================================
+       LOADING SCREEN — Ultra Pro
+       ============================================ */
+    #loader {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        background: #0a0a1a;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+    #loader.hide {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+    }
+
+    /* Canvas particles */
+    #loader-canvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    /* Center content */
+    .loader-center {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem;
+    }
+
+    /* Logo ring */
+    .loader-logo-wrap {
+        position: relative;
+        width: 120px;
+        height: 120px;
+    }
+    .loader-ring {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        border: 3px solid transparent;
+        animation: ringRotate 1.4s linear infinite;
+    }
+    .loader-ring:nth-child(1) {
+        border-top-color: #667eea;
+        border-right-color: #667eea;
+        animation-duration: 1.2s;
+    }
+    .loader-ring:nth-child(2) {
+        inset: 10px;
+        border-bottom-color: #764ba2;
+        border-left-color: #764ba2;
+        animation-duration: 1.8s;
+        animation-direction: reverse;
+    }
+    .loader-ring:nth-child(3) {
+        inset: 22px;
+        border-top-color: #f093fb;
+        border-right-color: #f093fb;
+        animation-duration: 2.4s;
+    }
+    @keyframes ringRotate {
+        to { transform: rotate(360deg); }
+    }
+
+    /* Logo icon inside */
+    .loader-icon {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.2rem;
+        animation: iconPulse 2s ease-in-out infinite;
+    }
+    @keyframes iconPulse {
+        0%, 100% { transform: scale(1); filter: drop-shadow(0 0 8px #667eea); }
+        50% { transform: scale(1.12); filter: drop-shadow(0 0 20px #764ba2); }
+    }
+
+    /* Name */
+    .loader-name {
+        font-family: 'Segoe UI', sans-serif;
+        font-size: 1.8rem;
+        font-weight: 800;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        background: linear-gradient(135deg, #667eea, #f093fb, #764ba2);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: textShine 2s linear infinite;
+    }
+    @keyframes textShine {
+        to { background-position: 200% center; }
+    }
+
+    /* Tagline typing */
+    .loader-tagline {
+        font-family: 'Segoe UI', sans-serif;
+        font-size: 0.85rem;
+        color: rgba(255,255,255,0.45);
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        min-height: 1.2em;
+    }
+    .loader-tagline .cursor {
+        display: inline-block;
+        width: 2px;
+        height: 1em;
+        background: #667eea;
+        margin-left: 2px;
+        vertical-align: middle;
+        animation: blink 0.8s step-end infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* Progress bar */
+    .loader-progress-wrap {
+        width: 260px;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: center;
+    }
+    .loader-progress-track {
+        width: 100%;
+        height: 3px;
+        background: rgba(255,255,255,0.08);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    .loader-progress-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #667eea, #f093fb, #764ba2);
+        background-size: 200% auto;
+        border-radius: 10px;
+        transition: width 0.3s ease;
+        animation: progressShine 1.5s linear infinite;
+    }
+    @keyframes progressShine {
+        to { background-position: 200% center; }
+    }
+    .loader-percent {
+        font-family: 'Segoe UI', sans-serif;
+        font-size: 0.75rem;
+        color: rgba(255,255,255,0.35);
+        letter-spacing: 1px;
+    }
+
+    /* Floating dots decoration */
+    .loader-dots {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+    .loader-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #667eea;
+        animation: dotBounce 1.2s ease-in-out infinite;
+    }
+    .loader-dot:nth-child(2) { animation-delay: 0.2s; background: #f093fb; }
+    .loader-dot:nth-child(3) { animation-delay: 0.4s; background: #764ba2; }
+    @keyframes dotBounce {
+        0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+        40% { transform: scale(1.2); opacity: 1; }
+    }
+    </style>
 </head>
 <body>
+    <!-- ============ LOADING SCREEN ============ -->
+    <div id="loader">
+        <canvas id="loader-canvas"></canvas>
+        <div class="loader-center">
+            <div class="loader-logo-wrap">
+                <div class="loader-ring"></div>
+                <div class="loader-ring"></div>
+                <div class="loader-ring"></div>
+                <div class="loader-icon">💻</div>
+            </div>
+            <div class="loader-name">Clitus PC</div>
+            <div class="loader-tagline"><span id="loader-text"></span><span class="cursor"></span></div>
+            <div class="loader-progress-wrap">
+                <div class="loader-progress-track">
+                    <div class="loader-progress-fill" id="loader-fill"></div>
+                </div>
+                <div class="loader-percent" id="loader-percent">0%</div>
+            </div>
+            <div class="loader-dots">
+                <div class="loader-dot"></div>
+                <div class="loader-dot"></div>
+                <div class="loader-dot"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+    (function() {
+        // ===== PARTICLE CANVAS =====
+        const canvas = document.getElementById('loader-canvas');
+        const ctx = canvas.getContext('2d');
+        let W, H, particles = [], animId;
+
+        function resize() {
+            W = canvas.width = window.innerWidth;
+            H = canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        function Particle() {
+            this.x = Math.random() * W;
+            this.y = Math.random() * H;
+            this.vx = (Math.random() - 0.5) * 0.6;
+            this.vy = (Math.random() - 0.5) * 0.6;
+            this.r = Math.random() * 2 + 1;
+            this.alpha = Math.random() * 0.5 + 0.2;
+        }
+        Particle.prototype.update = function() {
+            this.x += this.vx; this.y += this.vy;
+            if (this.x < 0) this.x = W; if (this.x > W) this.x = 0;
+            if (this.y < 0) this.y = H; if (this.y > H) this.y = 0;
+        };
+
+        for (let i = 0; i < 80; i++) particles.push(new Particle());
+
+        function drawParticles() {
+            ctx.clearRect(0, 0, W, H);
+            // Draw connections
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist < 120) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(102,126,234,${0.15 * (1 - dist/120)})`;
+                        ctx.lineWidth = 0.8;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            // Draw dots
+            particles.forEach(p => {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(102,126,234,${p.alpha})`;
+                ctx.fill();
+                p.update();
+            });
+            animId = requestAnimationFrame(drawParticles);
+        }
+        drawParticles();
+
+        // ===== TYPING EFFECT =====
+        const tags = ['Full Stack Developer', 'UI/UX Designer', 'AI Engineer'];
+        let ti = 0, ci = 0, deleting = false;
+        const textEl = document.getElementById('loader-text');
+        function type() {
+            if (!textEl) return;
+            const word = tags[ti];
+            if (!deleting) {
+                textEl.textContent = word.slice(0, ++ci);
+                if (ci === word.length) { deleting = true; setTimeout(type, 1400); return; }
+            } else {
+                textEl.textContent = word.slice(0, --ci);
+                if (ci === 0) { deleting = false; ti = (ti + 1) % tags.length; }
+            }
+            setTimeout(type, deleting ? 55 : 90);
+        }
+        setTimeout(type, 400);
+
+        // ===== PROGRESS BAR =====
+        const fill = document.getElementById('loader-fill');
+        const pct = document.getElementById('loader-percent');
+        let progress = 0;
+        const totalMs = 2600;
+        const interval = 40;
+        const steps = totalMs / interval;
+        let step = 0;
+
+        function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+
+        const progressTimer = setInterval(() => {
+            step++;
+            progress = Math.round(easeOut(step / steps) * 100);
+            if (progress >= 100) { progress = 100; clearInterval(progressTimer); }
+            if (fill) fill.style.width = progress + '%';
+            if (pct) pct.textContent = progress + '%';
+        }, interval);
+
+        // ===== HIDE LOADER =====
+        function hideLoader() {
+            const loader = document.getElementById('loader');
+            if (!loader || loader.classList.contains('hide')) return;
+            loader.classList.add('hide');
+            setTimeout(() => {
+                loader.style.display = 'none';
+                cancelAnimationFrame(animId);
+            }, 650);
+        }
+
+        // Ẩn khi progress đạt 100% hoặc window.load (cái nào đến sau)
+        let pageLoaded = false, progressDone = false;
+        function tryHide() { if (pageLoaded && progressDone) hideLoader(); }
+
+        window.addEventListener('load', () => { pageLoaded = true; tryHide(); });
+        setTimeout(() => { progressDone = true; tryHide(); }, totalMs + 200);
+        // Fallback tối đa 5s
+        setTimeout(hideLoader, 5000);
+    })();
+    </script>
+
     <header>
         <nav>
             <div class="logo">Portfolio</div>
@@ -193,7 +519,7 @@
                 <div class="testimonial-card" data-aos="fade-up" data-aos-delay="100">
                     <div class="testimonial-header">
                         <div class="testimonial-avatar"><i class="fas fa-user-circle"></i></div>
-                        <div class="testimonial-info"><h4>Nguyễn Văn A</h4><p>CEO, Tech Startup VN</p></div>
+                        <div class="testimonial-info"><h4>Nguyễn Văn Minh</h4><p>CEO, Tech Startup VN</p></div>
                     </div>
                     <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
                     <p class="testimonial-text">"Clitus là một lập trình viên xuất sắc. Anh ấy hoàn thành dự án đúng hạn và vượt quá mong đợi của chúng tôi. Rất chuyên nghiệp!"</p>
@@ -201,7 +527,7 @@
                 <div class="testimonial-card" data-aos="fade-up" data-aos-delay="200">
                     <div class="testimonial-header">
                         <div class="testimonial-avatar"><i class="fas fa-user-circle"></i></div>
-                        <div class="testimonial-info"><h4>Trần Thị B</h4><p>Product Manager, E-commerce Co</p></div>
+                        <div class="testimonial-info"><h4>Trần Thị Minh Châu</h4><p>Product Manager, E-commerce Co</p></div>
                     </div>
                     <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
                     <p class="testimonial-text">"Tôi rất ấn tượng với các giải pháp sáng tạo của Clitus. Anh ấy không chỉ code tốt mà còn rất tốt trong giao tiếp và hợp tác."</p>
@@ -209,7 +535,7 @@
                 <div class="testimonial-card" data-aos="fade-up" data-aos-delay="300">
                     <div class="testimonial-header">
                         <div class="testimonial-avatar"><i class="fas fa-user-circle"></i></div>
-                        <div class="testimonial-info"><h4>Lê Minh C</h4><p>Technical Lead, Design Agency</p></div>
+                        <div class="testimonial-info"><h4>Lê Hoàng Minh </h4><p>Technical Lead, Design Agency</p></div>
                     </div>
                     <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
                     <p class="testimonial-text">"Làm việc với Clitus là một trải nghiệm tuyệt vời. Anh ấy có kỹ năng kỹ thuật mạnh mẽ và luôn sẵn sàng học hỏi điều mới."</p>
