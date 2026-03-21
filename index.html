@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
     <meta name="description" content="Portfolio cá nhân của Clitus PC - Lập trình viên Full Stack chuyên về React, Node.js, và các công nghệ hiện đại.">
     <meta name="author" content="Clitus PC">
     <meta property="og:title" content="Trang Cá Nhân - Clitus PC Developer">
@@ -1135,8 +1137,9 @@
         const hamburger = document.getElementById('navHamburger');
         const navUl = document.querySelector('nav ul');
         function closeMenu() {
-            hamburger && hamburger.classList.remove('open');
-            navUl && navUl.classList.remove('open');
+            if (!hamburger) return;
+            hamburger.classList.remove('open');
+            navUl.classList.remove('open');
             document.body.style.overflow = '';
         }
         if (hamburger && navUl) {
