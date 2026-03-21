@@ -206,6 +206,118 @@
         0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
         40% { transform: scale(1.2); opacity: 1; }
     }
+
+    /* ============================================
+       MUSIC PLAYER
+       ============================================ */
+    .music-player {
+        position: fixed;
+        bottom: 90px;
+        left: 20px;
+        z-index: 9000;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0;
+    }
+    .music-btn {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 16px rgba(102,126,234,0.4);
+        transition: transform 0.3s, box-shadow 0.3s;
+        position: relative;
+        z-index: 2;
+    }
+    .music-btn:hover { transform: scale(1.1); box-shadow: 0 6px 24px rgba(102,126,234,0.5); }
+    .music-btn.playing { animation: musicPulse 2s ease-in-out infinite; }
+    @keyframes musicPulse {
+        0%,100% { box-shadow: 0 4px 16px rgba(102,126,234,0.4); }
+        50% { box-shadow: 0 4px 28px rgba(118,75,162,0.7); }
+    }
+    .music-panel {
+        display: none;
+        flex-direction: column;
+        gap: 1rem;
+        background: white;
+        border-radius: 20px;
+        padding: 1.25rem;
+        box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+        width: 260px;
+        margin-bottom: 10px;
+        border: 1px solid rgba(102,126,234,0.15);
+        animation: musicSlideUp 0.3s ease;
+    }
+    html[data-theme="dark"] .music-panel {
+        background: #1e1e3a;
+        border-color: rgba(102,126,234,0.3);
+        box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+    }
+    .music-panel.open { display: flex; }
+    @keyframes musicSlideUp {
+        from { opacity: 0; transform: translateY(12px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .music-info { display: flex; align-items: center; gap: 0.85rem; }
+    .music-disc {
+        width: 44px; height: 44px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.3rem;
+        flex-shrink: 0;
+        transition: transform 0.1s;
+    }
+    .music-disc.spinning { animation: discSpin 3s linear infinite; }
+    @keyframes discSpin { to { transform: rotate(360deg); } }
+    .music-text { min-width: 0; }
+    .music-title { display: block; font-weight: 700; font-size: 0.88rem; color: #1a1a2e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    html[data-theme="dark"] .music-title { color: #e8e8ff; }
+    .music-sub { display: block; font-size: 0.72rem; color: #999; margin-top: 2px; }
+    .music-controls { display: flex; align-items: center; justify-content: center; gap: 1rem; }
+    .music-controls button {
+        background: none; border: none; cursor: pointer;
+        color: #667eea; font-size: 1rem; padding: 0.4rem;
+        border-radius: 50%; transition: all 0.2s;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .music-controls button:hover { background: rgba(102,126,234,0.1); transform: scale(1.15); }
+    .music-play-btn {
+        width: 44px !important; height: 44px !important;
+        background: linear-gradient(135deg, #667eea, #764ba2) !important;
+        color: white !important;
+        border-radius: 50% !important;
+        font-size: 1.1rem !important;
+        box-shadow: 0 4px 14px rgba(102,126,234,0.4);
+    }
+    .music-play-btn:hover { opacity: 0.9; transform: scale(1.1) !important; }
+    .music-volume { display: flex; align-items: center; gap: 0.6rem; }
+    .music-volume i { color: #999; font-size: 0.8rem; }
+    .music-volume input[type=range] {
+        flex: 1; height: 4px; border-radius: 4px;
+        accent-color: #667eea; cursor: pointer;
+    }
+    .music-tracks { display: flex; flex-direction: column; gap: 0.4rem; }
+    .track-btn {
+        background: #f5f5ff; border: 1.5px solid #e0e4ff;
+        border-radius: 10px; padding: 0.5rem 0.85rem;
+        font-size: 0.78rem; cursor: pointer; text-align: left;
+        color: #555; transition: all 0.2s; font-weight: 600;
+    }
+    html[data-theme="dark"] .track-btn { background: #252545; border-color: #3a3a6a; color: #aaa; }
+    .track-btn:hover, .track-btn.active {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white; border-color: transparent;
+        box-shadow: 0 3px 10px rgba(102,126,234,0.3);
+    }
     </style>
 </head>
 <body>
@@ -705,6 +817,40 @@
     </div>
 
     <button id="backToTop" class="back-to-top" title="Quay lại đầu trang"><i class="fas fa-arrow-up"></i></button>
+
+    <!-- ===== MUSIC PLAYER ===== -->
+    <div id="musicPlayer" class="music-player">
+        <div id="musicIframe" style="display:none"></div>
+        <button class="music-btn" id="musicToggle" title="Nhạc thư giãn" onclick="toggleMusic()">
+            <i class="fas fa-music"></i>
+        </button>
+        <div class="music-panel" id="musicPanel">
+            <div class="music-info">
+                <div class="music-disc" id="musicDisc">🎵</div>
+                <div class="music-text">
+                    <span class="music-title">Lo-fi Chill Beats</span>
+                    <span class="music-sub">Nhạc thư giãn · YouTube</span>
+                </div>
+            </div>
+            <div class="music-controls">
+                <button onclick="prevTrack()" title="Bài trước"><i class="fas fa-backward-step"></i></button>
+                <button class="music-play-btn" id="musicPlayBtn" onclick="togglePlay()">
+                    <i class="fas fa-play"></i>
+                </button>
+                <button onclick="nextTrack()" title="Bài tiếp"><i class="fas fa-forward-step"></i></button>
+            </div>
+            <div class="music-volume">
+                <i class="fas fa-volume-low"></i>
+                <input type="range" id="musicVol" min="0" max="100" value="50" oninput="setVolume(this.value)">
+                <i class="fas fa-volume-high"></i>
+            </div>
+            <div class="music-tracks">
+                <button class="track-btn active" data-id="jfKfPfyJRdk" onclick="selectTrack(this,'jfKfPfyJRdk','Lo-fi Chill Beats')">🎵 Lo-fi Chill</button>
+                <button class="track-btn" data-id="5qap5aO4i9A" onclick="selectTrack(this,'5qap5aO4i9A','Lo-fi Hip Hop')">🎶 Lo-fi Hip Hop</button>
+                <button class="track-btn" data-id="DWcJFNfaw9c" onclick="selectTrack(this,'DWcJFNfaw9c','Nature Sounds')">🌿 Nature Sounds</button>
+            </div>
+        </div>
+    </div>
 
     <footer>
         <h3 data-i18n="footer.follow">Theo Dõi Tôi</h3>
@@ -1492,6 +1638,82 @@
                 if (navUl.classList.contains('open') && !navUl.contains(e.target) && e.target !== hamburger) closeMenu();
             });
             document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
+        }
+    </script>
+    <script>
+        // ===== MUSIC PLAYER =====
+        const TRACKS = [
+            { id: 'jfKfPfyJRdk', name: 'Lo-fi Chill Beats' },
+            { id: '5qap5aO4i9A', name: 'Lo-fi Hip Hop' },
+            { id: 'DWcJFNfaw9c', name: 'Nature Sounds' },
+        ];
+        let musicPlaying = false, currentTrackIdx = 0, ytPlayer = null, panelOpen = false;
+
+        // Load YouTube IFrame API
+        const tag = document.createElement('script');
+        tag.src = 'https://www.youtube.com/iframe_api';
+        document.head.appendChild(tag);
+
+        window.onYouTubeIframeAPIReady = function() {
+            ytPlayer = new YT.Player('musicIframe', {
+                height: '0', width: '0',
+                videoId: TRACKS[0].id,
+                playerVars: { autoplay: 0, controls: 0, loop: 1, playlist: TRACKS[0].id },
+                events: {
+                    onReady: (e) => { e.target.setVolume(50); document.getElementById('musicIframe').style.display = 'none'; },
+                    onStateChange: (e) => {
+                        if (e.data === YT.PlayerState.PLAYING) setPlayingUI(true);
+                        else if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED) setPlayingUI(false);
+                    }
+                }
+            });
+        };
+
+        function toggleMusic() {
+            panelOpen = !panelOpen;
+            const panel = document.getElementById('musicPanel');
+            panel.classList.toggle('open', panelOpen);
+        }
+
+        function togglePlay() {
+            if (!ytPlayer) return;
+            if (musicPlaying) { ytPlayer.pauseVideo(); }
+            else { ytPlayer.playVideo(); }
+        }
+
+        function setPlayingUI(playing) {
+            musicPlaying = playing;
+            const btn = document.getElementById('musicPlayBtn');
+            const disc = document.getElementById('musicDisc');
+            const musicBtn = document.getElementById('musicToggle');
+            if (btn) btn.innerHTML = playing ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
+            if (disc) disc.classList.toggle('spinning', playing);
+            if (musicBtn) musicBtn.classList.toggle('playing', playing);
+        }
+
+        function prevTrack() {
+            currentTrackIdx = (currentTrackIdx - 1 + TRACKS.length) % TRACKS.length;
+            loadTrack(currentTrackIdx);
+        }
+        function nextTrack() {
+            currentTrackIdx = (currentTrackIdx + 1) % TRACKS.length;
+            loadTrack(currentTrackIdx);
+        }
+        function selectTrack(btn, id, name) {
+            document.querySelectorAll('.track-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentTrackIdx = TRACKS.findIndex(t => t.id === id);
+            loadTrack(currentTrackIdx);
+        }
+        function loadTrack(idx) {
+            const t = TRACKS[idx];
+            if (!ytPlayer) return;
+            ytPlayer.loadVideoById({ videoId: t.id, suggestedQuality: 'small' });
+            document.querySelector('.music-title').textContent = t.name;
+            document.querySelectorAll('.track-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
+        }
+        function setVolume(val) {
+            if (ytPlayer) ytPlayer.setVolume(parseInt(val));
         }
     </script>
 </body>
