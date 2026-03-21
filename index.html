@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Portfolio cá nhân của Clitus PC - Lập trình viên Full Stack chuyên về React, Node.js, và các công nghệ hiện đại.">
+    <meta name="author" content="Clitus PC">
+    <meta property="og:title" content="Trang Cá Nhân - Clitus PC Developer">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#667eea">
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Clitus PC">
+    <link rel="apple-touch-icon" href="img/icon-192.png">
+    <title>Trang Cá Nhân - Giới Thiệu | Clitus PC Developer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles-new.css">
+    <link rel="stylesheet" href="testimonials.css">
+    <link rel="stylesheet" href="interactions.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">Portfolio</div>
+            <ul>
+                <li><a href="#home" data-i18n="nav.home">Trang Chủ</a></li>
+                <li><a href="#about" data-i18n="nav.about">Về Tôi</a></li>
+                <li><a href="#projects" data-i18n="nav.projects">Dự Án</a></li>
+                <li><a href="#certificates" data-i18n="nav.certificates">Chứng Chỉ</a></li>
+                <li><a href="#skills" data-i18n="nav.skills">Kỹ Năng</a></li>
+                <li><a href="#map" data-i18n="nav.map">Vị Trí</a></li>
+                <li><a href="#contact" data-i18n="nav.contact">Liên Hệ</a></li>
+                <li><a href="blog.html">Blog</a></li>
+            </ul>
+            <button class="theme-toggle" id="themeToggle" title="Chuyển đổi chế độ tối/sáng">
+                <i class="fas fa-moon"></i>
+            </button>
+            <button class="lang-toggle" id="langToggle" title="Switch language">🇻🇳</button>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1 data-i18n="hero.title">Xin Chào! 👋</h1>
+            <p data-i18n="hero.desc">Chào mừng bạn đến với trang cá nhân của tôi. Tôi là một lập trình viên chuyên về phát triển ứng dụng web và hệ thống. Tôi tập trung vào việc xây dựng các giải pháp công nghệ ổn định, hiệu quả và có khả năng mở rộng, đáp ứng nhu cầu thực tế của doanh nghiệp và người dùng.</p>
+            <div class="hero-buttons">
+                <a href="#about" class="btn btn-primary" data-i18n="hero.btn1">Tìm Hiểu Thêm</a>
+                <a href="#contact" class="btn btn-secondary" data-i18n="hero.btn2">Liên Hệ Với Tôi</a>
+                <a href="./files/CV-Clitus-PC.pdf" class="btn btn-tertiary" target="_blank" download>
+                    <i class="fas fa-download"></i> <span data-i18n="hero.btn3">Tải CV</span>
+                </a>
+            </div>
+        </div>
+        <div class="hero-image">
+            <img src="./img/z7643593902682_1d1e5b7671cc398923d350f14dd68934.jpg" alt="Profile Avatar" class="profile-image">
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about" id="about">
+        <div class="about-content">
+            <h2 data-i18n="about.title">Về Tôi</h2>
+            <p style="text-align:center;margin-bottom:2rem;color:#666;" data-i18n="about.desc">
+                Với nền tảng vững chắc trong phát triển phần mềm, tôi đã tham gia và triển khai nhiều dự án trong các lĩnh vực khác nhau. Tôi đề cao tính kỷ luật trong công việc, tư duy hệ thống và khả năng giải quyết vấn đề.
+            </p>
+            <div class="about-grid">
+                <div class="about-card" data-aos="fade-up" data-aos-delay="100">
+                    <h3 data-i18n="about.exp.title">💼 Kinh Nghiệm</h3>
+                    <p data-i18n="about.exp.desc">Với hơn một thập kỷ kinh nghiệm, tôi đã giúp nhiều công ty phát triển và đạt được mục tiêu của họ.</p>
+                </div>
+                <div class="about-card" data-aos="fade-up" data-aos-delay="200">
+                    <h3 data-i18n="about.goal.title">🎯 Mục Tiêu</h3>
+                    <p data-i18n="about.goal.desc">Mục tiêu của tôi là tạo ra tác động tích cực thông qua công nghệ và giáo dục.</p>
+                </div>
+                <div class="about-card" data-aos="fade-up" data-aos-delay="300">
+                    <h3 data-i18n="about.passion.title">🚀 Đam Mê</h3>
+                    <p data-i18n="about.passion.desc">Tôi đam mê học hỏi những công nghệ mới và chia sẻ kiến thức với cộng đồng.</p>
+                </div>
+            </div>
+            <h3 style="text-align:center;margin-top:2rem;color:#667eea;" data-i18n="about.connect">Kết Nối Với Tôi</h3>
+            <div class="social-links">
+                <a href="https://www.facebook.com/OtisPc.Developer" target="_blank" class="facebook" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.linkedin.com/in/clitus-tsai-a4bbb3363" target="_blank" class="linkedin" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://www.instagram.com/clituspc?igsh=YTcwZTRtbjV4dmdk&utm_source=qr" target="_blank" class="instagram" title="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="https://x.com/clituspc?s=21" target="_blank" class="linkedin" title="X"><i class="fa-solid fa-x"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section class="projects" id="projects">
+        <div class="projects-content">
+            <h2 data-i18n="projects.title">Dự Án Nổi Bật</h2>
+            <div class="filter-buttons" data-aos="fade-up" data-aos-delay="100">
+                <button class="filter-btn active" data-filter="*" data-i18n="projects.filter.all">Tất Cả</button>
+                <button class="filter-btn" data-filter="React">React</button>
+                <button class="filter-btn" data-filter="Vue">Vue.js</button>
+                <button class="filter-btn" data-filter="Node">Node.js</button>
+                <button class="filter-btn" data-filter="Python">Python</button>
+            </div>
+            <div class="projects-grid">
+                <div class="project-card" data-filter="React,Node,MongoDB" data-aos="fade-up" data-aos-delay="100" data-project-id="1">
+                    <div class="project-image"><i class="fas fa-globe"></i></div>
+                    <div class="project-content">
+                        <h3 data-i18n="projects.p1.title">Website Thương Mại Điện Tử</h3>
+                        <p data-i18n="projects.p1.desc">Nền tảng mua sắm trực tuyến hiện đại với thanh toán an toàn và giao diện thân thiện.</p>
+                        <div class="project-tags">
+                            <span class="tag">React</span><span class="tag">Node.js</span><span class="tag">MongoDB</span>
+                        </div>
+                        <div class="project-stats">
+                            <span class="view-count"><i class="fas fa-eye"></i> <span class="view-number">0</span></span>
+                            <button class="like-btn" onclick="toggleLike(1)"><i class="far fa-heart"></i> <span class="like-number">0</span></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="project-card" data-filter="React,Firebase" data-aos="fade-up" data-aos-delay="200" data-project-id="2">
+                    <div class="project-image"><i class="fas fa-mobile-alt"></i></div>
+                    <div class="project-content">
+                        <h3 data-i18n="projects.p2.title">Quản Lý Dự Án</h3>
+                        <p data-i18n="projects.p2.desc">Công cụ quản lý dự án toàn diện giúp tổ chức công việc và cộng tác nhóm hiệu quả.</p>
+                        <div class="project-tags">
+                            <span class="tag">React Native</span><span class="tag">Firebase</span><span class="tag">Redux</span>
+                        </div>
+                        <div class="project-stats">
+                            <span class="view-count"><i class="fas fa-eye"></i> <span class="view-number">0</span></span>
+                            <button class="like-btn" onclick="toggleLike(2)"><i class="far fa-heart"></i> <span class="like-number">0</span></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="project-card" data-filter="Vue,Python,DataViz" data-aos="fade-up" data-aos-delay="300" data-project-id="3">
+                    <div class="project-image"><i class="fas fa-chart-line"></i></div>
+                    <div class="project-content">
+                        <h3 data-i18n="projects.p3.title">Dashboard Phân Tích Dữ Liệu</h3>
+                        <p data-i18n="projects.p3.desc">Hệ thống visualize dữ liệu real-time với biểu đồ tương tác và báo cáo chi tiết.</p>
+                        <div class="project-tags">
+                            <span class="tag">Vue.js</span><span class="tag">Chart.js</span><span class="tag">Python</span>
+                        </div>
+                        <div class="project-stats">
+                            <span class="view-count"><i class="fas fa-eye"></i> <span class="view-number">0</span></span>
+                            <button class="like-btn" onclick="toggleLike(3)"><i class="far fa-heart"></i> <span class="like-number">0</span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section class="skills" id="skills">
+        <h2 data-aos="fade-up" data-i18n="skills.title">Kỹ Năng Kỹ Thuật</h2>
+        <div class="skills-grid">
+            <div class="skill-item" data-aos="fade-up" data-aos-delay="100">
+                <h3>Frontend Development</h3>
+                <div><div class="skill-bar"><div class="skill-progress" style="width:95%"></div></div><div class="skill-percentage">95%</div></div>
+                <p>React, Vue.js, JavaScript, HTML/CSS</p>
+            </div>
+            <div class="skill-item" data-aos="fade-up" data-aos-delay="200">
+                <h3>Backend Development</h3>
+                <div><div class="skill-bar"><div class="skill-progress" style="width:90%"></div></div><div class="skill-percentage">90%</div></div>
+                <p>Node.js, Python, Django, Express</p>
+            </div>
+            <div class="skill-item" data-aos="fade-up" data-aos-delay="300">
+                <h3>Database Design</h3>
+                <div><div class="skill-bar"><div class="skill-progress" style="width:85%"></div></div><div class="skill-percentage">85%</div></div>
+                <p>MongoDB, SQL, Firebase, PostgreSQL</p>
+            </div>
+            <div class="skill-item" data-aos="fade-up" data-aos-delay="400">
+                <h3>UI/UX Design</h3>
+                <div><div class="skill-bar"><div class="skill-progress" style="width:88%"></div></div><div class="skill-percentage">88%</div></div>
+                <p>Figma, Design Systems, Prototyping</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials" id="testimonials">
+        <div class="testimonials-content">
+            <h2 data-aos="fade-up" data-i18n="testimonials.title">💬 Đánh Giá Của Khách Hàng</h2>
+            <p class="testimonials-subtitle" data-aos="fade-up" data-aos-delay="100" data-i18n="testimonials.subtitle">Những lời nhận xét từ các công ty và dự án tôi đã hợp tác</p>
+            <div class="testimonials-grid">
+                <div class="testimonial-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar"><i class="fas fa-user-circle"></i></div>
+                        <div class="testimonial-info"><h4>Nguyễn Văn A</h4><p>CEO, Tech Startup VN</p></div>
+                    </div>
+                    <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                    <p class="testimonial-text">"Clitus là một lập trình viên xuất sắc. Anh ấy hoàn thành dự án đúng hạn và vượt quá mong đợi của chúng tôi. Rất chuyên nghiệp!"</p>
+                </div>
+                <div class="testimonial-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar"><i class="fas fa-user-circle"></i></div>
+                        <div class="testimonial-info"><h4>Trần Thị B</h4><p>Product Manager, E-commerce Co</p></div>
+                    </div>
+                    <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                    <p class="testimonial-text">"Tôi rất ấn tượng với các giải pháp sáng tạo của Clitus. Anh ấy không chỉ code tốt mà còn rất tốt trong giao tiếp và hợp tác."</p>
+                </div>
+                <div class="testimonial-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar"><i class="fas fa-user-circle"></i></div>
+                        <div class="testimonial-info"><h4>Lê Minh C</h4><p>Technical Lead, Design Agency</p></div>
+                    </div>
+                    <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                    <p class="testimonial-text">"Làm việc với Clitus là một trải nghiệm tuyệt vời. Anh ấy có kỹ năng kỹ thuật mạnh mẽ và luôn sẵn sàng học hỏi điều mới."</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Certificates Section -->
+    <section class="certificates" id="certificates">
+        <div class="certificates-content">
+            <h2 data-i18n="certs.title">🏆 Chứng Chỉ & Giải Thưởng</h2>
+            <div class="certificates-grid">
+                <div class="certificate-card">
+                    <div class="certificate-icon">📜</div>
+                    <h3>Cuộc thi lập trình hackathon</h3>
+                    <p>hackathon tỉnh đoàn đồng Nai - 2024</p>
+                    <p style="font-size:0.85rem;margin-top:0.5rem;">Chứng nhân đạt giải lập trình hackathon 2024</p>
+                </div>
+                <div class="certificate-card">
+                    <div class="certificate-icon">🎓</div>
+                    <h3>AI Agent for SDLC Hackathon</h3>
+                    <p>Software Development Life Cycle – SDLC - 2025</p>
+                    <p style="font-size:0.85rem;margin-top:0.5rem;">đạt giải software Engineer AGILE LEAGUE - 2025</p>
+                </div>
+                <div class="certificate-card">
+                    <div class="certificate-icon">⭐</div>
+                    <h3>Best Innovation Award</h3>
+                    <p>Tech Summit Vietnam - 2024</p>
+                    <p style="font-size:0.85rem;margin-top:0.5rem;">Giải thưởng cho dự án đột phá</p>
+                </div>
+                <div class="certificate-card">
+                    <div class="certificate-icon">🏅</div>
+                    <h3>Top 10 Developer</h3>
+                    <p>Global Dev Challenge - 2025</p>
+                    <p style="font-size:0.85rem;margin-top:0.5rem;">Được vinh danh trong top 10 nhà phát triển toàn cầu</p>
+                </div>
+            </div>
+            <div class="marquee-container">
+                <div class="marquee-content">
+                    <span class="marquee-item">✨ Frontend Development</span>
+                    <span class="marquee-item">🔥 Backend Specialist</span>
+                    <span class="marquee-item">💎 Full Stack Developer</span>
+                    <span class="marquee-item">🎨 UI/UX Designer</span>
+                    <span class="marquee-item">📊 AI Engineer</span>
+                    <span class="marquee-item">🚀 DevOps Engineer</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Map Section -->
+    <section class="map-section" id="map">
+        <div class="map-content">
+            <h2 data-i18n="map.title">📍 Vị Trí Của Tôi</h2>
+            <div class="map-container">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.486516642826!2d106.66459652346897!3d10.75269326189391!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f376236a837%3A0x2cfcf11b33000882!2sHo%20Chi%20Minh%20City%2C%20Vietnam!5e0!3m2!1sen!2s!4v1710000000000" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section" id="contact">
+        <div class="contact-content">
+            <h2 data-i18n="contact.title">📧 Liên Hệ Với Tôi</h2>
+            <p data-i18n="contact.subtitle">Hãy để lại tin nhắn của bạn. Tôi sẽ phản hồi sớm nhất có thể!</p>
+            <div class="form-success" id="formSuccess">✓ Cảm ơn bạn! Tin nhắn đã được gửi thành công.</div>
+            <form id="contactForm" action="https://formspree.io/f/myknvrbe" method="POST">
+                <div class="form-group">
+                    <label for="name" data-i18n="contact.name">Họ & Tên *</label>
+                    <input type="text" id="name" name="name" required placeholder="Nhập tên của bạn" data-i18n-ph="contact.name.ph">
+                </div>
+                <div class="form-group">
+                    <label for="email" data-i18n="contact.email">Email *</label>
+                    <input type="email" id="email" name="email" required placeholder="your.email@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="subject" data-i18n="contact.subject">Chủ Đề</label>
+                    <input type="text" id="subject" name="subject" placeholder="Chủ đề tin nhắn" data-i18n-ph="contact.subject.ph">
+                </div>
+                <div class="form-group">
+                    <label for="message" data-i18n="contact.message">Tin Nhắn *</label>
+                    <textarea id="message" name="message" required placeholder="Viết tin nhắn của bạn ở đây..." data-i18n-ph="contact.message.ph"></textarea>
+                </div>
+                <button type="submit" class="submit-btn" data-i18n="contact.send">📤 Gửi Tin Nhắn</button>
+            </form>
+            <div class="contact-info">
+                <div class="contact-info-item"><h4 data-i18n="contact.phone.label">📞 Điện Thoại</h4><p>+84 906857331</p></div>
+                <div class="contact-info-item"><h4 data-i18n="contact.email.label">📧 Email</h4><p>infoclituspc@gmail.com</p></div>
+                <div class="contact-info-item"><h4 data-i18n="contact.addr.label">📍 Địa Chỉ</h4><p data-i18n="contact.addr.val">Hồ Chí Minh, Việt Nam</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Feedback / Comment Section -->
+    <section class="feedback" id="feedback">
+        <div class="feedback-content">
+            <h2 data-i18n="feedback.title">💬 Phản Hồi & Bình Luận</h2>
+            <p class="feedback-subtitle" data-i18n="feedback.subtitle">Chia sẻ ý kiến của bạn về portfolio và dự án của tôi</p>
+            <div class="portfolio-stats-bar" data-aos="fade-up">
+                <div class="stat-item"><i class="fas fa-eye"></i><span id="totalViews">0</span><small data-i18n="stats.views">Lượt Xem</small></div>
+                <div class="stat-item"><i class="fas fa-heart"></i><span id="totalLikes">0</span><small data-i18n="stats.likes">Lượt Thích</small></div>
+                <div class="stat-item"><i class="fas fa-comments"></i><span id="totalComments">0</span><small data-i18n="stats.comments">Bình Luận</small></div>
+                <div class="stat-item"><i class="fas fa-star"></i><span id="avgRating">0.0</span><small data-i18n="stats.rating">Đánh Giá TB</small></div>
+            </div>
+            <div class="feedback-container">
+                <div class="feedback-form-wrapper">
+                    <h3><i class="fas fa-pen"></i> <span data-i18n="feedback.form.title">Để Lại Bình Luận</span></h3>
+                    <form id="feedbackForm" class="feedback-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="feedbackName" data-i18n="feedback.name">Tên của bạn *</label>
+                                <input type="text" id="feedbackName" name="name" required placeholder="Nhập tên của bạn" data-i18n-ph="feedback.name.ph">
+                            </div>
+                            <div class="form-group">
+                                <label for="feedbackEmail" data-i18n="feedback.email">Email (Không bắt buộc)</label>
+                                <input type="email" id="feedbackEmail" name="email" placeholder="your.email@example.com">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="feedback.rating">Đánh Giá *</label>
+                            <div class="rating-stars" id="ratingStars">
+                                <i class="far fa-star" data-rating="1"></i>
+                                <i class="far fa-star" data-rating="2"></i>
+                                <i class="far fa-star" data-rating="3"></i>
+                                <i class="far fa-star" data-rating="4"></i>
+                                <i class="far fa-star" data-rating="5"></i>
+                            </div>
+                            <input type="hidden" id="feedbackRating" name="rating" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="feedbackText" data-i18n="feedback.text">Bình Luận *</label>
+                            <textarea id="feedbackText" name="feedback" required placeholder="Chia sẻ ý kiến hoặc nhận xét của bạn..." data-i18n-ph="feedback.text.ph"></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn feedback-submit-btn">
+                            <i class="fas fa-paper-plane"></i> <span data-i18n="feedback.send">Gửi Bình Luận</span>
+                        </button>
+                    </form>
+                </div>
+                <div class="feedback-list-wrapper">
+                    <div class="feedback-list-header">
+                        <h3><i class="fas fa-comments"></i> <span data-i18n="feedback.list.title">Bình Luận</span> (<span id="commentCount">0</span>)</h3>
+                        <select id="sortComments" class="sort-select">
+                            <option value="newest" data-i18n="feedback.sort.newest">Mới nhất</option>
+                            <option value="oldest" data-i18n="feedback.sort.oldest">Cũ nhất</option>
+                            <option value="rating" data-i18n="feedback.sort.rating">Đánh giá cao</option>
+                        </select>
+                    </div>
+                    <div id="feedbackList" class="feedback-list"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Chat Widget -->
+    <button class="chat-toggle" id="chatToggle"><i class="fas fa-comments"></i></button>
+    <div class="chat-widget" id="chatWidget">
+        <div class="chat-header">
+            <h3>🤖 AI Smart Assistant</h3>
+            <button class="chat-close" id="chatClose">×</button>
+        </div>
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-input">
+            <input type="text" id="chatInput" placeholder="Nhập tin nhắn..." data-i18n-ph="chat.placeholder">
+            <button id="sendBtn" data-i18n="chat.send">Gửi</button>
+        </div>
+    </div>
+
+    <button id="backToTop" class="back-to-top" title="Quay lại đầu trang"><i class="fas fa-arrow-up"></i></button>
+
+    <footer>
+        <h3 data-i18n="footer.follow">Theo Dõi Tôi</h3>
+        <div class="social-links">
+            <a href="https://www.facebook.com/OtisPc.Developer" target="_blank" class="facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://www.linkedin.com/in/clitus-tsai-a4bbb3363" target="_blank" class="linkedin"><i class="fab fa-linkedin-in"></i></a>
+            <a href="https://www.instagram.com/clituspc?igsh=YTcwZTRtbjV4dmdk&utm_source=qr" target="_blank" class="instagram"><i class="fab fa-instagram"></i></a>
+            <a href="https://x.com/clituspc?s=21" target="_blank" class="linkedin"><i class="fa-solid fa-x"></i></a>
+        </div>
+        <p style="margin-top:1rem;font-size:0.9rem;" data-i18n="footer.copy">© 2026 Trang Cá Nhân của Tôi. Bản quyền được bảo vệ.</p>
+        <span class="admin-secret-hint" onclick="openAdmin()" title="Admin">⚙</span>
+    </footer>
+
+    <!-- Admin Dashboard Modal -->
+    <div id="adminOverlay" class="admin-overlay" style="display:none">
+        <div class="admin-modal">
+            <div id="adminLogin" class="admin-login">
+                <div class="admin-login-logo"><i class="fas fa-shield-alt"></i></div>
+                <h2>Admin Dashboard</h2>
+                <p>Nhập mật khẩu để truy cập</p>
+                <div class="admin-login-form">
+                    <input type="password" id="adminPassword" placeholder="Mật khẩu..." autocomplete="off">
+                    <button onclick="adminLogin()"><i class="fas fa-sign-in-alt"></i> Đăng nhập</button>
+                </div>
+                <p id="adminLoginError" class="admin-error"></p>
+                <button class="admin-close-btn" onclick="closeAdmin()"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="adminDashboard" class="admin-dashboard" style="display:none">
+                <div class="admin-header">
+                    <div class="admin-header-left"><i class="fas fa-tachometer-alt"></i><h2>Admin Dashboard</h2></div>
+                    <div class="admin-header-right">
+                        <span id="adminDateTime" class="admin-datetime"></span>
+                        <button class="admin-logout-btn" onclick="adminLogout()"><i class="fas fa-sign-out-alt"></i> Đăng xuất</button>
+                        <button class="admin-close-btn" onclick="closeAdmin()"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+                <div class="admin-quick-stats">
+                    <div class="admin-stat-card"><i class="fas fa-eye"></i><div><span id="adm-views">0</span><small>Lượt Xem</small></div></div>
+                    <div class="admin-stat-card"><i class="fas fa-heart"></i><div><span id="adm-likes">0</span><small>Lượt Thích</small></div></div>
+                    <div class="admin-stat-card"><i class="fas fa-comments"></i><div><span id="adm-comments">0</span><small>Bình Luận</small></div></div>
+                    <div class="admin-stat-card"><i class="fas fa-envelope"></i><div><span id="adm-messages">0</span><small>Tin Nhắn</small></div></div>
+                    <div class="admin-stat-card online-card"><i class="fas fa-circle online-dot"></i><div><span id="adm-online">1</span><small>Đang Online</small></div></div>
+                </div>
+                <div class="admin-tabs">
+                    <button class="admin-tab active" data-tab="projects"><i class="fas fa-folder"></i> Dự Án</button>
+                    <button class="admin-tab" data-tab="messages"><i class="fas fa-envelope"></i> Tin Nhắn</button>
+                    <button class="admin-tab" data-tab="comments"><i class="fas fa-comments"></i> Bình Luận</button>
+                    <button class="admin-tab" data-tab="blog"><i class="fas fa-pen-nib"></i> Blog</button>
+                    <button class="admin-tab" data-tab="analytics"><i class="fas fa-chart-bar"></i> Thống Kê</button>
+                </div>
+                <div class="admin-tab-content active" id="tab-projects">
+                    <div class="admin-section-header"><h3>Quản Lý Dự Án</h3></div>
+                    <div id="adminProjectsList" class="admin-projects-list"></div>
+                </div>
+                <div class="admin-tab-content" id="tab-messages" style="display:none">
+                    <div class="admin-section-header">
+                        <h3>Tin Nhắn Liên Hệ</h3>
+                        <button class="admin-btn-danger" onclick="adminClearMessages()"><i class="fas fa-trash"></i> Xóa Tất Cả</button>
+                    </div>
+                    <div id="adminMessagesList" class="admin-messages-list"></div>
+                </div>
+                <div class="admin-tab-content" id="tab-comments" style="display:none">
+                    <div class="admin-section-header">
+                        <h3>Quản Lý Bình Luận</h3>
+                        <button class="admin-btn-danger" onclick="adminClearComments()"><i class="fas fa-trash"></i> Xóa Tất Cả</button>
+                    </div>
+                    <div id="adminCommentsList" class="admin-comments-list"></div>
+                </div>
+                <div class="admin-tab-content" id="tab-blog" style="display:none">
+                    <div class="admin-section-header">
+                        <h3>Quản Lý Blog</h3>
+                        <button class="admin-btn-primary" onclick="openBlogEditor()"><i class="fas fa-plus"></i> Viết Bài Mới</button>
+                    </div>
+                    <div id="adminBlogList" class="admin-blog-list"></div>
+                </div>
+
+                <div class="admin-tab-content" id="tab-analytics" style="display:none"></div>
+                    <div class="admin-section-header"><h3>Thống Kê Truy Cập</h3>
+                        <button class="admin-btn-primary" onclick="showPushModal()" style="margin-left:auto"><i class="fas fa-bell"></i> Gửi Thông Báo</button>
+                    </div>
+                    <!-- Row 1: Charts -->
+                    <div class="analytics-grid">
+                        <div class="analytics-card">
+                            <h4><i class="fas fa-chart-bar"></i> Lượt Xem Theo Dự Án</h4>
+                            <canvas id="chartViews" height="160"></canvas>
+                        </div>
+                        <div class="analytics-card">
+                            <h4><i class="fas fa-heart"></i> Lượt Thích Theo Dự Án</h4>
+                            <canvas id="chartLikes" height="160"></canvas>
+                        </div>
+                        <div class="analytics-card">
+                            <h4><i class="fas fa-star"></i> Phân Bố Đánh Giá</h4>
+                            <canvas id="chartRatings" height="160"></canvas>
+                        </div>
+                        <div class="analytics-card">
+                            <h4><i class="fas fa-info-circle"></i> Thông Tin Hệ Thống</h4>
+                            <div id="analyticsSystem" class="analytics-info"></div>
+                        </div>
+                    </div>
+                    <!-- Row 2: Country + Heatmap -->
+                    <div class="analytics-grid" style="margin-top:1.2rem">
+                        <div class="analytics-card analytics-card-wide">
+                            <h4><i class="fas fa-globe-asia"></i> Lượt Truy Cập Theo Quốc Gia</h4>
+                            <canvas id="chartCountries" height="180"></canvas>
+                            <div id="countryList" class="country-list"></div>
+                        </div>
+                        <div class="analytics-card analytics-card-wide">
+                            <h4><i class="fas fa-mouse-pointer"></i> Heatmap Click
+                                <button class="admin-btn-danger" style="margin-left:auto;padding:0.25rem 0.6rem;font-size:0.75rem" onclick="clearHeatmap()"><i class="fas fa-trash"></i> Xóa</button>
+                            </h4>
+                            <div class="heatmap-wrapper">
+                                <canvas id="heatmapCanvas"></canvas>
+                                <div id="heatmapEmpty" class="heatmap-empty">Chưa có dữ liệu click. Đóng admin và click vào trang.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Project Edit Sub-Modal -->
+    <div id="projectEditModal" class="admin-sub-modal" style="display:none">
+        <div class="admin-sub-modal-content">
+            <h3 id="projectEditTitle">Chỉnh Sửa Dự Án</h3>
+            <input type="hidden" id="editProjectId">
+            <div class="form-group"><label>Tên Dự Án</label><input type="text" id="editProjectName"></div>
+            <div class="form-group"><label>Mô Tả</label><textarea id="editProjectDesc"></textarea></div>
+            <div class="form-group"><label>Tags (phân cách bằng dấu phẩy)</label><input type="text" id="editProjectTags"></div>
+            <div class="form-group"><label>Icon (Font Awesome class)</label><input type="text" id="editProjectIcon"></div>
+            <div class="admin-modal-actions">
+                <button class="admin-btn-primary" onclick="saveProject()"><i class="fas fa-save"></i> Lưu</button>
+                <button class="admin-btn-secondary" onclick="closeProjectEdit()"><i class="fas fa-times"></i> Hủy</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Blog Editor Modal -->
+    <div id="blogEditorModal" class="admin-sub-modal" style="display:none">
+        <div class="admin-sub-modal-content blog-editor-modal">
+            <h3 id="blogEditorTitle">✍️ Viết Bài Mới</h3>
+            <input type="hidden" id="blogEditId">
+            <div class="blog-editor-grid">
+                <div class="form-group"><label>Tiêu Đề *</label><input type="text" id="blogTitle" placeholder="Tiêu đề bài viết..."></div>
+                <div class="form-group"><label>Slug (URL)</label><input type="text" id="blogSlug" placeholder="ten-bai-viet"></div>
+                <div class="form-group"><label>Tóm Tắt</label><textarea id="blogExcerpt" rows="2" placeholder="Mô tả ngắn..."></textarea></div>
+                <div class="form-group"><label>Tags (phân cách bằng dấu phẩy)</label><input type="text" id="blogTags" placeholder="React, Node.js, Tutorial"></div>
+                <div class="form-group blog-editor-row">
+                    <div><label>Thời Gian Đọc (phút)</label><input type="number" id="blogReadTime" value="5" min="1"></div>
+                    <div><label>Trạng Thái</label>
+                        <select id="blogPublished"><option value="1">✅ Đã Xuất Bản</option><option value="0">📝 Nháp</option></select>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Nội Dung (Markdown) *</label>
+                <div class="md-editor-toolbar">
+                    <button type="button" onclick="mdInsert('**','**','Bold')"><b>B</b></button>
+                    <button type="button" onclick="mdInsert('*','*','Italic')"><i>I</i></button>
+                    <button type="button" onclick="mdInsert('## ','','Heading')">H2</button>
+                    <button type="button" onclick="mdInsert('### ','','Heading')">H3</button>
+                    <button type="button" onclick="mdInsert('`','`','code')">{'`'}</button>
+                    <button type="button" onclick="mdInsert('\n```javascript\n','\n```\n','code block')">{'```'}</button>
+                    <button type="button" onclick="mdInsert('[','](url)','link')">🔗</button>
+                    <button type="button" onclick="mdInsert('> ','','quote')">❝</button>
+                    <button type="button" onclick="togglePreview()">👁 Preview</button>
+                </div>
+                <div class="md-editor-wrap">
+                    <textarea id="blogContent" class="md-editor" placeholder="Viết nội dung bằng Markdown...&#10;&#10;# Tiêu đề&#10;## Mục&#10;**Bold** *Italic*&#10;&#10;```javascript&#10;const hello = 'world';&#10;```"></textarea>
+                    <div id="mdPreview" class="md-preview markdown-body" style="display:none"></div>
+                </div>
+            </div>
+            <div class="admin-modal-actions">
+                <button class="admin-btn-primary" onclick="saveBlogPost()"><i class="fas fa-save"></i> Lưu Bài</button>
+                <button class="admin-btn-secondary" onclick="closeBlogEditor()"><i class="fas fa-times"></i> Hủy</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Push Notification Modal -->
+    <div id="pushModal" class="admin-sub-modal" style="display:none">
+        <div class="admin-sub-modal-content">
+            <h3>🔔 Gửi Push Notification</h3>
+            <div class="form-group"><label>Tiêu đề</label><input type="text" id="pushTitle" placeholder="Clitus PC Portfolio" value="Clitus PC Portfolio"></div>
+            <div class="form-group"><label>Nội dung</label><textarea id="pushBody" placeholder="Nội dung thông báo..."></textarea></div>
+            <div class="form-group"><label>URL (tùy chọn)</label><input type="text" id="pushUrl" placeholder="/" value="/"></div>
+            <div class="admin-modal-actions">
+                <button class="admin-btn-primary" onclick="sendPushNotification()"><i class="fas fa-paper-plane"></i> Gửi</button>
+                <button class="admin-btn-secondary" onclick="document.getElementById('pushModal').style.display='none'"><i class="fas fa-times"></i> Hủy</button>
+            </div>
+            <p id="pushResult" style="margin-top:0.5rem;font-size:0.85rem;color:#667eea"></p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="i18n.js"></script>
+    <script src="api.js"></script>
+    <script src="admin.js"></script>
+    <script>
+        // ===== TOAST =====
+        function showToast(message, type = 'info', duration = 3000) {
+            let container = document.querySelector('.toast-container');
+            if (!container) { container = document.createElement('div'); container.className = 'toast-container'; document.body.appendChild(container); }
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<span class="toast-icon">${{success:'✓',error:'✕',info:'ℹ',warning:'⚠'}[type]}</span><span class="toast-message">${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.style.animation = 'slideOutToastRight 0.3s ease'; setTimeout(() => toast.remove(), 300); }, duration);
+        }
+
+        window.addEventListener('load', () => {
+            setTimeout(() => showToast('👋 Chào mừng bạn đến với trang cá nhân của tôi!', 'success', 3000), 500);
+        });
+
+        // ===== CHAT WIDGET =====
+        const chatToggle = document.getElementById('chatToggle');
+        const chatWidget = document.getElementById('chatWidget');
+        const chatClose = document.getElementById('chatClose');
+        const sendBtn = document.getElementById('sendBtn');
+        const chatInput = document.getElementById('chatInput');
+        const chatMessages = document.getElementById('chatMessages');
+        let isOpen = false;
+
+        chatToggle && chatToggle.addEventListener('click', () => {
+            isOpen = !isOpen;
+            if (isOpen) {
+                chatWidget.classList.add('open');
+                chatToggle.classList.add('hidden');
+                if (chatMessages.children.length === 0) addBotMessage('Xin chào! 👋 Tôi có thể giúp gì cho bạn?');
+            }
+        });
+        chatClose && chatClose.addEventListener('click', () => { isOpen = false; chatWidget.classList.remove('open'); chatToggle && chatToggle.classList.remove('hidden'); });
+        sendBtn && sendBtn.addEventListener('click', sendMessage);
+        chatInput && chatInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendMessage(); });
+
+        function addMessage(text, isUser) {
+            if (!chatMessages) return;
+            const el = document.createElement('div');
+            el.className = `message ${isUser ? 'user' : 'bot'}`;
+            el.innerHTML = `<div class="message-content">${text}</div>`;
+            chatMessages.appendChild(el);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        function addBotMessage(text) { addMessage(text, false); }
+        async function sendMessage() {
+            if (!chatInput) return;
+            const text = chatInput.value.trim();
+            if (!text) return;
+            addMessage(text, true);
+            chatInput.value = '';
+            sendBtn && (sendBtn.disabled = true);
+
+            // Typing indicator
+            const typingEl = document.createElement('div');
+            typingEl.className = 'message bot typing-indicator';
+            typingEl.innerHTML = '<div class="message-content"><span>.</span><span>.</span><span>.</span></div>';
+            chatMessages && chatMessages.appendChild(typingEl);
+            chatMessages && (chatMessages.scrollTop = chatMessages.scrollHeight);
+
+            // Gọi AI thật qua backend
+            let reply = null;
+            if (typeof sendChatMessage === 'function') {
+                reply = await sendChatMessage(text);
+            }
+
+            // Fallback keyword nếu backend offline
+            if (!reply) {
+                const responses = {
+                    'xin chào': 'Xin chào bạn! 👋 Rất vui được gặp bạn.',
+                    'bạn là ai': 'Tôi là AI Assistant của Clitus PC Portfolio.',
+                    'dự án': 'Clitus đã xây dựng: E-Commerce (React/Node.js), Project Management (React Native), Data Dashboard (Vue.js/Python).',
+                    'kỹ năng': 'Kỹ năng: Frontend 95%, Backend 90%, Database 85%, UI/UX 88%.',
+                    'liên hệ': 'Email: infoclituspc@gmail.com | Phone: +84 906857331',
+                    'hello': 'Hello! How can I help you today? 😊',
+                    'hi': 'Hi there! 😊',
+                };
+                const lower = text.toLowerCase();
+                reply = 'Cảm ơn bạn đã hỏi! Tôi có thể giúp bạn tìm hiểu về kỹ năng, dự án, hoặc liên hệ với Clitus. 😊';
+                for (const [k, v] of Object.entries(responses)) { if (lower.includes(k)) { reply = v; break; } }
+            }
+
+            typingEl.remove();
+            sendBtn && (sendBtn.disabled = false);
+            addBotMessage(reply);
+        }
+
+        // ===== DARK MODE =====
+        const themeToggle = document.getElementById('themeToggle');
+        const htmlEl = document.documentElement;
+        if (localStorage.getItem('theme') === 'dark') { htmlEl.setAttribute('data-theme', 'dark'); themeToggle && (themeToggle.innerHTML = '<i class="fas fa-sun"></i>'); }
+        themeToggle && themeToggle.addEventListener('click', () => {
+            const isDark = htmlEl.getAttribute('data-theme') === 'dark';
+            htmlEl.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            localStorage.setItem('theme', isDark ? 'light' : 'dark');
+            themeToggle.innerHTML = isDark ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+            showToast(isDark ? '☀️ Chế độ sáng bật' : '🌙 Chế độ tối bật', 'info', 2000);
+        });
+
+        // ===== BACK TO TOP =====
+        const backToTopBtn = document.getElementById('backToTop');
+        window.addEventListener('scroll', () => backToTopBtn && backToTopBtn.classList.toggle('show', window.pageYOffset > 300));
+        backToTopBtn && backToTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+        // ===== SMOOTH SCROLL =====
+        document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', function(e) {
+            e.preventDefault();
+            const t = document.querySelector(this.getAttribute('href'));
+            if (t) t.scrollIntoView({ behavior: 'smooth' });
+        }));
+
+        // ===== PROJECT FILTER =====
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const projectCards = document.querySelectorAll('.project-card');
+        filterBtns.forEach(btn => btn.addEventListener('click', () => {
+            filterBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const f = btn.getAttribute('data-filter');
+            projectCards.forEach(card => {
+                card.style.opacity = '0'; card.style.transform = 'scale(0.8)';
+                setTimeout(() => {
+                    const cf = card.getAttribute('data-filter');
+                    card.style.display = (f === '*' || (cf && cf.includes(f))) ? 'block' : 'none';
+                    setTimeout(() => { if (card.style.display !== 'none') { card.style.opacity = '1'; card.style.transform = 'scale(1)'; } }, 50);
+                }, 300);
+            });
+        }));
+
+        // ===== CONTACT FORM =====
+        const contactForm = document.getElementById('contactForm');
+        const formSuccess = document.getElementById('formSuccess');
+        contactForm && contactForm.addEventListener('submit', function() {
+            showToast('📤 Đang gửi tin nhắn...', 'info');
+            // Lưu lên backend thật
+            const name = document.getElementById('name')?.value?.trim();
+            const email = document.getElementById('email')?.value?.trim();
+            const subject = document.getElementById('subject')?.value?.trim();
+            const message = document.getElementById('message')?.value?.trim();
+            if (name && message && typeof postMessage === 'function') {
+                postMessage({ name, email, subject, message });
+            }
+            setTimeout(() => {
+                showToast('✓ Gửi thành công! Cảm ơn bạn đã liên hệ.', 'success', 4000);
+                if (formSuccess) { formSuccess.style.display = 'block'; setTimeout(() => formSuccess.style.display = 'none', 5000); }
+            }, 1000);
+        });
+
+        // ===== AOS =====
+        if (typeof AOS !== 'undefined') AOS.init({ duration: 800, offset: 100, once: true });
+
+        // ===== LIKE / VIEW / COMMENT SYSTEM =====
+        const STORAGE_KEY = 'portfolio_interactions';
+        // liked state lưu localStorage (per-browser)
+        const likedProjects = JSON.parse(localStorage.getItem('liked_projects') || '{}');
+        const likedComments = JSON.parse(localStorage.getItem('liked_comments') || '{}');
+
+        function loadData() {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (raw) return JSON.parse(raw);
+            return {
+                projects: { 1:{views:142,likes:38,liked:false}, 2:{views:97,likes:21,liked:false}, 3:{views:215,likes:54,liked:false} },
+                totalViews: 1284, totalLikes: 113,
+                comments: [
+                    { id:1, name:'Nguyễn Minh Tuấn', email:'', text:'Portfolio rất ấn tượng! Thiết kế đẹp và chuyên nghiệp. Tôi đặc biệt thích phần dự án thương mại điện tử.', rating:5, date:new Date(Date.now()-2*86400000).toISOString(), likes:12, liked:false },
+                    { id:2, name:'Trần Thị Lan', email:'', text:'Kỹ năng kỹ thuật rất đa dạng. Mong được hợp tác trong tương lai!', rating:5, date:new Date(Date.now()-5*86400000).toISOString(), likes:8, liked:false },
+                    { id:3, name:'Phạm Quốc Hùng', email:'', text:'Dashboard phân tích dữ liệu trông rất xịn. Bạn có thể chia sẻ thêm về tech stack không?', rating:4, date:new Date(Date.now()-8*86400000).toISOString(), likes:5, liked:false },
+                    { id:4, name:'Lê Thị Hoa', email:'', text:'Trang web load nhanh, giao diện mượt mà. Chúc bạn thành công hơn nữa!', rating:5, date:new Date(Date.now()-12*86400000).toISOString(), likes:15, liked:false }
+                ]
+            };
+        }
+        function saveData(d) { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }
+        let interactionData = loadData();
+
+        // Load stats thật từ backend
+        async function loadRealStats() {
+            const stats = await fetchStats();
+            if (!stats) return;
+            interactionData.totalViews = stats.totalViews;
+            interactionData.totalLikes = stats.totalLikes;
+            Object.entries(stats.projects).forEach(([id, p]) => {
+                if (!interactionData.projects[id]) interactionData.projects[id] = { views:0, likes:0, liked:false };
+                interactionData.projects[id].views = p.views;
+                interactionData.projects[id].likes = p.likes;
+                interactionData.projects[id].liked = !!likedProjects[id];
+            });
+            saveData(interactionData);
+            initProjectStats();
+            updateStatsBar();
+        }
+
+        // Load comments thật từ backend
+        async function loadRealComments(sort) {
+            const comments = await fetchComments(sort);
+            if (!comments) return;
+            interactionData.comments = comments.map(c => ({
+                id: c.id,
+                name: c.name,
+                email: c.email || '',
+                text: c.text,
+                rating: c.rating,
+                date: c.created_at,
+                likes: c.likes,
+                liked: !!likedComments[c.id]
+            }));
+            saveData(interactionData);
+            renderComments(true); // skipFetch=true để tránh loop
+            updateStatsBar();
+        }
+
+        function initProjectStats() {
+            document.querySelectorAll('.project-card').forEach(card => {
+                const id = parseInt(card.getAttribute('data-project-id'));
+                if (!id) return;
+                if (!interactionData.projects[id]) interactionData.projects[id] = { views:0, likes:0, liked:false };
+                const p = interactionData.projects[id];
+                const vEl = card.querySelector('.view-number'); if (vEl) vEl.textContent = formatNumber(p.views);
+                const lEl = card.querySelector('.like-number'); if (lEl) lEl.textContent = formatNumber(p.likes);
+                const btn = card.querySelector('.like-btn');
+                if (btn && p.liked) { btn.querySelector('i').className = 'fas fa-heart'; btn.classList.add('liked'); }
+            });
+        }
+
+        async function trackProjectView(id) {
+            if (!interactionData.projects[id]) return;
+            // Gọi backend
+            const result = await apiTrackView(id);
+            if (result) {
+                interactionData.projects[id].views = result.views;
+            } else {
+                interactionData.projects[id].views++;
+            }
+            interactionData.totalViews++;
+            saveData(interactionData);
+            const vEl = document.querySelector(`[data-project-id="${id}"] .view-number`);
+            if (vEl) vEl.textContent = formatNumber(interactionData.projects[id].views);
+            updateStatsBar();
+        }
+
+        async function toggleLike(id) {
+            const p = interactionData.projects[id]; if (!p) return;
+            const card = document.querySelector(`[data-project-id="${id}"]`);
+            const btn = card && card.querySelector('.like-btn');
+            const icon = btn && btn.querySelector('i');
+            const action = p.liked ? 'unlike' : 'like';
+
+            // Gọi backend
+            const result = await apiToggleLike(id, action);
+
+            if (p.liked) {
+                p.liked = false; likedProjects[id] = false;
+                if (result) p.likes = result.likes; else p.likes = Math.max(0, p.likes-1);
+                interactionData.totalLikes = Math.max(0, interactionData.totalLikes-1);
+                if (icon) icon.className = 'far fa-heart'; if (btn) btn.classList.remove('liked');
+            } else {
+                p.liked = true; likedProjects[id] = true;
+                if (result) p.likes = result.likes; else p.likes++;
+                interactionData.totalLikes++;
+                if (icon) icon.className = 'fas fa-heart';
+                if (btn) { btn.classList.add('liked','pop'); setTimeout(() => btn.classList.remove('pop'), 400); }
+                showToast('❤️ Đã thích dự án này!', 'success', 2000);
+            }
+            localStorage.setItem('liked_projects', JSON.stringify(likedProjects));
+            const lEl = card && card.querySelector('.like-number'); if (lEl) lEl.textContent = formatNumber(p.likes);
+            saveData(interactionData); updateStatsBar();
+        }
+
+        const viewObserver = new IntersectionObserver(entries => {
+            entries.forEach(e => { if (e.isIntersecting) { const id = parseInt(e.target.getAttribute('data-project-id')); if (id) { setTimeout(() => trackProjectView(id), 800); viewObserver.unobserve(e.target); } } });
+        }, { threshold: 0.5 });
+        document.querySelectorAll('.project-card[data-project-id]').forEach(c => viewObserver.observe(c));
+
+        function updateStatsBar() {
+            const d = interactionData;
+            const vEl = document.getElementById('totalViews'); if (vEl) animateCount(vEl, d.totalViews);
+            const lEl = document.getElementById('totalLikes'); if (lEl) animateCount(lEl, d.totalLikes);
+            const cEl = document.getElementById('totalComments'); if (cEl) animateCount(cEl, d.comments.length);
+            const rEl = document.getElementById('avgRating');
+            if (rEl) { const rs = d.comments.map(c=>c.rating).filter(r=>r>0); rEl.textContent = rs.length ? (rs.reduce((a,b)=>a+b,0)/rs.length).toFixed(1) : '0.0'; }
+        }
+
+        function animateCount(el, target) {
+            const cur = parseInt(el.textContent)||0; if (cur===target) return;
+            const step = Math.ceil(Math.abs(target-cur)/20); let val = cur;
+            const t = setInterval(() => {
+                val += target>cur ? step : -step;
+                if ((target>cur&&val>=target)||(target<cur&&val<=target)) { val=target; clearInterval(t); }
+                el.textContent = formatNumber(val);
+            }, 30);
+        }
+
+        function formatNumber(n) { return n >= 1000 ? (n/1000).toFixed(1)+'k' : n.toString(); }
+
+        // ===== COMMENTS =====
+        const avatarColors = ['#667eea','#764ba2','#f093fb','#f5576c','#4facfe','#43e97b','#fa709a','#fee140'];
+        function getInitials(name) { return name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2); }
+        function getAvatarColor(name) { let h=0; for (let c of name) h=c.charCodeAt(0)+((h<<5)-h); return avatarColors[Math.abs(h)%avatarColors.length]; }
+        function timeAgo(d) {
+            const s=(Date.now()-new Date(d))/1000;
+            if(s<60) return 'Vừa xong'; if(s<3600) return Math.floor(s/60)+' phút trước';
+            if(s<86400) return Math.floor(s/3600)+' giờ trước'; if(s<2592000) return Math.floor(s/86400)+' ngày trước';
+            return new Date(d).toLocaleDateString('vi-VN');
+        }
+        function renderStars(r) { return Array.from({length:5},(_,i)=>`<i class="${i<r?'fas':'far'} fa-star"></i>`).join(''); }
+
+        function renderComments(skipFetch) {
+            const list = document.getElementById('feedbackList'); if (!list) return;
+            const sort = document.getElementById('sortComments')?.value||'newest';
+
+            // Nếu backend online và không phải gọi từ loadRealComments, fetch data thật
+            if (!skipFetch && typeof fetchComments === 'function') {
+                loadRealComments(sort);
+                return;
+            }
+
+            let comments = [...interactionData.comments];
+            if (sort==='newest') comments.sort((a,b)=>new Date(b.date)-new Date(a.date));
+            else if (sort==='oldest') comments.sort((a,b)=>new Date(a.date)-new Date(b.date));
+            else if (sort==='rating') comments.sort((a,b)=>b.rating-a.rating);
+            const cEl = document.getElementById('commentCount'); if (cEl) cEl.textContent = comments.length;
+            if (!comments.length) { list.innerHTML = '<div class="no-comments"><i class="far fa-comment-dots"></i><p>Chưa có bình luận nào. Hãy là người đầu tiên!</p></div>'; return; }
+            list.innerHTML = comments.map(c => `
+                <div class="comment-card" data-id="${c.id}">
+                    <div class="comment-avatar" style="background:${getAvatarColor(c.name)}">${getInitials(c.name)}</div>
+                    <div class="comment-body">
+                        <div class="comment-header"><span class="comment-name">${c.name}</span><span class="comment-time">${timeAgo(c.date)}</span></div>
+                        <div class="comment-rating">${renderStars(c.rating)}</div>
+                        <p class="comment-text">${c.text}</p>
+                        <div class="comment-actions">
+                            <button class="comment-like-btn ${c.liked?'liked':''}" onclick="likeComment(${c.id})"><i class="${c.liked?'fas':'far'} fa-thumbs-up"></i> <span>${c.likes}</span></button>
+                            <button class="comment-reply-btn" onclick="replyToComment('${c.name}')"><i class="fas fa-reply"></i> Trả lời</button>
+                        </div>
+                    </div>
+                </div>`).join('');
+        }
+
+        async function likeComment(id) {
+            const c = interactionData.comments.find(c=>c.id===id); if (!c) return;
+            // Gọi backend
+            const result = await apiLikeComment(id);
+            if (result) {
+                c.likes = result.likes;
+            } else {
+                c.liked ? (c.liked=false, c.likes=Math.max(0,c.likes-1)) : (c.liked=true, c.likes++);
+            }
+            c.liked = !c.liked; // toggle local state
+            likedComments[id] = c.liked;
+            localStorage.setItem('liked_comments', JSON.stringify(likedComments));
+            saveData(interactionData); renderComments(true);
+        }
+
+        function replyToComment(name) {
+            const ta = document.getElementById('feedbackText');
+            if (ta) { ta.value = `@${name} `; ta.focus(); document.querySelector('.feedback-form-wrapper').scrollIntoView({behavior:'smooth'}); }
+        }
+
+        const ratingStars = document.getElementById('ratingStars');
+        const ratingInput = document.getElementById('feedbackRating');
+        let currentRating = 0;
+        if (ratingStars) {
+            ratingStars.querySelectorAll('i').forEach(star => {
+                star.addEventListener('mouseover', () => { const r=parseInt(star.getAttribute('data-rating')); ratingStars.querySelectorAll('i').forEach((s,i)=>s.className=i<r?'fas fa-star':'far fa-star'); });
+                star.addEventListener('mouseout', () => { ratingStars.querySelectorAll('i').forEach((s,i)=>s.className=i<currentRating?'fas fa-star':'far fa-star'); });
+                star.addEventListener('click', () => { currentRating=parseInt(star.getAttribute('data-rating')); if(ratingInput) ratingInput.value=currentRating; ratingStars.querySelectorAll('i').forEach((s,i)=>s.className=i<currentRating?'fas fa-star':'far fa-star'); });
+            });
+        }
+
+        document.getElementById('sortComments')?.addEventListener('change', () => renderComments(false));
+
+        const feedbackForm = document.getElementById('feedbackForm');
+        feedbackForm && feedbackForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const name = document.getElementById('feedbackName').value.trim();
+            const text = document.getElementById('feedbackText').value.trim();
+            const rating = parseInt(document.getElementById('feedbackRating').value)||0;
+            if (!name||!text) { showToast('⚠️ Vui lòng điền đầy đủ thông tin!','error',3000); return; }
+            if (!rating) { showToast('⭐ Vui lòng chọn số sao đánh giá!','warning',3000); return; }
+
+            const submitBtn = feedbackForm.querySelector('.feedback-submit-btn');
+            if (submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...'; }
+
+            try {
+                // Gửi lên backend thật
+                const newComment = await postComment({
+                    name,
+                    email: document.getElementById('feedbackEmail').value.trim(),
+                    text,
+                    rating
+                });
+
+                if (newComment) {
+                    // Backend thành công
+                    interactionData.comments.unshift({
+                        id: newComment.id, name: newComment.name, email: newComment.email || '',
+                        text: newComment.text, rating: newComment.rating,
+                        date: newComment.created_at, likes: 0, liked: false
+                    });
+                } else {
+                    // Fallback localStorage
+                    interactionData.comments.unshift({ id:Date.now(), name, email:document.getElementById('feedbackEmail').value.trim(), text, rating, date:new Date().toISOString(), likes:0, liked:false });
+                }
+
+                saveData(interactionData); renderComments(true); updateStatsBar();
+                feedbackForm.reset(); currentRating=0;
+                if (ratingStars) ratingStars.querySelectorAll('i').forEach(s=>s.className='far fa-star');
+                if (ratingInput) ratingInput.value=0;
+                showToast('✅ Bình luận của bạn đã được đăng!','success',3000);
+                setTimeout(() => { const l=document.getElementById('feedbackList'); if(l) l.scrollIntoView({behavior:'smooth'}); }, 300);
+            } catch(err) {
+                showToast('❌ ' + (err.message || 'Lỗi khi gửi bình luận'), 'error', 3000);
+            } finally {
+                if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> <span data-i18n="feedback.send">Gửi Bình Luận</span>'; }
+            }
+        });
+
+        // Init
+        initProjectStats(); updateStatsBar(); renderComments(false);
+        // Load data thật từ backend (async, không block UI)
+        loadRealStats();
+        interactionData.totalViews++; saveData(interactionData);
+
+        // ===== PWA: SERVICE WORKER =====
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    const reg = await navigator.serviceWorker.register('/sw.js');
+                    console.log('✅ SW registered:', reg.scope);
+                    window._swReg = reg;
+
+                    // Kiểm tra update SW
+                    reg.addEventListener('updatefound', () => {
+                        const newSW = reg.installing;
+                        newSW.addEventListener('statechange', () => {
+                            if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+                                showToast('🔄 Có phiên bản mới! Tải lại để cập nhật.', 'info', 6000);
+                            }
+                        });
+                    });
+                } catch (err) {
+                    console.warn('SW registration failed:', err);
+                }
+            });
+        }
+
+        // ===== PWA: INSTALL PROMPT =====
+        let _deferredPrompt = null;
+        window.addEventListener('beforeinstallprompt', e => {
+            e.preventDefault();
+            _deferredPrompt = e;
+            // Hiện nút cài app sau 3 giây
+            setTimeout(() => showInstallBanner(), 3000);
+        });
+
+        window.addEventListener('appinstalled', () => {
+            _deferredPrompt = null;
+            const banner = document.getElementById('pwa-install-banner');
+            if (banner) banner.remove();
+            showToast('🎉 App đã được cài đặt thành công!', 'success', 4000);
+        });
+
+        function showInstallBanner() {
+            if (!_deferredPrompt || document.getElementById('pwa-install-banner')) return;
+            const banner = document.createElement('div');
+            banner.id = 'pwa-install-banner';
+            banner.innerHTML = `
+                <div class="pwa-banner-content">
+                    <span class="pwa-banner-icon">📱</span>
+                    <div class="pwa-banner-text">
+                        <strong>Cài App Clitus PC</strong>
+                        <small>Dùng offline, nhanh hơn trình duyệt</small>
+                    </div>
+                    <button class="pwa-install-btn" onclick="installPWA()">Cài Ngay</button>
+                    <button class="pwa-dismiss-btn" onclick="this.closest('#pwa-install-banner').remove()">✕</button>
+                </div>`;
+            document.body.appendChild(banner);
+            setTimeout(() => banner.classList.add('show'), 100);
+        }
+
+        async function installPWA() {
+            if (!_deferredPrompt) return;
+            _deferredPrompt.prompt();
+            const { outcome } = await _deferredPrompt.userChoice;
+            _deferredPrompt = null;
+            const banner = document.getElementById('pwa-install-banner');
+            if (banner) banner.remove();
+            if (outcome === 'accepted') showToast('🎉 Đang cài đặt app...', 'success', 3000);
+        }
+
+        // ===== PWA: PUSH NOTIFICATIONS =====
+        async function requestPushPermission() {
+            if (!('Notification' in window)) return;
+            if (Notification.permission === 'granted') return subscribeToNotifications();
+            if (Notification.permission === 'denied') return;
+            const perm = await Notification.requestPermission();
+            if (perm === 'granted') {
+                subscribeToNotifications();
+                showToast('🔔 Đã bật thông báo!', 'success', 3000);
+            }
+        }
+
+        async function subscribeToNotifications() {
+            if (!window._swReg) return;
+            try {
+                const existing = await window._swReg.pushManager.getSubscription();
+                if (existing) return;
+                // VAPID public key từ server
+                const res = await fetch('/api/push/vapid-public-key');
+                if (!res.ok) return;
+                const { publicKey } = await res.json();
+                const sub = await window._swReg.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: urlBase64ToUint8Array(publicKey)
+                });
+                // Gửi subscription lên server
+                await fetch('/api/push/subscribe', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(sub)
+                });
+            } catch (err) {
+                console.warn('Push subscription failed:', err);
+            }
+        }
+
+        function urlBase64ToUint8Array(base64String) {
+            const padding = '='.repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+            const raw = window.atob(base64);
+            return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
+        }
+
+        // Hỏi permission sau 5 giây
+        setTimeout(() => requestPushPermission(), 5000);
+
+        // ===== OFFLINE INDICATOR =====
+        function updateOnlineStatus() {
+            const isOnline = navigator.onLine;
+            let bar = document.getElementById('offline-bar');
+            if (!isOnline) {
+                if (!bar) {
+                    bar = document.createElement('div');
+                    bar.id = 'offline-bar';
+                    bar.textContent = '📡 Bạn đang offline — đang dùng dữ liệu đã cache';
+                    document.body.prepend(bar);
+                }
+            } else {
+                if (bar) { bar.textContent = '✅ Đã kết nối lại!'; setTimeout(() => bar.remove(), 2000); }
+            }
+        }
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+        updateOnlineStatus();
+    </script>
+</body>
+</html>

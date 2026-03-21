@@ -1,0 +1,6 @@
+server/node_modules/
+node_modules/
+server/.env
+server/portfolio.db
+*.db
+.DS_Store

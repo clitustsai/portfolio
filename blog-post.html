@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog Post - Clitus PC</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#667eea">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles-new.css">
+  <link rel="stylesheet" href="blog.css?v=3">
+</head>
+<body>
+  <header>
+    <nav>
+      <div class="logo"><a href="index.html" style="color:inherit;text-decoration:none">Portfolio</a></div>
+      <ul>
+        <li><a href="index.html#home">Trang Chủ</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="index.html#contact">Liên Hệ</a></li>
+      </ul>
+      <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+    </nav>
+  </header>
+
+  <div id="postLoading" class="post-loading"><i class="fas fa-spinner fa-spin"></i></div>
+
+  <article id="postContainer" class="post-container" style="display:none">
+    <div class="post-header">
+      <a href="blog.html" class="back-btn"><i class="fas fa-arrow-left"></i> Quay lại Blog</a>
+      <div id="postTags" class="post-tags"></div>
+      <h1 id="postTitle"></h1>
+      <div class="post-meta">
+        <span><i class="fas fa-user"></i> Clitus PC</span>
+        <span id="postDate"></span>
+        <span id="postReadTime"></span>
+        <span id="postViews"></span>
+      </div>
+    </div>
+
+    <div class="post-layout">
+      <div class="post-body">
+        <!-- Table of contents -->
+        <div id="tocBox" class="toc-box" style="display:none">
+          <h4><i class="fas fa-list"></i> Mục Lục</h4>
+          <div id="tocList"></div>
+        </div>
+        <div id="postContent" class="post-content markdown-body"></div>
+
+        <!-- Like / Share -->
+        <div class="post-actions">
+          <button class="post-like-btn" id="postLikeBtn" onclick="likePost()">
+            <i class="far fa-heart"></i> <span id="postLikes">0</span> Thích
+          </button>
+          <div class="share-btns">
+            <span>Chia sẻ:</span>
+            <button onclick="sharePost('facebook')"><i class="fab fa-facebook-f"></i></button>
+            <button onclick="sharePost('twitter')"><i class="fab fa-x-twitter"></i></button>
+            <button onclick="copyLink()"><i class="fas fa-link"></i></button>
+          </div>
+        </div>
+
+        <!-- Comments -->
+        <div class="post-comments">
+          <h3><i class="fas fa-comments"></i> Bình Luận (<span id="postCommentCount">0</span>)</h3>
+          <form id="postCommentForm" class="post-comment-form">
+            <input type="text" id="pcName" placeholder="Tên của bạn *" required>
+            <textarea id="pcText" placeholder="Viết bình luận..." required></textarea>
+            <button type="submit"><i class="fas fa-paper-plane"></i> Gửi</button>
+          </form>
+          <div id="postCommentList"></div>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="post-sidebar">
+        <div class="sidebar-card">
+          <h3><i class="fas fa-newspaper"></i> Bài Liên Quan</h3>
+          <div id="relatedPosts"></div>
+        </div>
+        <div class="sidebar-card author-card">
+          <img src="img/z7643593902682_1d1e5b7671cc398923d350f14dd68934.jpg" alt="Clitus PC" class="author-avatar">
+          <h4>Clitus PC</h4>
+          <p>Full Stack Developer · 10+ năm kinh nghiệm</p>
+          <a href="index.html#contact" class="author-contact-btn">Liên Hệ</a>
+        </div>
+      </aside>
+    </div>
+  </article>
+
+  <div id="postNotFound" class="post-not-found" style="display:none">
+    <i class="fas fa-file-slash"></i>
+    <h2>Bài viết không tồn tại</h2>
+    <a href="blog.html" class="btn btn-primary">← Quay lại Blog</a>
+  </div>
+
+  <footer><p>© 2026 Clitus PC. <a href="blog.html" style="color:#667eea">Blog</a></p></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="api.js"></script>
+  <script>
+    const API = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+      ? 'http://localhost:3001/api'
+      : `${location.origin}/api`;
+    const params = new URLSearchParams(location.search);
+    const slug = params.get('slug');
+    let postData = null;
+    let postLiked = JSON.parse(localStorage.getItem('liked_posts')||'{}');
+
+    // Dark mode
+    const themeToggle = document.getElementById('themeToggle');
+    if (localStorage.getItem('theme') === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+    }
+    themeToggle.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+      localStorage.setItem('theme', isDark ? 'light' : 'dark');
+      themeToggle.innerHTML = isDark ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+    });
+
+    // Marked config
+    marked.setOptions({ breaks: true, gfm: true });
+
+    async function loadPost() {
+      if (!slug) { showNotFound(); return; }
+      try {
+        const r = await fetch(`${API}/blog/posts/${slug}`);
+        if (!r.ok) throw new Error();
+        postData = await r.json();
+        renderPost(postData);
+      } catch {
+        // Fallback demo
+        postData = getDemoPost(slug);
+        if (postData) renderPost(postData);
+        else showNotFound();
+      }
+    }
+
+    function getDemoPost(slug) {
+      const demos = {
+        'react-hooks-guide': {
+          id:1, title:'React Hooks: Tất cả những gì bạn cần biết', slug:'react-hooks-guide',
+          tags:['React','Frontend'], views:342, likes:87, read_time:8,
+          created_at: new Date(Date.now()-2*86400000).toISOString(),
+          content: `# React Hooks: Tất cả những gì bạn cần biết
+
+React Hooks được giới thiệu từ React 16.8 và đã thay đổi hoàn toàn cách chúng ta viết React components.
+
+## useState
+
+Hook cơ bản nhất để quản lý state:
+
+\`\`\`javascript
+const [count, setCount] = useState(0);
+
+// Cập nhật state
+setCount(prev => prev + 1);
+\`\`\`
+
+## useEffect
+
+Xử lý side effects như fetch data, subscriptions:
+
+\`\`\`javascript
+useEffect(() => {
+  fetch('/api/data')
+    .then(r => r.json())
+    .then(setData);
+  
+  return () => {
+    // Cleanup
+  };
+}, [dependency]);
+\`\`\`
+
+## useCallback & useMemo
+
+Tối ưu performance bằng memoization:
+
+\`\`\`javascript
+const memoizedFn = useCallback(() => {
+  doSomething(a, b);
+}, [a, b]);
+
+const memoizedValue = useMemo(() => {
+  return computeExpensive(a, b);
+}, [a, b]);
+\`\`\`
+
+## Custom Hooks
+
+Tái sử dụng logic giữa các components:
+
+\`\`\`javascript
+function useFetch(url) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    fetch(url)
+      .then(r => r.json())
+      .then(d => { setData(d); setLoading(false); });
+  }, [url]);
+  
+  return { data, loading };
+}
+
+// Sử dụng
+const { data, loading } = useFetch('/api/users');
+\`\`\`
+
+## Kết luận
+
+Hooks giúp code React trở nên **ngắn gọn**, **dễ test** và **dễ tái sử dụng** hơn rất nhiều so với class components.`,
+          comments: []
+        }
+      };
+      return demos[slug] || null;
+    }
+
+    function renderPost(p) {
+      document.title = `${p.title} - Clitus PC Blog`;
+      document.getElementById('postLoading').style.display = 'none';
+      document.getElementById('postContainer').style.display = 'block';
+
+      document.getElementById('postTitle').textContent = p.title;
+      document.getElementById('postTags').innerHTML = (p.tags||[]).map(t=>`<span class="blog-tag">${t}</span>`).join('');
+      document.getElementById('postDate').innerHTML = `<i class="fas fa-calendar"></i> ${new Date(p.created_at).toLocaleDateString('vi-VN')}`;
+      document.getElementById('postReadTime').innerHTML = `<i class="fas fa-clock"></i> ${p.read_time||5} phút đọc`;
+      document.getElementById('postViews').innerHTML = `<i class="fas fa-eye"></i> ${p.views||0} lượt đọc`;
+      document.getElementById('postLikes').textContent = p.likes||0;
+
+      if (postLiked[p.id]) {
+        document.getElementById('postLikeBtn').classList.add('liked');
+        document.getElementById('postLikeBtn').querySelector('i').className = 'fas fa-heart';
+      }
+
+      // Render markdown
+      const html = marked.parse(p.content || '');
+      document.getElementById('postContent').innerHTML = html;
+
+      // Syntax highlight
+      document.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
+
+      // Table of contents
+      buildTOC();
+
+      // Comments
+      renderComments(p.comments || []);
+
+      // Related posts
+      loadRelated(p.tags, p.id);
+    }
+
+    function buildTOC() {
+      const headings = document.querySelectorAll('.post-content h2, .post-content h3');
+      if (headings.length < 2) return;
+      const tocBox = document.getElementById('tocBox');
+      const tocList = document.getElementById('tocList');
+      tocBox.style.display = 'block';
+      tocList.innerHTML = [...headings].map((h, i) => {
+        h.id = `heading-${i}`;
+        const indent = h.tagName === 'H3' ? 'toc-h3' : '';
+        return `<a href="#heading-${i}" class="toc-link ${indent}">${h.textContent}</a>`;
+      }).join('');
+    }
+
+    async function likePost() {
+      if (!postData) return;
+      const btn = document.getElementById('postLikeBtn');
+      const liked = postLiked[postData.id];
+      try {
+        const r = await fetch(`${API}/blog/posts/${postData.id}/like`, {
+          method: 'POST', headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ action: liked ? 'unlike' : 'like' })
+        });
+        const data = await r.json();
+        document.getElementById('postLikes').textContent = data.likes;
+      } catch {
+        const cur = parseInt(document.getElementById('postLikes').textContent)||0;
+        document.getElementById('postLikes').textContent = liked ? cur-1 : cur+1;
+      }
+      postLiked[postData.id] = !liked;
+      localStorage.setItem('liked_posts', JSON.stringify(postLiked));
+      btn.classList.toggle('liked', !liked);
+      btn.querySelector('i').className = !liked ? 'fas fa-heart' : 'far fa-heart';
+    }
+
+    function renderComments(comments) {
+      document.getElementById('postCommentCount').textContent = comments.length;
+      const list = document.getElementById('postCommentList');
+      if (!comments.length) { list.innerHTML = '<p class="no-comments-msg">Chưa có bình luận. Hãy là người đầu tiên!</p>'; return; }
+      list.innerHTML = comments.map(c => `
+        <div class="post-comment">
+          <div class="pc-avatar">${c.name[0].toUpperCase()}</div>
+          <div class="pc-body">
+            <strong>${c.name}</strong>
+            <small>${timeAgo(c.created_at||c.date)}</small>
+            <p>${c.text}</p>
+          </div>
+        </div>`).join('');
+    }
+
+    document.getElementById('postCommentForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const name = document.getElementById('pcName').value.trim();
+      const text = document.getElementById('pcText').value.trim();
+      if (!name||!text) return;
+      try {
+        const r = await fetch(`${API}/blog/posts/${postData.id}/comments`, {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ name, text })
+        });
+        const c = await r.json();
+        if (postData.comments) postData.comments.unshift(c);
+        else postData.comments = [c];
+        renderComments(postData.comments);
+        this.reset();
+      } catch {
+        alert('Lỗi khi gửi bình luận');
+      }
+    });
+
+    async function loadRelated(tags, currentId) {
+      try {
+        const r = await fetch(`${API}/blog/posts`);
+        const posts = await r.json();
+        const pool = (Array.isArray(posts) && posts.length > 0) ? posts : Object.values({
+          'react-hooks-guide': {id:1,title:'React Hooks Guide',slug:'react-hooks-guide',tags:['React'],read_time:8},
+          'nodejs-performance': {id:2,title:'Node.js Performance',slug:'nodejs-performance',tags:['Node.js'],read_time:12},
+        });
+        const related = pool.filter(p => p.id !== currentId && (p.tags||[]).some(t => (tags||[]).includes(t))).slice(0,3);
+        renderRelated(related);
+      } catch { renderRelated([]); }
+    }
+
+    function renderRelated(posts) {
+      document.getElementById('relatedPosts').innerHTML = posts.length
+        ? posts.map(p=>`<a href="blog-post.html?slug=${p.slug||p.id}" class="related-item"><span>${p.title}</span><small><i class="fas fa-clock"></i> ${p.read_time||5} phút</small></a>`).join('')
+        : '<p style="color:#aaa;font-size:0.85rem">Không có bài liên quan</p>';
+    }
+
+    function sharePost(platform) {
+      const url = encodeURIComponent(location.href);
+      const title = encodeURIComponent(postData?.title||'');
+      const urls = {
+        facebook: `https://www.facebook.com/sharer/sharer.php?u=${url}`,
+        twitter: `https://twitter.com/intent/tweet?url=${url}&text=${title}`
+      };
+      window.open(urls[platform], '_blank', 'width=600,height=400');
+    }
+
+    function copyLink() {
+      navigator.clipboard.writeText(location.href).then(() => alert('✅ Đã copy link!'));
+    }
+
+    function showNotFound() {
+      document.getElementById('postLoading').style.display = 'none';
+      document.getElementById('postNotFound').style.display = 'flex';
+    }
+
+    function timeAgo(d) {
+      const s=(Date.now()-new Date(d))/1000;
+      if(s<3600) return Math.floor(s/60)+' phút trước';
+      if(s<86400) return Math.floor(s/3600)+' giờ trước';
+      if(s<2592000) return Math.floor(s/86400)+' ngày trước';
+      return new Date(d).toLocaleDateString('vi-VN');
+    }
+
+    loadPost();
+  </script>
+</body>
+</html>

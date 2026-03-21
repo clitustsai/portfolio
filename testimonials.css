@@ -1,0 +1,117 @@
+/* Testimonials Section */
+.testimonials {
+    background: white;
+    padding: 3rem 2rem;
+    margin-top: 3rem;
+}
+
+.testimonials-content {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.testimonials h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #667eea;
+    text-align: center;
+}
+
+.testimonials-subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 2rem;
+    font-size: 1.05rem;
+}
+
+.testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.testimonial-card {
+    background: #f8f9fa;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    opacity: 0;
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+.testimonial-card:nth-child(1) { animation-delay: 0.1s; }
+.testimonial-card:nth-child(2) { animation-delay: 0.2s; }
+.testimonial-card:nth-child(3) { animation-delay: 0.3s; }
+
+.testimonial-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.testimonial-header {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    align-items: center;
+}
+
+.testimonial-avatar {
+    font-size: 2.5rem;
+    color: #667eea;
+}
+
+.testimonial-info h4 {
+    color: #333;
+    margin-bottom: 0.2rem;
+    font-size: 1.1rem;
+}
+
+.testimonial-info p {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.stars {
+    color: #ffc107;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    letter-spacing: 0.2rem;
+}
+
+.testimonial-text {
+    color: #555;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    font-style: italic;
+    border-left: 3px solid #667eea;
+    padding-left: 1rem;
+}
+
+/* Dark mode for testimonials */
+html[data-theme="dark"] .testimonials {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"] .testimonials h2 {
+    color: var(--accent-color);
+}
+
+html[data-theme="dark"] .testimonial-card {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"] .testimonial-avatar {
+    color: var(--accent-color);
+}
+
+html[data-theme="dark"] .testimonial-info h4 {
+    color: var(--accent-color);
+}
+
+html[data-theme="dark"] .testimonial-text {
+    color: var(--text-secondary);
+    border-left-color: var(--accent-color);
+}

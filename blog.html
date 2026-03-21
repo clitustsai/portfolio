@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Blog chia sẻ kiến thức lập trình của Clitus PC">
+  <title>Blog - Clitus PC Developer</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#667eea">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles-new.css">
+  <link rel="stylesheet" href="blog.css?v=3">
+</head>
+<body>
+  <header>
+    <nav>
+      <div class="logo"><a href="index.html" style="color:inherit;text-decoration:none">Portfolio</a></div>
+      <ul>
+        <li><a href="index.html#home">Trang Chủ</a></li>
+        <li><a href="index.html#projects">Dự Án</a></li>
+        <li><a href="blog.html" class="active">Blog</a></li>
+        <li><a href="index.html#contact">Liên Hệ</a></li>
+      </ul>
+      <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+    </nav>
+  </header>
+
+  <section class="blog-hero">
+    <div class="blog-hero-content">
+      <h1>📝 Blog & Kiến Thức</h1>
+      <p>Chia sẻ kinh nghiệm, tips và tricks về lập trình</p>
+      <div class="blog-search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" id="blogSearch" placeholder="Tìm kiếm bài viết...">
+      </div>
+    </div>
+  </section>
+
+  <section class="blog-main">
+    <div class="blog-container">
+      <!-- Sidebar tags -->
+      <aside class="blog-sidebar">
+        <div class="sidebar-card">
+          <h3><i class="fas fa-tags"></i> Chủ Đề</h3>
+          <div id="tagCloud" class="tag-cloud"></div>
+        </div>
+        <div class="sidebar-card">
+          <h3><i class="fas fa-fire"></i> Bài Nổi Bật</h3>
+          <div id="featuredPosts" class="featured-list"></div>
+        </div>
+        <div class="sidebar-card">
+          <h3><i class="fas fa-chart-bar"></i> Thống Kê</h3>
+          <div id="blogStats" class="blog-stats-mini"></div>
+        </div>
+      </aside>
+
+      <!-- Main content -->
+      <main class="blog-content">
+        <div class="blog-filters">
+          <button class="blog-filter-btn active" data-tag="all">Tất Cả</button>
+          <div id="filterTags"></div>
+        </div>
+        <div id="blogGrid" class="blog-grid">
+          <div class="blog-loading"><i class="fas fa-spinner fa-spin"></i> Đang tải...</div>
+        </div>
+        <div id="blogPagination" class="blog-pagination"></div>
+      </main>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2026 Clitus PC. <a href="blog.html" style="color:#667eea">Blog</a></p>
+  </footer>
+
+  <script src="api.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>
+    const API = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+      ? 'http://localhost:3001/api'
+      : `${location.origin}/api`;
+    let allPosts = [], currentTag = 'all', currentPage = 1;
+    const PER_PAGE = 6;
+
+    // Dark mode
+    const themeToggle = document.getElementById('themeToggle');
+    if (localStorage.getItem('theme') === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+    }
+    themeToggle.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+      localStorage.setItem('theme', isDark ? 'light' : 'dark');
+      themeToggle.innerHTML = isDark ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+    });
+
+    async function loadPosts() {
+      try {
+        const r = await fetch(`${API}/blog/posts`);
+        const data = await r.json();
+        allPosts = (Array.isArray(data) && data.length > 0) ? data : getDemoPosts();
+      } catch {
+        allPosts = getDemoPosts();
+      }
+      renderAll();
+    }
+
+    function getDemoPosts() {
+      return [
+        { id:1, title:'React Hooks: Tất cả những gì bạn cần biết', slug:'react-hooks-guide', excerpt:'Hướng dẫn toàn diện về useState, useEffect, useCallback, useMemo và custom hooks trong React.', tags:['React','Frontend'], cover:'', views:342, likes:87, created_at: new Date(Date.now()-2*86400000).toISOString(), read_time:8 },
+        { id:2, title:'Node.js Performance: Tối ưu API đến 10x', slug:'nodejs-performance', excerpt:'Các kỹ thuật tối ưu hiệu suất Node.js: clustering, caching, database indexing và connection pooling.', tags:['Node.js','Backend','Performance'], cover:'', views:215, likes:54, created_at: new Date(Date.now()-5*86400000).toISOString(), read_time:12 },
+        { id:3, title:'MongoDB vs PostgreSQL: Chọn cái nào?', slug:'mongodb-vs-postgresql', excerpt:'So sánh chi tiết hai database phổ biến nhất. Khi nào dùng NoSQL, khi nào dùng SQL?', tags:['Database','MongoDB','PostgreSQL'], cover:'', views:189, likes:43, created_at: new Date(Date.now()-8*86400000).toISOString(), read_time:10 },
+        { id:4, title:'Docker cho Developer: Từ Zero đến Hero', slug:'docker-guide', excerpt:'Học Docker từ cơ bản đến nâng cao: containers, images, docker-compose và deployment.', tags:['DevOps','Docker'], cover:'', views:276, likes:71, created_at: new Date(Date.now()-12*86400000).toISOString(), read_time:15 },
+        { id:5, title:'CSS Grid & Flexbox: Layout hiện đại', slug:'css-grid-flexbox', excerpt:'Nắm vững CSS Grid và Flexbox để xây dựng layout responsive đẹp và hiệu quả.', tags:['CSS','Frontend'], cover:'', views:158, likes:39, created_at: new Date(Date.now()-15*86400000).toISOString(), read_time:7 },
+        { id:6, title:'TypeScript: Tại sao bạn nên dùng ngay hôm nay', slug:'typescript-why', excerpt:'TypeScript giúp code an toàn hơn, dễ maintain hơn. Hướng dẫn migrate từ JavaScript.', tags:['TypeScript','JavaScript'], cover:'', views:203, likes:62, created_at: new Date(Date.now()-20*86400000).toISOString(), read_time:9 },
+      ];
+    }
+
+    function renderAll() {
+      renderTagCloud();
+      renderFilterTags();
+      renderPosts();
+      renderFeatured();
+      renderStats();
+    }
+
+    function getAllTags() {
+      const map = {};
+      allPosts.forEach(p => (p.tags||[]).forEach(t => { map[t] = (map[t]||0)+1; }));
+      return Object.entries(map).sort((a,b) => b[1]-a[1]);
+    }
+
+    function renderTagCloud() {
+      const tags = getAllTags();
+      document.getElementById('tagCloud').innerHTML = tags.map(([t,c]) =>
+        `<span class="tag-chip ${currentTag===t?'active':''}" onclick="filterByTag('${t}')">${t} <small>${c}</small></span>`
+      ).join('');
+    }
+
+    function renderFilterTags() {
+      const tags = getAllTags().slice(0, 8);
+      document.getElementById('filterTags').innerHTML = tags.map(([t]) =>
+        `<button class="blog-filter-btn ${currentTag===t?'active':''}" data-tag="${t}" onclick="filterByTag('${t}')">${t}</button>`
+      ).join('');
+    }
+
+    function filterByTag(tag) {
+      currentTag = tag; currentPage = 1;
+      document.querySelectorAll('.blog-filter-btn').forEach(b => b.classList.toggle('active', b.getAttribute('data-tag') === tag));
+      document.querySelectorAll('.tag-chip').forEach(c => c.classList.toggle('active', c.textContent.trim().startsWith(tag)));
+      renderPosts();
+    }
+
+    document.querySelector('.blog-filter-btn[data-tag="all"]').addEventListener('click', () => filterByTag('all'));
+
+    function getFiltered() {
+      const q = document.getElementById('blogSearch').value.toLowerCase();
+      return allPosts.filter(p => {
+        const matchTag = currentTag === 'all' || (p.tags||[]).includes(currentTag);
+        const matchQ = !q || p.title.toLowerCase().includes(q) || p.excerpt.toLowerCase().includes(q) || (p.tags||[]).some(t => t.toLowerCase().includes(q));
+        return matchTag && matchQ;
+      });
+    }
+
+    function renderPosts() {
+      const filtered = getFiltered();
+      const total = filtered.length;
+      const pages = Math.ceil(total / PER_PAGE);
+      const slice = filtered.slice((currentPage-1)*PER_PAGE, currentPage*PER_PAGE);
+      const grid = document.getElementById('blogGrid');
+
+      if (!slice.length) {
+        grid.innerHTML = '<div class="blog-empty"><i class="fas fa-search"></i><p>Không tìm thấy bài viết nào</p></div>';
+        document.getElementById('blogPagination').innerHTML = '';
+        return;
+      }
+
+      grid.innerHTML = slice.map(p => `
+        <article class="blog-card" onclick="window.location='blog-post.html?slug=${p.slug||p.id}'">
+          <div class="blog-card-cover ${!p.cover?'blog-card-cover-default':''}">
+            ${p.cover ? `<img src="${p.cover}" alt="${p.title}" loading="lazy">` : `<div class="cover-icon">${getCoverIcon(p.tags)}</div>`}
+            <div class="blog-card-tags">${(p.tags||[]).map(t=>`<span class="blog-tag">${t}</span>`).join('')}</div>
+          </div>
+          <div class="blog-card-body">
+            <h2 class="blog-card-title">${p.title}</h2>
+            <p class="blog-card-excerpt">${p.excerpt}</p>
+            <div class="blog-card-meta">
+              <span><i class="fas fa-clock"></i> ${p.read_time||5} phút đọc</span>
+              <span><i class="fas fa-eye"></i> ${p.views||0}</span>
+              <span><i class="fas fa-heart"></i> ${p.likes||0}</span>
+              <span class="blog-card-date">${timeAgo(p.created_at)}</span>
+            </div>
+          </div>
+        </article>`).join('');
+
+      // Pagination
+      if (pages > 1) {
+        document.getElementById('blogPagination').innerHTML = Array.from({length:pages},(_,i)=>
+          `<button class="page-btn ${i+1===currentPage?'active':''}" onclick="goPage(${i+1})">${i+1}</button>`
+        ).join('');
+      } else {
+        document.getElementById('blogPagination').innerHTML = '';
+      }
+    }
+
+    function goPage(p) { currentPage = p; renderPosts(); window.scrollTo({top:300,behavior:'smooth'}); }
+
+    function renderFeatured() {
+      const top = [...allPosts].sort((a,b)=>(b.views||0)-(a.views||0)).slice(0,4);
+      document.getElementById('featuredPosts').innerHTML = top.map(p => `
+        <a href="blog-post.html?slug=${p.slug||p.id}" class="featured-item">
+          <span class="featured-icon">${getCoverIcon(p.tags)}</span>
+          <div><strong>${p.title}</strong><small><i class="fas fa-eye"></i> ${p.views||0}</small></div>
+        </a>`).join('');
+    }
+
+    function renderStats() {
+      const totalViews = allPosts.reduce((s,p)=>s+(p.views||0),0);
+      const totalLikes = allPosts.reduce((s,p)=>s+(p.likes||0),0);
+      const tags = new Set(allPosts.flatMap(p=>p.tags||[])).size;
+      document.getElementById('blogStats').innerHTML = `
+        <div class="stat-row"><i class="fas fa-file-alt"></i><span>${allPosts.length} bài viết</span></div>
+        <div class="stat-row"><i class="fas fa-eye"></i><span>${totalViews} lượt đọc</span></div>
+        <div class="stat-row"><i class="fas fa-heart"></i><span>${totalLikes} lượt thích</span></div>
+        <div class="stat-row"><i class="fas fa-tags"></i><span>${tags} chủ đề</span></div>`;
+    }
+
+    function getCoverIcon(tags=[]) {
+      if (tags.includes('React')||tags.includes('Vue')||tags.includes('Frontend')) return '⚛️';
+      if (tags.includes('Node.js')||tags.includes('Backend')) return '🟢';
+      if (tags.includes('Database')||tags.includes('MongoDB')||tags.includes('PostgreSQL')) return '🗄️';
+      if (tags.includes('DevOps')||tags.includes('Docker')) return '🐳';
+      if (tags.includes('CSS')) return '🎨';
+      if (tags.includes('TypeScript')||tags.includes('JavaScript')) return '📘';
+      if (tags.includes('AI')) return '🤖';
+      return '📝';
+    }
+
+    function timeAgo(d) {
+      const s=(Date.now()-new Date(d))/1000;
+      if(s<3600) return Math.floor(s/60)+' phút trước';
+      if(s<86400) return Math.floor(s/3600)+' giờ trước';
+      if(s<2592000) return Math.floor(s/86400)+' ngày trước';
+      return new Date(d).toLocaleDateString('vi-VN');
+    }
+
+    document.getElementById('blogSearch').addEventListener('input', () => { currentPage=1; renderPosts(); });
+
+    loadPosts();
+  </script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Offline - Clitus PC</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-align: center;
+      padding: 2rem;
+    }
+    .container { max-width: 400px; }
+    .icon { font-size: 5rem; margin-bottom: 1.5rem; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+    h1 { font-size: 1.8rem; margin-bottom: 1rem; }
+    p { opacity: 0.85; line-height: 1.6; margin-bottom: 2rem; }
+    button {
+      background: white;
+      color: #667eea;
+      border: none;
+      padding: 0.9rem 2rem;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    button:hover { transform: scale(1.05); }
+    .status { margin-top: 1.5rem; font-size: 0.85rem; opacity: 0.7; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">📡</div>
+    <h1>Không có kết nối</h1>
+    <p>Bạn đang offline. Một số tính năng có thể không hoạt động, nhưng nội dung đã cache vẫn xem được.</p>
+    <button onclick="retry()">🔄 Thử lại</button>
+    <div class="status" id="status">Đang kiểm tra kết nối...</div>
+  </div>
+  <script>
+    function retry() {
+      window.location.href = '/';
+    }
+    // Tự động redirect khi có mạng
+    window.addEventListener('online', () => {
+      document.getElementById('status').textContent = '✅ Đã có kết nối! Đang chuyển hướng...';
+      setTimeout(() => window.location.href = '/', 1000);
+    });
+    window.addEventListener('offline', () => {
+      document.getElementById('status').textContent = '❌ Vẫn chưa có kết nối';
+    });
+    document.getElementById('status').textContent = navigator.onLine ? '✅ Kết nối đã khôi phục' : '❌ Chưa có kết nối';
+  </script>
+</body>
+</html>
