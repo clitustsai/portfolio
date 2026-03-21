@@ -315,6 +315,11 @@ app.post('/api/push/send', requireAdmin, async (req, res) => {
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok', time: new Date().toISOString() }));
 
+// Serve index.html cho tất cả các route không phải API
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'index.html'));
+});
+
 // Khởi động: init DB trước rồi mới listen
 getDb().then(() => {
     app.listen(PORT, () => {
