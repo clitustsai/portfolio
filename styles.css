@@ -1170,3 +1170,19 @@
     .about-card, .skill-item { padding: 1.1rem 1.25rem; }
 }
 
+
+/* ===== MOBILE: tắt AOS animation để tránh element bị ẩn chặn touch ===== */
+@media (max-width: 768px) {
+    [data-aos] {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
+    /* Đảm bảo tất cả cards hiện ngay */
+    .about-card, .skill-item, .project-card, .certificate-card,
+    .testimonial-card, .comment-card {
+        opacity: 1 !important;
+        transform: none !important;
+        animation: none !important;
+    }
+}

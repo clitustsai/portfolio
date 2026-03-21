@@ -455,7 +455,7 @@
                     <div id="adminBlogList" class="admin-blog-list"></div>
                 </div>
 
-                <div class="admin-tab-content" id="tab-analytics" style="display:none"></div>
+                <div class="admin-tab-content" id="tab-analytics" style="display:none">
                     <div class="admin-section-header"><h3>Thống Kê Truy Cập</h3>
                         <button class="admin-btn-primary" onclick="showPushModal()" style="margin-left:auto"><i class="fas fa-bell"></i> Gửi Thông Báo</button>
                     </div>
@@ -727,8 +727,20 @@
             }, 1000);
         });
 
-        // ===== AOS =====
-        if (typeof AOS !== 'undefined') AOS.init({ duration: 800, offset: 100, once: true });
+        // ===== AOS — tắt trên mobile để tránh lỗi touch =====
+        if (typeof AOS !== 'undefined') {
+            if (window.innerWidth > 768) {
+                AOS.init({ duration: 800, offset: 100, once: true });
+            } else {
+                // Mobile: xóa tất cả data-aos để element hiện ngay, không bị ẩn
+                document.querySelectorAll('[data-aos]').forEach(el => {
+                    el.removeAttribute('data-aos');
+                    el.removeAttribute('data-aos-delay');
+                    el.style.opacity = '1';
+                    el.style.transform = 'none';
+                });
+            }
+        }
 
         // ===== LIKE / VIEW / COMMENT SYSTEM =====
         const STORAGE_KEY = 'portfolio_interactions';
