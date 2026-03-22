@@ -439,7 +439,6 @@ app.get('/api/user/dashboard', requireUser, (req, res) => {
     const totalEarned = coinRow?.total_earned || 0;
 
     // Daily reward status
-    const today = new Date().toISOString().slice(0,10);
     const dailyClaimed = !!get('SELECT id FROM daily_rewards WHERE user_id=? AND claimed_date=?', [req.userId, today]);
 
     res.json({ user, isVip, subscription: sub || null, daysLeft, usage, totalUsage, history, coins, totalEarned, dailyClaimed });
