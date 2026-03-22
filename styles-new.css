@@ -222,6 +222,7 @@ html[data-theme="dark"] footer {
     }
 
     .lang-toggle {
+        display: none;
         position: relative;
         z-index: 1200;
     }

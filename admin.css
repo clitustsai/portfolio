@@ -1,16 +1,5 @@
 /* ========== LANGUAGE TOGGLE ========== */
-.lang-toggle {
-    background: var(--bg-secondary, #f5f5f5);
-    border: 1.5px solid var(--border-color, #e0e0e0);
-    border-radius: 8px;
-    padding: 0.3rem 0.6rem;
-    font-size: 1.2rem;
-    cursor: pointer;
-    margin-left: 0.5rem;
-    transition: all 0.2s ease;
-    line-height: 1;
-}
-.lang-toggle:hover { transform: scale(1.1); border-color: #667eea; }
+.lang-toggle { display: none; }
 
 /* ========== ADMIN TRIGGER ========== */
 .admin-trigger-btn {
