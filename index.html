@@ -538,18 +538,41 @@
         </nav>
     </header>
 
+    <!-- ===== VIDEO INTRO MODAL ===== -->
+    <div id="introVideoModal" class="intro-modal">
+        <div class="intro-modal-backdrop" id="introBackdrop"></div>
+        <div class="intro-modal-box">
+            <div class="intro-modal-header">
+                <div class="intro-modal-title">
+                    <span class="intro-modal-dot"></span>
+                    Giới thiệu — Clitus PC
+                </div>
+                <button class="intro-modal-close" id="introClose" title="Đóng">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="intro-modal-video">
+                <iframe id="introYT"
+                    src=""
+                    data-src="https://www.youtube.com/embed/YOUR_VIDEO_ID?autoplay=1&rel=0&modestbranding=1&enablejsapi=1"
+                    allow="autoplay; encrypted-media; fullscreen"
+                    allowfullscreen
+                    title="Video giới thiệu Clitus PC">
+                </iframe>
+            </div>
+            <div class="intro-modal-footer">
+                <label class="intro-no-show">
+                    <input type="checkbox" id="introNoShow"> Không hiện lại
+                </label>
+                <button class="intro-skip-btn" id="introSkip">
+                    Bỏ qua <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Hero Section -->
     <section class="hero" id="home">
-        <!-- Video Background -->
-        <div class="hero-video-bg" id="heroVideoBg">
-            <iframe id="heroYT"
-                src="https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1&mute=1&loop=1&playlist=jfKfPfyJRdk&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&enablejsapi=1"
-                allow="autoplay; encrypted-media"
-                allowfullscreen
-                title="Hero background video">
-            </iframe>
-            <div class="hero-video-overlay"></div>
-        </div>
         <!-- Particle Canvas Background -->
         <canvas id="heroCanvas"></canvas>
 
@@ -601,10 +624,6 @@
             <img src="./img/z7643593902682_1d1e5b7671cc398923d350f14dd68934.jpg" alt="Profile Avatar" class="profile-image">
             <div class="hero-img-glow"></div>
         </div>
-        <!-- Video toggle button -->
-        <button class="hero-video-toggle" id="heroVideoToggle" title="Tắt/bật video nền">
-            <i class="fas fa-pause" id="heroVideoIcon"></i> Video
-        </button>
     </section>
 
     <!-- About Section -->
@@ -2241,50 +2260,55 @@
   });
 })();
 
-// ===== HERO VIDEO BACKGROUND =====
+// ===== INTRO VIDEO MODAL =====
 (function() {
-  const bg = document.getElementById('heroVideoBg');
-  const btn = document.getElementById('heroVideoToggle');
-  const icon = document.getElementById('heroVideoIcon');
-  if (!bg || !btn) return;
+  const STORAGE_KEY = 'introVideoShown_v1';
+  const VIDEO_ID = 'YOUR_VIDEO_ID'; // <-- Thay bằng YouTube ID video giới thiệu của bạn
 
-  let playing = true;
-  let player = null;
+  const modal   = document.getElementById('introVideoModal');
+  const backdrop = document.getElementById('introBackdrop');
+  const closeBtn = document.getElementById('introClose');
+  const skipBtn  = document.getElementById('introSkip');
+  const noShow   = document.getElementById('introNoShow');
+  const iframe   = document.getElementById('introYT');
+  if (!modal) return;
 
-  // YouTube IFrame API callback
-  window.onYouTubeIframeAPIReady = function() {
-    player = new YT.Player('heroYT', {
-      events: {
-        onReady: function(e) {
-          e.target.mute();
-          e.target.playVideo();
-          setTimeout(() => bg.classList.add('loaded'), 600);
-        }
-      }
-    });
-  };
+  // Kiểm tra đã xem chưa
+  if (localStorage.getItem(STORAGE_KEY)) return;
 
-  // Load API script
-  if (!window.YT) {
-    const s = document.createElement('script');
-    s.src = 'https://www.youtube.com/iframe_api';
-    document.head.appendChild(s);
-  } else if (window.YT && window.YT.Player) {
-    window.onYouTubeIframeAPIReady();
+  function openModal() {
+    // Set src khi mở (tránh autoplay khi load trang)
+    if (VIDEO_ID !== 'YOUR_VIDEO_ID') {
+      iframe.src = `https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1&rel=0&modestbranding=1`;
+    } else {
+      // Chưa có video ID — hiện placeholder
+      iframe.style.display = 'none';
+      const ph = document.createElement('div');
+      ph.className = 'intro-video-placeholder';
+      ph.innerHTML = '<i class="fas fa-video"></i><span>Thêm YouTube Video ID vào biến VIDEO_ID trong JS</span>';
+      iframe.parentNode.appendChild(ph);
+    }
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
   }
 
-  // Fallback fade-in nếu API không load
-  setTimeout(() => bg.classList.add('loaded'), 3000);
-
-  btn.addEventListener('click', () => {
-    playing = !playing;
-    if (player && player.pauseVideo) {
-      playing ? player.playVideo() : player.pauseVideo();
+  function closeModal() {
+    if (noShow && noShow.checked) {
+      localStorage.setItem(STORAGE_KEY, '1');
     }
-    const iframe = document.getElementById('heroYT');
-    if (iframe) iframe.style.opacity = playing ? '1' : '0';
-    icon.className = playing ? 'fas fa-pause' : 'fas fa-play';
-  });
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+    // Dừng video
+    iframe.src = '';
+  }
+
+  // Hiện sau 1.5s để trang load xong
+  setTimeout(openModal, 1500);
+
+  closeBtn && closeBtn.addEventListener('click', closeModal);
+  skipBtn  && skipBtn.addEventListener('click', closeModal);
+  backdrop && backdrop.addEventListener('click', closeModal);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 })();
 </script>
 
