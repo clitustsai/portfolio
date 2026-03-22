@@ -538,6 +538,25 @@
                 <a href="./files/CV-Clitus-PC.pdf" class="btn btn-tertiary" target="_blank" download>
                     <i class="fas fa-download"></i> <span data-i18n="hero.btn3">Tải CV</span>
                 </a>
+                <button class="btn btn-qr" onclick="openQRModal()">
+                    <i class="fas fa-qrcode"></i> QR Profile
+                </button>
+            </div>
+        </div>
+
+        <!-- QR Modal -->
+        <div id="qrModal" style="display:none;position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;padding:1rem;">
+            <div onclick="closeQRModal()" style="position:absolute;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);"></div>
+            <div style="position:relative;z-index:1;background:#fff;border-radius:24px;padding:2rem;text-align:center;max-width:320px;width:100%;box-shadow:0 24px 80px rgba(0,0,0,0.3);animation:authSlideIn 0.3s ease;">
+                <button onclick="closeQRModal()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.4rem;cursor:pointer;color:#999;">×</button>
+                <div style="font-size:2rem;margin-bottom:0.5rem;">📱</div>
+                <h3 style="margin:0 0 0.25rem;color:#1a1a2e;font-size:1.1rem;">Scan để xem Portfolio</h3>
+                <p style="color:#999;font-size:0.8rem;margin:0 0 1.25rem;">Quét QR bằng camera điện thoại</p>
+                <div id="qrCanvas" style="display:flex;justify-content:center;margin-bottom:1.25rem;"></div>
+                <p style="font-size:0.75rem;color:#667eea;word-break:break-all;margin:0 0 1rem;">portfolio-utbu.onrender.com</p>
+                <button onclick="downloadQR()" style="background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:50px;padding:0.6rem 1.5rem;cursor:pointer;font-size:0.88rem;font-weight:700;">
+                    <i class="fas fa-download"></i> Tải QR
+                </button>
             </div>
         </div>
         <div class="hero-image">
@@ -1781,7 +1800,45 @@
         }
         function setVolume(val) {
             if (ytPlayer) ytPlayer.setVolume(parseInt(val));
-        }
+    <!-- QR Code -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script>
+    function openQRModal() {
+        const modal = document.getElementById('qrModal');
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        const container = document.getElementById('qrCanvas');
+        if (container.querySelector('canvas')) return;
+        QRCode.toCanvas(document.createElement('canvas'), 'https://portfolio-utbu.onrender.com', {
+            width: 220, margin: 2,
+            color: { dark: '#1a1a2e', light: '#ffffff' }
+        }, (err, canvas) => {
+            if (!err) { container.innerHTML = ''; container.appendChild(canvas); }
+        });
+    }
+    function closeQRModal() {
+        document.getElementById('qrModal').style.display = 'none';
+        document.body.style.overflow = '';
+    }
+    function downloadQR() {
+        const canvas = document.querySelector('#qrCanvas canvas');
+        if (!canvas) return;
+        const a = document.createElement('a');
+        a.download = 'clituspc-qr.png';
+        a.href = canvas.toDataURL();
+        a.click();
+    }
     </script>
+    <style>
+    .btn-qr {
+        background: linear-gradient(135deg, #11998e, #38ef7d);
+        color: #fff; border: none; border-radius: 50px;
+        padding: 0.75rem 1.5rem; font-size: 0.95rem; font-weight: 700;
+        cursor: pointer; transition: all 0.3s; display: inline-flex;
+        align-items: center; gap: 0.5rem;
+        box-shadow: 0 4px 15px rgba(17,153,142,0.35);
+    }
+    .btn-qr:hover { opacity: 0.88; transform: translateY(-3px); }
+    </style>
 </body>
 </html>
