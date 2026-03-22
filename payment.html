@@ -6,7 +6,7 @@
   <title>Dịch Vụ & Thanh Toán - Clitus PC</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="styles-new.css">`n  <link rel="stylesheet" href="modern.css">
+  <link rel="stylesheet" href="styles-new.css">  <link rel="stylesheet" href="modern.css">
   <link rel="stylesheet" href="modern-payment.css">
   <style>
   *{box-sizing:border-box;margin:0;padding:0;}
@@ -553,6 +553,64 @@
   </div>
 </div>
 
+<script>
+// VIP Modal functions — defined early so inline onclick works
+const API_BASE = (location.hostname==='localhost'||location.hostname==='127.0.0.1')
+  ? 'http://localhost:3001/api' : `${location.origin}/api`;
+
+function openVipModal() {
+  document.getElementById('vipModal').style.display='flex';
+  document.getElementById('vipStep1').style.display='block';
+  document.getElementById('vipStep2').style.display='none';
+  document.body.style.overflow='hidden';
+}
+function closeVipModal() {
+  document.getElementById('vipModal').style.display='none';
+  document.body.style.overflow='';
+}
+async function submitVip() {
+  const name = document.getElementById('vipName').value.trim();
+  const email = document.getElementById('vipEmail').value.trim();
+  const ref = document.getElementById('vipRef').value.trim();
+  if(!name||!email) { alert('Vui lòng nhập họ tên và email!'); return; }
+  const btn = document.getElementById('vipSubmitBtn');
+  btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
+  try {
+    const r = await fetch(`${API_BASE}/subscription/register`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ name, email, transferRef: ref })
+    });
+    const d = await r.json();
+    if(!r.ok && r.status!==409) throw new Error(d.error);
+    document.getElementById('vipStep1').style.display='none';
+    document.getElementById('vipStep2').style.display='block';
+  } catch(e) {
+    alert('Lỗi: '+e.message);
+    btn.disabled=false;
+    btn.innerHTML='<i class="fas fa-crown"></i> Xác nhận đã chuyển khoản';
+  }
+}
+async function checkVipStatus() {
+  const email = document.getElementById('checkEmail').value.trim();
+  if(!email) return;
+  const res = document.getElementById('checkResult');
+  res.innerHTML='<span style="color:var(--sub)">Đang kiểm tra...</span>';
+  try {
+    const r = await fetch(`${API_BASE}/subscription/check?email=${encodeURIComponent(email)}`);
+    const d = await r.json();
+    if(d.hasSubscription) {
+      const exp = new Date(d.subscription.expires_at).toLocaleDateString('vi-VN');
+      res.innerHTML=`<div class="status-active">✅ VIP đang hoạt động — hết hạn ${exp}</div>`;
+    } else if(d.subscription?.status==='pending') {
+      res.innerHTML=`<div class="status-pending">⏳ Đang chờ xác nhận thanh toán</div>`;
+    } else {
+      res.innerHTML=`<div class="status-none">Chưa có gói VIP. <a href="#vip" onclick="openVipModal()" style="color:#667eea;font-weight:700;">Đăng ký ngay →</a></div>`;
+    }
+  } catch(e) {
+    res.innerHTML='<span style="color:red">Lỗi kết nối</span>';
+  }
+}
+</script>
 <script src="api.js"></script>
 <script src="auth.js"></script>
 <script>
@@ -611,63 +669,6 @@ function cp(t) {
 }
 
 // ===== VIP =====
-const API_BASE = (location.hostname==='localhost'||location.hostname==='127.0.0.1')
-  ? 'http://localhost:3001/api' : `${location.origin}/api`;
-
-function openVipModal() {
-  document.getElementById('vipModal').style.display='flex';
-  document.getElementById('vipStep1').style.display='block';
-  document.getElementById('vipStep2').style.display='none';
-  document.body.style.overflow='hidden';
-}
-function closeVipModal() {
-  document.getElementById('vipModal').style.display='none';
-  document.body.style.overflow='';
-}
-
-async function submitVip() {
-  const name = document.getElementById('vipName').value.trim();
-  const email = document.getElementById('vipEmail').value.trim();
-  const ref = document.getElementById('vipRef').value.trim();
-  if(!name||!email) { alert('Vui lòng nhập họ tên và email!'); return; }
-  const btn = document.getElementById('vipSubmitBtn');
-  btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
-  try {
-    const r = await fetch(`${API_BASE}/subscription/register`, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ name, email, transferRef: ref })
-    });
-    const d = await r.json();
-    if(!r.ok && r.status!==409) throw new Error(d.error);
-    document.getElementById('vipStep1').style.display='none';
-    document.getElementById('vipStep2').style.display='block';
-  } catch(e) {
-    alert('Lỗi: '+e.message);
-    btn.disabled=false;
-    btn.innerHTML='<i class="fas fa-crown"></i> Xác nhận đã chuyển khoản';
-  }
-}
-
-async function checkVipStatus() {
-  const email = document.getElementById('checkEmail').value.trim();
-  if(!email) return;
-  const res = document.getElementById('checkResult');
-  res.innerHTML='<span style="color:var(--sub)">Đang kiểm tra...</span>';
-  try {
-    const r = await fetch(`${API_BASE}/subscription/check?email=${encodeURIComponent(email)}`);
-    const d = await r.json();
-    if(d.hasSubscription) {
-      const exp = new Date(d.subscription.expires_at).toLocaleDateString('vi-VN');
-      res.innerHTML=`<div class="status-active">✅ VIP đang hoạt động — hết hạn ${exp}</div>`;
-    } else if(d.subscription?.status==='pending') {
-      res.innerHTML=`<div class="status-pending">⏳ Đang chờ xác nhận thanh toán</div>`;
-    } else {
-      res.innerHTML=`<div class="status-none">Chưa có gói VIP. <a href="#vip" onclick="openVipModal()" style="color:#667eea;font-weight:700;">Đăng ký ngay →</a></div>`;
-    }
-  } catch(e) {
-    res.innerHTML='<span style="color:red">Lỗi kết nối</span>';
-  }
-}
 </script>
 </body>
 </html>
