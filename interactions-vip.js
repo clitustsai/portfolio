@@ -214,8 +214,11 @@
     });
   }
 
-  // ===== PAGE FADE IN =====
+  // ===== PAGE FADE IN — chỉ chạy 1 lần per session =====
   function initPageTransition() {
+    var key = 'vip_loaded_' + location.pathname;
+    if (sessionStorage.getItem(key)) return; // đã load rồi, bỏ qua
+    sessionStorage.setItem(key, '1');
     var s = document.createElement('style');
     s.textContent = 'body{animation:vipPageIn 0.45s cubic-bezier(0.4,0,0.2,1);}@keyframes vipPageIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}';
     document.head.appendChild(s);
