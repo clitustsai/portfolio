@@ -324,20 +324,42 @@ app.get('/api/health', (req, res) => res.json({ status: 'ok', time: new Date().t
 
 // ========== USER AUTH ==========
 const crypto = require('crypto');
+const jwt = require('jsonwebtoken');
+
+const JWT_SECRET = process.env.JWT_SECRET || 'clituspc_jwt_secret_2026';
+const JWT_EXPIRES = '30d';
 
 function hashPassword(pw) {
     return crypto.createHash('sha256').update(pw + 'clituspc_salt_2026').digest('hex');
 }
-function genToken() {
-    return crypto.randomBytes(32).toString('hex');
+function signJWT(payload) {
+    return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES });
+}
+function verifyJWT(token) {
+    try { return jwt.verify(token, JWT_SECRET); } catch { return null; }
+}
+function getAuthToken(req) {
+    const auth = req.headers['authorization'];
+    if (auth && auth.startsWith('Bearer ')) return auth.slice(7);
+    // backward compat
+    return req.headers['x-user-token'] || null;
 }
 function requireUser(req, res, next) {
-    const token = req.headers['x-user-token'];
+    const token = getAuthToken(req);
     if (!token) return res.status(401).json({ error: 'Chưa đăng nhập' });
-    const session = get("SELECT * FROM user_sessions WHERE token=? AND expires_at > datetime('now')", [token]);
-    if (!session) return res.status(401).json({ error: 'Phiên đăng nhập hết hạn' });
-    req.userId = session.user_id;
-    req.userToken = token;
+    const payload = verifyJWT(token);
+    if (!payload) return res.status(401).json({ error: 'Phiên đăng nhập hết hạn' });
+    const user = get('SELECT id,username,email,avatar,role FROM users WHERE id=?', [payload.id]);
+    if (!user) return res.status(401).json({ error: 'Tài khoản không tồn tại' });
+    req.userId = user.id;
+    req.userRole = user.role;
+    req.userEmail = user.email;
+    next();
+}
+function requireVip(req, res, next) {
+    if (req.userRole !== 'vip' && req.userRole !== 'admin') {
+        return res.status(403).json({ error: 'Tính năng này chỉ dành cho VIP', upgradeUrl: '/payment.html' });
+    }
     next();
 }
 
@@ -349,12 +371,11 @@ app.post('/api/auth/register', (req, res) => {
         return res.status(400).json({ error: 'Mật khẩu tối thiểu 6 ký tự' });
     const existing = get('SELECT id FROM users WHERE email=? OR username=?', [email.trim(), username.trim()]);
     if (existing) return res.status(409).json({ error: 'Email hoặc tên đăng nhập đã tồn tại' });
-    run('INSERT INTO users (username, email, password_hash) VALUES (?,?,?)', [
-        username.trim().slice(0,50), email.trim().slice(0,100), hashPassword(password)
+    run('INSERT INTO users (username, email, password_hash, role) VALUES (?,?,?,?)', [
+        username.trim().slice(0,50), email.trim().slice(0,100), hashPassword(password), 'free'
     ]);
-    const user = get('SELECT id,username,email,avatar,created_at FROM users ORDER BY id DESC LIMIT 1');
-    const token = genToken();
-    run("INSERT INTO user_sessions (token, user_id, expires_at) VALUES (?,?,datetime('now','+30 days'))", [token, user.id]);
+    const user = get('SELECT id,username,email,avatar,role,created_at FROM users ORDER BY id DESC LIMIT 1');
+    const token = signJWT({ id: user.id, email: user.email, role: user.role });
     res.status(201).json({ user, token });
 });
 
@@ -365,20 +386,88 @@ app.post('/api/auth/login', (req, res) => {
     const user = get('SELECT * FROM users WHERE email=?', [email.trim()]);
     if (!user || user.password_hash !== hashPassword(password))
         return res.status(401).json({ error: 'Email hoặc mật khẩu không đúng' });
-    const token = genToken();
-    run("INSERT INTO user_sessions (token, user_id, expires_at) VALUES (?,?,datetime('now','+30 days'))", [token, user.id]);
-    res.json({ user: { id:user.id, username:user.username, email:user.email, avatar:user.avatar, created_at:user.created_at }, token });
+    const token = signJWT({ id: user.id, email: user.email, role: user.role });
+    res.json({ user: { id:user.id, username:user.username, email:user.email, avatar:user.avatar, role:user.role, created_at:user.created_at }, token });
 });
 
 app.get('/api/auth/me', requireUser, (req, res) => {
-    const user = get('SELECT id,username,email,avatar,created_at FROM users WHERE id=?', [req.userId]);
+    const user = get('SELECT id,username,email,avatar,role,created_at FROM users WHERE id=?', [req.userId]);
     if (!user) return res.status(404).json({ error: 'Không tìm thấy user' });
     res.json(user);
 });
 
-app.post('/api/auth/logout', requireUser, (req, res) => {
-    run('DELETE FROM user_sessions WHERE token=?', [req.userToken]);
+app.post('/api/auth/logout', (req, res) => {
+    // JWT stateless — client xóa token
     res.json({ ok: true });
+});
+
+// ========== USER DASHBOARD ==========
+app.get('/api/user/dashboard', requireUser, (req, res) => {
+    const user = get('SELECT id,username,email,avatar,role,created_at FROM users WHERE id=?', [req.userId]);
+    if (!user) return res.status(404).json({ error: 'Không tìm thấy user' });
+
+    // Subscription
+    const sub = get("SELECT * FROM subscriptions WHERE email=? AND status='active' AND expires_at > datetime('now') ORDER BY id DESC LIMIT 1", [user.email]);
+    const isVip = !!sub || user.role === 'vip' || user.role === 'admin';
+
+    // Usage hôm nay
+    const today = new Date().toISOString().slice(0, 10);
+    const usageRows = all('SELECT tool, count FROM user_usage WHERE user_id=? AND date=?', [req.userId, today]);
+    const usage = {};
+    usageRows.forEach(r => { usage[r.tool] = r.count; });
+
+    // Tổng usage
+    const totalRow = get('SELECT SUM(count) as total FROM user_usage WHERE user_id=?', [req.userId]);
+    const totalUsage = totalRow?.total || 0;
+
+    // AI history (20 gần nhất)
+    const history = all('SELECT * FROM user_ai_history WHERE user_id=? ORDER BY id DESC LIMIT 20', [req.userId]);
+
+    // Days left
+    let daysLeft = null;
+    if (sub?.expires_at) {
+        daysLeft = Math.max(0, Math.ceil((new Date(sub.expires_at) - Date.now()) / 86400000));
+    }
+
+    res.json({ user, isVip, subscription: sub || null, daysLeft, usage, totalUsage, history });
+});
+
+// ========== USER USAGE ==========
+app.get('/api/user/usage', requireUser, (req, res) => {
+    const today = new Date().toISOString().slice(0, 10);
+    const rows = all('SELECT tool, count FROM user_usage WHERE user_id=? AND date=?', [req.userId, today]);
+    const usage = {};
+    rows.forEach(r => { usage[r.tool] = r.count; });
+    res.json({ usage, date: today });
+});
+
+// ========== AI HISTORY ==========
+app.post('/api/user/ai-history', requireUser, (req, res) => {
+    const { tool, input } = req.body;
+    if (!tool) return res.status(400).json({ error: 'Thiếu tool' });
+    run('INSERT INTO user_ai_history (user_id, tool, input) VALUES (?,?,?)', [
+        req.userId, tool.slice(0,20), (input||'').slice(0,200)
+    ]);
+    // Giữ tối đa 100 records per user
+    const oldest = all('SELECT id FROM user_ai_history WHERE user_id=? ORDER BY id DESC LIMIT -1 OFFSET 100', [req.userId]);
+    if (oldest.length) {
+        oldest.forEach(r => run('DELETE FROM user_ai_history WHERE id=?', [r.id]));
+    }
+    res.json({ ok: true });
+});
+
+app.delete('/api/user/ai-history', requireUser, (req, res) => {
+    run('DELETE FROM user_ai_history WHERE user_id=?', [req.userId]);
+    res.json({ ok: true });
+});
+
+// ========== SUBSCRIPTION UPGRADE/CANCEL ==========
+app.post('/api/subscription/cancel', requireUser, (req, res) => {
+    run("UPDATE subscriptions SET status='cancelled' WHERE email=? AND status='active'", [req.userEmail]);
+    // Downgrade role nếu không còn sub active
+    const activeSub = get("SELECT id FROM subscriptions WHERE email=? AND status='active' AND expires_at > datetime('now')", [req.userEmail]);
+    if (!activeSub) run("UPDATE users SET role='free' WHERE id=?", [req.userId]);
+    res.json({ ok: true, message: 'Đã hủy gói VIP' });
 });
 
 // ========== OAUTH — GOOGLE ==========
@@ -422,9 +511,8 @@ app.get('/api/auth/google/callback', async (req, res) => {
             username: profile.name || profile.email.split('@')[0],
             email: profile.email, avatar: profile.picture || ''
         });
-        const token = genToken();
-        run("INSERT INTO user_sessions (token, user_id, expires_at) VALUES (?,?,datetime('now','+30 days'))", [token, user.id]);
-        res.redirect(`${appUrl}/?auth_token=${token}&auth_user=${encodeURIComponent(JSON.stringify({ id:user.id, username:user.username, email:user.email, avatar:user.avatar }))}`);
+        const token = signJWT({ id: user.id, email: user.email, role: user.role || 'free' });
+        res.redirect(`${appUrl}/?auth_token=${token}&auth_user=${encodeURIComponent(JSON.stringify({ id:user.id, username:user.username, email:user.email, avatar:user.avatar, role:user.role }))}`);
     } catch (err) {
         console.error('Google OAuth error:', err.message);
         res.redirect(`${appUrl}/?auth_error=${encodeURIComponent(err.message)}`);
@@ -463,9 +551,8 @@ app.get('/api/auth/facebook/callback', async (req, res) => {
             email: profile.email || `fb_${profile.id}@facebook.com`,
             avatar: profile.picture?.data?.url || ''
         });
-        const token = genToken();
-        run("INSERT INTO user_sessions (token, user_id, expires_at) VALUES (?,?,datetime('now','+30 days'))", [token, user.id]);
-        res.redirect(`${appUrl}/?auth_token=${token}&auth_user=${encodeURIComponent(JSON.stringify({ id:user.id, username:user.username, email:user.email, avatar:user.avatar }))}`);
+        const token = signJWT({ id: user.id, email: user.email, role: user.role || 'free' });
+        res.redirect(`${appUrl}/?auth_token=${token}&auth_user=${encodeURIComponent(JSON.stringify({ id:user.id, username:user.username, email:user.email, avatar:user.avatar, role:user.role }))}`);
     } catch (err) {
         console.error('Facebook OAuth error:', err.message);
         res.redirect(`${appUrl}/?auth_error=${encodeURIComponent(err.message)}`);
@@ -473,28 +560,23 @@ app.get('/api/auth/facebook/callback', async (req, res) => {
 });
 
 function upsertOAuthUser({ provider, providerId, username, email, avatar }) {
-    // Tìm user theo oauth_provider + oauth_id
     let user = get('SELECT * FROM users WHERE oauth_provider=? AND oauth_id=?', [provider, providerId]);
     if (!user) {
-        // Tìm theo email (nếu đã đăng ký thủ công trước đó)
         user = get('SELECT * FROM users WHERE email=?', [email]);
         if (user) {
-            // Link OAuth vào account cũ
             run('UPDATE users SET oauth_provider=?, oauth_id=?, avatar=? WHERE id=?', [provider, providerId, avatar, user.id]);
         } else {
-            // Tạo user mới
             let finalUsername = username.slice(0, 50);
             const dup = get('SELECT id FROM users WHERE username=?', [finalUsername]);
             if (dup) finalUsername = `${finalUsername}_${providerId.slice(-4)}`;
-            run('INSERT INTO users (username, email, password_hash, oauth_provider, oauth_id, avatar) VALUES (?,?,?,?,?,?)',
-                [finalUsername, email.slice(0,100), '', provider, providerId, avatar]);
+            run('INSERT INTO users (username, email, password_hash, oauth_provider, oauth_id, avatar, role) VALUES (?,?,?,?,?,?,?)',
+                [finalUsername, email.slice(0,100), '', provider, providerId, avatar, 'free']);
             user = get('SELECT * FROM users ORDER BY id DESC LIMIT 1');
         }
     } else {
-        // Cập nhật avatar mới nhất
         run('UPDATE users SET avatar=? WHERE id=?', [avatar, user.id]);
     }
-    return get('SELECT id,username,email,avatar,created_at FROM users WHERE id=?', [user.id]);
+    return get('SELECT id,username,email,avatar,role,created_at FROM users WHERE id=?', [user.id]);
 }
 
 // Override comment endpoints để yêu cầu đăng nhập
@@ -705,6 +787,8 @@ app.post('/api/subscription/admin/activate/:id', requireAdmin, (req, res) => {
     const sub = get('SELECT * FROM subscriptions WHERE id=?', [id]);
     if (!sub) return res.status(404).json({ error: 'Không tìm thấy' });
     run("UPDATE subscriptions SET status='active', activated_at=datetime('now'), expires_at=datetime('now','+30 days') WHERE id=?", [id]);
+    // Cập nhật role user thành vip
+    run("UPDATE users SET role='vip' WHERE email=?", [sub.email]);
     const updated = get('SELECT * FROM subscriptions WHERE id=?', [id]);
     // Gửi email thông báo nếu có Resend
     if (process.env.RESEND_API_KEY) {
@@ -751,6 +835,19 @@ app.delete('/api/subscription/admin/:id', requireAdmin, (req, res) => {
     res.json({ ok: true });
 });
 
+// Admin: set role user
+app.post('/api/admin/users/:id/role', requireAdmin, (req, res) => {
+    const { role } = req.body;
+    if (!['free','vip','admin'].includes(role)) return res.status(400).json({ error: 'Role không hợp lệ' });
+    run('UPDATE users SET role=? WHERE id=?', [role, parseInt(req.params.id)]);
+    res.json({ ok: true });
+});
+
+// Admin: list users
+app.get('/api/admin/users', requireAdmin, (req, res) => {
+    res.json(all('SELECT id,username,email,avatar,role,created_at FROM users ORDER BY id DESC'));
+});
+
 // ========== AI TOOLS — Code Review & CV Generator ==========
 const aiToolsLimiter = rateLimit({ windowMs: 24 * 60 * 60 * 1000, max: 3, keyGenerator: (req) => req.ip + '_tools', message: { error: 'Hết lượt miễn phí hôm nay (3 lần). Nâng cấp VIP để dùng không giới hạn.' } });
 
@@ -767,10 +864,29 @@ async function callOpenRouter(messages, maxTokens = 1500) {
     return data?.choices?.[0]?.message?.content || '';
 }
 
-function checkVIP(email) {
-    if (!email) return false;
-    const sub = get("SELECT * FROM subscriptions WHERE email=? AND status='active' AND expires_at > datetime('now')", [email.trim()]);
+function checkVIP(userId) {
+    const user = get('SELECT role,email FROM users WHERE id=?', [userId]);
+    if (!user) return false;
+    if (user.role === 'vip' || user.role === 'admin') return true;
+    const sub = get("SELECT id FROM subscriptions WHERE email=? AND status='active' AND expires_at > datetime('now')", [user.email]);
     return !!sub;
+}
+
+function getToolUsage(userId, tool) {
+    const today = new Date().toISOString().slice(0, 10);
+    const row = get('SELECT count FROM user_usage WHERE user_id=? AND tool=? AND date=?', [userId, tool, today]);
+    return row?.count || 0;
+}
+
+function incToolUsage(userId, tool) {
+    const today = new Date().toISOString().slice(0, 10);
+    const existing = get('SELECT id FROM user_usage WHERE user_id=? AND tool=? AND date=?', [userId, tool, today]);
+    if (existing) run('UPDATE user_usage SET count=count+1 WHERE user_id=? AND tool=? AND date=?', [userId, tool, today]);
+    else run('INSERT INTO user_usage (user_id, tool, date, count) VALUES (?,?,?,1)', [userId, tool, today]);
+}
+
+function saveAiHistory(userId, tool, input) {
+    run('INSERT INTO user_ai_history (user_id, tool, input) VALUES (?,?,?)', [userId, tool, (input||'').slice(0,200)]);
 }
 
 // AI Code Review
@@ -778,32 +894,23 @@ app.post('/api/tools/code-review', async (req, res) => {
     const { code, language } = req.body;
     if (!code?.trim()) return res.status(400).json({ error: 'Thiếu code' });
 
-    // Kiểm tra auth token — bắt buộc đăng nhập
-    const token = req.headers['x-user-token'];
+    const token = getAuthToken(req);
     if (!token) return res.status(401).json({ error: 'Vui lòng đăng nhập để sử dụng AI Tools' });
-    const session = get("SELECT * FROM user_sessions WHERE token=? AND expires_at > datetime('now')", [token]);
-    if (!session) return res.status(401).json({ error: 'Phiên đăng nhập hết hạn, vui lòng đăng nhập lại' });
+    const payload = verifyJWT(token);
+    if (!payload) return res.status(401).json({ error: 'Phiên đăng nhập hết hạn, vui lòng đăng nhập lại' });
 
-    // Kiểm tra VIP theo email của user
-    const user = get('SELECT email FROM users WHERE id=?', [session.user_id]);
-    const isVip = user ? checkVIP(user.email) : false;
-
+    const isVip = checkVIP(payload.id);
     if (!isVip) {
-        const key = `cr_user_${session.user_id}`;
-        const today = new Date().toDateString();
-        const usageKey = `usage_${key}_${today}`;
-        const usage = get('SELECT value FROM site_stats WHERE key=?', [usageKey]);
-        const count = parseInt(usage?.value || '0');
+        const count = getToolUsage(payload.id, 'cr');
         if (count >= 3) return res.status(429).json({ error: 'Hết lượt miễn phí hôm nay (3 lần). Nâng cấp VIP để dùng không giới hạn.', upgradeUrl: '/payment.html' });
-        if (!usage) run('INSERT INTO site_stats (key, value) VALUES (?,?)', [usageKey, '1']);
-        else run('UPDATE site_stats SET value=? WHERE key=?', [String(count + 1), usageKey]);
     }
     try {
         const result = await callOpenRouter([
             { role: 'system', content: `Bạn là senior code reviewer chuyên nghiệp. Phân tích code và trả về JSON với format:\n{"score":85,"summary":"...","issues":[{"severity":"high|medium|low","line":"...","issue":"...","fix":"..."}],"strengths":["..."],"suggestions":["..."]}` },
             { role: 'user', content: `Language: ${language || 'auto-detect'}\n\nCode:\n\`\`\`\n${code.slice(0, 3000)}\n\`\`\`` }
         ], 1500);
-        // Parse JSON từ response
+        if (!isVip) incToolUsage(payload.id, 'cr');
+        saveAiHistory(payload.id, 'cr', code.slice(0, 80));
         const jsonMatch = result.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
             res.json({ ok: true, result: JSON.parse(jsonMatch[0]), isVip });
@@ -820,24 +927,15 @@ app.post('/api/tools/cv-generate', async (req, res) => {
     const { name, title, email: userEmail, phone, summary, skills, experience, education, language } = req.body;
     if (!name?.trim()) return res.status(400).json({ error: 'Thiếu tên' });
 
-    // Kiểm tra auth token — bắt buộc đăng nhập
-    const token = req.headers['x-user-token'];
+    const token = getAuthToken(req);
     if (!token) return res.status(401).json({ error: 'Vui lòng đăng nhập để sử dụng AI Tools' });
-    const session = get("SELECT * FROM user_sessions WHERE token=? AND expires_at > datetime('now')", [token]);
-    if (!session) return res.status(401).json({ error: 'Phiên đăng nhập hết hạn, vui lòng đăng nhập lại' });
+    const payload = verifyJWT(token);
+    if (!payload) return res.status(401).json({ error: 'Phiên đăng nhập hết hạn, vui lòng đăng nhập lại' });
 
-    const user = get('SELECT email FROM users WHERE id=?', [session.user_id]);
-    const isVip = user ? checkVIP(user.email) : false;
-
+    const isVip = checkVIP(payload.id);
     if (!isVip) {
-        const key = `cv_user_${session.user_id}`;
-        const today = new Date().toDateString();
-        const usageKey = `usage_${key}_${today}`;
-        const usage = get('SELECT value FROM site_stats WHERE key=?', [usageKey]);
-        const count = parseInt(usage?.value || '0');
+        const count = getToolUsage(payload.id, 'cv');
         if (count >= 3) return res.status(429).json({ error: 'Hết lượt miễn phí hôm nay (3 lần). Nâng cấp VIP để dùng không giới hạn.', upgradeUrl: '/payment.html' });
-        if (!usage) run('INSERT INTO site_stats (key, value) VALUES (?,?)', [usageKey, '1']);
-        else run('UPDATE site_stats SET value=? WHERE key=?', [String(count + 1), usageKey]);
     }
     try {
         const lang = language === 'en' ? 'English' : 'Vietnamese';
@@ -845,6 +943,8 @@ app.post('/api/tools/cv-generate', async (req, res) => {
             { role: 'system', content: `Bạn là chuyên gia viết CV chuyên nghiệp. Tạo CV hoàn chỉnh bằng ${lang} dựa trên thông tin được cung cấp. Trả về HTML đẹp, sẵn sàng in, với inline CSS. Dùng màu #667eea cho accent. Không dùng external CSS.` },
             { role: 'user', content: `Tên: ${name}\nChức danh: ${title || ''}\nEmail: ${userEmail || ''}\nPhone: ${phone || ''}\nTóm tắt: ${summary || ''}\nKỹ năng: ${skills || ''}\nKinh nghiệm: ${experience || ''}\nHọc vấn: ${education || ''}` }
         ], 2000);
+        if (!isVip) incToolUsage(payload.id, 'cv');
+        saveAiHistory(payload.id, 'cv', name);
         res.json({ ok: true, html: result, isVip });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -918,7 +1018,7 @@ app.put('/api/auth/profile', requireUser, (req, res) => {
     if (!updates.length) return res.status(400).json({ error: 'Không có gì để cập nhật' });
     params.push(req.userId);
     run(`UPDATE users SET ${updates.join(',')} WHERE id=?`, params);
-    const user = get('SELECT id,username,email,avatar,created_at FROM users WHERE id=?', [req.userId]);
+    const user = get('SELECT id,username,email,avatar,role,created_at FROM users WHERE id=?', [req.userId]);
     res.json({ ok: true, user });
 });
 

@@ -260,36 +260,13 @@ function toast(msg, color) {
   setTimeout(() => { t.style.display = 'none'; }, 3000);
 }
 
-// ===== USAGE (localStorage) =====
-const USAGE_KEYS = { hw:'hw', fix:'fix', vid:'vid', cr:'cr', cv:'cv' };
+// ===== USAGE LABELS =====
 const USAGE_LABELS = { hw:'📚 Giải Bài Tập', fix:'🔧 Fix Code', vid:'🎬 Video Script', cr:'💻 Code Review', cv:'📄 CV Generator' };
 
-function getUsage(key) {
-  const today = new Date().toDateString();
-  const s = JSON.parse(localStorage.getItem('sv_usage') || '{}');
-  const s2 = JSON.parse(localStorage.getItem('ai_usage') || '{}');
-  if (key === 'cr' || key === 'cv') return s2.date === today ? (s2[key] || 0) : 0;
-  return s.date === today ? (s[key] || 0) : 0;
-}
-
-function getTotalUsage() {
-  let total = 0, today = 0;
-  const allKeys = ['hw','fix','vid','cr','cv'];
-  allKeys.forEach(k => {
-    const v = getUsage(k);
-    today += v;
-    // rough total from history
-  });
-  const hist = getHistory();
-  total = hist.length;
-  return { total, today };
-}
-
-function renderUsage(isVip) {
+function renderUsage(usage, isVip) {
   const keys = ['hw','fix','vid','cr','cv'];
   keys.forEach(k => {
-    const used = getUsage(k);
-    const max = isVip ? '∞' : 3;
+    const used = usage[k] || 0;
     const pct = isVip ? 30 : Math.min(100, (used / 3) * 100);
     const el = document.getElementById('u-' + k);
     const bar = document.getElementById('uf-' + k);
@@ -303,40 +280,39 @@ function renderUsage(isVip) {
   if (note) note.textContent = isVip ? '👑 VIP — Không giới hạn lượt dùng' : 'Reset lúc 00:00 mỗi ngày';
 }
 
-// ===== HISTORY (localStorage) =====
-function getHistory() {
-  return JSON.parse(localStorage.getItem('ai_history') || '[]');
-}
-
-function renderHistory() {
+// ===== HISTORY =====
+function renderHistory(history) {
   const list = document.getElementById('historyList');
-  const hist = getHistory();
-  if (!hist.length) {
+  if (!history || !history.length) {
     list.innerHTML = '<div class="history-empty"><i class="fas fa-robot" style="display:block;font-size:2rem;margin-bottom:.5rem;opacity:.3;"></i>Chưa có lịch sử</div>';
     return;
   }
   const icons = { hw:'📚', fix:'🔧', vid:'🎬', cr:'💻', cv:'📄', chat:'💬' };
   const colors = { hw:'linear-gradient(135deg,#667eea,#764ba2)', fix:'linear-gradient(135deg,#11998e,#38ef7d)', vid:'linear-gradient(135deg,#f093fb,#f5576c)', cr:'linear-gradient(135deg,#4facfe,#00f2fe)', cv:'linear-gradient(135deg,#fa709a,#fee140)', chat:'linear-gradient(135deg,#a18cd1,#fbc2eb)' };
-  list.innerHTML = hist.slice().reverse().map(h => `
+  list.innerHTML = history.map(h => `
     <div class="history-item">
       <div class="history-icon" style="background:${colors[h.tool]||colors.chat}">${icons[h.tool]||'🤖'}</div>
       <div class="history-content">
         <div class="history-tool">${USAGE_LABELS[h.tool] || h.tool}</div>
         <div class="history-text">${h.input || '—'}</div>
-        <div class="history-time">${timeAgo(h.time)}</div>
+        <div class="history-time">${timeAgo(h.created_at)}</div>
       </div>
     </div>`).join('');
 }
 
-function clearHistory() {
+async function clearHistory() {
   if (!confirm('Xóa toàn bộ lịch sử AI?')) return;
+  const token = localStorage.getItem('user_token');
+  await fetch(API_BASE + '/user/ai-history', { method:'DELETE', headers:{'Authorization':'Bearer '+token} }).catch(()=>{});
   localStorage.removeItem('ai_history');
-  renderHistory();
+  renderHistory([]);
   toast('🗑️ Đã xóa lịch sử', '#f87171');
 }
 
 function timeAgo(ts) {
-  const s = (Date.now() - ts) / 1000;
+  const d = ts ? new Date(ts) : null;
+  if (!d) return '';
+  const s = (Date.now() - d.getTime()) / 1000;
   if (s < 60) return 'Vừa xong';
   if (s < 3600) return Math.floor(s/60) + ' phút trước';
   if (s < 86400) return Math.floor(s/3600) + ' giờ trước';
@@ -344,31 +320,30 @@ function timeAgo(ts) {
 }
 
 // ===== PLAN =====
-async function loadPlan(email) {
-  try {
-    const r = await fetch(API_BASE + '/subscription/check?email=' + encodeURIComponent(email));
-    const d = await r.json();
-    const badge = document.getElementById('planBadge');
-    const expires = document.getElementById('planExpires');
-    const btnUp = document.getElementById('btnUpgrade');
-    const btnRenew = document.getElementById('btnRenew');
-    const daysLeft = document.getElementById('statDaysLeft');
+function renderPlan(isVip, subscription, daysLeft) {
+  const badge = document.getElementById('planBadge');
+  const expires = document.getElementById('planExpires');
+  const btnUp = document.getElementById('btnUpgrade');
+  const btnRenew = document.getElementById('btnRenew');
+  const daysLeftEl = document.getElementById('statDaysLeft');
 
-    if (d.hasSubscription && d.subscription?.expires_at) {
-      const exp = new Date(d.subscription.expires_at);
-      const days = Math.max(0, Math.ceil((exp - Date.now()) / 86400000));
-      badge.className = 'plan-badge plan-vip';
-      badge.textContent = '👑 VIP';
-      expires.innerHTML = 'Hết hạn: <span>' + exp.toLocaleDateString('vi-VN') + '</span>';
-      expires.className = 'plan-expires' + (days <= 5 ? ' expired' : '');
-      daysLeft.textContent = days;
-      btnUp.style.display = 'none';
-      btnRenew.style.display = 'flex';
-    } else {
-      daysLeft.textContent = '—';
-    }
-    return d.hasSubscription;
-  } catch(e) { return false; }
+  if (isVip && subscription?.expires_at) {
+    const exp = new Date(subscription.expires_at);
+    badge.className = 'plan-badge plan-vip';
+    badge.textContent = '👑 VIP';
+    expires.innerHTML = 'Hết hạn: <span>' + exp.toLocaleDateString('vi-VN') + '</span>';
+    expires.className = 'plan-expires' + (daysLeft <= 5 ? ' expired' : '');
+    daysLeftEl.textContent = daysLeft;
+    btnUp.style.display = 'none';
+    btnRenew.style.display = 'flex';
+  } else {
+    daysLeftEl.textContent = '—';
+    badge.className = 'plan-badge plan-free';
+    badge.textContent = '🆓 Free';
+    expires.textContent = '3 lượt/ngày · Mỗi tool';
+    btnUp.style.display = 'flex';
+    btnRenew.style.display = 'none';
+  }
 }
 
 // ===== PROFILE SAVE =====
@@ -377,14 +352,19 @@ async function saveProfile() {
   const avatar = document.getElementById('editAvatar').value.trim();
   if (!name) { toast('⚠️ Tên không được để trống', '#f87171'); return; }
   try {
+    const token = localStorage.getItem('user_token');
     const r = await fetch(API_BASE + '/auth/profile', {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json', 'x-user-token': localStorage.getItem('userToken') || '' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
       body: JSON.stringify({ nickname: name, avatar })
     });
     const d = await r.json();
     if (!r.ok) { toast('❌ ' + d.error, '#f87171'); return; }
-    localStorage.setItem('user', JSON.stringify(d.user));
+    // Update localStorage
+    const stored = JSON.parse(localStorage.getItem('user_info') || '{}');
+    stored.username = d.user.username;
+    stored.avatar = d.user.avatar;
+    localStorage.setItem('user_info', JSON.stringify(stored));
     document.getElementById('dbName').textContent = d.user.username;
     if (d.user.avatar) document.getElementById('dbAvatar').innerHTML = `<img src="${d.user.avatar}" style="width:72px;height:72px;border-radius:50%;object-fit:cover;">`;
     toast('✅ Đã lưu hồ sơ!');
@@ -394,54 +374,69 @@ async function saveProfile() {
 // ===== LOGOUT =====
 function confirmLogout() {
   if (!confirm('Đăng xuất khỏi tài khoản?')) return;
-  fetch(API_BASE + '/auth/logout', { method: 'POST', headers: { 'x-user-token': localStorage.getItem('userToken') || '' } }).catch(()=>{});
-  localStorage.removeItem('userToken');
-  localStorage.removeItem('user');
+  const token = localStorage.getItem('user_token');
+  fetch(API_BASE + '/auth/logout', { method:'POST', headers:{'Authorization':'Bearer '+token} }).catch(()=>{});
+  localStorage.removeItem('user_token');
+  localStorage.removeItem('user_info');
   window.location.href = 'index.html';
 }
 
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', async () => {
-  const token = localStorage.getItem('userToken');
-  const userStr = localStorage.getItem('user');
+  const token = localStorage.getItem('user_token');
+  if (!token) { window.location.href = 'index.html'; return; }
 
-  if (!token || !userStr) {
-    window.location.href = 'index.html';
-    return;
-  }
-
-  const user = JSON.parse(userStr);
-
-  // Verify token
   try {
-    const r = await fetch(API_BASE + '/auth/me', { headers: { 'x-user-token': token } });
+    const r = await fetch(API_BASE + '/user/dashboard', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
     if (!r.ok) { window.location.href = 'index.html'; return; }
-  } catch(e) {}
+    const data = await r.json();
+    const { user, isVip, subscription, daysLeft, usage, totalUsage, history } = data;
 
-  // Show UI
-  document.getElementById('dbLoading').style.display = 'none';
-  document.getElementById('dbMain').style.display = 'block';
+    // Show UI
+    document.getElementById('dbLoading').style.display = 'none';
+    document.getElementById('dbMain').style.display = 'block';
 
-  // Fill profile
-  document.getElementById('dbName').textContent = user.username || 'User';
-  document.getElementById('dbEmail').textContent = user.email || '';
-  document.getElementById('editName').value = user.username || '';
-  document.getElementById('editAvatar').value = user.avatar || '';
-  if (user.avatar) {
-    document.getElementById('dbAvatar').innerHTML = `<img src="${user.avatar}" style="width:72px;height:72px;border-radius:50%;object-fit:cover;">`;
+    // Fill profile
+    document.getElementById('dbName').textContent = user.username || 'User';
+    document.getElementById('dbEmail').textContent = user.email || '';
+    document.getElementById('editName').value = user.username || '';
+    document.getElementById('editAvatar').value = user.avatar || '';
+    if (user.avatar) {
+      document.getElementById('dbAvatar').innerHTML = `<img src="${user.avatar}" style="width:72px;height:72px;border-radius:50%;object-fit:cover;">`;
+    }
+
+    // Stats
+    const todayUsage = Object.values(usage).reduce((a,b) => a+b, 0);
+    document.getElementById('statAiTotal').textContent = totalUsage;
+    document.getElementById('statAiToday').textContent = todayUsage;
+
+    // Plan
+    renderPlan(isVip, subscription, daysLeft);
+
+    // Usage bars
+    renderUsage(usage, isVip);
+
+    // History (server-side, fallback localStorage)
+    if (history && history.length) {
+      renderHistory(history);
+    } else {
+      const localHist = JSON.parse(localStorage.getItem('ai_history') || '[]');
+      renderHistory(localHist.slice().reverse().map(h => ({ tool:h.tool, input:h.input, created_at: new Date(h.time).toISOString() })));
+    }
+
+    // VIP badge nếu role là admin
+    if (user.role === 'admin') {
+      const badge = document.getElementById('planBadge');
+      badge.className = 'plan-badge plan-vip';
+      badge.textContent = '⚡ Admin';
+    }
+
+  } catch(e) {
+    console.error(e);
+    window.location.href = 'index.html';
   }
-
-  // Load plan
-  const isVip = await loadPlan(user.email);
-
-  // Usage
-  renderUsage(isVip);
-  const { total, today } = getTotalUsage();
-  document.getElementById('statAiTotal').textContent = total;
-  document.getElementById('statAiToday').textContent = today;
-
-  // History
-  renderHistory();
 });
 </script>
 </body>

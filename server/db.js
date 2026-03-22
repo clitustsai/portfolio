@@ -86,12 +86,28 @@ async function getDb() {
             avatar TEXT DEFAULT '',
             oauth_provider TEXT DEFAULT '',
             oauth_id TEXT DEFAULT '',
+            role TEXT NOT NULL DEFAULT 'free',
             created_at DATETIME DEFAULT (datetime('now'))
         );
         CREATE TABLE IF NOT EXISTS user_sessions (
             token TEXT PRIMARY KEY,
             user_id INTEGER NOT NULL,
             expires_at DATETIME NOT NULL,
+            created_at DATETIME DEFAULT (datetime('now'))
+        );
+        CREATE TABLE IF NOT EXISTS user_usage (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            tool TEXT NOT NULL,
+            date TEXT NOT NULL,
+            count INTEGER NOT NULL DEFAULT 0,
+            UNIQUE(user_id, tool, date)
+        );
+        CREATE TABLE IF NOT EXISTS user_ai_history (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            tool TEXT NOT NULL,
+            input TEXT DEFAULT '',
             created_at DATETIME DEFAULT (datetime('now'))
         );
         CREATE TABLE IF NOT EXISTS invoices (

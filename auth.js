@@ -42,7 +42,7 @@ async function apiLogout() {
     if (token) {
         try {
             await fetch(`${API_BASE}/auth/logout`, {
-                method: 'POST', headers: { 'x-user-token': token }
+                method: 'POST', headers: { 'Authorization': `Bearer ${token}` }
             });
         } catch {}
     }
@@ -54,7 +54,7 @@ async function postCommentAuth(data) {
     if (!token) throw new Error('Chưa đăng nhập');
     const r = await fetch(`${API_BASE}/comments/auth`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-user-token': token },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify(data)
     });
     const d = await r.json();
@@ -67,7 +67,7 @@ async function postBlogCommentAuth(postId, text) {
     if (!token) throw new Error('Chưa đăng nhập');
     const r = await fetch(`${API_BASE}/blog/posts/${postId}/comments/auth`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-user-token': token },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ text })
     });
     const d = await r.json();
@@ -664,7 +664,7 @@ async function saveProfile() {
         const token = getToken();
         const r = await fetch(API_BASE + '/auth/profile', {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json', 'x-user-token': token },
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
             body: JSON.stringify({ nickname, avatar })
         });
         const d = await r.json();
