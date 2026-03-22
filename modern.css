@@ -820,3 +820,86 @@ footer {
   .hero-badge { font-size: 0.75rem; }
   .hero-3d-card { transform: none !important; }
 }
+
+
+/* ============================================================
+   HERO VIDEO BACKGROUND
+   ============================================================ */
+.hero-video-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* YouTube iframe — scale up để che hết section */
+.hero-video-bg iframe {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 177.78vh;   /* 16/9 * 100vh */
+  height: 100vh;
+  min-width: 100%;
+  min-height: 56.25vw; /* 9/16 * 100vw */
+  transform: translate(-50%, -50%);
+  border: none;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+.hero-video-bg.loaded iframe { opacity: 1; }
+
+/* Gradient overlay — giữ text readable */
+.hero-video-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(135deg,
+      rgba(10,10,40,0.78) 0%,
+      rgba(30,20,60,0.65) 40%,
+      rgba(10,10,40,0.72) 100%);
+  z-index: 1;
+}
+
+/* Canvas nằm trên overlay */
+#heroCanvas { z-index: 2; }
+
+/* Hero content nằm trên tất cả */
+.hero > *:not(.hero-video-bg):not(#heroCanvas) { z-index: 3; }
+
+/* Nút tắt/bật video */
+.hero-video-toggle {
+  position: absolute;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 10;
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.8);
+  border-radius: 50px;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.25s;
+  letter-spacing: 0.02em;
+}
+.hero-video-toggle:hover {
+  background: rgba(255,255,255,0.22);
+  color: #fff;
+}
+
+@media (max-width: 768px) {
+  .hero-video-bg iframe {
+    width: 177.78vw;
+    height: 100vw;
+    min-width: 177.78vh;
+    min-height: 100%;
+  }
+  .hero-video-toggle { bottom: 1rem; right: 1rem; font-size: 0.7rem; }
+}

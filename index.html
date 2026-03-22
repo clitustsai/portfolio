@@ -540,6 +540,16 @@
 
     <!-- Hero Section -->
     <section class="hero" id="home">
+        <!-- Video Background -->
+        <div class="hero-video-bg" id="heroVideoBg">
+            <iframe id="heroYT"
+                src="https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1&mute=1&loop=1&playlist=jfKfPfyJRdk&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&enablejsapi=1"
+                allow="autoplay; encrypted-media"
+                allowfullscreen
+                title="Hero background video">
+            </iframe>
+            <div class="hero-video-overlay"></div>
+        </div>
         <!-- Particle Canvas Background -->
         <canvas id="heroCanvas"></canvas>
 
@@ -591,6 +601,10 @@
             <img src="./img/z7643593902682_1d1e5b7671cc398923d350f14dd68934.jpg" alt="Profile Avatar" class="profile-image">
             <div class="hero-img-glow"></div>
         </div>
+        <!-- Video toggle button -->
+        <button class="hero-video-toggle" id="heroVideoToggle" title="Tắt/bật video nền">
+            <i class="fas fa-pause" id="heroVideoIcon"></i> Video
+        </button>
     </section>
 
     <!-- About Section -->
@@ -2224,6 +2238,52 @@
     card.style.transition = 'transform 0.6s ease';
     card.style.transform = 'perspective(800px) rotateY(0) rotateX(0)';
     setTimeout(() => card.style.transition = 'transform 0.1s ease', 600);
+  });
+})();
+
+// ===== HERO VIDEO BACKGROUND =====
+(function() {
+  const bg = document.getElementById('heroVideoBg');
+  const btn = document.getElementById('heroVideoToggle');
+  const icon = document.getElementById('heroVideoIcon');
+  if (!bg || !btn) return;
+
+  let playing = true;
+  let player = null;
+
+  // YouTube IFrame API callback
+  window.onYouTubeIframeAPIReady = function() {
+    player = new YT.Player('heroYT', {
+      events: {
+        onReady: function(e) {
+          e.target.mute();
+          e.target.playVideo();
+          setTimeout(() => bg.classList.add('loaded'), 600);
+        }
+      }
+    });
+  };
+
+  // Load API script
+  if (!window.YT) {
+    const s = document.createElement('script');
+    s.src = 'https://www.youtube.com/iframe_api';
+    document.head.appendChild(s);
+  } else if (window.YT && window.YT.Player) {
+    window.onYouTubeIframeAPIReady();
+  }
+
+  // Fallback fade-in nếu API không load
+  setTimeout(() => bg.classList.add('loaded'), 3000);
+
+  btn.addEventListener('click', () => {
+    playing = !playing;
+    if (player && player.pauseVideo) {
+      playing ? player.playVideo() : player.pauseVideo();
+    }
+    const iframe = document.getElementById('heroYT');
+    if (iframe) iframe.style.opacity = playing ? '1' : '0';
+    icon.className = playing ? 'fas fa-pause' : 'fas fa-play';
   });
 })();
 </script>
