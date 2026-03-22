@@ -1,5 +1,5 @@
 // ========== SERVICE WORKER - PWA ==========
-const CACHE_NAME = 'clituspc-v21';
+const CACHE_NAME = 'clituspc-v22';
 const OFFLINE_URL = '/offline.html';
 
 // Files cần cache để offline
@@ -20,6 +20,7 @@ const PRECACHE_ASSETS = [
   '/manifest.json',
   '/img/z7643593902682_1d1e5b7671cc398923d350f14dd68934.jpg',
   '/img/z7643399499088_fbf2b939d27d107fda73c5053dbb4dd0.jpg',
+  '/recommend.js',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
   'https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.css',
   'https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.min.js',
