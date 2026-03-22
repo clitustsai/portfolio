@@ -975,6 +975,14 @@
     .certificates-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
+/* ===== MEDIUM SCREEN (nav overflow fix) ===== */
+@media (max-width: 1300px) {
+    nav { padding: 0 1rem; }
+    nav ul { gap: 0.75rem; }
+    nav ul li a { font-size: 0.85rem; }
+    .logo { font-size: 1.2rem; }
+}
+
 /* ===== MOBILE ===== */
 @media (max-width: 768px) {
 
@@ -1184,3 +1192,19 @@
         animation: none !important;
     }
 }
+
+/* ===== SURFACE DUO / NARROW SCREENS (540px) ===== */
+@media (max-width: 560px) {
+    .skill-item { padding: 1rem; }
+    .skill-item h3 { font-size: 0.95rem; }
+    .progress-bar { height: 6px; }
+    .skills-grid { grid-template-columns: 1fr; gap: 0.75rem; }
+    .portfolio-stats-bar { gap: 0.5rem; padding: 0.75rem; }
+    .stat-item { font-size: 0.75rem; }
+    .stat-item span { font-size: 1.1rem; }
+}
+
+/* ===== FLOATING BUTTONS — unified across all breakpoints ===== */
+.chat-toggle  { bottom: 164px !important; right: 20px !important; }
+.back-to-top  { bottom: 94px  !important; right: 20px !important; }
+#fabGroup     { bottom: 24px  !important; right: 20px !important; }

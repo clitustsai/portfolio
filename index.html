@@ -1409,24 +1409,25 @@
 
         function updateStatsBar() {
             const d = interactionData;
-            const vEl = document.getElementById('totalViews'); if (vEl) animateCount(vEl, d.totalViews);
-            const lEl = document.getElementById('totalLikes'); if (lEl) animateCount(lEl, d.totalLikes);
-            const cEl = document.getElementById('totalComments'); if (cEl) animateCount(cEl, d.comments.length);
+            const vEl = document.getElementById('totalViews'); if (vEl) animateCount(vEl, d.totalViews||0);
+            const lEl = document.getElementById('totalLikes'); if (lEl) animateCount(lEl, d.totalLikes||0);
+            const cEl = document.getElementById('totalComments'); if (cEl) animateCount(cEl, (d.comments||[]).length);
             const rEl = document.getElementById('avgRating');
-            if (rEl) { const rs = d.comments.map(c=>c.rating).filter(r=>r>0); rEl.textContent = rs.length ? (rs.reduce((a,b)=>a+b,0)/rs.length).toFixed(1) : '0.0'; }
+            if (rEl) { const rs = (d.comments||[]).map(c=>c.rating).filter(r=>r>0); rEl.textContent = rs.length ? (rs.reduce((a,b)=>a+b,0)/rs.length).toFixed(1) : '0.0'; }
         }
 
         function animateCount(el, target) {
-            const cur = parseInt(el.textContent)||0; if (cur===target) return;
-            const step = Math.ceil(Math.abs(target-cur)/20); let val = cur;
-            const t = setInterval(() => {
-                val += target>cur ? step : -step;
-                if ((target>cur&&val>=target)||(target<cur&&val<=target)) { val=target; clearInterval(t); }
+            const t2 = parseInt(target)||0;
+            const cur = parseInt(el.textContent)||0; if (cur===t2) return;
+            const step = Math.ceil(Math.abs(t2-cur)/20)||1; let val = cur;
+            const timer = setInterval(() => {
+                val += t2>cur ? step : -step;
+                if ((t2>cur&&val>=t2)||(t2<cur&&val<=t2)) { val=t2; clearInterval(timer); }
                 el.textContent = formatNumber(val);
             }, 30);
         }
 
-        function formatNumber(n) { return n >= 1000 ? (n/1000).toFixed(1)+'k' : n.toString(); }
+        function formatNumber(n) { const num = parseInt(n)||0; return num >= 1000 ? (num/1000).toFixed(1)+'k' : num.toString(); }
 
         // ===== COMMENTS =====
         const avatarColors = ['#667eea','#764ba2','#f093fb','#f5576c','#4facfe','#43e97b','#fa709a','#fee140'];
