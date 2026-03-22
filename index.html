@@ -506,29 +506,35 @@
 
     <header>
         <nav>
-            <div class="logo">Portfolio</div>
-            <ul>
+            <div class="logo">✦ Clitus PC</div>
+            <ul id="navMenu">
                 <li><a href="#home" data-i18n="nav.home">Trang Chủ</a></li>
                 <li><a href="#about" data-i18n="nav.about">Về Tôi</a></li>
                 <li><a href="#projects" data-i18n="nav.projects">Dự Án</a></li>
-                <li><a href="#certificates" data-i18n="nav.certificates">Chứng Chỉ</a></li>
                 <li><a href="#skills" data-i18n="nav.skills">Kỹ Năng</a></li>
-                <li><a href="#map" data-i18n="nav.map">Vị Trí</a></li>
                 <li><a href="#contact" data-i18n="nav.contact">Liên Hệ</a></li>
                 <li><a href="blog.html">Blog</a></li>
-                <li><a href="roadmap.html">🗺️ Roadmap</a></li>
-                <li><a href="proposal.html">💼 Proposal</a></li>
-                <li><a href="payment.html">💳 Dịch Vụ</a></li>
-                <li><a href="invoice.html">🧾 Invoice</a></li>
+                <!-- Dropdown: Công Cụ -->
+                <li class="nav-dropdown">
+                    <a href="#" class="nav-dropdown-toggle">Công Cụ <i class="fas fa-chevron-down nav-chevron"></i></a>
+                    <ul class="nav-dropdown-menu">
+                        <li><a href="roadmap.html"><span class="dd-icon">🗺️</span> Roadmap</a></li>
+                        <li><a href="proposal.html"><span class="dd-icon">💼</span> Proposal</a></li>
+                        <li><a href="invoice.html"><span class="dd-icon">🧾</span> Invoice</a></li>
+                        <li><a href="payment.html"><span class="dd-icon">💳</span> Dịch Vụ & VIP</a></li>
+                    </ul>
+                </li>
             </ul>
-            <button class="theme-toggle" id="themeToggle" title="Chuyển đổi chế độ tối/sáng">
-                <i class="fas fa-moon"></i>
-            </button>
-            <button class="lang-toggle" id="langToggle" title="Switch language">🇻🇳</button>
-            <div class="nav-auth-slot"></div>
-            <button class="nav-hamburger" id="navHamburger" aria-label="Menu">
-                <span></span><span></span><span></span>
-            </button>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" title="Chuyển đổi chế độ tối/sáng">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="lang-toggle" id="langToggle" title="Switch language">🇻🇳</button>
+                <div class="nav-auth-slot"></div>
+                <button class="nav-hamburger" id="navHamburger" aria-label="Menu">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
         </nav>
     </header>
 
@@ -1709,12 +1715,29 @@
                 navUl.classList.toggle('open', isOpen);
                 document.body.style.overflow = isOpen ? 'hidden' : '';
             });
-            navUl.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
+            navUl.querySelectorAll('a:not(.nav-dropdown-toggle)').forEach(a => a.addEventListener('click', closeMenu));
             document.addEventListener('click', (e) => {
                 if (navUl.classList.contains('open') && !navUl.contains(e.target) && e.target !== hamburger) closeMenu();
             });
             document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
         }
+
+        // Dropdown menu
+        document.querySelectorAll('.nav-dropdown').forEach(dd => {
+            const toggle = dd.querySelector('.nav-dropdown-toggle');
+            const isMobile = () => window.innerWidth <= 768;
+            // Desktop: hover handled by CSS; Mobile: click toggle
+            toggle.addEventListener('click', (e) => {
+                if (isMobile()) {
+                    e.preventDefault();
+                    dd.classList.toggle('open');
+                }
+            });
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!dd.contains(e.target)) dd.classList.remove('open');
+            });
+        });
     </script>
     <script>
         // ===== MUSIC PLAYER =====
@@ -1817,7 +1840,7 @@
         }
         </script>
     <!-- Floating Action Buttons -->
-    <div id="fabGroup" style="position:fixed;bottom:1.5rem;right:1.5rem;z-index:9990;display:flex;flex-direction:column;align-items:flex-end;gap:0.6rem;">
+    <div id="fabGroup">
       <div id="fabMenu" style="display:none;flex-direction:column;gap:0.5rem;align-items:flex-end;margin-bottom:0.25rem;">
         <a href="payment.html" style="display:flex;align-items:center;gap:0.6rem;text-decoration:none;">
           <span style="background:#fff;color:#1a1a2e;font-size:0.8rem;font-weight:700;padding:0.35rem 0.85rem;border-radius:50px;box-shadow:0 2px 10px rgba(0,0,0,0.15);white-space:nowrap;">💼 Thuê tôi ngay</span>
