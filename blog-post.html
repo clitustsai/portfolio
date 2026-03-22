@@ -3,6 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Bài viết blog của Clitus PC - Full Stack Developer">
+  <meta name="author" content="Clitus PC">
+  <meta name="robots" content="index, follow">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Clitus PC Portfolio">
+  <meta property="og:locale" content="vi_VN">
+  <meta name="twitter:card" content="summary_large_image">
   <title>Blog Post - Clitus PC</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
@@ -229,6 +236,22 @@ Hooks giúp code React trở nên **ngắn gọn**, **dễ test** và **dễ tá
 
     function renderPost(p) {
       document.title = `${p.title} - Clitus PC Blog`;
+      // Dynamic SEO meta
+      const setMeta = (sel, val) => { const el = document.querySelector(sel); if(el) el.setAttribute('content', val); };
+      const desc = p.excerpt || p.content?.replace(/<[^>]+>/g,'').slice(0,160) || '';
+      const img = p.cover || 'https://portfolio-utbu.onrender.com/img/z7643399499088_fbf2b939d27d107fda73c5053dbb4dd0.jpg';
+      const url = `https://portfolio-utbu.onrender.com/blog-post.html?id=${p.id}`;
+      setMeta('meta[name="description"]', desc);
+      setMeta('meta[property="og:title"]', `${p.title} - Clitus PC Blog`);
+      setMeta('meta[property="og:description"]', desc);
+      setMeta('meta[property="og:image"]', img);
+      setMeta('meta[property="og:url"]', url);
+      setMeta('meta[name="twitter:title"]', `${p.title} - Clitus PC Blog`);
+      setMeta('meta[name="twitter:description"]', desc);
+      setMeta('meta[name="twitter:image"]', img);
+      let canon = document.querySelector('link[rel="canonical"]');
+      if (!canon) { canon = document.createElement('link'); canon.rel = 'canonical'; document.head.appendChild(canon); }
+      canon.href = url;
       document.getElementById('postLoading').style.display = 'none';
       document.getElementById('postContainer').style.display = 'block';
 
