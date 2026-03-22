@@ -342,6 +342,9 @@ function signJWT(payload) {
 function verifyJWT(token) {
     try { return jwt.verify(token, JWT_SECRET); } catch { return null; }
 }
+function genToken() {
+    return crypto.randomBytes(16).toString('hex');
+}
 function getAuthToken(req) {
     const auth = req.headers['authorization'];
     if (auth && auth.startsWith('Bearer ')) return auth.slice(7);
