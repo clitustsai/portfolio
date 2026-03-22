@@ -1,5 +1,5 @@
 // ========== SERVICE WORKER - PWA ==========
-const CACHE_NAME = 'clituspc-v23';
+const CACHE_NAME = 'clituspc-v24';
 const OFFLINE_URL = '/offline.html';
 
 // Files cần cache để offline

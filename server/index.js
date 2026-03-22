@@ -1219,21 +1219,43 @@ app.get('/api/game/leaderboard/:game', (req, res) => {
 // ========== COMMUNITY CHAT ==========
 const chatPostLimiter = rateLimit({ windowMs: 10 * 1000, max: 3, message: { error: 'Gửi quá nhanh, chờ chút!' } });
 
+const VIP_ROOMS = ['vip', 'vip-lounge'];
+
+function parseChatMsg(r) {
+    return { ...r, reactions: JSON.parse(r.reactions || '{}') };
+}
+
+// GET messages — VIP room guard
 app.get('/api/chat/messages', (req, res) => {
     const room = (req.query.room || 'general').slice(0, 30);
     const since = parseInt(req.query.since) || 0;
+
+    // VIP room: phải đăng nhập + có role vip/admin
+    if (VIP_ROOMS.includes(room)) {
+        const token = getAuthToken(req);
+        if (!token) return res.status(403).json({ error: 'VIP only', upgradeUrl: '/payment.html' });
+        const payload = verifyJWT(token);
+        if (!payload) return res.status(403).json({ error: 'VIP only', upgradeUrl: '/payment.html' });
+        const user = get('SELECT role FROM users WHERE id=?', [payload.id]);
+        if (!user || (user.role !== 'vip' && user.role !== 'admin')) {
+            return res.status(403).json({ error: 'VIP only', upgradeUrl: '/payment.html' });
+        }
+    }
+
+    // Pinned messages (luôn trả về, không filter by since)
+    const pinned = all('SELECT * FROM chat_messages WHERE room=? AND pinned=1 ORDER BY id DESC LIMIT 3', [room]);
+
     const rows = all(
-        'SELECT * FROM chat_messages WHERE room=? AND id>? ORDER BY id ASC LIMIT 50',
+        'SELECT * FROM chat_messages WHERE room=? AND id>? AND pinned=0 ORDER BY id ASC LIMIT 60',
         [room, since]
     );
-    const parsed = rows.map(r => ({ ...r, reactions: JSON.parse(r.reactions || '{}') }));
-    res.json(parsed);
+    res.json({ messages: rows.map(parseChatMsg), pinned: pinned.map(parseChatMsg) });
 });
 
+// POST message
 app.post('/api/chat/messages', chatPostLimiter, (req, res) => {
-    const { message, room, reply_to } = req.body;
-    if (!message?.trim()) return res.status(400).json({ error: 'Tin nhắn trống' });
-    if (message.trim().length > 500) return res.status(400).json({ error: 'Tối đa 500 ký tự' });
+    const { message, room, reply_to, msg_type, sticker } = req.body;
+    const roomName = (room || 'general').slice(0, 30);
 
     const token = getAuthToken(req);
     let userId = null, username = 'Khách', avatar = '', role = 'guest';
@@ -1246,18 +1268,39 @@ app.post('/api/chat/messages', chatPostLimiter, (req, res) => {
         }
     }
 
-    // Guest name từ body nếu chưa đăng nhập
+    // VIP room guard
+    if (VIP_ROOMS.includes(roomName)) {
+        if (!userId || (role !== 'vip' && role !== 'admin')) {
+            return res.status(403).json({ error: 'VIP only', upgradeUrl: '/payment.html' });
+        }
+    }
+
+    // Sticker: chỉ user đăng nhập
+    const type = msg_type || 'text';
+    if (type === 'sticker' && !userId) return res.status(401).json({ error: 'Đăng nhập để gửi sticker' });
+    if (type === 'donate' && !userId) return res.status(401).json({ error: 'Đăng nhập để donate' });
+
+    // Validate
+    if (type === 'text' || type === 'donate') {
+        if (!message?.trim()) return res.status(400).json({ error: 'Tin nhắn trống' });
+        if (message.trim().length > 500) return res.status(400).json({ error: 'Tối đa 500 ký tự' });
+    }
+    if (type === 'sticker' && !sticker) return res.status(400).json({ error: 'Thiếu sticker' });
+
+    // Guest name
     if (!userId && req.body.guestName?.trim()) {
         username = req.body.guestName.trim().slice(0, 30) + ' (khách)';
     }
 
-    run('INSERT INTO chat_messages (user_id, username, avatar, role, room, message, reply_to) VALUES (?,?,?,?,?,?,?)',
-        [userId, username, avatar, role, (room||'general').slice(0,30), message.trim().slice(0,500), reply_to || null]);
+    const msgText = type === 'sticker' ? '' : (message || '').trim().slice(0, 500);
+    run('INSERT INTO chat_messages (user_id, username, avatar, role, room, message, msg_type, reply_to, sticker) VALUES (?,?,?,?,?,?,?,?,?)',
+        [userId, username, avatar, role, roomName, msgText, type, reply_to || null, sticker || '']);
 
     const msg = get('SELECT * FROM chat_messages ORDER BY id DESC LIMIT 1');
-    res.status(201).json({ ...msg, reactions: {} });
+    res.status(201).json(parseChatMsg(msg));
 });
 
+// React
 app.post('/api/chat/messages/:id/react', (req, res) => {
     const id = parseInt(req.params.id);
     const { emoji } = req.body;
@@ -1271,8 +1314,40 @@ app.post('/api/chat/messages/:id/react', (req, res) => {
     res.json({ reactions });
 });
 
+// Pin / Unpin — admin only
+app.post('/api/chat/messages/:id/pin', requireAdmin, (req, res) => {
+    const id = parseInt(req.params.id);
+    const { pin } = req.body; // true/false
+    run('UPDATE chat_messages SET pinned=? WHERE id=?', [pin ? 1 : 0, id]);
+    res.json({ ok: true, pinned: !!pin });
+});
+
+// Delete — admin only
 app.delete('/api/chat/messages/:id', requireAdmin, (req, res) => {
     run('DELETE FROM chat_messages WHERE id=?', [parseInt(req.params.id)]);
+    res.json({ ok: true });
+});
+
+// GET ads
+app.get('/api/chat/ads', (req, res) => {
+    const ads = all('SELECT * FROM chat_ads WHERE active=1 ORDER BY RANDOM() LIMIT 1');
+    res.json(ads[0] || null);
+});
+
+// CRUD ads — admin
+app.post('/api/chat/ads', requireAdmin, (req, res) => {
+    const { text, url } = req.body;
+    if (!text?.trim()) return res.status(400).json({ error: 'Thiếu text' });
+    run('INSERT INTO chat_ads (text, url) VALUES (?,?)', [text.trim().slice(0,200), (url||'').trim()]);
+    res.status(201).json(get('SELECT * FROM chat_ads ORDER BY id DESC LIMIT 1'));
+});
+app.patch('/api/chat/ads/:id', requireAdmin, (req, res) => {
+    const { active } = req.body;
+    run('UPDATE chat_ads SET active=? WHERE id=?', [active ? 1 : 0, parseInt(req.params.id)]);
+    res.json({ ok: true });
+});
+app.delete('/api/chat/ads/:id', requireAdmin, (req, res) => {
+    run('DELETE FROM chat_ads WHERE id=?', [parseInt(req.params.id)]);
     res.json({ ok: true });
 });
 

@@ -172,16 +172,30 @@ async function getDb() {
             role TEXT DEFAULT 'free',
             room TEXT NOT NULL DEFAULT 'general',
             message TEXT NOT NULL,
+            msg_type TEXT DEFAULT 'text',
             reply_to INTEGER DEFAULT NULL,
             reactions TEXT DEFAULT '{}',
+            pinned INTEGER DEFAULT 0,
+            sticker TEXT DEFAULT '',
             created_at DATETIME DEFAULT (datetime('now'))
         );
+        CREATE TABLE IF NOT EXISTS chat_ads (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            text TEXT NOT NULL,
+            url TEXT DEFAULT '',
+            active INTEGER DEFAULT 1,
+            created_at DATETIME DEFAULT (datetime('now'))
+        );
+        INSERT OR IGNORE INTO chat_ads (id, text, url) VALUES (1, '👑 Nâng VIP 99k/tháng — Dùng không giới hạn AI Tools + Chat VIP riêng!', '/payment.html');
     `);
     // Migrate: thêm cột mới nếu chưa có (cho DB cũ)
     try { db.exec(`ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'free'`); } catch(e) {}
     try { db.exec(`ALTER TABLE users ADD COLUMN oauth_provider TEXT DEFAULT ''`); } catch(e) {}
     try { db.exec(`ALTER TABLE users ADD COLUMN oauth_id TEXT DEFAULT ''`); } catch(e) {}
     try { db.exec(`ALTER TABLE users ADD COLUMN avatar TEXT DEFAULT ''`); } catch(e) {}
+    try { db.exec(`ALTER TABLE chat_messages ADD COLUMN msg_type TEXT DEFAULT 'text'`); } catch(e) {}
+    try { db.exec(`ALTER TABLE chat_messages ADD COLUMN pinned INTEGER DEFAULT 0`); } catch(e) {}
+    try { db.exec(`ALTER TABLE chat_messages ADD COLUMN sticker TEXT DEFAULT ''`); } catch(e) {}
 
     save();
     return db;
