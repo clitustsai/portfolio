@@ -53,8 +53,10 @@ function incUsage(key) {
 function updateUsageUI() {
   var crLeft = window._isVip ? Infinity : Math.max(0, 3 - getUsage('cr'));
   var cvLeft = window._isVip ? Infinity : Math.max(0, 3 - getUsage('cv'));
+  var imgLeft = window._isVip ? Infinity : Math.max(0, 3 - getUsage('img'));
   var crEl = document.getElementById('cr-usage');
   var cvEl = document.getElementById('cv-usage');
+  var imgEl = document.getElementById('img-usage');
   if (crEl) {
     crEl.textContent = window._isVip ? '∞' : crLeft;
     crEl.style.color = (!window._isVip && crLeft === 0) ? '#f5576c' : (!window._isVip && crLeft === 1) ? '#f59e0b' : 'var(--g1)';
@@ -62,6 +64,10 @@ function updateUsageUI() {
   if (cvEl) {
     cvEl.textContent = window._isVip ? '∞' : cvLeft;
     cvEl.style.color = (!window._isVip && cvLeft === 0) ? '#f5576c' : (!window._isVip && cvLeft === 1) ? '#f59e0b' : 'var(--g1)';
+  }
+  if (imgEl) {
+    imgEl.textContent = window._isVip ? '∞' : imgLeft;
+    imgEl.style.color = (!window._isVip && imgLeft === 0) ? '#f5576c' : (!window._isVip && imgLeft === 1) ? '#f59e0b' : 'var(--g1)';
   }
 }
 
@@ -364,3 +370,163 @@ async function _loadToolsCoins() {
     if (cnt) cnt.textContent = d.coins || 0;
   } catch(e) {}
 }
+
+// ===== AI IMAGE ANALYZER =====
+let _imgBase64 = null;
+
+function handleImgFile(file) {
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { alert('Ảnh quá lớn! Tối đa 5MB.'); return; }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    _imgBase64 = e.target.result; // data:image/...;base64,...
+    document.getElementById('img-preview').src = _imgBase64;
+    document.getElementById('img-preview-wrap').style.display = 'block';
+    document.getElementById('img-file-info').textContent = file.name + ' · ' + (file.size/1024).toFixed(0) + ' KB';
+    document.getElementById('img-btn').disabled = false;
+    // Drag zone feedback
+    const zone = document.getElementById('img-drop-zone');
+    zone.style.borderColor = '#667eea';
+    zone.innerHTML = '<div style="font-size:1.5rem;color:#667eea;font-weight:700;">✅ Ảnh đã tải lên</div><div style="font-size:.8rem;color:#999;margin-top:.25rem;">Click để đổi ảnh khác</div><input type="file" id="img-file" accept="image/*" style="display:none" onchange="handleImgFile(this.files[0])">';
+    zone.onclick = function() { document.getElementById('img-file').click(); };
+  };
+  reader.readAsDataURL(file);
+}
+
+// Drag & drop
+document.addEventListener('DOMContentLoaded', function() {
+  const zone = document.getElementById('img-drop-zone');
+  if (!zone) return;
+  zone.addEventListener('dragover', function(e) { e.preventDefault(); zone.classList.add('dragover'); });
+  zone.addEventListener('dragleave', function() { zone.classList.remove('dragover'); });
+  zone.addEventListener('drop', function(e) {
+    e.preventDefault(); zone.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) handleImgFile(file);
+  });
+});
+
+async function runImageAI() {
+  if (!isLoggedIn()) { openAuthModal('login'); return; }
+  if (!_imgBase64) { document.getElementById('img-error').textContent = '⚠️ Vui lòng chọn ảnh trước.'; document.getElementById('img-error').classList.add('show'); return; }
+  if (!window._isVip && getUsage('img') >= 3) {
+    const extras = JSON.parse(localStorage.getItem('coin_extras') || '{}');
+    if (extras.img > 0) { extras.img--; localStorage.setItem('coin_extras', JSON.stringify(extras)); }
+    else { showUpsellModal('AI Image Analyzer'); return; }
+  }
+  const btn = document.getElementById('img-btn');
+  const errBox = document.getElementById('img-error');
+  const resultBox = document.getElementById('img-result');
+  errBox.classList.remove('show'); resultBox.classList.remove('show');
+  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang phân tích...';
+  try {
+    const mode = document.getElementById('img-mode').value;
+    const lang = document.getElementById('img-lang').value;
+    const question = document.getElementById('img-question').value.trim();
+    const res = await fetch(API_BASE + '/tools/image-analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
+      body: JSON.stringify({ imageBase64: _imgBase64, mode, lang, question })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      if (res.status === 429) { showUpsellModal('AI Image Analyzer'); return; }
+      if (res.status === 401) { openAuthModal('login'); return; }
+      errBox.textContent = '❌ ' + data.error; errBox.classList.add('show'); return;
+    }
+    if (!data.isVip) incUsage('img');
+    updateUsageUI();
+    document.getElementById('img-result-body').textContent = data.result;
+    resultBox.classList.add('show');
+    resultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    // Save history
+    try { fetch(API_BASE + '/user/ai-history', { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+getToken()}, body:JSON.stringify({tool:'img',input:'[image]'}) }); } catch(e){}
+  } catch(e) {
+    errBox.textContent = '❌ Lỗi kết nối. Vui lòng thử lại.'; errBox.classList.add('show');
+  } finally {
+    btn.disabled = false; btn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Phân Tích Ảnh';
+  }
+}
+
+function copyImgResult() {
+  const text = document.getElementById('img-result-body').textContent;
+  navigator.clipboard.writeText(text).then(function() { showToast('✓ Đã copy kết quả!', 'success', 2000); });
+}
+
+// ===== SMART NOTIFICATIONS =====
+function initSmartNotifications() {
+  if (!isLoggedIn()) return;
+  // Chạy sau 4 giây để không làm phiền ngay khi load
+  setTimeout(_checkAndNotify, 4000);
+}
+
+async function _checkAndNotify() {
+  try {
+    const token = getToken();
+    const r = await fetch(API_BASE + '/user/dashboard', { headers: { 'Authorization': 'Bearer ' + token } });
+    if (!r.ok) return;
+    const d = await r.json();
+
+    const msgs = [];
+
+    // 1. Daily reward chưa nhận
+    if (!d.dailyClaimed) {
+      msgs.push({ icon:'🎁', title:'Daily Reward chờ bạn!', body:'Nhận coin miễn phí hôm nay — streak càng cao thưởng càng nhiều', cta:'Nhận ngay', url:'arcade.html', color:'#f59e0b', priority:1 });
+    }
+
+    // 2. Còn ít lượt free
+    const crUsed = d.usage?.cr || 0;
+    const cvUsed = d.usage?.cv || 0;
+    const imgUsed = d.usage?.img || 0;
+    if (!d.isVip) {
+      if (crUsed === 2) msgs.push({ icon:'⚠️', title:'Còn 1 lượt Code Review!', body:'Bạn đã dùng 2/3 lượt miễn phí hôm nay. Nâng VIP để dùng không giới hạn.', cta:'Nâng VIP', url:'payment.html', color:'#f5576c', priority:2 });
+      if (crUsed >= 3 && cvUsed >= 3) msgs.push({ icon:'🔒', title:'Hết lượt miễn phí hôm nay', body:'Nâng cấp VIP 99k/tháng để dùng không giới hạn tất cả AI tools.', cta:'Xem VIP', url:'payment.html', color:'#667eea', priority:3 });
+    }
+
+    // 3. Coin thấp
+    if (d.coins < 20 && d.coins >= 0) {
+      msgs.push({ icon:'🪙', title:'Coin sắp hết!', body:`Bạn còn ${d.coins} coin. Chơi game để kiếm thêm coin mở AI tools.`, cta:'Chơi game', url:'arcade.html', color:'#fbbf24', priority:4 });
+    }
+
+    // 4. VIP sắp hết hạn
+    if (d.isVip && d.daysLeft !== null && d.daysLeft <= 3) {
+      msgs.push({ icon:'👑', title:`VIP còn ${d.daysLeft} ngày!`, body:'Gia hạn ngay để không bị gián đoạn. Ưu đãi đặc biệt cho khách hàng cũ.', cta:'Gia hạn', url:'payment.html', color:'#f59e0b', priority:0 });
+    }
+
+    if (!msgs.length) return;
+    // Hiện notification ưu tiên cao nhất
+    msgs.sort((a,b) => a.priority - b.priority);
+    _showSmartNotif(msgs[0]);
+  } catch(e) {}
+}
+
+function _showSmartNotif(n) {
+  if (document.getElementById('smart-notif')) return; // đã có rồi
+  const el = document.createElement('div');
+  el.id = 'smart-notif';
+  el.style.cssText = `position:fixed;bottom:24px;right:24px;z-index:99997;max-width:320px;width:calc(100vw - 48px);
+    background:#fff;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.2);
+    border-left:4px solid ${n.color};padding:1rem 1.25rem;
+    animation:notifSlideIn .4s cubic-bezier(0.4,0,0.2,1);`;
+  el.innerHTML = `
+    <style>@keyframes notifSlideIn{from{opacity:0;transform:translateX(60px)}to{opacity:1;transform:translateX(0)}}</style>
+    <div style="display:flex;align-items:flex-start;gap:.75rem;">
+      <div style="font-size:1.8rem;flex-shrink:0;line-height:1;">${n.icon}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-weight:800;font-size:.9rem;color:#1a1a2e;margin-bottom:.2rem;">${n.title}</div>
+        <div style="font-size:.78rem;color:#666;line-height:1.5;margin-bottom:.65rem;">${n.body}</div>
+        <div style="display:flex;gap:.5rem;align-items:center;">
+          <a href="${n.url}" style="background:${n.color};color:#fff;border-radius:50px;padding:.35rem .9rem;font-size:.78rem;font-weight:800;text-decoration:none;transition:opacity .2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">${n.cta} →</a>
+          <button onclick="document.getElementById('smart-notif').remove()" style="background:none;border:none;color:#bbb;cursor:pointer;font-size:.8rem;padding:.2rem .5rem;border-radius:50px;transition:all .2s;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='none'">✕ Bỏ qua</button>
+        </div>
+      </div>
+    </div>`;
+  document.body.appendChild(el);
+  // Tự đóng sau 8 giây
+  setTimeout(() => { if (el.parentNode) { el.style.animation = 'notifSlideIn .3s reverse'; setTimeout(() => el.remove(), 300); } }, 8000);
+}
+
+// Gọi smart notifications khi load
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(initSmartNotifications, 100);
+});

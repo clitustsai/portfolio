@@ -1017,6 +1017,71 @@ app.post('/api/tools/video-script', async (req, res) => {
     }
 });
 
+// ========== AI IMAGE ANALYZE ==========
+app.post('/api/tools/image-analyze', async (req, res) => {
+    const { imageBase64, mode, lang, question } = req.body;
+    if (!imageBase64) return res.status(400).json({ error: 'Thiếu ảnh' });
+
+    const token = getAuthToken(req);
+    if (!token) return res.status(401).json({ error: 'Vui lòng đăng nhập' });
+    const payload = verifyJWT(token);
+    if (!payload) return res.status(401).json({ error: 'Phiên đăng nhập hết hạn' });
+
+    const isVip = checkVIP(payload.id);
+    if (!isVip) {
+        const count = getToolUsage(payload.id, 'img');
+        if (count >= 3) return res.status(429).json({ error: 'Hết lượt miễn phí hôm nay (3 lần). Nâng cấp VIP để dùng không giới hạn.', upgradeUrl: '/payment.html' });
+    }
+
+    const modePrompts = {
+        describe: 'Mô tả chi tiết nội dung ảnh này: màu sắc, đối tượng, bối cảnh, cảm xúc, chi tiết đáng chú ý.',
+        identify: 'Nhận diện và liệt kê tất cả đối tượng, vật thể, con người, động vật trong ảnh. Ước tính số lượng nếu có nhiều.',
+        text: 'Đọc và trích xuất toàn bộ văn bản, chữ viết có trong ảnh. Giữ nguyên định dạng nếu có thể.',
+        emotion: 'Phân tích cảm xúc, tâm trạng trong ảnh: biểu cảm khuôn mặt, ngôn ngữ cơ thể, không khí tổng thể.',
+        scene: 'Phân tích cảnh vật: địa điểm, thời gian trong ngày, thời tiết, phong cách kiến trúc, môi trường.',
+        code: 'Đọc và trích xuất toàn bộ code, công thức, sơ đồ kỹ thuật trong ảnh. Giữ nguyên cú pháp.'
+    };
+
+    const langNote = lang === 'en' ? 'Respond in English.' : 'Trả lời bằng tiếng Việt.';
+    const modeInstruction = modePrompts[mode] || modePrompts.describe;
+    const userPrompt = question ? `${modeInstruction}\n\nCâu hỏi thêm: ${question}` : modeInstruction;
+
+    try {
+        const apiKey = process.env.OPENROUTER_API_KEY;
+        if (!apiKey) return res.status(503).json({ error: 'API chưa cấu hình' });
+
+        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`,
+                'HTTP-Referer': 'https://portfolio-utbu.onrender.com',
+                'X-Title': 'Clitus PC Image AI'
+            },
+            body: JSON.stringify({
+                model: 'openai/gpt-4o-mini',
+                messages: [
+                    { role: 'system', content: `Bạn là AI chuyên phân tích hình ảnh. ${langNote}` },
+                    { role: 'user', content: [
+                        { type: 'text', text: userPrompt },
+                        { type: 'image_url', image_url: { url: imageBase64, detail: 'auto' } }
+                    ]}
+                ],
+                max_tokens: 1000
+            })
+        });
+        const data = await response.json();
+        if (data.error) throw new Error(data.error.message || 'AI error');
+        const result = data?.choices?.[0]?.message?.content || 'Không thể phân tích ảnh này.';
+
+        if (!isVip) incToolUsage(payload.id, 'img');
+        saveAiHistory(payload.id, 'img', '[image]');
+        res.json({ ok: true, result, isVip });
+    } catch(err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // ========== USER PROFILE UPDATE ==========
 app.put('/api/auth/profile', requireUser, (req, res) => {
     const { nickname, avatar } = req.body;
