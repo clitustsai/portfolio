@@ -414,6 +414,7 @@ html[data-theme="dark"] .pricing-feature { color:#bbb; }
 </footer>
 
 <script>
+// v2 - fixed
 const API = '';
 
 // ===== TABS =====
@@ -441,10 +442,12 @@ function incUsage(key) {
 }
 function updateUsageUI() {
   const crUsed = getUsage('cr'); const cvUsed = getUsage('cv');
-  document.getElementById('cr-usage').textContent = Math.max(0, 3 - crUsed);
-  document.getElementById('cv-usage').textContent = Math.max(0, 3 - cvUsed);
+  const crEl = document.getElementById('cr-usage');
+  const cvEl = document.getElementById('cv-usage');
+  if (crEl) crEl.textContent = Math.max(0, 3 - crUsed);
+  if (cvEl) cvEl.textContent = Math.max(0, 3 - cvUsed);
 }
-updateUsageUI();
+document.addEventListener('DOMContentLoaded', updateUsageUI);
 
 // ===== CODE REVIEW =====
 async function runCodeReview() {
