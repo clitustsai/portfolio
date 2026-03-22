@@ -187,19 +187,19 @@
   .vip-glow{
     position:absolute;top:-50%;left:-50%;width:200%;height:200%;
     background:radial-gradient(circle at 50% 30%,rgba(245,158,11,0.15),transparent 60%);
-    pointer-events:none;
+    pointer-events:none;z-index:0;
     animation:vipPulse 3s ease-in-out infinite;
   }
   @keyframes vipPulse{0%,100%{opacity:0.6}50%{opacity:1}}
-  .vip-crown{font-size:3rem;margin-bottom:0.5rem;position:relative;animation:crownFloat 3s ease-in-out infinite;}
+  .vip-crown{font-size:3rem;margin-bottom:0.5rem;position:relative;z-index:1;animation:crownFloat 3s ease-in-out infinite;}
   @keyframes crownFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
   .vip-badge-label{
     display:inline-block;background:linear-gradient(135deg,#f59e0b,#d97706);
     color:#fff;font-size:0.7rem;font-weight:900;letter-spacing:0.15em;
     padding:0.3rem 1rem;border-radius:50px;margin-bottom:1.25rem;
-    text-transform:uppercase;position:relative;
+    text-transform:uppercase;position:relative;z-index:1;
   }
-  .vip-price-wrap{margin-bottom:1.5rem;position:relative;}
+  .vip-price-wrap{margin-bottom:1.5rem;position:relative;z-index:1;}
   .vip-price{
     font-size:2.5rem;font-weight:900;
     background:linear-gradient(135deg,#f59e0b,#fbbf24,#f59e0b);
@@ -209,7 +209,7 @@
   }
   @keyframes goldShift{0%{background-position:0% center}100%{background-position:200% center}}
   .vip-unit{font-size:0.85rem;color:rgba(255,255,255,0.5);display:block;margin-top:0.2rem;}
-  .vip-perks{list-style:none;text-align:left;margin-bottom:1.75rem;position:relative;}
+  .vip-perks{list-style:none;text-align:left;margin-bottom:1.75rem;position:relative;z-index:1;}
   .vip-perks li{
     display:flex;align-items:center;gap:0.75rem;
     padding:0.6rem 0;border-bottom:1px solid rgba(255,255,255,0.07);
@@ -222,12 +222,10 @@
     background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;
     font-size:1rem;font-weight:800;display:flex;align-items:center;justify-content:center;gap:0.6rem;
     box-shadow:0 8px 28px rgba(245,158,11,0.45);transition:all 0.25s;
-    position:relative;overflow:hidden;
+    position:relative;z-index:2;
   }
-  .vip-btn::before{content:'';position:absolute;inset:0;background:rgba(255,255,255,0.15);transform:translateX(-100%);transition:transform 0.5s ease;}
-  .vip-btn:hover::before{transform:translateX(100%);}
   .vip-btn:hover{transform:translateY(-3px);box-shadow:0 14px 40px rgba(245,158,11,0.55);}
-  .vip-note{font-size:0.75rem;color:rgba(255,255,255,0.4);margin-top:0.75rem;position:relative;}
+  .vip-note{font-size:0.75rem;color:rgba(255,255,255,0.4);margin-top:0.75rem;position:relative;z-index:1;}
 
   /* Compare table */
   .vip-compare{background:var(--card);border-radius:24px;padding:1.75rem;border:1px solid var(--border);box-shadow:0 4px 24px rgba(0,0,0,0.06);}
@@ -375,7 +373,7 @@
   <!-- VIP MEMBERSHIP -->
   <div id="vip" class="section-head">
     <div class="eyebrow">👑 Membership</div>
-    <h2>Gói VIP — 1.000.000 VNĐ/tháng</h2>
+    <h2>Gói VIP — 99.000 VNĐ/tháng</h2>
     <p>Truy cập toàn bộ source code, tải không giới hạn, nội dung độc quyền</p>
   </div>
 
@@ -386,7 +384,7 @@
       <div class="vip-crown">👑</div>
       <div class="vip-badge-label">VIP MEMBER</div>
       <div class="vip-price-wrap">
-        <span class="vip-price">1.000.000</span>
+        <span class="vip-price">99.000</span>
         <span class="vip-unit">VNĐ / tháng</span>
       </div>
       <ul class="vip-perks">
