@@ -1,13 +1,12 @@
 // tools.js — AI Tools logic (tách ra khỏi HTML để tránh parse errors)
-// v5 — auth required, server-side usage tracking
+// v6 — dùng auth.js cho auth, không duplicate
 
-var API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
-  ? 'http://localhost:3001/api' : (location.origin + '/api');
-
-// ===== AUTH HELPERS =====
-function getToken()   { return localStorage.getItem('user_token'); }
-function getUser()    { try { return JSON.parse(localStorage.getItem('user_info')); } catch(e) { return null; } }
-function isLoggedIn() { return !!getToken() && !!getUser(); }
+// ===== AUTH SUCCESS CALLBACK (được gọi từ auth.js sau login/register) =====
+function onToolsAuthSuccess(user) {
+  document.querySelectorAll('.tools-tabs,.tools-main,.pricing-section').forEach(function(el) { el.style.display = ''; });
+  checkVipStatus(user.email);
+  updateUsageUI();
+}
 
 // ===== VIP CHECK =====
 async function checkVipStatus(email) {
@@ -92,154 +91,6 @@ function showToast(msg, type, dur) {
     t.style.animation = 'slideOutToastRight .3s ease';
     setTimeout(function() { t.remove(); }, 300);
   }, dur);
-}
-
-// ===== AUTH MODAL =====
-function showAuthModal(msg) {
-  if (document.getElementById('auth-modal')) return;
-  var modal = document.createElement('div');
-  modal.id = 'auth-modal';
-  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;';
-
-  var box = document.createElement('div');
-  box.style.cssText = 'background:#fff;border-radius:24px;width:100%;max-width:400px;box-shadow:0 30px 80px rgba(0,0,0,.4);overflow:hidden;';
-
-  var header = document.createElement('div');
-  header.style.cssText = 'background:linear-gradient(135deg,#667eea,#764ba2);padding:2rem;text-align:center;';
-  header.innerHTML = '<div style="font-size:2.5rem;margin-bottom:.5rem;">🤖</div>' +
-    '<h2 style="color:#fff;font-size:1.2rem;font-weight:900;margin:0 0 .25rem;">AI Tools — Clitus PC</h2>' +
-    '<p style="color:rgba(255,255,255,.8);font-size:.82rem;margin:0;">' + (msg || 'Đăng nhập để sử dụng AI Tools miễn phí') + '</p>';
-
-  var tabs = document.createElement('div');
-  tabs.style.cssText = 'display:flex;border-bottom:2px solid #f0f0f0;';
-  tabs.innerHTML = '<button id="auth-tab-login" onclick="switchAuthTab(\'login\')" style="flex:1;padding:.85rem;border:none;background:#fff;font-size:.9rem;font-weight:700;color:#667eea;cursor:pointer;border-bottom:2px solid #667eea;margin-bottom:-2px;">Đăng Nhập</button>' +
-    '<button id="auth-tab-reg" onclick="switchAuthTab(\'register\')" style="flex:1;padding:.85rem;border:none;background:#fff;font-size:.9rem;font-weight:700;color:#999;cursor:pointer;">Đăng Ký</button>';
-
-  var inputStyle = 'padding:.75rem 1rem;border:1.5px solid #e0e4ff;border-radius:12px;font-size:.9rem;font-family:inherit;outline:none;width:100%;box-sizing:border-box;';
-  var btnStyle = 'width:100%;margin-top:1rem;padding:.9rem;border:none;border-radius:50px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:.95rem;font-weight:800;cursor:pointer;box-shadow:0 6px 20px rgba(102,126,234,.4);';
-
-  var loginForm = document.createElement('div');
-  loginForm.id = 'auth-form-login';
-  loginForm.style.padding = '1.5rem';
-  loginForm.innerHTML = '<div style="display:flex;flex-direction:column;gap:.75rem;">' +
-    '<input id="al-email" type="email" placeholder="Email *" style="' + inputStyle + '">' +
-    '<input id="al-pass" type="password" placeholder="Mật khẩu *" style="' + inputStyle + '">' +
-    '</div>' +
-    '<div id="al-err" style="display:none;color:#dc2626;font-size:.82rem;margin:.65rem 0 0;background:#fff5f5;border-radius:8px;padding:.5rem .75rem;"></div>' +
-    '<button id="al-btn" onclick="doLogin()" style="' + btnStyle + '">Đăng Nhập</button>' +
-    '<p style="text-align:center;font-size:.8rem;color:#999;margin:.75rem 0 0;">Chưa có tài khoản? <a onclick="switchAuthTab(\'register\')" style="color:#667eea;font-weight:700;cursor:pointer;">Đăng ký ngay</a></p>';
-
-  var regForm = document.createElement('div');
-  regForm.id = 'auth-form-reg';
-  regForm.style.cssText = 'display:none;padding:1.5rem;';
-  regForm.innerHTML = '<div style="display:flex;flex-direction:column;gap:.75rem;">' +
-    '<input id="ar-name" type="text" placeholder="Tên đăng nhập *" style="' + inputStyle + '">' +
-    '<input id="ar-email" type="email" placeholder="Email *" style="' + inputStyle + '">' +
-    '<input id="ar-pass" type="password" placeholder="Mật khẩu (tối thiểu 6 ký tự) *" style="' + inputStyle + '">' +
-    '</div>' +
-    '<div id="ar-err" style="display:none;color:#dc2626;font-size:.82rem;margin:.65rem 0 0;background:#fff5f5;border-radius:8px;padding:.5rem .75rem;"></div>' +
-    '<button id="ar-btn" onclick="doRegister()" style="' + btnStyle + '">Tạo Tài Khoản</button>' +
-    '<p style="text-align:center;font-size:.8rem;color:#999;margin:.75rem 0 0;">Đã có tài khoản? <a onclick="switchAuthTab(\'login\')" style="color:#667eea;font-weight:700;cursor:pointer;">Đăng nhập</a></p>';
-
-  box.appendChild(header);
-  box.appendChild(tabs);
-  box.appendChild(loginForm);
-  box.appendChild(regForm);
-  modal.appendChild(box);
-  document.body.appendChild(modal);
-}
-
-function switchAuthTab(tab) {
-  var isLogin = (tab === 'login');
-  document.getElementById('auth-form-login').style.display = isLogin ? 'block' : 'none';
-  document.getElementById('auth-form-reg').style.display = isLogin ? 'none' : 'block';
-  var base = 'flex:1;padding:.85rem;border:none;background:#fff;font-size:.9rem;font-weight:700;cursor:pointer;';
-  document.getElementById('auth-tab-login').style.cssText = base + (isLogin ? 'color:#667eea;border-bottom:2px solid #667eea;margin-bottom:-2px;' : 'color:#999;');
-  document.getElementById('auth-tab-reg').style.cssText = base + (!isLogin ? 'color:#667eea;border-bottom:2px solid #667eea;margin-bottom:-2px;' : 'color:#999;');
-}
-
-async function doLogin() {
-  var email = document.getElementById('al-email').value.trim();
-  var pass = document.getElementById('al-pass').value;
-  var errEl = document.getElementById('al-err');
-  var btn = document.getElementById('al-btn');
-  errEl.style.display = 'none';
-  if (!email || !pass) { errEl.textContent = '⚠️ Vui lòng nhập đầy đủ.'; errEl.style.display = 'block'; return; }
-  btn.disabled = true; btn.textContent = 'Đang đăng nhập...';
-  try {
-    var r = await fetch(API_BASE + '/auth/login', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email, password: pass })
-    });
-    var d = await r.json();
-    if (!r.ok) throw new Error(d.error);
-    localStorage.setItem('user_token', d.token);
-    localStorage.setItem('user_info', JSON.stringify(d.user));
-    document.getElementById('auth-modal').remove();
-    onAuthSuccess(d.user);
-  } catch(e) {
-    errEl.textContent = '❌ ' + e.message; errEl.style.display = 'block';
-    btn.disabled = false; btn.textContent = 'Đăng Nhập';
-  }
-}
-
-async function doRegister() {
-  var name = document.getElementById('ar-name').value.trim();
-  var email = document.getElementById('ar-email').value.trim();
-  var pass = document.getElementById('ar-pass').value;
-  var errEl = document.getElementById('ar-err');
-  var btn = document.getElementById('ar-btn');
-  errEl.style.display = 'none';
-  if (!name || !email || !pass) { errEl.textContent = '⚠️ Vui lòng nhập đầy đủ.'; errEl.style.display = 'block'; return; }
-  if (pass.length < 6) { errEl.textContent = '⚠️ Mật khẩu tối thiểu 6 ký tự.'; errEl.style.display = 'block'; return; }
-  btn.disabled = true; btn.textContent = 'Đang tạo tài khoản...';
-  try {
-    var r = await fetch(API_BASE + '/auth/register', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: name, email: email, password: pass })
-    });
-    var d = await r.json();
-    if (!r.ok) throw new Error(d.error);
-    localStorage.setItem('user_token', d.token);
-    localStorage.setItem('user_info', JSON.stringify(d.user));
-    document.getElementById('auth-modal').remove();
-    onAuthSuccess(d.user);
-  } catch(e) {
-    errEl.textContent = '❌ ' + e.message; errEl.style.display = 'block';
-    btn.disabled = false; btn.textContent = 'Tạo Tài Khoản';
-  }
-}
-
-function onAuthSuccess(user) {
-  document.querySelectorAll('.tools-tabs,.tools-main,.pricing-section').forEach(function(el) { el.style.display = ''; });
-  checkVipStatus(user.email);
-  renderLogoutBtn(user);
-  var badge = document.getElementById('vip-status-badge');
-  if (badge) { badge.style.display = ''; badge.textContent = '🆓 Free (3 lượt/ngày)'; }
-  showToast('✓ Chào mừng ' + user.username + '!', 'success', 3000);
-}
-
-function renderLogoutBtn(user) {
-  var slot = document.getElementById('tools-user-slot');
-  if (!slot) return;
-  var span = document.createElement('span');
-  span.style.cssText = 'font-size:.82rem;color:rgba(255,255,255,.8);margin-right:.5rem;';
-  span.textContent = user.username;
-  var btn = document.createElement('button');
-  btn.style.cssText = 'background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:50px;padding:.35rem .85rem;font-size:.78rem;font-weight:700;cursor:pointer;';
-  btn.textContent = 'Đăng xuất';
-  btn.onclick = doLogout;
-  slot.innerHTML = '';
-  slot.appendChild(span);
-  slot.appendChild(btn);
-}
-
-async function doLogout() {
-  var token = getToken();
-  if (token) { try { await fetch(API_BASE + '/auth/logout', { method: 'POST', headers: { 'x-user-token': token } }); } catch(e) {} }
-  localStorage.removeItem('user_token');
-  localStorage.removeItem('user_info');
-  location.reload();
 }
 
 // ===== UPSELL MODAL =====
@@ -341,7 +192,7 @@ async function submitUpsell() {
 
 // ===== CODE REVIEW =====
 async function runCodeReview() {
-  if (!isLoggedIn()) { showAuthModal(); return; }
+  if (!isLoggedIn()) { openAuthModal('login'); return; }
   var code = document.getElementById('cr-code').value.trim();
   var lang = document.getElementById('cr-lang').value;
   var btn = document.getElementById('cr-btn');
@@ -360,7 +211,7 @@ async function runCodeReview() {
     var data = await res.json();
     if (!res.ok) {
       if (res.status === 429) { showUpsellModal('AI Code Review'); return; }
-      if (res.status === 401) { showAuthModal('Phiên đăng nhập hết hạn, vui lòng đăng nhập lại'); return; }
+      if (res.status === 401) { openAuthModal('login'); return; }
       errBox.textContent = '❌ ' + data.error; errBox.classList.add('show'); return;
     }
     if (!data.isVip) incUsage('cr');
@@ -406,7 +257,7 @@ function copyReview() {
 // ===== CV GENERATOR =====
 var cvHTML = '';
 async function runCVGen() {
-  if (!isLoggedIn()) { showAuthModal(); return; }
+  if (!isLoggedIn()) { openAuthModal('login'); return; }
   var name = document.getElementById('cv-name').value.trim();
   var btn = document.getElementById('cv-btn');
   var errBox = document.getElementById('cv-error');
@@ -434,7 +285,7 @@ async function runCVGen() {
     var data = await res.json();
     if (!res.ok) {
       if (res.status === 429) { showUpsellModal('AI CV Generator'); return; }
-      if (res.status === 401) { showAuthModal('Phiên đăng nhập hết hạn, vui lòng đăng nhập lại'); return; }
+      if (res.status === 401) { openAuthModal('login'); return; }
       errBox.textContent = '❌ ' + data.error; errBox.classList.add('show'); return;
     }
     if (!data.isVip) incUsage('cv');
@@ -501,14 +352,14 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('click', function(e) { if (!dd.contains(e.target)) dd.classList.remove('open'); });
   });
 
-  // AUTH GATE
+  // AUTH GATE — auth.js đã handle updateNavAuth() qua DOMContentLoaded của nó
+  // Chỉ cần check VIP và usage nếu đã đăng nhập
   if (isLoggedIn()) {
     var user = getUser();
-    renderLogoutBtn(user);
     checkVipStatus(user.email);
     updateUsageUI();
   } else {
     document.querySelectorAll('.tools-tabs,.tools-main,.pricing-section').forEach(function(el) { el.style.display = 'none'; });
-    showAuthModal();
+    openAuthModal('login');
   }
 });

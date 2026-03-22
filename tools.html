@@ -8,6 +8,8 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="modern.css">
+<script src="api.js" defer></script>
+<script src="auth.js" defer></script>
 <style>
 :root { --g1:#667eea; --g2:#764ba2; --g3:#f093fb; }
 body { background: linear-gradient(135deg,#667eea 0%,#764ba2 100%); min-height:100vh; }
@@ -190,6 +192,7 @@ html[data-theme="dark"] .pricing-feature { color:#bbb; }
     </ul>
     <div class="nav-actions">
       <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+      <div class="nav-auth-slot"></div>
       <button class="nav-hamburger" id="navHamburger" aria-label="Menu"><span></span><span></span><span></span></button>
     </div>
   </nav>

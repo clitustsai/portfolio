@@ -332,6 +332,7 @@ async function handleLogin(e) {
         closeAuthModal();
         updateNavAuth();
         updateCommentForms();
+        if (typeof onToolsAuthSuccess === 'function') onToolsAuthSuccess(user);
         if (typeof showToast === 'function') showToast(`👋 Chào ${user.username}!`, 'success', 3000);
     } catch(err) {
         errEl.textContent = err.message;
@@ -357,6 +358,7 @@ async function handleRegister(e) {
         closeAuthModal();
         updateNavAuth();
         updateCommentForms();
+        if (typeof onToolsAuthSuccess === 'function') onToolsAuthSuccess(user);
         if (typeof showToast === 'function') showToast(`🎉 Đăng ký thành công! Chào ${user.username}!`, 'success', 4000);
     } catch(err) {
         errEl.textContent = err.message;
@@ -676,9 +678,6 @@ async function saveProfile() {
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-save"></i> Lưu thay đổi';
     }
-}
-        }
-    });
 }
 
 // ========== COMMENT FORM GUARD ==========
