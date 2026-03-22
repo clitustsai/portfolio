@@ -1,12 +1,15 @@
 {
   "name": "Clitus PC - Portfolio",
   "short_name": "Clitus PC",
-  "description": "Portfolio cá nhân của Clitus PC - Full Stack Developer",
+  "description": "Portfolio cá nhân của Clitus PC - Full Stack Developer. AI Tools, Arcade, Blog.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#667eea",
+  "background_color": "#0a0a1a",
   "theme_color": "#667eea",
   "orientation": "portrait-primary",
+  "lang": "vi",
+  "categories": ["portfolio", "developer", "technology", "productivity"],
   "icons": [
     {
       "src": "img/icon-192.png",
@@ -19,6 +22,35 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    },
+    {
+      "src": "img/icon-192.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "AI Tools",
+      "short_name": "AI Tools",
+      "description": "Mở AI Tools",
+      "url": "/tools.html",
+      "icons": [{ "src": "img/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Arcade",
+      "short_name": "Arcade",
+      "description": "Chơi game kiếm coin",
+      "url": "/arcade.html",
+      "icons": [{ "src": "img/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "Xem dashboard cá nhân",
+      "url": "/dashboard.html",
+      "icons": [{ "src": "img/icon-192.png", "sizes": "192x192" }]
     }
   ],
   "screenshots": [
@@ -28,7 +60,5 @@
       "type": "image/jpeg",
       "form_factor": "wide"
     }
-  ],
-  "categories": ["portfolio", "developer", "technology"],
-  "lang": "vi"
+  ]
 }
