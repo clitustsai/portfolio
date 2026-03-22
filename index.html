@@ -482,6 +482,7 @@
                 <i class="fas fa-moon"></i>
             </button>
             <button class="lang-toggle" id="langToggle" title="Switch language">🇻🇳</button>
+            <div class="nav-auth-slot"></div>
             <button class="nav-hamburger" id="navHamburger" aria-label="Menu">
                 <span></span><span></span><span></span>
             </button>
@@ -1050,6 +1051,7 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="i18n.js"></script>
     <script src="api.js"></script>
+    <script src="auth.js"></script>
     <script src="admin.js"></script>
     <script>
         // ===== TOAST =====
@@ -1441,27 +1443,30 @@
             if (!name||!text) { showToast('⚠️ Vui lòng điền đầy đủ thông tin!','error',3000); return; }
             if (!rating) { showToast('⭐ Vui lòng chọn số sao đánh giá!','warning',3000); return; }
 
+            // Kiểm tra đăng nhập
+            if (typeof isLoggedIn === 'function' && !isLoggedIn()) {
+                openAuthModal('login'); return;
+            }
+
             const submitBtn = feedbackForm.querySelector('.feedback-submit-btn');
             if (submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...'; }
 
             try {
-                // Gửi lên backend thật
-                const newComment = await postComment({
-                    name,
-                    email: document.getElementById('feedbackEmail').value.trim(),
-                    text,
-                    rating
-                });
+                let newComment = null;
+                // Dùng auth endpoint nếu đã đăng nhập
+                if (typeof postCommentAuth === 'function' && isLoggedIn()) {
+                    newComment = await postCommentAuth({ text, rating });
+                } else {
+                    newComment = await postComment({ name, email: document.getElementById('feedbackEmail').value.trim(), text, rating });
+                }
 
                 if (newComment) {
-                    // Backend thành công
                     interactionData.comments.unshift({
                         id: newComment.id, name: newComment.name, email: newComment.email || '',
                         text: newComment.text, rating: newComment.rating,
                         date: newComment.created_at, likes: 0, liked: false
                     });
                 } else {
-                    // Fallback localStorage
                     interactionData.comments.unshift({ id:Date.now(), name, email:document.getElementById('feedbackEmail').value.trim(), text, rating, date:new Date().toISOString(), likes:0, liked:false });
                 }
 

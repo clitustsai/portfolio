@@ -315,6 +315,90 @@ app.post('/api/push/send', requireAdmin, async (req, res) => {
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok', time: new Date().toISOString() }));
 
+// ========== USER AUTH ==========
+const crypto = require('crypto');
+
+function hashPassword(pw) {
+    return crypto.createHash('sha256').update(pw + 'clituspc_salt_2026').digest('hex');
+}
+function genToken() {
+    return crypto.randomBytes(32).toString('hex');
+}
+function requireUser(req, res, next) {
+    const token = req.headers['x-user-token'];
+    if (!token) return res.status(401).json({ error: 'Chưa đăng nhập' });
+    const session = get("SELECT * FROM user_sessions WHERE token=? AND expires_at > datetime('now')", [token]);
+    if (!session) return res.status(401).json({ error: 'Phiên đăng nhập hết hạn' });
+    req.userId = session.user_id;
+    req.userToken = token;
+    next();
+}
+
+app.post('/api/auth/register', (req, res) => {
+    const { username, email, password } = req.body;
+    if (!username?.trim() || !email?.trim() || !password?.trim())
+        return res.status(400).json({ error: 'Vui lòng điền đầy đủ thông tin' });
+    if (password.length < 6)
+        return res.status(400).json({ error: 'Mật khẩu tối thiểu 6 ký tự' });
+    const existing = get('SELECT id FROM users WHERE email=? OR username=?', [email.trim(), username.trim()]);
+    if (existing) return res.status(409).json({ error: 'Email hoặc tên đăng nhập đã tồn tại' });
+    run('INSERT INTO users (username, email, password_hash) VALUES (?,?,?)', [
+        username.trim().slice(0,50), email.trim().slice(0,100), hashPassword(password)
+    ]);
+    const user = get('SELECT id,username,email,avatar,created_at FROM users ORDER BY id DESC LIMIT 1');
+    const token = genToken();
+    run("INSERT INTO user_sessions (token, user_id, expires_at) VALUES (?,?,datetime('now','+30 days'))", [token, user.id]);
+    res.status(201).json({ user, token });
+});
+
+app.post('/api/auth/login', (req, res) => {
+    const { email, password } = req.body;
+    if (!email?.trim() || !password?.trim())
+        return res.status(400).json({ error: 'Vui lòng nhập email và mật khẩu' });
+    const user = get('SELECT * FROM users WHERE email=?', [email.trim()]);
+    if (!user || user.password_hash !== hashPassword(password))
+        return res.status(401).json({ error: 'Email hoặc mật khẩu không đúng' });
+    const token = genToken();
+    run("INSERT INTO user_sessions (token, user_id, expires_at) VALUES (?,?,datetime('now','+30 days'))", [token, user.id]);
+    res.json({ user: { id:user.id, username:user.username, email:user.email, avatar:user.avatar, created_at:user.created_at }, token });
+});
+
+app.get('/api/auth/me', requireUser, (req, res) => {
+    const user = get('SELECT id,username,email,avatar,created_at FROM users WHERE id=?', [req.userId]);
+    if (!user) return res.status(404).json({ error: 'Không tìm thấy user' });
+    res.json(user);
+});
+
+app.post('/api/auth/logout', requireUser, (req, res) => {
+    run('DELETE FROM user_sessions WHERE token=?', [req.userToken]);
+    res.json({ ok: true });
+});
+
+// Override comment endpoints để yêu cầu đăng nhập
+app.post('/api/comments/auth', requireUser, (req, res) => {
+    const { text, rating } = req.body;
+    if (!text?.trim() || !rating) return res.status(400).json({ error: 'Thiếu thông tin.' });
+    if (rating < 1 || rating > 5) return res.status(400).json({ error: 'Rating 1-5.' });
+    const user = get('SELECT username,email FROM users WHERE id=?', [req.userId]);
+    run('INSERT INTO comments (name, email, text, rating) VALUES (?, ?, ?, ?)', [
+        user.username, user.email || '',
+        text.trim().slice(0, 2000), parseInt(rating)
+    ]);
+    const comment = get('SELECT * FROM comments ORDER BY id DESC LIMIT 1');
+    res.status(201).json(comment);
+});
+
+app.post('/api/blog/posts/:id/comments/auth', requireUser, (req, res) => {
+    const { text } = req.body;
+    if (!text?.trim()) return res.status(400).json({ error: 'Thiếu nội dung' });
+    const user = get('SELECT username FROM users WHERE id=?', [req.userId]);
+    run('INSERT INTO blog_comments (post_id, name, text) VALUES (?,?,?)', [
+        parseInt(req.params.id), user.username, text.trim().slice(0,2000)
+    ]);
+    const c = get('SELECT * FROM blog_comments ORDER BY id DESC LIMIT 1');
+    res.status(201).json(c);
+});
+
 // Serve index.html cho tất cả các route không phải API
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'index.html'));

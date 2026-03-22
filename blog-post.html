@@ -22,6 +22,7 @@
         <li><a href="index.html#contact">Liên Hệ</a></li>
       </ul>
       <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+      <div class="nav-auth-slot"></div>
       <button class="nav-hamburger" id="blogHamburger" aria-label="Menu">
         <span></span><span></span><span></span>
       </button>
@@ -69,7 +70,6 @@
         <div class="post-comments">
           <h3><i class="fas fa-comments"></i> Bình Luận (<span id="postCommentCount">0</span>)</h3>
           <form id="postCommentForm" class="post-comment-form">
-            <input type="text" id="pcName" placeholder="Tên của bạn *" required>
             <textarea id="pcText" placeholder="Viết bình luận..." required></textarea>
             <button type="submit"><i class="fas fa-paper-plane"></i> Gửi</button>
           </form>
@@ -104,6 +104,7 @@
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <script src="api.js"></script>
+  <script src="auth.js"></script>
   <script>
     const API = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
       ? 'http://localhost:3001/api'
@@ -312,21 +313,34 @@ Hooks giúp code React trở nên **ngắn gọn**, **dễ test** và **dễ tá
 
     document.getElementById('postCommentForm').addEventListener('submit', async function(e) {
       e.preventDefault();
-      const name = document.getElementById('pcName').value.trim();
+      // Kiểm tra đăng nhập
+      if (typeof isLoggedIn === 'function' && !isLoggedIn()) {
+        openAuthModal('login'); return;
+      }
       const text = document.getElementById('pcText').value.trim();
-      if (!name||!text) return;
+      if (!text) return;
+      const btn = this.querySelector('button[type=submit]');
+      if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; }
       try {
-        const r = await fetch(`${API}/blog/posts/${postData.id}/comments`, {
-          method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({ name, text })
-        });
-        const c = await r.json();
+        let c;
+        if (typeof postBlogCommentAuth === 'function' && isLoggedIn()) {
+          c = await postBlogCommentAuth(postData.id, text);
+        } else {
+          const name = document.getElementById('pcName')?.value?.trim() || 'Ẩn danh';
+          const r = await fetch(`${API}/blog/posts/${postData.id}/comments`, {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ name, text })
+          });
+          c = await r.json();
+        }
         if (postData.comments) postData.comments.unshift(c);
         else postData.comments = [c];
         renderComments(postData.comments);
         this.reset();
-      } catch {
-        alert('Lỗi khi gửi bình luận');
+      } catch(err) {
+        alert(err.message || 'Lỗi khi gửi bình luận');
+      } finally {
+        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Gửi'; }
       }
     });
 
