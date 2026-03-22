@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Career Roadmap Generator - Clitus PC</title>
+  <meta name="description" content="AI tạo lộ trình học lập trình cá nhân hóa - Clitus PC">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles-new.css">
+  <style>
+  .roadmap-page { min-height: 100vh; padding: 6rem 1rem 4rem; background: var(--bg, #f8f9ff); }
+  html[data-theme="dark"] { --bg: #0d0d1a; --card: #1a1a2e; --text: #e0e0ff; --sub: #9090b0; --border: #2a2a4a; }
+  html:not([data-theme="dark"]) { --bg: #f8f9ff; --card: #fff; --text: #1a1a2e; --sub: #666; --border: #e0e4ff; }
+
+  .roadmap-container { max-width: 860px; margin: 0 auto; }
+  .roadmap-header { text-align: center; margin-bottom: 2.5rem; }
+  .roadmap-header h1 { font-size: clamp(1.6rem, 4vw, 2.4rem); color: var(--text); margin: 0 0 0.5rem; }
+  .roadmap-header p { color: var(--sub); font-size: 1rem; }
+
+  .roadmap-form-card {
+    background: var(--card); border-radius: 20px; padding: 2rem;
+    box-shadow: 0 8px 32px rgba(102,126,234,0.1); border: 1px solid var(--border);
+    margin-bottom: 2rem;
+  }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+  @media(max-width:600px) { .form-row { grid-template-columns: 1fr; } }
+  .form-group label { display: block; font-size: 0.85rem; font-weight: 700; color: var(--text); margin-bottom: 0.4rem; }
+  .form-group select, .form-group input {
+    width: 100%; padding: 0.75rem 1rem; border-radius: 12px;
+    border: 1.5px solid var(--border); background: var(--bg);
+    color: var(--text); font-size: 0.95rem; outline: none; transition: border 0.2s;
+    box-sizing: border-box;
+  }
+  .form-group select:focus, .form-group input:focus { border-color: #667eea; }
+  .generate-btn {
+    width: 100%; padding: 1rem; border: none; border-radius: 14px;
+    background: linear-gradient(135deg, #667eea, #764ba2); color: #fff;
+    font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 0.6rem;
+    box-shadow: 0 4px 16px rgba(102,126,234,0.35); margin-top: 0.5rem;
+  }
+  .generate-btn:hover { opacity: 0.9; transform: translateY(-2px); }
+  .generate-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+  /* Result */
+  #roadmapResult { display: none; }
+  .result-header {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;
+  }
+  .result-title { font-size: 1.3rem; font-weight: 800; color: var(--text); }
+  .result-actions { display: flex; gap: 0.75rem; }
+  .btn-action {
+    padding: 0.5rem 1.1rem; border-radius: 50px; border: 1.5px solid var(--border);
+    background: var(--card); color: var(--text); font-size: 0.82rem; font-weight: 700;
+    cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 0.4rem;
+  }
+  .btn-action:hover { border-color: #667eea; color: #667eea; }
+
+  .phase-card {
+    background: var(--card); border-radius: 16px; padding: 1.5rem;
+    margin-bottom: 1.25rem; border: 1px solid var(--border);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.05); position: relative; overflow: hidden;
+  }
+  .phase-card::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 4px; background: var(--phase-color, #667eea); border-radius: 4px 0 0 4px;
+  }
+  .phase-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+  .phase-num {
+    width: 36px; height: 36px; border-radius: 50%; background: var(--phase-color, #667eea);
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 0.9rem; flex-shrink: 0;
+  }
+  .phase-title { font-size: 1rem; font-weight: 800; color: var(--text); }
+  .phase-duration { font-size: 0.78rem; color: var(--sub); margin-left: auto; }
+
+  .phase-section { margin-bottom: 1rem; }
+  .phase-section h4 { font-size: 0.82rem; font-weight: 700; color: #667eea; margin: 0 0 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .tag-list { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .tag {
+    padding: 0.3rem 0.75rem; border-radius: 50px; font-size: 0.78rem; font-weight: 600;
+    background: rgba(102,126,234,0.1); color: #667eea; border: 1px solid rgba(102,126,234,0.2);
+  }
+  .tag.resource { background: rgba(17,153,142,0.1); color: #11998e; border-color: rgba(17,153,142,0.2); }
+  .tag.project { background: rgba(245,87,108,0.1); color: #f5576c; border-color: rgba(245,87,108,0.2); }
+
+  .loading-dots { display: inline-flex; gap: 4px; }
+  .loading-dots span { width: 8px; height: 8px; border-radius: 50%; background: #fff; animation: dotBounce 1.2s infinite; }
+  .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes dotBounce { 0%,80%,100%{transform:scale(0.6);opacity:0.5} 40%{transform:scale(1);opacity:1} }
+
+  .progress-bar-wrap { background: var(--border); border-radius: 50px; height: 6px; margin-top: 0.5rem; }
+  .progress-bar-fill { height: 6px; border-radius: 50px; background: linear-gradient(90deg,#667eea,#764ba2); transition: width 0.5s; }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <div class="logo"><a href="index.html" style="color:inherit;text-decoration:none">Portfolio</a></div>
+      <ul>
+        <li><a href="index.html#home">Trang Chủ</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="index.html#contact">Liên Hệ</a></li>
+      </ul>
+      <div class="nav-auth-slot"></div>
+    </nav>
+  </header>
+
+  <main class="roadmap-page">
+    <div class="roadmap-container">
+      <div class="roadmap-header">
+        <div style="font-size:3rem;margin-bottom:0.5rem;">🗺️</div>
+        <h1>Career Roadmap Generator</h1>
+        <p>AI tạo lộ trình học lập trình cá nhân hóa cho bạn</p>
+      </div>
+
+      <div class="roadmap-form-card">
+        <div class="form-row">
+          <div class="form-group">
+            <label><i class="fas fa-bullseye"></i> Mục tiêu nghề nghiệp</label>
+            <select id="rmGoal">
+              <option value="Frontend Developer">Frontend Developer</option>
+              <option value="Backend Developer">Backend Developer</option>
+              <option value="Full Stack Developer">Full Stack Developer</option>
+              <option value="Mobile Developer">Mobile Developer</option>
+              <option value="Data Scientist">Data Scientist</option>
+              <option value="DevOps Engineer">DevOps Engineer</option>
+              <option value="AI/ML Engineer">AI/ML Engineer</option>
+              <option value="Blockchain Developer">Blockchain Developer</option>
+              <option value="Game Developer">Game Developer</option>
+              <option value="Cybersecurity Engineer">Cybersecurity Engineer</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-layer-group"></i> Trình độ hiện tại</label>
+            <select id="rmLevel">
+              <option value="Hoàn toàn mới bắt đầu">Hoàn toàn mới bắt đầu</option>
+              <option value="Đã biết cơ bản HTML/CSS/JS">Đã biết cơ bản HTML/CSS/JS</option>
+              <option value="Junior (1-2 năm)">Junior (1-2 năm)</option>
+              <option value="Mid-level (2-4 năm)">Mid-level (2-4 năm)</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label><i class="fas fa-clock"></i> Thời gian học mỗi ngày</label>
+            <select id="rmTime">
+              <option value="1-2 giờ/ngày">1-2 giờ/ngày</option>
+              <option value="3-4 giờ/ngày">3-4 giờ/ngày</option>
+              <option value="5-6 giờ/ngày">5-6 giờ/ngày</option>
+              <option value="Full-time (8+ giờ)">Full-time (8+ giờ)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-language"></i> Ngôn ngữ ưa thích</label>
+            <select id="rmLang">
+              <option value="JavaScript">JavaScript</option>
+              <option value="Python">Python</option>
+              <option value="Java">Java</option>
+              <option value="C#">C#</option>
+              <option value="Go">Go</option>
+              <option value="Rust">Rust</option>
+              <option value="Swift">Swift</option>
+              <option value="Kotlin">Kotlin</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:1rem;">
+          <label><i class="fas fa-star"></i> Kỹ năng bạn đã có (tùy chọn)</label>
+          <input type="text" id="rmSkills" placeholder="VD: HTML, CSS, Git, React cơ bản...">
+        </div>
+        <button class="generate-btn" id="generateBtn" onclick="generateRoadmap()">
+          <i class="fas fa-magic"></i> Tạo Roadmap với AI
+        </button>
+      </div>
+
+      <!-- Result -->
+      <div id="roadmapResult">
+        <div class="result-header">
+          <div class="result-title" id="resultTitle"></div>
+          <div class="result-actions">
+            <button class="btn-action" onclick="copyRoadmap()"><i class="fas fa-copy"></i> Copy</button>
+            <button class="btn-action" onclick="printRoadmap()"><i class="fas fa-print"></i> In</button>
+          </div>
+        </div>
+        <div id="phasesContainer"></div>
+      </div>
+    </div>
+  </main>
+
+  <script src="api.js"></script>
+  <script src="auth.js"></script>
+  <script>
+  async function generateRoadmap() {
+    const goal = document.getElementById('rmGoal').value;
+    const level = document.getElementById('rmLevel').value;
+    const time = document.getElementById('rmTime').value;
+    const lang = document.getElementById('rmLang').value;
+    const skills = document.getElementById('rmSkills').value.trim();
+
+    const btn = document.getElementById('generateBtn');
+    btn.disabled = true;
+    btn.innerHTML = `<div class="loading-dots"><span></span><span></span><span></span></div> Đang tạo roadmap...`;
+
+    const prompt = `Tạo lộ trình học chi tiết cho người muốn trở thành ${goal}.
+Thông tin:
+- Trình độ hiện tại: ${level}
+- Thời gian học: ${time}
+- Ngôn ngữ ưa thích: ${lang}
+- Kỹ năng đã có: ${skills || 'Chưa có'}
+
+Trả về JSON với format sau (KHÔNG có markdown, chỉ JSON thuần):
+{
+  "title": "Lộ trình ${goal}",
+  "totalTime": "X tháng",
+  "phases": [
+    {
+      "phase": 1,
+      "title": "Tên giai đoạn",
+      "duration": "X tuần",
+      "color": "#667eea",
+      "skills": ["skill1", "skill2"],
+      "resources": ["Tài liệu 1", "Tài liệu 2"],
+      "projects": ["Dự án 1", "Dự án 2"]
+    }
+  ]
+}
+Tạo 4-5 giai đoạn phù hợp. Tài liệu nên cụ thể (tên sách, khóa học, website). Dự án thực tế.`;
+
+    try {
+      const res = await fetch(`${API_BASE}/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: prompt })
+      });
+      const data = await res.json();
+      let reply = data.reply || '';
+
+      // Parse JSON từ reply
+      const jsonMatch = reply.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) throw new Error('Không parse được JSON');
+      const roadmap = JSON.parse(jsonMatch[0]);
+      renderRoadmap(roadmap);
+    } catch(e) {
+      // Fallback roadmap
+      renderRoadmap(getFallbackRoadmap(goal, level, lang));
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-magic"></i> Tạo Roadmap với AI';
+    }
+  }
+
+  function renderRoadmap(roadmap) {
+    document.getElementById('resultTitle').textContent = `🗺️ ${roadmap.title} · ${roadmap.totalTime}`;
+    const container = document.getElementById('phasesContainer');
+    container.innerHTML = roadmap.phases.map(p => `
+      <div class="phase-card" style="--phase-color:${p.color||'#667eea'}">
+        <div class="phase-header">
+          <div class="phase-num">${p.phase}</div>
+          <div class="phase-title">${p.title}</div>
+          <div class="phase-duration"><i class="fas fa-clock"></i> ${p.duration}</div>
+        </div>
+        <div class="phase-section">
+          <h4>🎯 Kỹ năng cần học</h4>
+          <div class="tag-list">${(p.skills||[]).map(s=>`<span class="tag">${s}</span>`).join('')}</div>
+        </div>
+        <div class="phase-section">
+          <h4>📚 Tài liệu học</h4>
+          <div class="tag-list">${(p.resources||[]).map(r=>`<span class="tag resource">${r}</span>`).join('')}</div>
+        </div>
+        <div class="phase-section">
+          <h4>🚀 Dự án thực hành</h4>
+          <div class="tag-list">${(p.projects||[]).map(pr=>`<span class="tag project">${pr}</span>`).join('')}</div>
+        </div>
+      </div>
+    `).join('');
+    document.getElementById('roadmapResult').style.display = 'block';
+    document.getElementById('roadmapResult').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function getFallbackRoadmap(goal, level, lang) {
+    return {
+      title: `Lộ trình ${goal}`,
+      totalTime: '6-12 tháng',
+      phases: [
+        { phase:1, title:'Nền tảng', duration:'4-6 tuần', color:'#667eea',
+          skills:['HTML/CSS','JavaScript cơ bản','Git & GitHub','Terminal'],
+          resources:['MDN Web Docs','freeCodeCamp.org','The Odin Project'],
+          projects:['Trang web cá nhân tĩnh','Landing page responsive'] },
+        { phase:2, title:'Core Skills', duration:'6-8 tuần', color:'#11998e',
+          skills:[lang,'Cấu trúc dữ liệu','Thuật toán cơ bản','REST API'],
+          resources:[`${lang} Documentation`,`Eloquent ${lang}`,'CS50 Harvard'],
+          projects:['Todo App','Weather App dùng API'] },
+        { phase:3, title:'Framework & Tools', duration:'8-10 tuần', color:'#f5576c',
+          skills:['React/Vue','Node.js','Database (SQL/NoSQL)','Docker cơ bản'],
+          resources:['React Docs','Node.js Docs','MongoDB University'],
+          projects:['Blog App full-stack','E-commerce mini'] },
+        { phase:4, title:'Chuyên sâu & Deploy', duration:'4-6 tuần', color:'#764ba2',
+          skills:['CI/CD','Cloud (AWS/Vercel)','Testing','Performance'],
+          resources:['AWS Free Tier','Vercel Docs','Testing Library'],
+          projects:['Portfolio hoàn chỉnh','Open source contribution'] }
+      ]
+    };
+  }
+
+  function copyRoadmap() {
+    const phases = document.querySelectorAll('.phase-card');
+    let text = document.getElementById('resultTitle').textContent + '\n\n';
+    phases.forEach(p => {
+      text += p.querySelector('.phase-title').textContent + ' (' + p.querySelector('.phase-duration').textContent.trim() + ')\n';
+      p.querySelectorAll('.tag').forEach(t => text += '  • ' + t.textContent + '\n');
+      text += '\n';
+    });
+    navigator.clipboard.writeText(text).then(() => {
+      if (typeof showToast === 'function') showToast('✅ Đã copy roadmap!', 'success', 2000);
+    });
+  }
+
+  function printRoadmap() { window.print(); }
+  </script>
+</body>
+</html>
