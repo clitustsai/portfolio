@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thanh Toán & Dịch Vụ - Clitus PC</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles-new.css">
+  <style>
+  :root{--bg:#f8f9ff;--card:#fff;--text:#1a1a2e;--sub:#666;--border:#e0e4ff;}
+  html[data-theme="dark"]{--bg:#0d0d1a;--card:#1a1a2e;--text:#e0e0ff;--sub:#9090b0;--border:#2a2a4a;}
+  .pay-page{min-height:100vh;padding:6rem 1rem 4rem;background:var(--bg);}
+  .pay-wrap{max-width:1000px;margin:0 auto;}
+  .pay-header{text-align:center;margin-bottom:3rem;}
+  .pay-header h1{font-size:clamp(1.8rem,4vw,2.6rem);color:var(--text);margin:0 0 0.5rem;}
+  .pay-header p{color:var(--sub);font-size:1rem;}
+  .section-title{font-size:1.2rem;font-weight:800;color:var(--text);margin:0 0 1.25rem;display:flex;align-items:center;gap:0.5rem;}
+  /* Service Cards */
+  .services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;margin-bottom:3rem;}
+  .service-card{
+    background:var(--card);border-radius:20px;padding:1.75rem;border:1px solid var(--border);
+    box-shadow:0 4px 20px rgba(0,0,0,0.06);transition:all 0.3s;position:relative;overflow:hidden;
+  }
+  .service-card:hover{transform:translateY(-6px);box-shadow:0 12px 40px rgba(102,126,234,0.15);}
+  .service-card.featured{border-color:#667eea;box-shadow:0 4px 20px rgba(102,126,234,0.2);}
+  .badge{position:absolute;top:1rem;right:1rem;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:0.7rem;font-weight:800;padding:0.25rem 0.65rem;border-radius:50px;}
+  .service-icon{font-size:2.5rem;margin-bottom:1rem;}
+  .service-name{font-size:1.1rem;font-weight:800;color:var(--text);margin:0 0 0.4rem;}
+  .service-desc{font-size:0.85rem;color:var(--sub);margin:0 0 1rem;line-height:1.6;}
+  .service-price{font-size:1.6rem;font-weight:900;color:#667eea;margin-bottom:1rem;}
+  .service-price span{font-size:0.8rem;color:var(--sub);font-weight:400;}
+  .service-features{list-style:none;padding:0;margin:0 0 1.25rem;}
+  .service-features li{font-size:0.82rem;color:var(--sub);padding:0.3rem 0;display:flex;gap:0.5rem;}
+  .service-features li::before{content:'✓';color:#11998e;font-weight:800;flex-shrink:0;}
+  .buy-btn{
+    width:100%;padding:0.85rem;border:none;border-radius:12px;
+    background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;
+    font-size:0.93rem;font-weight:700;cursor:pointer;transition:all 0.2s;
+    display:flex;align-items:center;justify-content:center;gap:0.5rem;
+  }
+  .buy-btn:hover{opacity:0.88;transform:translateY(-2px);}
+  .buy-btn.outline{background:none;border:2px solid #667eea;color:#667eea;}
+  .buy-btn.outline:hover{background:#667eea;color:#fff;}
+  /* Source Code */
+  .source-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.25rem;margin-bottom:3rem;}
+  .source-card{
+    background:var(--card);border-radius:16px;padding:1.5rem;border:1px solid var(--border);
+    box-shadow:0 4px 16px rgba(0,0,0,0.05);transition:all 0.3s;
+  }
+  .source-card:hover{transform:translateY(-4px);box-shadow:0 8px 28px rgba(102,126,234,0.12);}
+  .source-tech{display:flex;flex-wrap:wrap;gap:0.35rem;margin-bottom:0.75rem;}
+  .tech-pill{padding:0.2rem 0.6rem;border-radius:50px;font-size:0.72rem;font-weight:700;background:rgba(102,126,234,0.1);color:#667eea;}
+  .source-name{font-size:1rem;font-weight:800;color:var(--text);margin:0 0 0.35rem;}
+  .source-desc{font-size:0.82rem;color:var(--sub);margin:0 0 1rem;}
+  .source-price-row{display:flex;align-items:center;justify-content:space-between;gap:0.75rem;}
+  .source-price{font-size:1.2rem;font-weight:900;color:#764ba2;}
+  /* Donate */
+  .donate-section{background:var(--card);border-radius:20px;padding:2rem;border:1px solid var(--border);margin-bottom:3rem;text-align:center;}
+  .donate-desc{color:var(--sub);font-size:0.9rem;margin:0.5rem 0 1.5rem;}
+  .donate-amounts{display:flex;flex-wrap:wrap;gap:0.75rem;justify-content:center;margin-bottom:1.5rem;}
+  .donate-amt{
+    padding:0.6rem 1.4rem;border-radius:50px;border:2px solid var(--border);
+    background:var(--bg);color:var(--text);font-size:0.9rem;font-weight:700;
+    cursor:pointer;transition:all 0.2s;
+  }
+  .donate-amt:hover,.donate-amt.active{border-color:#667eea;background:#667eea;color:#fff;}
+  .donate-methods{display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;}
+  .donate-method{
+    display:flex;flex-direction:column;align-items:center;gap:0.5rem;
+    padding:1.25rem 1.75rem;border-radius:16px;border:1.5px solid var(--border);
+    background:var(--bg);cursor:pointer;transition:all 0.2s;min-width:120px;
+  }
+  .donate-method:hover{border-color:#667eea;transform:translateY(-3px);}
+  .donate-method img{width:48px;height:48px;border-radius:10px;object-fit:contain;}
+  .donate-method span{font-size:0.8rem;font-weight:700;color:var(--text);}
+  /* Payment Modal */
+  #payModal{display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;padding:1rem;}
+  .pay-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);}
+  .pay-modal-box{
+    position:relative;z-index:1;background:var(--card);border-radius:24px;
+    padding:2rem;width:100%;max-width:440px;box-shadow:0 24px 80px rgba(0,0,0,0.25);
+    animation:slideIn 0.3s ease;
+  }
+  @keyframes slideIn{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+  .modal-close{position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.4rem;cursor:pointer;color:#999;}
+  .modal-title{font-size:1.1rem;font-weight:800;color:var(--text);margin:0 0 0.25rem;}
+  .modal-price{font-size:2rem;font-weight:900;color:#667eea;margin:0.5rem 0 1.25rem;}
+  .qr-pay{width:200px;height:200px;border-radius:12px;margin:0 auto 1rem;display:block;}
+  .bank-info{background:var(--bg);border-radius:12px;padding:1rem;font-size:0.85rem;color:var(--text);margin-bottom:1rem;}
+  .bank-row{display:flex;justify-content:space-between;padding:0.3rem 0;border-bottom:1px solid var(--border);}
+  .bank-row:last-child{border:none;}
+  .bank-row .val{font-weight:700;color:#667eea;}
+  .copy-bank{background:none;border:none;color:#667eea;cursor:pointer;font-size:0.8rem;font-weight:700;}
+  .modal-note{font-size:0.78rem;color:var(--sub);text-align:center;margin-top:0.75rem;}
+  .contact-after{
+    width:100%;padding:0.75rem;border:none;border-radius:12px;margin-top:0.75rem;
+    background:linear-gradient(135deg,#11998e,#38ef7d);color:#fff;
+    font-size:0.9rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.5rem;
+  }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <div class="logo"><a href="index.html" style="color:inherit;text-decoration:none">Portfolio</a></div>
+      <ul>
+        <li><a href="index.html#home">Trang Chủ</a></li>
+        <li><a href="proposal.html">💼 Proposal</a></li>
+        <li><a href="blog.html">Blog</a></li>
+      </ul>
+      <div class="nav-auth-slot"></div>
+    </nav>
+  </header>
+
+  <main class="pay-page">
+    <div class="pay-wrap">
+      <div class="pay-header">
+        <div style="font-size:3rem;margin-bottom:0.5rem;">💳</div>
+        <h1>Dịch Vụ & Thanh Toán</h1>
+        <p>Thuê tôi làm dự án, mua source code, hoặc ủng hộ một ly cà phê ☕</p>
+      </div>
+
+      <!-- HIRE ME -->
+      <div class="section-title">💼 Thuê Tôi Làm Dự Án</div>
+      <div class="services-grid">
+        <div class="service-card">
+          <div class="service-icon">🌐</div>
+          <div class="service-name">Landing Page</div>
+          <div class="service-desc">Website giới thiệu sản phẩm/dịch vụ, responsive, tối ưu SEO, tốc độ cao.</div>
+          <div class="service-price">3.000.000 <span>VNĐ</span></div>
+          <ul class="service-features">
+            <li>Responsive mobile/tablet/desktop</li>
+            <li>SEO cơ bản + tốc độ tải nhanh</li>
+            <li>Form liên hệ + Google Maps</li>
+            <li>Bàn giao trong 5-7 ngày</li>
+          </ul>
+          <button class="buy-btn" onclick="openPayModal('Landing Page','3.000.000 VNĐ')">
+            <i class="fas fa-briefcase"></i> Thuê Ngay
+          </button>
+        </div>
+        <div class="service-card featured">
+          <div class="badge">⭐ Phổ biến</div>
+          <div class="service-icon">🛒</div>
+          <div class="service-name">Website Bán Hàng</div>
+          <div class="service-desc">E-commerce đầy đủ: giỏ hàng, thanh toán, quản lý đơn hàng, admin panel.</div>
+          <div class="service-price">15.000.000 <span>VNĐ</span></div>
+          <ul class="service-features">
+            <li>Giỏ hàng + thanh toán online</li>
+            <li>Quản lý sản phẩm/đơn hàng</li>
+            <li>Admin dashboard</li>
+            <li>Bàn giao trong 30-45 ngày</li>
+          </ul>
+          <button class="buy-btn" onclick="openPayModal('Website Bán Hàng','15.000.000 VNĐ')">
+            <i class="fas fa-briefcase"></i> Thuê Ngay
+          </button>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">⚙️</div>
+          <div class="service-name">Web App / SaaS</div>
+          <div class="service-desc">Ứng dụng web phức tạp: dashboard, API, authentication, real-time features.</div>
+          <div class="service-price">30.000.000 <span>VNĐ</span></div>
+          <ul class="service-features">
+            <li>Full Stack (React + Node.js)</li>
+            <li>Database + REST API</li>
+            <li>Auth + phân quyền</li>
+            <li>Deploy + bảo trì 3 tháng</li>
+          </ul>
+          <button class="buy-btn" onclick="openPayModal('Web App / SaaS','30.000.000 VNĐ')">
+            <i class="fas fa-briefcase"></i> Thuê Ngay
+          </button>
+        </div>
+      </div>
+
+      <!-- SOURCE CODE -->
+      <div class="section-title">📦 Mua Source Code</div>
+      <div class="source-grid">
+        <div class="source-card">
+          <div class="source-tech"><span class="tech-pill">React</span><span class="tech-pill">Node.js</span><span class="tech-pill">MongoDB</span></div>
+          <div class="source-name">Portfolio Template Pro</div>
+          <div class="source-desc">Template portfolio như trang này: blog, AI chat, dark mode, PWA, auth.</div>
+          <div class="source-price-row">
+            <div class="source-price">299.000 VNĐ</div>
+            <button class="buy-btn" style="width:auto;padding:0.6rem 1.2rem;" onclick="openPayModal('Portfolio Template Pro','299.000 VNĐ')">
+              <i class="fas fa-shopping-cart"></i> Mua
+            </button>
+          </div>
+        </div>
+        <div class="source-card">
+          <div class="source-tech"><span class="tech-pill">React</span><span class="tech-pill">Stripe</span><span class="tech-pill">Firebase</span></div>
+          <div class="source-name">E-Commerce Starter</div>
+          <div class="source-desc">Boilerplate bán hàng: giỏ hàng, Stripe payment, quản lý sản phẩm.</div>
+          <div class="source-price-row">
+            <div class="source-price">599.000 VNĐ</div>
+            <button class="buy-btn" style="width:auto;padding:0.6rem 1.2rem;" onclick="openPayModal('E-Commerce Starter','599.000 VNĐ')">
+              <i class="fas fa-shopping-cart"></i> Mua
+            </button>
+          </div>
+        </div>
+        <div class="source-card">
+          <div class="source-tech"><span class="tech-pill">Vue.js</span><span class="tech-pill">Python</span><span class="tech-pill">PostgreSQL</span></div>
+          <div class="source-name">Dashboard Analytics</div>
+          <div class="source-desc">Admin dashboard với charts, báo cáo, export Excel/PDF, dark mode.</div>
+          <div class="source-price-row">
+            <div class="source-price">499.000 VNĐ</div>
+            <button class="buy-btn" style="width:auto;padding:0.6rem 1.2rem;" onclick="openPayModal('Dashboard Analytics','499.000 VNĐ')">
+              <i class="fas fa-shopping-cart"></i> Mua
+            </button>
+          </div>
+        </div>
+        <div class="source-card">
+          <div class="source-tech"><span class="tech-pill">React Native</span><span class="tech-pill">Expo</span></div>
+          <div class="source-name">Mobile App Template</div>
+          <div class="source-desc">Template React Native: auth, navigation, API integration, push notification.</div>
+          <div class="source-price-row">
+            <div class="source-price">399.000 VNĐ</div>
+            <button class="buy-btn" style="width:auto;padding:0.6rem 1.2rem;" onclick="openPayModal('Mobile App Template','399.000 VNĐ')">
+              <i class="fas fa-shopping-cart"></i> Mua
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- DONATE -->
+      <div class="section-title">☕ Ủng Hộ / Donate</div>
+      <div class="donate-section">
+        <div style="font-size:2rem;">☕</div>
+        <div class="donate-desc">Nếu nội dung của mình có ích, hãy mời mình một ly cà phê nhé! Mọi sự ủng hộ đều được trân trọng 🙏</div>
+        <div class="donate-amounts">
+          <button class="donate-amt active" onclick="selectDonate(this,'20.000 VNĐ')">☕ 20k</button>
+          <button class="donate-amt" onclick="selectDonate(this,'50.000 VNĐ')">☕☕ 50k</button>
+          <button class="donate-amt" onclick="selectDonate(this,'100.000 VNĐ')">🎁 100k</button>
+          <button class="donate-amt" onclick="selectDonate(this,'200.000 VNĐ')">💎 200k</button>
+        </div>
+        <div class="donate-methods">
+          <div class="donate-method" onclick="openPayModal('Donate ☕',window._donateAmt||'20.000 VNĐ')">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Momo_Logo.png/240px-Momo_Logo.png" alt="MoMo" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 48 48%22><rect width=%2248%22 height=%2248%22 rx=%228%22 fill=%22%23a50064%22/><text y=%2232%22 x=%2224%22 text-anchor=%22middle%22 font-size=%2220%22 fill=%22white%22>M</text></svg>'">
+            <span>MoMo</span>
+          </div>
+          <div class="donate-method" onclick="openPayModal('Donate ☕',window._donateAmt||'20.000 VNĐ')">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Vietcombank_logo.svg/240px-Vietcombank_logo.svg.png" alt="Bank" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 48 48%22><rect width=%2248%22 height=%2248%22 rx=%228%22 fill=%22%23006633%22/><text y=%2232%22 x=%2224%22 text-anchor=%22middle%22 font-size=%2214%22 fill=%22white%22>VCB</text></svg>'">
+            <span>Chuyển khoản</span>
+          </div>
+          <div class="donate-method" onclick="openPayModal('Donate ☕',window._donateAmt||'20.000 VNĐ')">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/PayPal.svg/240px-PayPal.svg.png" alt="PayPal" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 48 48%22><rect width=%2248%22 height=%2248%22 rx=%228%22 fill=%22%23003087%22/><text y=%2232%22 x=%2224%22 text-anchor=%22middle%22 font-size=%2212%22 fill=%22white%22>PayPal</text></svg>'">
+            <span>PayPal</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Payment Modal -->
+  <div id="payModal">
+    <div class="pay-overlay" onclick="closePayModal()"></div>
+    <div class="pay-modal-box">
+      <button class="modal-close" onclick="closePayModal()">×</button>
+      <div style="text-align:center;">
+        <div style="font-size:2rem;margin-bottom:0.5rem;">💳</div>
+        <div class="modal-title" id="modalTitle">Thanh toán</div>
+        <div class="modal-price" id="modalPrice"></div>
+      </div>
+      <img class="qr-pay" id="modalQR" src="" alt="QR thanh toán">
+      <div class="bank-info">
+        <div class="bank-row"><span>Ngân hàng</span><span class="val">Vietcombank</span></div>
+        <div class="bank-row"><span>Số tài khoản</span><span class="val">1234567890 <button class="copy-bank" onclick="copyText('1234567890')">Copy</button></span></div>
+        <div class="bank-row"><span>Chủ tài khoản</span><span class="val">NGUYEN VAN A</span></div>
+        <div class="bank-row"><span>Nội dung CK</span><span class="val" id="modalContent"></span></div>
+      </div>
+      <div class="modal-note">Sau khi thanh toán, vui lòng liên hệ để xác nhận và nhận sản phẩm</div>
+      <button class="contact-after" onclick="window.open('https://zalo.me/0906857331','_blank')">
+        <i class="fab fa-facebook-messenger"></i> Liên hệ Zalo xác nhận
+      </button>
+    </div>
+  </div>
+
+  <script src="api.js"></script>
+  <script src="auth.js"></script>
+  <script>
+  window._donateAmt = '20.000 VNĐ';
+  function selectDonate(el, amt) {
+    document.querySelectorAll('.donate-amt').forEach(b=>b.classList.remove('active'));
+    el.classList.add('active');
+    window._donateAmt = amt;
+  }
+  function openPayModal(name, price) {
+    document.getElementById('modalTitle').textContent = name;
+    document.getElementById('modalPrice').textContent = price;
+    const content = 'CLITUSPC ' + name.replace(/[^a-zA-Z0-9]/g,'').toUpperCase().slice(0,15);
+    document.getElementById('modalContent').textContent = content;
+    // QR chuyển khoản VietQR
+    const qrUrl = `https://img.vietqr.io/image/VCB-1234567890-compact2.png?amount=${price.replace(/[^0-9]/g,'')}&addInfo=${encodeURIComponent(content)}&accountName=NGUYEN%20VAN%20A`;
+    document.getElementById('modalQR').src = qrUrl;
+    document.getElementById('payModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+  function closePayModal() {
+    document.getElementById('payModal').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+  function copyText(t) {
+    navigator.clipboard.writeText(t);
+    if(typeof showToast==='function') showToast('✅ Đã copy!','success',1500);
+  }
+  </script>
+</body>
+</html>

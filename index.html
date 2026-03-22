@@ -517,6 +517,7 @@
                 <li><a href="blog.html">Blog</a></li>
                 <li><a href="roadmap.html">🗺️ Roadmap</a></li>
                 <li><a href="proposal.html">💼 Proposal</a></li>
+                <li><a href="payment.html">💳 Dịch Vụ</a></li>
             </ul>
             <button class="theme-toggle" id="themeToggle" title="Chuyển đổi chế độ tối/sáng">
                 <i class="fas fa-moon"></i>
@@ -1802,7 +1803,44 @@
         }
         function setVolume(val) {
             if (ytPlayer) ytPlayer.setVolume(parseInt(val));
-    <!-- QR Code -->
+    <!-- Floating Action Buttons -->
+    <div id="fabGroup" style="position:fixed;bottom:2rem;right:1.5rem;z-index:9990;display:flex;flex-direction:column;align-items:flex-end;gap:0.6rem;">
+      <div id="fabMenu" style="display:none;flex-direction:column;gap:0.5rem;align-items:flex-end;margin-bottom:0.25rem;">
+        <a href="payment.html" style="display:flex;align-items:center;gap:0.6rem;text-decoration:none;">
+          <span style="background:#fff;color:#1a1a2e;font-size:0.8rem;font-weight:700;padding:0.35rem 0.85rem;border-radius:50px;box-shadow:0 2px 10px rgba(0,0,0,0.15);white-space:nowrap;">💼 Thuê tôi ngay</span>
+          <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(102,126,234,0.4);flex-shrink:0;"><i class="fas fa-briefcase" style="color:#fff;font-size:1rem;"></i></div>
+        </a>
+        <a href="payment.html#pay" style="display:flex;align-items:center;gap:0.6rem;text-decoration:none;">
+          <span style="background:#fff;color:#1a1a2e;font-size:0.8rem;font-weight:700;padding:0.35rem 0.85rem;border-radius:50px;box-shadow:0 2px 10px rgba(0,0,0,0.15);white-space:nowrap;">💳 Thanh toán</span>
+          <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#11998e,#38ef7d);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(17,153,142,0.4);flex-shrink:0;"><i class="fas fa-credit-card" style="color:#fff;font-size:1rem;"></i></div>
+        </a>
+        <a href="payment.html#donate" style="display:flex;align-items:center;gap:0.6rem;text-decoration:none;">
+          <span style="background:#fff;color:#1a1a2e;font-size:0.8rem;font-weight:700;padding:0.35rem 0.85rem;border-radius:50px;box-shadow:0 2px 10px rgba(0,0,0,0.15);white-space:nowrap;">☕ Donate</span>
+          <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#f093fb,#f5576c);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(245,87,108,0.4);flex-shrink:0;"><i class="fas fa-mug-hot" style="color:#fff;font-size:1rem;"></i></div>
+        </a>
+      </div>
+      <button id="fabMain" onclick="toggleFab()" style="width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);border:none;cursor:pointer;box-shadow:0 6px 20px rgba(102,126,234,0.45);display:flex;align-items:center;justify-content:center;transition:all 0.3s;">
+        <i class="fas fa-plus" id="fabIcon" style="color:#fff;font-size:1.2rem;transition:transform 0.3s;"></i>
+      </button>
+    </div>
+    <script>
+    let fabOpen = false;
+    function toggleFab() {
+      fabOpen = !fabOpen;
+      const menu = document.getElementById('fabMenu');
+      const icon = document.getElementById('fabIcon');
+      menu.style.display = fabOpen ? 'flex' : 'none';
+      icon.style.transform = fabOpen ? 'rotate(45deg)' : 'rotate(0)';
+    }
+    document.addEventListener('click', e => {
+      if (fabOpen && !document.getElementById('fabGroup').contains(e.target)) {
+        fabOpen = false;
+        document.getElementById('fabMenu').style.display = 'none';
+        document.getElementById('fabIcon').style.transform = 'rotate(0)';
+      }
+    });
+    </script>
+</body>
     <script>
     const QR_URL = 'https://portfolio-utbu.onrender.com';
     function openQRModal() {
