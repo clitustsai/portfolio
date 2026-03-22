@@ -851,6 +851,57 @@ app.post('/api/tools/cv-generate', async (req, res) => {
     }
 });
 
+// ========== AI TOOLS — Homework / Fix Code / Video Script ==========
+
+// AI Giải Bài Tập (không cần đăng nhập, rate limit 3/ngày theo IP)
+app.post('/api/tools/homework', async (req, res) => {
+    const { question, subject } = req.body;
+    if (!question?.trim()) return res.status(400).json({ error: 'Thiếu câu hỏi' });
+    const subjectMap = { math:'Toán học', physics:'Vật lý', chemistry:'Hóa học', literature:'Ngữ văn', english:'Tiếng Anh', biology:'Sinh học', history:'Lịch sử' };
+    const subjectName = subjectMap[subject] || subject || 'Tổng hợp';
+    try {
+        const answer = await callOpenRouter([
+            { role: 'system', content: `Bạn là gia sư giỏi môn ${subjectName} cấp THCS và THPT tại Việt Nam. Giải bài tập chi tiết, từng bước rõ ràng, dễ hiểu. Dùng tiếng Việt. Nếu là Toán/Lý/Hóa thì trình bày công thức và các bước giải. Nếu là Văn thì phân tích sâu sắc.` },
+            { role: 'user', content: question.trim().slice(0, 2000) }
+        ], 1500);
+        res.json({ ok: true, answer });
+    } catch(err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// AI Fix Code (không cần đăng nhập)
+app.post('/api/tools/fix-code', async (req, res) => {
+    const { code, error: errMsg, language } = req.body;
+    if (!code?.trim()) return res.status(400).json({ error: 'Thiếu code' });
+    try {
+        const result = await callOpenRouter([
+            { role: 'system', content: `Bạn là senior developer chuyên fix bug. Phân tích code ${language || ''}, tìm lỗi và đưa ra:\n1. Giải thích lỗi\n2. Code đã sửa (đầy đủ)\n3. Giải thích cách sửa\nDùng tiếng Việt, trình bày rõ ràng.` },
+            { role: 'user', content: `Code:\n\`\`\`${language || ''}\n${code.trim().slice(0, 3000)}\n\`\`\`${errMsg ? '\n\nThông báo lỗi: ' + errMsg : ''}` }
+        ], 1500);
+        res.json({ ok: true, result });
+    } catch(err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// AI Video Script (không cần đăng nhập)
+app.post('/api/tools/video-script', async (req, res) => {
+    const { topic, type } = req.body;
+    if (!topic?.trim()) return res.status(400).json({ error: 'Thiếu chủ đề' });
+    const typeMap = { youtube:'YouTube Video', tiktok:'TikTok/Reels ngắn', intro:'Intro/Outro', ads:'Video Quảng Cáo', tutorial:'Tutorial hướng dẫn', vlog:'Vlog cá nhân' };
+    const typeName = typeMap[type] || type || 'YouTube';
+    try {
+        const script = await callOpenRouter([
+            { role: 'system', content: `Bạn là chuyên gia sản xuất nội dung video ${typeName}. Tạo kịch bản chi tiết gồm: Hook mở đầu, nội dung chính (từng cảnh/phân đoạn), CTA kết thúc. Thêm gợi ý hình ảnh/âm thanh cho từng đoạn. Dùng tiếng Việt, phong cách phù hợp với ${typeName}.` },
+            { role: 'user', content: topic.trim().slice(0, 1000) }
+        ], 1500);
+        res.json({ ok: true, script });
+    } catch(err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // ========== USER PROFILE UPDATE ==========
 app.put('/api/auth/profile', requireUser, (req, res) => {
     const { nickname, avatar } = req.body;
