@@ -1801,31 +1801,31 @@
         function setVolume(val) {
             if (ytPlayer) ytPlayer.setVolume(parseInt(val));
     <!-- QR Code -->
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <script>
+    const QR_URL = 'https://portfolio-utbu.onrender.com';
     function openQRModal() {
         const modal = document.getElementById('qrModal');
         modal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
         const container = document.getElementById('qrCanvas');
-        if (container.querySelector('canvas')) return;
-        QRCode.toCanvas(document.createElement('canvas'), 'https://portfolio-utbu.onrender.com', {
-            width: 220, margin: 2,
-            color: { dark: '#1a1a2e', light: '#ffffff' }
-        }, (err, canvas) => {
-            if (!err) { container.innerHTML = ''; container.appendChild(canvas); }
-        });
+        if (container.querySelector('img')) return;
+        const img = document.createElement('img');
+        img.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(QR_URL)}&color=1a1a2e&bgcolor=ffffff&margin=10`;
+        img.width = 220; img.height = 220;
+        img.style.borderRadius = '12px';
+        img.alt = 'QR Portfolio';
+        container.innerHTML = '';
+        container.appendChild(img);
     }
     function closeQRModal() {
         document.getElementById('qrModal').style.display = 'none';
         document.body.style.overflow = '';
     }
     function downloadQR() {
-        const canvas = document.querySelector('#qrCanvas canvas');
-        if (!canvas) return;
         const a = document.createElement('a');
         a.download = 'clituspc-qr.png';
-        a.href = canvas.toDataURL();
+        a.href = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(QR_URL)}&color=1a1a2e&bgcolor=ffffff&margin=10`;
+        a.target = '_blank';
         a.click();
     }
     </script>
