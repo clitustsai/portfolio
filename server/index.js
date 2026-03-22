@@ -874,6 +874,22 @@ getDb().then(() => {
     app.listen(PORT, () => {
         console.log(`✅ Backend chạy tại http://localhost:${PORT}`);
         console.log(`🤖 AI Chat: ${process.env.OPENROUTER_API_KEY ? 'OpenRouter đã kết nối' : 'Fallback mode'}`);
+
+        // ===== KEEP-ALIVE: tự ping mỗi 10 phút để Render không sleep =====
+        const RENDER_URL = process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
+        if (process.env.NODE_ENV !== 'development') {
+            setInterval(async () => {
+                try {
+                    const https = require('https');
+                    const http = require('http');
+                    const url = new URL(RENDER_URL + '/api/health');
+                    const client = url.protocol === 'https:' ? https : http;
+                    client.get(url.toString(), (res) => {
+                        console.log(`🏓 Keep-alive ping: ${res.statusCode}`);
+                    }).on('error', () => {});
+                } catch(e) {}
+            }, 10 * 60 * 1000); // 10 phút
+        }
     });
 }).catch(err => {
     console.error('❌ Lỗi khởi động DB:', err);

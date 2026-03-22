@@ -8,10 +8,17 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
 let backendOnline = false;
 async function checkBackend() {
   try {
-    const r = await fetch(`${API_BASE}/health`, { signal: AbortSignal.timeout(3000) });
+    const r = await fetch(`${API_BASE}/health`, { signal: AbortSignal.timeout(5000) });
     backendOnline = r.ok;
   } catch {
-    backendOnline = false;
+    // Retry 1 lần sau 3 giây (Render đang wake up)
+    await new Promise(res => setTimeout(res, 3000));
+    try {
+      const r2 = await fetch(`${API_BASE}/health`, { signal: AbortSignal.timeout(8000) });
+      backendOnline = r2.ok;
+    } catch {
+      backendOnline = false;
+    }
   }
   return backendOnline;
 }
