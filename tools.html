@@ -203,7 +203,9 @@ html[data-theme="dark"] .pricing-feature { color:#bbb; }
     <span class="badge"><i class="fas fa-bolt"></i> Powered by GPT-4.1</span>
     <span class="badge"><i class="fas fa-gift"></i> 3 lần/ngày miễn phí</span>
     <span class="badge vip"><i class="fas fa-crown"></i> VIP: Không giới hạn</span>
+    <span class="badge" id="vip-status-badge" style="display:none;"></span>
   </div>
+  <div id="tools-user-slot" style="margin-top:1rem;display:flex;align-items:center;justify-content:center;gap:.5rem;"></div>
 </div>
 
 <!-- TABS -->
@@ -257,10 +259,6 @@ html[data-theme="dark"] .pricing-feature { color:#bbb; }
               <option value="rust">Rust</option>
               <option value="sql">SQL</option>
             </select>
-          </div>
-          <div class="form-group">
-            <label>Email VIP (nếu có)</label>
-            <input type="email" id="cr-email" placeholder="email@example.com để dùng VIP">
           </div>
         </div>
         <div class="form-group">
@@ -343,10 +341,6 @@ html[data-theme="dark"] .pricing-feature { color:#bbb; }
               <option value="en">English</option>
             </select>
           </div>
-          <div class="form-group">
-            <label>Email VIP (nếu có)</label>
-            <input type="email" id="cv-vip-email" placeholder="email@example.com để dùng VIP">
-          </div>
         </div>
         <div class="submit-row">
           <button class="btn-submit" id="cv-btn" onclick="runCVGen()">
@@ -414,8 +408,217 @@ html[data-theme="dark"] .pricing-feature { color:#bbb; }
 </footer>
 
 <script>
-// v3
-const API = '';
+// v4 — auth required
+const API_BASE = (location.hostname==='localhost'||location.hostname==='127.0.0.1')
+  ? 'http://localhost:3001/api' : `${location.origin}/api`;
+
+// ===== AUTH HELPERS (dùng lại từ auth.js) =====
+function getToken()   { return localStorage.getItem('user_token'); }
+function getUser()    { try { return JSON.parse(localStorage.getItem('user_info')); } catch { return null; } }
+function isLoggedIn() { return !!getToken() && !!getUser(); }
+
+// ===== AUTH GATE: chặn toàn bộ trang nếu chưa login =====
+function checkAuthGate() {
+  if (!isLoggedIn()) {
+    showAuthModal();
+    // Ẩn tools content
+    document.querySelectorAll('.tools-tabs,.tools-main,.pricing-section').forEach(el => el.style.display = 'none');
+    return false;
+  }
+  // Đã login: hiện content, cập nhật navbar
+  document.querySelectorAll('.tools-tabs,.tools-main,.pricing-section').forEach(el => el.style.display = '');
+  updateNavUser();
+  updateUsageUI();
+  return true;
+}
+
+function updateNavUser() {
+  const user = getUser();
+  if (!user) return;
+  // Cập nhật badge VIP nếu có
+  checkVipStatus(user.email);
+}
+
+async function checkVipStatus(email) {
+  try {
+    const r = await fetch(`${API_BASE}/subscription/check?email=${encodeURIComponent(email)}`);
+    const d = await r.json();
+    window._isVip = d.hasSubscription;
+    const badge = document.getElementById('vip-status-badge');
+    if (badge) {
+      badge.textContent = d.hasSubscription ? '👑 VIP' : '🆓 Free (3 lượt/ngày)';
+      badge.style.background = d.hasSubscription ? 'linear-gradient(135deg,#f59e0b,#d97706)' : 'rgba(255,255,255,.15)';
+    }
+  } catch {}
+}
+
+// ===== AUTH MODAL (Login / Register) =====
+function showAuthModal(msg) {
+  const existing = document.getElementById('auth-modal');
+  if (existing) return;
+  const modal = document.createElement('div');
+  modal.id = 'auth-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;';
+  modal.innerHTML = `
+    <div style="background:#fff;border-radius:24px;width:100%;max-width:400px;box-shadow:0 30px 80px rgba(0,0,0,.4);overflow:hidden;">
+      <div style="background:linear-gradient(135deg,#667eea,#764ba2);padding:2rem;text-align:center;">
+        <div style="font-size:2.5rem;margin-bottom:.5rem;">🤖</div>
+        <h2 style="color:#fff;font-size:1.2rem;font-weight:900;margin:0 0 .25rem;">AI Tools — Clitus PC</h2>
+        <p style="color:rgba(255,255,255,.8);font-size:.82rem;margin:0;">${msg || 'Đăng nhập để sử dụng AI Tools miễn phí'}</p>
+      </div>
+      <!-- Tabs -->
+      <div style="display:flex;border-bottom:2px solid #f0f0f0;">
+        <button id="auth-tab-login" onclick="switchAuthTab('login')" style="flex:1;padding:.85rem;border:none;background:#fff;font-size:.9rem;font-weight:700;color:#667eea;cursor:pointer;border-bottom:2px solid #667eea;margin-bottom:-2px;">Đăng Nhập</button>
+        <button id="auth-tab-reg" onclick="switchAuthTab('register')" style="flex:1;padding:.85rem;border:none;background:#fff;font-size:.9rem;font-weight:700;color:#999;cursor:pointer;">Đăng Ký</button>
+      </div>
+      <!-- Login form -->
+      <div id="auth-form-login" style="padding:1.5rem;">
+        <div style="display:flex;flex-direction:column;gap:.75rem;">
+          <input id="al-email" type="email" placeholder="Email *" style="padding:.75rem 1rem;border:1.5px solid #e0e4ff;border-radius:12px;font-size:.9rem;font-family:inherit;outline:none;width:100%;box-sizing:border-box;">
+          <input id="al-pass" type="password" placeholder="Mật khẩu *" style="padding:.75rem 1rem;border:1.5px solid #e0e4ff;border-radius:12px;font-size:.9rem;font-family:inherit;outline:none;width:100%;box-sizing:border-box;">
+        </div>
+        <div id="al-err" style="display:none;color:#dc2626;font-size:.82rem;margin:.65rem 0 0;background:#fff5f5;border-radius:8px;padding:.5rem .75rem;"></div>
+        <button id="al-btn" onclick="doLogin()" style="width:100%;margin-top:1rem;padding:.9rem;border:none;border-radius:50px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:.95rem;font-weight:800;cursor:pointer;box-shadow:0 6px 20px rgba(102,126,234,.4);">
+          Đăng Nhập
+        </button>
+        <p style="text-align:center;font-size:.8rem;color:#999;margin:.75rem 0 0;">Chưa có tài khoản? <a onclick="switchAuthTab('register')" style="color:#667eea;font-weight:700;cursor:pointer;">Đăng ký ngay</a></p>
+      </div>
+      <!-- Register form -->
+      <div id="auth-form-reg" style="display:none;padding:1.5rem;">
+        <div style="display:flex;flex-direction:column;gap:.75rem;">
+          <input id="ar-name" type="text" placeholder="Tên đăng nhập *" style="padding:.75rem 1rem;border:1.5px solid #e0e4ff;border-radius:12px;font-size:.9rem;font-family:inherit;outline:none;width:100%;box-sizing:border-box;">
+          <input id="ar-email" type="email" placeholder="Email *" style="padding:.75rem 1rem;border:1.5px solid #e0e4ff;border-radius:12px;font-size:.9rem;font-family:inherit;outline:none;width:100%;box-sizing:border-box;">
+          <input id="ar-pass" type="password" placeholder="Mật khẩu (tối thiểu 6 ký tự) *" style="padding:.75rem 1rem;border:1.5px solid #e0e4ff;border-radius:12px;font-size:.9rem;font-family:inherit;outline:none;width:100%;box-sizing:border-box;">
+        </div>
+        <div id="ar-err" style="display:none;color:#dc2626;font-size:.82rem;margin:.65rem 0 0;background:#fff5f5;border-radius:8px;padding:.5rem .75rem;"></div>
+        <button id="ar-btn" onclick="doRegister()" style="width:100%;margin-top:1rem;padding:.9rem;border:none;border-radius:50px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:.95rem;font-weight:800;cursor:pointer;box-shadow:0 6px 20px rgba(102,126,234,.4);">
+          Tạo Tài Khoản
+        </button>
+        <p style="text-align:center;font-size:.8rem;color:#999;margin:.75rem 0 0;">Đã có tài khoản? <a onclick="switchAuthTab('login')" style="color:#667eea;font-weight:700;cursor:pointer;">Đăng nhập</a></p>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+function switchAuthTab(tab) {
+  const isLogin = tab === 'login';
+  document.getElementById('auth-form-login').style.display = isLogin ? 'block' : 'none';
+  document.getElementById('auth-form-reg').style.display = isLogin ? 'none' : 'block';
+  document.getElementById('auth-tab-login').style.cssText = `flex:1;padding:.85rem;border:none;background:#fff;font-size:.9rem;font-weight:700;cursor:pointer;${isLogin ? 'color:#667eea;border-bottom:2px solid #667eea;margin-bottom:-2px;' : 'color:#999;'}`;
+  document.getElementById('auth-tab-reg').style.cssText = `flex:1;padding:.85rem;border:none;background:#fff;font-size:.9rem;font-weight:700;cursor:pointer;${!isLogin ? 'color:#667eea;border-bottom:2px solid #667eea;margin-bottom:-2px;' : 'color:#999;'}`;
+}
+
+async function doLogin() {
+  const email = document.getElementById('al-email').value.trim();
+  const pass = document.getElementById('al-pass').value;
+  const errEl = document.getElementById('al-err');
+  const btn = document.getElementById('al-btn');
+  errEl.style.display = 'none';
+  if (!email || !pass) { errEl.textContent = '⚠️ Vui lòng nhập đầy đủ.'; errEl.style.display = 'block'; return; }
+  btn.disabled = true; btn.textContent = 'Đang đăng nhập...';
+  try {
+    const r = await fetch(`${API_BASE}/auth/login`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password: pass })
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error);
+    localStorage.setItem('user_token', d.token);
+    localStorage.setItem('user_info', JSON.stringify(d.user));
+    document.getElementById('auth-modal').remove();
+    onAuthSuccess(d.user);
+  } catch(e) {
+    errEl.textContent = '❌ ' + e.message; errEl.style.display = 'block';
+    btn.disabled = false; btn.textContent = 'Đăng Nhập';
+  }
+}
+
+async function doRegister() {
+  const name = document.getElementById('ar-name').value.trim();
+  const email = document.getElementById('ar-email').value.trim();
+  const pass = document.getElementById('ar-pass').value;
+  const errEl = document.getElementById('ar-err');
+  const btn = document.getElementById('ar-btn');
+  errEl.style.display = 'none';
+  if (!name || !email || !pass) { errEl.textContent = '⚠️ Vui lòng nhập đầy đủ.'; errEl.style.display = 'block'; return; }
+  if (pass.length < 6) { errEl.textContent = '⚠️ Mật khẩu tối thiểu 6 ký tự.'; errEl.style.display = 'block'; return; }
+  btn.disabled = true; btn.textContent = 'Đang tạo tài khoản...';
+  try {
+    const r = await fetch(`${API_BASE}/auth/register`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: name, email, password: pass })
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error);
+    localStorage.setItem('user_token', d.token);
+    localStorage.setItem('user_info', JSON.stringify(d.user));
+    document.getElementById('auth-modal').remove();
+    onAuthSuccess(d.user);
+  } catch(e) {
+    errEl.textContent = '❌ ' + e.message; errEl.style.display = 'block';
+    btn.disabled = false; btn.textContent = 'Tạo Tài Khoản';
+  }
+}
+
+function onAuthSuccess(user) {
+  document.querySelectorAll('.tools-tabs,.tools-main,.pricing-section').forEach(el => el.style.display = '');
+  updateUsageUI();
+  checkVipStatus(user.email);
+  showToast(`✓ Chào mừng ${user.username}!`, 'success', 3000);
+  // Cập nhật hero badge
+  const badge = document.getElementById('vip-status-badge');
+  if (badge) badge.textContent = '🆓 Free (3 lượt/ngày)';
+  // Cập nhật nút logout trong navbar
+  renderLogoutBtn(user);
+}
+
+function renderLogoutBtn(user) {
+  const slot = document.getElementById('tools-user-slot');
+  if (!slot) return;
+  slot.innerHTML = `<span style="font-size:.82rem;color:rgba(255,255,255,.8);margin-right:.5rem;">${user.username}</span>
+    <button onclick="doLogout()" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:50px;padding:.35rem .85rem;font-size:.78rem;font-weight:700;cursor:pointer;">Đăng xuất</button>`;
+}
+
+async function doLogout() {
+  const token = getToken();
+  if (token) { try { await fetch(`${API_BASE}/auth/logout`, { method: 'POST', headers: { 'x-user-token': token } }); } catch {} }
+  localStorage.removeItem('user_token');
+  localStorage.removeItem('user_info');
+  location.reload();
+}
+
+// ===== TABS =====
+function switchTab(id, btn) {
+  document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ===== USAGE COUNTER (localStorage, sync với server) =====
+function getUsage(key) {
+  const today = new Date().toDateString();
+  const stored = JSON.parse(localStorage.getItem('ai_usage') || '{}');
+  if (stored.date !== today) return 0;
+  return stored[key] || 0;
+}
+function incUsage(key) {
+  const today = new Date().toDateString();
+  const stored = JSON.parse(localStorage.getItem('ai_usage') || '{}');
+  if (stored.date !== today) { localStorage.setItem('ai_usage', JSON.stringify({ date: today, [key]: 1 })); return 1; }
+  stored[key] = (stored[key] || 0) + 1;
+  localStorage.setItem('ai_usage', JSON.stringify(stored));
+  return stored[key];
+}
+function updateUsageUI() {
+  const crUsed = getUsage('cr'); const cvUsed = getUsage('cv');
+  const crEl = document.getElementById('cr-usage');
+  const cvEl = document.getElementById('cv-usage');
+  const crLeft = Math.max(0, 3 - crUsed);
+  const cvLeft = Math.max(0, 3 - cvUsed);
+  if (crEl) { crEl.textContent = window._isVip ? '∞' : crLeft; crEl.style.color = (!window._isVip && crLeft === 0) ? '#f5576c' : (!window._isVip && crLeft === 1) ? '#f59e0b' : 'var(--g1)'; }
+  if (cvEl) { cvEl.textContent = window._isVip ? '∞' : cvLeft; cvEl.style.color = (!window._isVip && cvLeft === 0) ? '#f5576c' : (!window._isVip && cvLeft === 1) ? '#f59e0b' : 'var(--g1)'; }
+}
 
 // ===== TABS =====
 function switchTab(id, btn) {
@@ -462,7 +665,7 @@ function updateUsageUI() {
 }
 document.addEventListener('DOMContentLoaded', updateUsageUI);
 
-// ===== UPSELL / REGISTER MODAL =====
+// ===== UPSELL MODAL (hết lượt → mua VIP) =====
 function showUpsellModal(toolName) {
   const existing = document.getElementById('upsell-modal');
   if (existing) existing.remove();
@@ -570,9 +773,9 @@ async function submitUpsell() {
 
 // ===== CODE REVIEW =====
 async function runCodeReview() {
+  if (!isLoggedIn()) { showAuthModal(); return; }
   const code = document.getElementById('cr-code').value.trim();
   const lang = document.getElementById('cr-lang').value;
-  const email = document.getElementById('cr-email').value.trim();
   const btn = document.getElementById('cr-btn');
   const errBox = document.getElementById('cr-error');
   const resultBox = document.getElementById('cr-result');
@@ -580,22 +783,22 @@ async function runCodeReview() {
   errBox.classList.remove('show'); resultBox.classList.remove('show');
   if (!code) { errBox.textContent = '⚠️ Vui lòng dán code vào ô bên trên.'; errBox.classList.add('show'); return; }
 
-  // Check free limit trước khi gọi API (nếu không có email VIP)
-  if (!email && getUsage('cr') >= 3) { showUpsellModal('AI Code Review'); return; }
+  // Check free limit client-side (nếu không phải VIP)
+  if (!window._isVip && getUsage('cr') >= 3) { showUpsellModal('AI Code Review'); return; }
 
   btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang phân tích...';
   try {
-    const res = await fetch('/api/tools/code-review', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code, language: lang, email })
+    const res = await fetch(`${API_BASE}/tools/code-review`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-user-token': getToken() },
+      body: JSON.stringify({ code, language: lang })
     });
     const data = await res.json();
     if (!res.ok) {
       if (res.status === 429) { showUpsellModal('AI Code Review'); return; }
-      errBox.innerHTML = `❌ ${data.error}`;
-      errBox.classList.add('show'); return;
+      if (res.status === 401) { showAuthModal('Phiên đăng nhập hết hạn, vui lòng đăng nhập lại'); return; }
+      errBox.innerHTML = `❌ ${data.error}`; errBox.classList.add('show'); return;
     }
-    // Chỉ tăng counter nếu không phải VIP
     if (!data.isVip) incUsage('cr');
     updateUsageUI();
     renderCodeReview(data.result);
@@ -639,6 +842,7 @@ function copyReview() {
 // ===== CV GENERATOR =====
 let cvHTML = '';
 async function runCVGen() {
+  if (!isLoggedIn()) { showAuthModal(); return; }
   const name = document.getElementById('cv-name').value.trim();
   const btn = document.getElementById('cv-btn');
   const errBox = document.getElementById('cv-error');
@@ -647,15 +851,13 @@ async function runCVGen() {
   errBox.classList.remove('show'); resultBox.classList.remove('show');
   if (!name) { errBox.textContent = '⚠️ Vui lòng nhập họ tên.'; errBox.classList.add('show'); return; }
 
-  const email = document.getElementById('cv-vip-email').value.trim();
-
-  // Check free limit trước khi gọi API
-  if (!email && getUsage('cv') >= 3) { showUpsellModal('AI CV Generator'); return; }
+  if (!window._isVip && getUsage('cv') >= 3) { showUpsellModal('AI CV Generator'); return; }
 
   btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tạo CV...';
   try {
-    const res = await fetch('/api/tools/cv-generate', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
+    const res = await fetch(`${API_BASE}/tools/cv-generate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-user-token': getToken() },
       body: JSON.stringify({
         name, title: document.getElementById('cv-title').value.trim(),
         email: document.getElementById('cv-email').value.trim(),
@@ -664,17 +866,15 @@ async function runCVGen() {
         skills: document.getElementById('cv-skills').value.trim(),
         experience: document.getElementById('cv-exp').value.trim(),
         education: document.getElementById('cv-edu').value.trim(),
-        language: document.getElementById('cv-lang').value,
-        vipEmail: email
+        language: document.getElementById('cv-lang').value
       })
     });
     const data = await res.json();
     if (!res.ok) {
       if (res.status === 429) { showUpsellModal('AI CV Generator'); return; }
-      errBox.innerHTML = `❌ ${data.error}`;
-      errBox.classList.add('show'); return;
+      if (res.status === 401) { showAuthModal('Phiên đăng nhập hết hạn, vui lòng đăng nhập lại'); return; }
+      errBox.innerHTML = `❌ ${data.error}`; errBox.classList.add('show'); return;
     }
-    // Chỉ tăng counter nếu không phải VIP
     if (!data.isVip) incUsage('cv');
     updateUsageUI();
     cvHTML = data.html || '';
@@ -728,6 +928,41 @@ if (hamburger && navUl) {
 document.querySelectorAll('.nav-dropdown').forEach(dd => {
   dd.querySelector('.nav-dropdown-toggle').addEventListener('click', e => { if (window.innerWidth <= 768) { e.preventDefault(); dd.classList.toggle('open'); } });
   document.addEventListener('click', e => { if (!dd.contains(e.target)) dd.classList.remove('open'); });
+});
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', () => {
+  // Dark mode
+  const htmlEl = document.documentElement;
+  const themeToggle = document.getElementById('themeToggle');
+  if (localStorage.getItem('theme') === 'dark') { htmlEl.setAttribute('data-theme','dark'); themeToggle && (themeToggle.innerHTML='<i class="fas fa-sun"></i>'); }
+  themeToggle && themeToggle.addEventListener('click', () => {
+    const isDark = htmlEl.getAttribute('data-theme') === 'dark';
+    htmlEl.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    localStorage.setItem('theme', isDark ? 'light' : 'dark');
+    themeToggle.innerHTML = isDark ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+  });
+  // Hamburger
+  const hamburger = document.getElementById('navHamburger');
+  const navUl = document.querySelector('nav ul');
+  if (hamburger && navUl) {
+    hamburger.addEventListener('click', e => { e.stopPropagation(); const o = hamburger.classList.toggle('open'); navUl.classList.toggle('open', o); document.body.style.overflow = o ? 'hidden' : ''; });
+    document.addEventListener('click', e => { if (navUl.classList.contains('open') && !navUl.contains(e.target) && e.target !== hamburger) { hamburger.classList.remove('open'); navUl.classList.remove('open'); document.body.style.overflow = ''; } });
+  }
+  document.querySelectorAll('.nav-dropdown').forEach(dd => {
+    dd.querySelector('.nav-dropdown-toggle').addEventListener('click', e => { if (window.innerWidth <= 768) { e.preventDefault(); dd.classList.toggle('open'); } });
+    document.addEventListener('click', e => { if (!dd.contains(e.target)) dd.classList.remove('open'); });
+  });
+  // AUTH GATE — bắt buộc đăng nhập
+  if (isLoggedIn()) {
+    const user = getUser();
+    renderLogoutBtn(user);
+    checkVipStatus(user.email);
+    updateUsageUI();
+  } else {
+    document.querySelectorAll('.tools-tabs,.tools-main,.pricing-section').forEach(el => el.style.display = 'none');
+    showAuthModal();
+  }
 });
 </script>
 </body>

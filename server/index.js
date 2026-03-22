@@ -768,12 +768,21 @@ function checkVIP(email) {
 
 // AI Code Review
 app.post('/api/tools/code-review', async (req, res) => {
-    const { code, language, email } = req.body;
+    const { code, language } = req.body;
     if (!code?.trim()) return res.status(400).json({ error: 'Thiếu code' });
-    const isVip = checkVIP(email);
+
+    // Kiểm tra auth token — bắt buộc đăng nhập
+    const token = req.headers['x-user-token'];
+    if (!token) return res.status(401).json({ error: 'Vui lòng đăng nhập để sử dụng AI Tools' });
+    const session = get("SELECT * FROM user_sessions WHERE token=? AND expires_at > datetime('now')", [token]);
+    if (!session) return res.status(401).json({ error: 'Phiên đăng nhập hết hạn, vui lòng đăng nhập lại' });
+
+    // Kiểm tra VIP theo email của user
+    const user = get('SELECT email FROM users WHERE id=?', [session.user_id]);
+    const isVip = user ? checkVIP(user.email) : false;
+
     if (!isVip) {
-        // Apply rate limit manually for free users
-        const key = `cr_${req.ip}`;
+        const key = `cr_user_${session.user_id}`;
         const today = new Date().toDateString();
         const usageKey = `usage_${key}_${today}`;
         const usage = get('SELECT value FROM site_stats WHERE key=?', [usageKey]);
@@ -801,11 +810,20 @@ app.post('/api/tools/code-review', async (req, res) => {
 
 // AI CV Generator
 app.post('/api/tools/cv-generate', async (req, res) => {
-    const { name, title, email: userEmail, phone, summary, skills, experience, education, language, email, vipEmail } = req.body;
+    const { name, title, email: userEmail, phone, summary, skills, experience, education, language } = req.body;
     if (!name?.trim()) return res.status(400).json({ error: 'Thiếu tên' });
-    const isVip = checkVIP(vipEmail || email);
+
+    // Kiểm tra auth token — bắt buộc đăng nhập
+    const token = req.headers['x-user-token'];
+    if (!token) return res.status(401).json({ error: 'Vui lòng đăng nhập để sử dụng AI Tools' });
+    const session = get("SELECT * FROM user_sessions WHERE token=? AND expires_at > datetime('now')", [token]);
+    if (!session) return res.status(401).json({ error: 'Phiên đăng nhập hết hạn, vui lòng đăng nhập lại' });
+
+    const user = get('SELECT email FROM users WHERE id=?', [session.user_id]);
+    const isVip = user ? checkVIP(user.email) : false;
+
     if (!isVip) {
-        const key = `cv_${req.ip}`;
+        const key = `cv_user_${session.user_id}`;
         const today = new Date().toDateString();
         const usageKey = `usage_${key}_${today}`;
         const usage = get('SELECT value FROM site_stats WHERE key=?', [usageKey]);
