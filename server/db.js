@@ -164,6 +164,18 @@ async function getDb() {
             coins_earned INTEGER NOT NULL DEFAULT 0,
             played_at DATETIME DEFAULT (datetime('now'))
         );
+        CREATE TABLE IF NOT EXISTS chat_messages (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER,
+            username TEXT NOT NULL,
+            avatar TEXT DEFAULT '',
+            role TEXT DEFAULT 'free',
+            room TEXT NOT NULL DEFAULT 'general',
+            message TEXT NOT NULL,
+            reply_to INTEGER DEFAULT NULL,
+            reactions TEXT DEFAULT '{}',
+            created_at DATETIME DEFAULT (datetime('now'))
+        );
     `);
     // Migrate: thêm cột mới nếu chưa có (cho DB cũ)
     try { db.exec(`ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'free'`); } catch(e) {}

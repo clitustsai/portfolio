@@ -1216,6 +1216,66 @@ app.get('/api/game/leaderboard/:game', (req, res) => {
     res.json(rows);
 });
 
+// ========== COMMUNITY CHAT ==========
+const chatPostLimiter = rateLimit({ windowMs: 10 * 1000, max: 3, message: { error: 'Gửi quá nhanh, chờ chút!' } });
+
+app.get('/api/chat/messages', (req, res) => {
+    const room = (req.query.room || 'general').slice(0, 30);
+    const since = parseInt(req.query.since) || 0;
+    const rows = all(
+        'SELECT * FROM chat_messages WHERE room=? AND id>? ORDER BY id ASC LIMIT 50',
+        [room, since]
+    );
+    const parsed = rows.map(r => ({ ...r, reactions: JSON.parse(r.reactions || '{}') }));
+    res.json(parsed);
+});
+
+app.post('/api/chat/messages', chatPostLimiter, (req, res) => {
+    const { message, room, reply_to } = req.body;
+    if (!message?.trim()) return res.status(400).json({ error: 'Tin nhắn trống' });
+    if (message.trim().length > 500) return res.status(400).json({ error: 'Tối đa 500 ký tự' });
+
+    const token = getAuthToken(req);
+    let userId = null, username = 'Khách', avatar = '', role = 'guest';
+
+    if (token) {
+        const payload = verifyJWT(token);
+        if (payload) {
+            const user = get('SELECT id,username,avatar,role FROM users WHERE id=?', [payload.id]);
+            if (user) { userId = user.id; username = user.username; avatar = user.avatar || ''; role = user.role; }
+        }
+    }
+
+    // Guest name từ body nếu chưa đăng nhập
+    if (!userId && req.body.guestName?.trim()) {
+        username = req.body.guestName.trim().slice(0, 30) + ' (khách)';
+    }
+
+    run('INSERT INTO chat_messages (user_id, username, avatar, role, room, message, reply_to) VALUES (?,?,?,?,?,?,?)',
+        [userId, username, avatar, role, (room||'general').slice(0,30), message.trim().slice(0,500), reply_to || null]);
+
+    const msg = get('SELECT * FROM chat_messages ORDER BY id DESC LIMIT 1');
+    res.status(201).json({ ...msg, reactions: {} });
+});
+
+app.post('/api/chat/messages/:id/react', (req, res) => {
+    const id = parseInt(req.params.id);
+    const { emoji } = req.body;
+    const allowed = ['👍','❤️','😂','🔥','👏','😮'];
+    if (!allowed.includes(emoji)) return res.status(400).json({ error: 'Emoji không hợp lệ' });
+    const msg = get('SELECT reactions FROM chat_messages WHERE id=?', [id]);
+    if (!msg) return res.status(404).json({ error: 'Không tìm thấy' });
+    const reactions = JSON.parse(msg.reactions || '{}');
+    reactions[emoji] = (reactions[emoji] || 0) + 1;
+    run('UPDATE chat_messages SET reactions=? WHERE id=?', [JSON.stringify(reactions), id]);
+    res.json({ reactions });
+});
+
+app.delete('/api/chat/messages/:id', requireAdmin, (req, res) => {
+    run('DELETE FROM chat_messages WHERE id=?', [parseInt(req.params.id)]);
+    res.json({ ok: true });
+});
+
 // Serve index.html chỉ cho các route không phải file tĩnh và không phải API
 app.get('*', (req, res) => {
     const reqPath = req.path;
