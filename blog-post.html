@@ -24,6 +24,7 @@
   <link rel="stylesheet" href="blog.css?v=3">
 </head>
 <body>
+<script src="dist/protect.js"></script>
   <header>
     <nav>
       <a href="index.html" class="logo">
@@ -129,9 +130,9 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-  <script src="api.js"></script>
-  <script src="auth.js"></script>
-  <script src="nav.js"></script>
+  <script src="dist/api.js"></script>
+  <script src="dist/auth.js"></script>
+  <script src="dist/nav.js"></script>
   <script>
     const API = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
       ? 'http://localhost:3001/api'
@@ -451,11 +452,11 @@ Hooks giúp code React trở nên **ngắn gọn**, **dễ test** và **dễ tá
       document.addEventListener('keydown', e=>{ if(e.key==='Escape') close(); });
     })();
   </script>
-<script src="interactions-vip.js"></script>
-<script src="live-activity.js"></script>
-<script src="recommend.js"></script>
-<script src="chat.js"></script>
-<script src="push-notify.js"></script>
-<script src="mobile-nav.js"></script>
+<script src="dist/interactions-vip.js"></script>
+<script src="dist/live-activity.js"></script>
+<script src="dist/recommend.js"></script>
+<script src="dist/chat.js"></script>
+<script src="dist/push-notify.js"></script>
+<script src="dist/mobile-nav.js"></script>
 </body>
 </html>
