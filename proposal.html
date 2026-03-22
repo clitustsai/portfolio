@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proposal Generator - Clitus PC</title>
+  <meta name="description" content="AI tạo proposal freelance chuyên nghiệp - báo giá, timeline, PDF">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles-new.css">
+  <style>
+  :root { --bg:#f8f9ff; --card:#fff; --text:#1a1a2e; --sub:#666; --border:#e0e4ff; }
+  html[data-theme="dark"] { --bg:#0d0d1a; --card:#1a1a2e; --text:#e0e0ff; --sub:#9090b0; --border:#2a2a4a; }
+
+  .proposal-page { min-height:100vh; padding:6rem 1rem 4rem; background:var(--bg); }
+  .proposal-container { max-width:900px; margin:0 auto; }
+  .page-header { text-align:center; margin-bottom:2.5rem; }
+  .page-header h1 { font-size:clamp(1.6rem,4vw,2.4rem); color:var(--text); margin:0 0 0.5rem; }
+  .page-header p { color:var(--sub); }
+
+  .form-card {
+    background:var(--card); border-radius:20px; padding:2rem;
+    box-shadow:0 8px 32px rgba(102,126,234,0.1); border:1px solid var(--border); margin-bottom:2rem;
+  }
+  .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem; }
+  @media(max-width:600px){ .form-grid{ grid-template-columns:1fr; } }
+  .fg label { display:block; font-size:0.83rem; font-weight:700; color:var(--text); margin-bottom:0.4rem; }
+  .fg input, .fg select, .fg textarea {
+    width:100%; padding:0.75rem 1rem; border-radius:12px; border:1.5px solid var(--border);
+    background:var(--bg); color:var(--text); font-size:0.93rem; outline:none;
+    transition:border 0.2s; box-sizing:border-box; font-family:inherit;
+  }
+  .fg input:focus, .fg select:focus, .fg textarea:focus { border-color:#667eea; }
+  .fg textarea { resize:vertical; min-height:100px; }
+  .gen-btn {
+    width:100%; padding:1rem; border:none; border-radius:14px;
+    background:linear-gradient(135deg,#667eea,#764ba2); color:#fff;
+    font-size:1rem; font-weight:700; cursor:pointer; transition:all 0.2s;
+    display:flex; align-items:center; justify-content:center; gap:0.6rem;
+    box-shadow:0 4px 16px rgba(102,126,234,0.35); margin-top:0.5rem;
+  }
+  .gen-btn:hover{ opacity:0.9; transform:translateY(-2px); }
+  .gen-btn:disabled{ opacity:0.6; cursor:not-allowed; transform:none; }
+
+  /* Preview */
+  #proposalPreview { display:none; }
+  .preview-actions {
+    display:flex; gap:0.75rem; flex-wrap:wrap; margin-bottom:1.5rem; justify-content:flex-end;
+  }
+  .btn-act {
+    padding:0.55rem 1.2rem; border-radius:50px; border:1.5px solid var(--border);
+    background:var(--card); color:var(--text); font-size:0.83rem; font-weight:700;
+    cursor:pointer; transition:all 0.2s; display:flex; align-items:center; gap:0.4rem;
+  }
+  .btn-act:hover{ border-color:#667eea; color:#667eea; }
+  .btn-act.primary{ background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; border:none; box-shadow:0 4px 14px rgba(102,126,234,0.3); }
+  .btn-act.primary:hover{ opacity:0.88; color:#fff; }
+
+  /* Proposal Document */
+  #proposalDoc {
+    background:#fff; border-radius:16px; padding:3rem;
+    box-shadow:0 8px 40px rgba(0,0,0,0.12); color:#1a1a2e;
+    font-family:'Segoe UI',sans-serif; line-height:1.7;
+  }
+  .doc-header { border-bottom:3px solid #667eea; padding-bottom:1.5rem; margin-bottom:2rem; display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1rem; }
+  .doc-brand { font-size:1.4rem; font-weight:900; background:linear-gradient(135deg,#667eea,#764ba2); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .doc-meta { text-align:right; font-size:0.82rem; color:#666; }
+  .doc-title { font-size:1.6rem; font-weight:900; color:#1a1a2e; margin:0 0 0.5rem; }
+  .doc-subtitle { color:#667eea; font-size:0.95rem; font-weight:600; }
+
+  .doc-section { margin-bottom:2rem; }
+  .doc-section h3 { font-size:1rem; font-weight:800; color:#667eea; text-transform:uppercase; letter-spacing:0.06em; margin:0 0 1rem; padding-bottom:0.4rem; border-bottom:1px solid #e0e4ff; }
+
+  .price-box {
+    background:linear-gradient(135deg,rgba(102,126,234,0.08),rgba(118,75,162,0.08));
+    border:2px solid rgba(102,126,234,0.2); border-radius:16px; padding:1.5rem;
+    display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; text-align:center;
+  }
+  @media(max-width:500px){ .price-box{ grid-template-columns:1fr; } }
+  .price-item .label { font-size:0.75rem; color:#666; font-weight:600; text-transform:uppercase; }
+  .price-item .value { font-size:1.4rem; font-weight:900; color:#667eea; }
+  .price-item .value.total { color:#764ba2; font-size:1.8rem; }
+
+  .timeline-row { display:flex; gap:1rem; margin-bottom:0.75rem; align-items:flex-start; }
+  .tl-num { width:28px; height:28px; border-radius:50%; background:#667eea; color:#fff; display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:800; flex-shrink:0; margin-top:2px; }
+  .tl-content { flex:1; }
+  .tl-title { font-weight:700; font-size:0.93rem; color:#1a1a2e; }
+  .tl-dur { font-size:0.78rem; color:#667eea; font-weight:600; }
+  .tl-desc { font-size:0.83rem; color:#666; margin-top:0.2rem; }
+
+  .tech-tags { display:flex; flex-wrap:wrap; gap:0.4rem; }
+  .tech-tag { padding:0.3rem 0.8rem; border-radius:50px; background:rgba(102,126,234,0.1); color:#667eea; font-size:0.78rem; font-weight:600; border:1px solid rgba(102,126,234,0.2); }
+
+  .terms-list { list-style:none; padding:0; margin:0; }
+  .terms-list li { padding:0.4rem 0; font-size:0.88rem; color:#444; display:flex; gap:0.5rem; }
+  .terms-list li::before { content:'✓'; color:#11998e; font-weight:800; flex-shrink:0; }
+
+  .doc-footer { border-top:2px solid #e0e4ff; padding-top:1.5rem; margin-top:2rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; }
+  .sig-box { text-align:center; }
+  .sig-line { width:160px; border-bottom:1.5px solid #1a1a2e; margin:0 auto 0.4rem; height:40px; }
+  .sig-label { font-size:0.78rem; color:#666; }
+
+  .loading-dots { display:inline-flex; gap:4px; }
+  .loading-dots span { width:8px; height:8px; border-radius:50%; background:#fff; animation:db 1.2s infinite; }
+  .loading-dots span:nth-child(2){ animation-delay:0.2s; }
+  .loading-dots span:nth-child(3){ animation-delay:0.4s; }
+  @keyframes db{ 0%,80%,100%{transform:scale(0.6);opacity:0.5} 40%{transform:scale(1);opacity:1} }
+
+  @media print {
+    header, .form-card, .preview-actions, .page-header { display:none!important; }
+    .proposal-page { padding:0; }
+    #proposalDoc { box-shadow:none; border-radius:0; padding:2rem; }
+  }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <div class="logo"><a href="index.html" style="color:inherit;text-decoration:none">Portfolio</a></div>
+      <ul>
+        <li><a href="index.html#home">Trang Chủ</a></li>
+        <li><a href="roadmap.html">🗺️ Roadmap</a></li>
+        <li><a href="blog.html">Blog</a></li>
+      </ul>
+      <div class="nav-auth-slot"></div>
+    </nav>
+  </header>
+
+  <main class="proposal-page">
+    <div class="proposal-container">
+      <div class="page-header">
+        <div style="font-size:3rem;margin-bottom:0.5rem;">💼</div>
+        <h1>Auto Proposal Generator</h1>
+        <p>AI tạo proposal freelance chuyên nghiệp trong vài giây</p>
+      </div>
+
+      <div class="form-card">
+        <div class="form-grid">
+          <div class="fg">
+            <label><i class="fas fa-user"></i> Tên khách hàng</label>
+            <input type="text" id="pClientName" placeholder="VD: Công ty ABC, Anh Minh...">
+          </div>
+          <div class="fg">
+            <label><i class="fas fa-briefcase"></i> Loại dự án</label>
+            <select id="pType">
+              <option>Website doanh nghiệp</option>
+              <option>E-commerce / Bán hàng</option>
+              <option>Landing Page</option>
+              <option>Web App / SaaS</option>
+              <option>Mobile App</option>
+              <option>API / Backend</option>
+              <option>Dashboard / Admin</option>
+              <option>Blog / CMS</option>
+              <option>Portfolio</option>
+              <option>Khác</option>
+            </select>
+          </div>
+        </div>
+        <div class="fg" style="margin-bottom:1rem;">
+          <label><i class="fas fa-align-left"></i> Mô tả yêu cầu dự án</label>
+          <textarea id="pDesc" placeholder="VD: Cần làm website bán hàng online cho shop thời trang, có giỏ hàng, thanh toán online, quản lý đơn hàng, responsive mobile..."></textarea>
+        </div>
+        <div class="form-grid">
+          <div class="fg">
+            <label><i class="fas fa-dollar-sign"></i> Budget khách hàng (VNĐ)</label>
+            <select id="pBudget">
+              <option value="5-10 triệu">5 - 10 triệu</option>
+              <option value="10-20 triệu">10 - 20 triệu</option>
+              <option value="20-50 triệu">20 - 50 triệu</option>
+              <option value="50-100 triệu">50 - 100 triệu</option>
+              <option value="100+ triệu">100+ triệu</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label><i class="fas fa-calendar"></i> Deadline mong muốn</label>
+            <select id="pDeadline">
+              <option>1-2 tuần</option>
+              <option>1 tháng</option>
+              <option>2-3 tháng</option>
+              <option>3-6 tháng</option>
+              <option>Linh hoạt</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="fg">
+            <label><i class="fas fa-code"></i> Tech stack ưa thích</label>
+            <input type="text" id="pStack" placeholder="VD: React, Node.js, MongoDB (để trống = AI chọn)">
+          </div>
+          <div class="fg">
+            <label><i class="fas fa-language"></i> Ngôn ngữ proposal</label>
+            <select id="pLang">
+              <option value="vi">Tiếng Việt</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+        </div>
+        <button class="gen-btn" id="genBtn" onclick="generateProposal()">
+          <i class="fas fa-magic"></i> Tạo Proposal với AI
+        </button>
+      </div>
+
+      <!-- Preview -->
+      <div id="proposalPreview">
+        <div class="preview-actions">
+          <button class="btn-act" onclick="generateProposal()"><i class="fas fa-redo"></i> Tạo lại</button>
+          <button class="btn-act" onclick="copyProposal()"><i class="fas fa-copy"></i> Copy text</button>
+          <button class="btn-act primary" onclick="exportPDF()"><i class="fas fa-file-pdf"></i> Xuất PDF</button>
+        </div>
+        <div id="proposalDoc"></div>
+      </div>
+    </div>
+  </main>
+
+  <script src="api.js"></script>
+  <script src="auth.js"></script>
+  <script>
+  async function generateProposal() {
+    const clientName = document.getElementById('pClientName').value.trim() || 'Quý Khách';
+    const type = document.getElementById('pType').value;
+    const desc = document.getElementById('pDesc').value.trim();
+    const budget = document.getElementById('pBudget').value;
+    const deadline = document.getElementById('pDeadline').value;
+    const stack = document.getElementById('pStack').value.trim();
+    const lang = document.getElementById('pLang').value;
+
+    if (!desc) { alert('Vui lòng mô tả yêu cầu dự án!'); return; }
+
+    const btn = document.getElementById('genBtn');
+    btn.disabled = true;
+    btn.innerHTML = `<div class="loading-dots"><span></span><span></span><span></span></div> Đang tạo proposal...`;
+
+    const prompt = `Tạo proposal freelance chuyên nghiệp bằng ${lang === 'vi' ? 'tiếng Việt' : 'English'}.
+Thông tin:
+- Khách hàng: ${clientName}
+- Loại dự án: ${type}
+- Yêu cầu: ${desc}
+- Budget: ${budget}
+- Deadline: ${deadline}
+- Tech stack: ${stack || 'AI tự chọn phù hợp'}
+- Freelancer: Clitus PC (Full Stack Developer, 10+ năm kinh nghiệm, TP.HCM)
+
+Trả về JSON (KHÔNG markdown, chỉ JSON thuần):
+{
+  "projectTitle": "Tên dự án ngắn gọn",
+  "summary": "Tóm tắt 2-3 câu về dự án và giải pháp",
+  "price": { "min": 15000000, "max": 25000000, "currency": "VNĐ" },
+  "timeline": [
+    { "phase": "Tên giai đoạn", "duration": "X ngày", "tasks": "Mô tả công việc" }
+  ],
+  "techStack": ["tech1", "tech2"],
+  "deliverables": ["Hạng mục bàn giao 1", "Hạng mục 2"],
+  "terms": ["Điều khoản 1", "Điều khoản 2"],
+  "whyMe": "Lý do chọn Clitus PC (2-3 câu)"
+}
+Timeline 3-5 giai đoạn. Price phù hợp budget ${budget}. Terms 4-5 điều khoản thực tế.`;
+
+    try {
+      const res = await fetch(`${API_BASE}/chat`, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ message: prompt })
+      });
+      const data = await res.json();
+      const jsonMatch = (data.reply||'').match(/\{[\s\S]*\}/);
+      if (!jsonMatch) throw new Error('parse error');
+      renderProposal(JSON.parse(jsonMatch[0]), clientName, lang);
+    } catch(e) {
+      renderProposal(getFallback(type, clientName, budget, deadline, stack), clientName, lang);
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-magic"></i> Tạo Proposal với AI';
+    }
+  }
+
+  function renderProposal(d, clientName, lang) {
+    const today = new Date().toLocaleDateString('vi-VN');
+    const propNum = 'PRO-' + Date.now().toString().slice(-6);
+    const vi = lang !== 'en';
+
+    const timelineHTML = (d.timeline||[]).map((t,i) => `
+      <div class="timeline-row">
+        <div class="tl-num">${i+1}</div>
+        <div class="tl-content">
+          <div class="tl-title">${t.phase} <span class="tl-dur">· ${t.duration}</span></div>
+          <div class="tl-desc">${t.tasks}</div>
+        </div>
+      </div>`).join('');
+
+    const techHTML = (d.techStack||[]).map(t=>`<span class="tech-tag">${t}</span>`).join('');
+    const delivHTML = (d.deliverables||[]).map(t=>`<li>${t}</li>`).join('');
+    const termsHTML = (d.terms||[]).map(t=>`<li>${t}</li>`).join('');
+
+    const minFmt = Number(d.price?.min||0).toLocaleString('vi-VN');
+    const maxFmt = Number(d.price?.max||0).toLocaleString('vi-VN');
+    const midFmt = Number(Math.round(((d.price?.min||0)+(d.price?.max||0))/2)).toLocaleString('vi-VN');
+
+    document.getElementById('proposalDoc').innerHTML = `
+      <div class="doc-header">
+        <div>
+          <div class="doc-brand">Clitus PC</div>
+          <div style="font-size:0.78rem;color:#666;margin-top:0.25rem;">Full Stack Developer · TP.HCM<br>infoclituspc@gmail.com · +84 906857331</div>
+        </div>
+        <div class="doc-meta">
+          <div><strong>${vi?'Số proposal':'Proposal No'}:</strong> ${propNum}</div>
+          <div><strong>${vi?'Ngày':'Date'}:</strong> ${today}</div>
+          <div><strong>${vi?'Gửi đến':'To'}:</strong> ${clientName}</div>
+        </div>
+      </div>
+
+      <div class="doc-title">${d.projectTitle}</div>
+      <div class="doc-subtitle">${vi?'Đề xuất dự án':'Project Proposal'} · ${vi?'Chuẩn bị bởi':'Prepared by'} Clitus PC</div>
+
+      <div class="doc-section" style="margin-top:1.5rem;">
+        <h3>${vi?'Tổng quan':'Overview'}</h3>
+        <p style="color:#444;font-size:0.93rem;">${d.summary}</p>
+      </div>
+
+      <div class="doc-section">
+        <h3>${vi?'Báo giá':'Pricing'}</h3>
+        <div class="price-box">
+          <div class="price-item"><div class="label">${vi?'Tối thiểu':'Minimum'}</div><div class="value">${minFmt} ${d.price?.currency||'VNĐ'}</div></div>
+          <div class="price-item"><div class="label">${vi?'Đề xuất':'Recommended'}</div><div class="value total">${midFmt} ${d.price?.currency||'VNĐ'}</div></div>
+          <div class="price-item"><div class="label">${vi?'Tối đa':'Maximum'}</div><div class="value">${maxFmt} ${d.price?.currency||'VNĐ'}</div></div>
+        </div>
+      </div>
+
+      <div class="doc-section">
+        <h3>Timeline</h3>
+        ${timelineHTML}
+      </div>
+
+      <div class="doc-section">
+        <h3>${vi?'Công nghệ sử dụng':'Tech Stack'}</h3>
+        <div class="tech-tags">${techHTML}</div>
+      </div>
+
+      <div class="doc-section">
+        <h3>${vi?'Hạng mục bàn giao':'Deliverables'}</h3>
+        <ul class="terms-list">${delivHTML}</ul>
+      </div>
+
+      <div class="doc-section">
+        <h3>${vi?'Điều khoản':'Terms'}</h3>
+        <ul class="terms-list">${termsHTML}</ul>
+      </div>
+
+      <div class="doc-section">
+        <h3>${vi?'Tại sao chọn tôi':'Why Choose Me'}</h3>
+        <p style="color:#444;font-size:0.93rem;">${d.whyMe}</p>
+      </div>
+
+      <div class="doc-footer">
+        <div class="sig-box"><div class="sig-line"></div><div class="sig-label">${vi?'Chữ ký khách hàng':'Client Signature'}</div></div>
+        <div style="text-align:center;font-size:0.82rem;color:#999;">${vi?'Proposal có hiệu lực 30 ngày':'Valid for 30 days'}</div>
+        <div class="sig-box"><div class="sig-line"></div><div class="sig-label">Clitus PC</div></div>
+      </div>`;
+
+    document.getElementById('proposalPreview').style.display = 'block';
+    document.getElementById('proposalPreview').scrollIntoView({ behavior:'smooth', block:'start' });
+  }
+
+  function getFallback(type, client, budget, deadline, stack) {
+    return {
+      projectTitle: `Dự án ${type} cho ${client}`,
+      summary: `Clitus PC đề xuất giải pháp ${type} chuyên nghiệp, hiện đại và tối ưu hiệu suất. Dự án sẽ được phát triển theo quy trình Agile, đảm bảo bàn giao đúng hạn và chất lượng cao.`,
+      price: { min: 15000000, max: 30000000, currency: 'VNĐ' },
+      timeline: [
+        { phase: 'Phân tích & Thiết kế', duration: '3-5 ngày', tasks: 'Thu thập yêu cầu, wireframe, UI mockup' },
+        { phase: 'Phát triển Frontend', duration: '7-10 ngày', tasks: 'Xây dựng giao diện responsive, tích hợp API' },
+        { phase: 'Phát triển Backend', duration: '7-10 ngày', tasks: 'API, database, authentication, business logic' },
+        { phase: 'Testing & Deploy', duration: '3-5 ngày', tasks: 'Kiểm thử, fix bug, deploy production' }
+      ],
+      techStack: stack ? stack.split(',').map(s=>s.trim()) : ['React','Node.js','MongoDB','Vercel'],
+      deliverables: ['Source code đầy đủ','Tài liệu kỹ thuật','Hướng dẫn sử dụng','Hỗ trợ 30 ngày sau bàn giao'],
+      terms: ['Thanh toán 50% trước khi bắt đầu','50% còn lại khi bàn giao','Revision tối đa 3 lần','Bảo hành lỗi 30 ngày','Bàn giao source code sau thanh toán đầy đủ'],
+      whyMe: '10+ năm kinh nghiệm Full Stack, đã hoàn thành 50+ dự án. Cam kết chất lượng, đúng deadline và hỗ trợ tận tình sau bàn giao.'
+    };
+  }
+
+  function copyProposal() {
+    const doc = document.getElementById('proposalDoc');
+    navigator.clipboard.writeText(doc.innerText).then(() => {
+      if (typeof showToast === 'function') showToast('✅ Đã copy proposal!', 'success', 2000);
+    });
+  }
+
+  function exportPDF() {
+    window.print();
+  }
+  </script>
+</body>
+</html>
