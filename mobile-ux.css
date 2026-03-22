@@ -96,7 +96,12 @@ html[data-theme="dark"] .mbn-item.active { color: #a78bfa; }
     min-width: 44px;
   }
 
-  /* Form inputs larger on mobile */
+  /* Adjust floating buttons above bottom nav */
+  #pn-bell { bottom: 148px !important; left: 12px !important; }
+  #la-toast-wrap { bottom: 80px !important; left: 12px !important; }
+  #rec-toggle { bottom: 140px !important; right: 16px !important; }
+  #cw-fab { bottom: 76px !important; right: 12px !important; }
+  #backToTop, .back-to-top { bottom: 148px !important; right: 16px !important; }
   input[type="text"], input[type="email"], input[type="password"],
   textarea, select {
     font-size: 16px !important; /* Prevent iOS zoom */

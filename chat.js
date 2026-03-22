@@ -146,8 +146,8 @@ html[data-theme="dark"] #cw-vip-wall h3{color:#e8e8ff;}
 html[data-theme="dark"] .cw-day-sep::before,html[data-theme="dark"] .cw-day-sep::after{background:rgba(255,255,255,.07);}
 .cw-empty{font-size:.78rem;color:#bbb;text-align:center;padding:1rem;font-style:italic;}
 @media(max-width:480px){
-  #cw-box{width:calc(100vw - 16px);right:8px;bottom:72px;height:calc(100vh - 90px);}
-  #cw-fab{bottom:12px;right:12px;}
+  #cw-box{width:calc(100vw - 16px);right:8px;bottom:140px;height:calc(100vh - 160px);}
+  #cw-fab{bottom:76px;right:12px;}
 }
 `;
 const styleEl = document.createElement('style');
