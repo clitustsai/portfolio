@@ -67,6 +67,7 @@
     <link rel="stylesheet" href="testimonials.css">
     <link rel="stylesheet" href="interactions.css">
     <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="vip-effects.css">
     <style>
     /* ============================================
        LOADING SCREEN — Ultra Pro
@@ -1963,5 +1964,92 @@
     </script>
 
 <script src="interactions-vip.js"></script>
+
+<!-- ===== VIP EFFECTS: Cursor + AI Float ===== -->
+<div id="cursor-glow"></div>
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+
+<!-- AI Floating Button -->
+<div id="ai-float-btn">
+    <a href="tools.html" class="ai-float-main" title="AI Tools">
+        <div class="ai-float-orbit"></div>
+        🤖
+    </a>
+    <span class="ai-float-label">AI Tools</span>
+</div>
+
+<script>
+// ===== CURSOR LIGHT EFFECT =====
+(function() {
+    const dot  = document.getElementById('cursor-dot');
+    const ring = document.getElementById('cursor-ring');
+    const glow = document.getElementById('cursor-glow');
+    if (!dot || !ring || !glow) return;
+    // Only desktop
+    if (window.matchMedia('(hover: none)').matches) return;
+
+    let mx = -999, my = -999;
+    let rx = -999, ry = -999;
+
+    document.addEventListener('mousemove', e => {
+        mx = e.clientX; my = e.clientY;
+        dot.style.left  = mx + 'px';
+        dot.style.top   = my + 'px';
+        glow.style.left = mx + 'px';
+        glow.style.top  = my + 'px';
+    });
+
+    // Ring follows with lag
+    function animateRing() {
+        rx += (mx - rx) * 0.14;
+        ry += (my - ry) * 0.14;
+        ring.style.left = rx + 'px';
+        ring.style.top  = ry + 'px';
+        requestAnimationFrame(animateRing);
+    }
+    animateRing();
+
+    // Scale on interactive elements
+    document.querySelectorAll('a, button, .project-card, .about-card, .skill-item').forEach(el => {
+        el.addEventListener('mouseenter', () => {
+            dot.style.transform  = 'translate(-50%,-50%) scale(2)';
+            ring.style.transform = 'translate(-50%,-50%) scale(1.6)';
+            ring.style.borderColor = 'rgba(240,147,251,0.7)';
+        });
+        el.addEventListener('mouseleave', () => {
+            dot.style.transform  = 'translate(-50%,-50%) scale(1)';
+            ring.style.transform = 'translate(-50%,-50%) scale(1)';
+            ring.style.borderColor = 'rgba(102,126,234,0.5)';
+        });
+    });
+
+    // Hide when leaving window
+    document.addEventListener('mouseleave', () => { dot.style.opacity = '0'; ring.style.opacity = '0'; });
+    document.addEventListener('mouseenter', () => { dot.style.opacity = '1'; ring.style.opacity = '1'; });
+})();
+
+// ===== 3D CARD HOVER =====
+(function() {
+    function init3D(selector, intensity) {
+        document.querySelectorAll(selector).forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const r = card.getBoundingClientRect();
+                const x = (e.clientX - r.left) / r.width  - 0.5;
+                const y = (e.clientY - r.top)  / r.height - 0.5;
+                card.style.transform = `perspective(800px) rotateY(${x * intensity}deg) rotateX(${-y * intensity}deg) translateZ(10px)`;
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = '';
+            });
+        });
+    }
+    init3D('.project-card', 12);
+    init3D('.about-card',   8);
+    init3D('.skill-item',   6);
+    init3D('.certificate-card', 8);
+    init3D('.testimonial-card', 6);
+})();
+</script>
 </body>
 </html>
