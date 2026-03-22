@@ -15,8 +15,8 @@ async function getDb() {
     } else {
         db = new SQL.Database();
     }
-    // Tạo bảng
-    db.run(`
+    // Tạo bảng — dùng exec() để chạy multi-statement
+    db.exec(`
         CREATE TABLE IF NOT EXISTS comments (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
@@ -165,6 +165,12 @@ async function getDb() {
             played_at DATETIME DEFAULT (datetime('now'))
         );
     `);
+    // Migrate: thêm cột mới nếu chưa có (cho DB cũ)
+    try { db.exec(`ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'free'`); } catch(e) {}
+    try { db.exec(`ALTER TABLE users ADD COLUMN oauth_provider TEXT DEFAULT ''`); } catch(e) {}
+    try { db.exec(`ALTER TABLE users ADD COLUMN oauth_id TEXT DEFAULT ''`); } catch(e) {}
+    try { db.exec(`ALTER TABLE users ADD COLUMN avatar TEXT DEFAULT ''`); } catch(e) {}
+
     save();
     return db;
 }
