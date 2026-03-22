@@ -165,6 +165,25 @@ body{background:linear-gradient(135deg,#0f0c29,#55545e,#24243e);min-height:100vh
     </a>
   </div>
 
+  <!-- Referral card -->
+  <div id="referralCard" style="background:linear-gradient(135deg,rgba(16,185,129,.1),rgba(6,182,212,.06));border:1.5px solid rgba(16,185,129,.25);border-radius:16px;padding:1rem 1.25rem;margin-bottom:1.25rem;">
+    <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem;flex-wrap:wrap;">
+      <span style="font-size:1.8rem;">🎁</span>
+      <div style="flex:1;">
+        <div style="font-size:.85rem;font-weight:800;">Mời bạn bè — Cả 2 nhận 50🪙</div>
+        <div style="font-size:.75rem;color:rgba(255,255,255,.5);">Chia sẻ link referral, bạn đăng ký → cả 2 nhận 50 coin!</div>
+      </div>
+      <div style="font-size:.78rem;color:rgba(255,255,255,.4);">Đã mời: <span id="refCount" style="color:#10b981;font-weight:800;">0</span> người</div>
+    </div>
+    <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;">
+      <input id="refLinkInput" readonly style="flex:1;min-width:180px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:.5rem .75rem;color:#fff;font-size:.78rem;outline:none;" value="Đang tải...">
+      <button onclick="copyRefLink()" style="background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;border-radius:10px;padding:.5rem 1rem;font-size:.8rem;font-weight:800;cursor:pointer;white-space:nowrap;">
+        <i class="fas fa-copy"></i> Copy
+      </button>
+    </div>
+    <div id="refStats" style="margin-top:.6rem;font-size:.75rem;color:rgba(255,255,255,.4);">Tổng coin từ referral: <span id="refTotalCoins" style="color:#fbbf24;font-weight:800;">0</span>🪙</div>
+  </div>
+
   <div class="db-grid">
     <!-- Gói hiện tại -->
     <div class="db-card">
@@ -401,6 +420,34 @@ function confirmLogout() {
   window.location.href = 'index.html';
 }
 
+// ===== REFERRAL =====
+async function loadReferral() {
+  try {
+    const token = localStorage.getItem('user_token');
+    const [codeRes, statsRes] = await Promise.all([
+      fetch(API_BASE + '/referral/code', { headers: { 'Authorization': 'Bearer ' + token } }),
+      fetch(API_BASE + '/referral/stats', { headers: { 'Authorization': 'Bearer ' + token } })
+    ]);
+    const codeData = await codeRes.json();
+    const statsData = await statsRes.json();
+    if (codeData.link) document.getElementById('refLinkInput').value = codeData.link;
+    document.getElementById('refCount').textContent = statsData.count || 0;
+    document.getElementById('refTotalCoins').textContent = statsData.totalCoins || 0;
+  } catch(e) {}
+}
+
+function copyRefLink() {
+  const input = document.getElementById('refLinkInput');
+  navigator.clipboard.writeText(input.value).then(() => {
+    const btn = event.target.closest('button');
+    const orig = btn.innerHTML;
+    btn.innerHTML = '✅ Đã copy!';
+    setTimeout(() => { btn.innerHTML = orig; }, 2000);
+  }).catch(() => {
+    input.select(); document.execCommand('copy');
+  });
+}
+
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', async () => {
   const token = localStorage.getItem('user_token');
@@ -435,11 +482,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Daily reward mini
     if (!data.dailyClaimed) {
-      document.getElementById('dailyMiniTitle').textContent = '🎁 Daily Reward chờ bạn!';
-      document.getElementById('dailyMiniDesc').textContent = 'Vào Arcade để nhận coin hôm nay';
-      document.getElementById('btnDailyMini').textContent = '🎁 Nhận ngay';
+      document.getElementById('dailyMiniTitle').textContent = '� Spin Wheel chờ bạn!';
+      document.getElementById('dailyMiniDesc').textContent = 'Vào Arcade quay vòng quay nhận coin hôm nay';
+      document.getElementById('btnDailyMini').textContent = '� Quay ngay';
     } else {
-      document.getElementById('dailyMiniTitle').textContent = '✅ Đã nhận daily reward hôm nay';
+      document.getElementById('dailyMiniTitle').textContent = '✅ Đã quay spin wheel hôm nay';
       document.getElementById('dailyMiniDesc').textContent = `Coin hiện có: ${data.coins || 0}🪙 · Chơi game kiếm thêm`;
     }
 
@@ -463,6 +510,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       badge.className = 'plan-badge plan-vip';
       badge.textContent = '⚡ Admin';
     }
+
+    // Load referral
+    loadReferral();
 
   } catch(e) {
     console.error(e);

@@ -470,6 +470,20 @@ app.post('/api/auth/register', (req, res) => {
     ]);
     const user = get('SELECT id,username,email,avatar,role,created_at FROM users ORDER BY id DESC LIMIT 1');
     const token = signJWT({ id: user.id, email: user.email, role: user.role });
+
+    // Referral bonus
+    const refCode = (req.body.ref || req.query.ref || '').trim().toUpperCase();
+    if (refCode) {
+        const referrer = get('SELECT id FROM users WHERE referral_code=?', [refCode]);
+        if (referrer && referrer.id !== user.id) {
+            const REFERRAL_BONUS = 50;
+            addCoins(user.id, REFERRAL_BONUS, 'referral_bonus', `Đăng ký qua ref ${refCode}`);
+            addCoins(referrer.id, REFERRAL_BONUS, 'referral_reward', `Mời ${user.username} đăng ký`);
+            run('INSERT INTO referrals (referrer_id, referred_id, code, coins_given) VALUES (?,?,?,?)',
+                [referrer.id, user.id, refCode, REFERRAL_BONUS]);
+        }
+    }
+
     res.status(201).json({ user, token });
 });
 
@@ -628,8 +642,8 @@ app.get('/api/user/dashboard', requireUser, (req, res) => {
     const coins = coinRow?.coins || 0;
     const totalEarned = coinRow?.total_earned || 0;
 
-    // Daily reward status
-    const dailyClaimed = !!get('SELECT id FROM daily_rewards WHERE user_id=? AND claimed_date=?', [req.userId, today]);
+    // Daily reward status (now spin wheel)
+    const dailyClaimed = !!get('SELECT id FROM spin_rewards WHERE user_id=? AND spun_date=?', [req.userId, today]);
 
     res.json({ user, isVip, subscription: sub || null, daysLeft, usage, totalUsage, history, coins, totalEarned, dailyClaimed });
 });
@@ -1540,6 +1554,57 @@ app.patch('/api/chat/ads/:id', requireAdmin, (req, res) => {
 app.delete('/api/chat/ads/:id', requireAdmin, (req, res) => {
     run('DELETE FROM chat_ads WHERE id=?', [parseInt(req.params.id)]);
     res.json({ ok: true });
+});
+
+// ========== SPIN WHEEL ==========
+const SPIN_PRIZES = [10, 20, 5, 50, 15, 30, 5, 100]; // 8 ô
+
+app.get('/api/spin/status', requireUser, (req, res) => {
+    const today = new Date().toISOString().slice(0, 10);
+    const spun = get('SELECT * FROM spin_rewards WHERE user_id=? AND spun_date=?', [req.userId, today]);
+    res.json({ spun: !!spun, coinsEarned: spun?.coins_earned || 0, coins: getCoins(req.userId) });
+});
+
+app.post('/api/spin/spin', requireUser, (req, res) => {
+    const today = new Date().toISOString().slice(0, 10);
+    const already = get('SELECT id FROM spin_rewards WHERE user_id=? AND spun_date=?', [req.userId, today]);
+    if (already) return res.status(409).json({ error: 'Đã quay hôm nay rồi! Quay lại vào ngày mai.' });
+    // Random prize — 100 coin có xác suất thấp hơn (index 7)
+    const weights = [20, 18, 25, 5, 18, 10, 25, 2]; // tổng 123
+    const total = weights.reduce((a, b) => a + b, 0);
+    let rand = Math.floor(Math.random() * total);
+    let prizeIndex = 0;
+    for (let i = 0; i < weights.length; i++) {
+        rand -= weights[i];
+        if (rand < 0) { prizeIndex = i; break; }
+    }
+    const coins = SPIN_PRIZES[prizeIndex];
+    run('INSERT INTO spin_rewards (user_id, spun_date, coins_earned) VALUES (?,?,?)', [req.userId, today, coins]);
+    addCoins(req.userId, coins, 'spin', `Spin wheel ngày ${today}`);
+    res.json({ ok: true, prizeIndex, coins, totalCoins: getCoins(req.userId) });
+});
+
+// ========== REFERRAL ==========
+function genReferralCode() {
+    return Math.random().toString(36).slice(2, 10).toUpperCase();
+}
+
+app.get('/api/referral/code', requireUser, (req, res) => {
+    let user = get('SELECT id, username, referral_code FROM users WHERE id=?', [req.userId]);
+    if (!user.referral_code) {
+        let code;
+        do { code = genReferralCode(); } while (get('SELECT id FROM users WHERE referral_code=?', [code]));
+        run('UPDATE users SET referral_code=? WHERE id=?', [code, req.userId]);
+        user.referral_code = code;
+    }
+    const appUrl = process.env.APP_URL || 'https://portfolio-utbu.onrender.com';
+    res.json({ code: user.referral_code, link: `${appUrl}/?ref=${user.referral_code}` });
+});
+
+app.get('/api/referral/stats', requireUser, (req, res) => {
+    const refs = all('SELECT r.*, u.username as referred_name FROM referrals r JOIN users u ON u.id=r.referred_id WHERE r.referrer_id=? ORDER BY r.id DESC', [req.userId]);
+    const totalCoins = refs.reduce((s, r) => s + (r.coins_given || 0), 0);
+    res.json({ count: refs.length, totalCoins, referrals: refs });
 });
 
 // Serve index.html chỉ cho các route không phải file tĩnh và không phải API
