@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Tools — Clitus PC</title>
+<meta name="description" content="AI Code Review & CV Generator — Công cụ AI miễn phí từ Clitus PC">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="modern.css">
+<style>
+:root { --g1:#667eea; --g2:#764ba2; --g3:#f093fb; }
+body { background: linear-gradient(135deg,#667eea 0%,#764ba2 100%); min-height:100vh; }
+
+/* ===== HERO ===== */
+.tools-hero { text-align:center; padding:3rem 1.5rem 2rem; color:#fff; }
+.tools-hero h1 { font-size:clamp(2rem,5vw,3rem); font-weight:900; margin-bottom:.75rem; }
+.tools-hero p { font-size:1.05rem; opacity:.85; max-width:560px; margin:0 auto 1.5rem; }
+.hero-badges { display:flex; gap:.75rem; justify-content:center; flex-wrap:wrap; }
+.badge { background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.25); color:#fff; border-radius:50px; padding:.35rem 1rem; font-size:.82rem; font-weight:600; backdrop-filter:blur(8px); }
+.badge.vip { background:linear-gradient(135deg,#f093fb,#f5576c); border-color:transparent; }
+
+/* ===== TABS ===== */
+.tools-tabs { display:flex; justify-content:center; gap:.75rem; padding:0 1.5rem 1.5rem; flex-wrap:wrap; }
+.tab-btn { background:rgba(255,255,255,.12); border:1.5px solid rgba(255,255,255,.2); color:rgba(255,255,255,.8); border-radius:50px; padding:.65rem 1.75rem; font-size:.95rem; font-weight:700; cursor:pointer; transition:all .25s; backdrop-filter:blur(8px); }
+.tab-btn.active, .tab-btn:hover { background:#fff; color:var(--g1); border-color:#fff; box-shadow:0 8px 24px rgba(0,0,0,.2); }
+
+/* ===== MAIN CARD ===== */
+.tools-main { max-width:900px; margin:0 auto; padding:0 1.25rem 4rem; }
+.tool-panel { display:none; }
+.tool-panel.active { display:block; }
+.tool-card { background:#fff; border-radius:24px; box-shadow:0 20px 60px rgba(0,0,0,.2); overflow:hidden; }
+html[data-theme="dark"] .tool-card { background:#1a1a2e; }
+
+/* ===== TOOL HEADER ===== */
+.tool-header { padding:1.5rem 2rem; background:linear-gradient(135deg,rgba(102,126,234,.08),rgba(118,75,162,.08)); border-bottom:1px solid rgba(102,126,234,.12); display:flex; align-items:center; gap:1rem; }
+.tool-icon { width:52px; height:52px; border-radius:16px; background:linear-gradient(135deg,var(--g1),var(--g2)); display:flex; align-items:center; justify-content:center; color:#fff; font-size:1.4rem; flex-shrink:0; }
+.tool-header-text h2 { font-size:1.2rem; font-weight:800; color:#1a1a2e; margin:0 0 .2rem; }
+html[data-theme="dark"] .tool-header-text h2 { color:#e8e8ff; }
+.tool-header-text p { font-size:.82rem; color:#888; margin:0; }
+.free-badge { margin-left:auto; background:linear-gradient(135deg,#11998e,#38ef7d); color:#fff; border-radius:50px; padding:.3rem .85rem; font-size:.75rem; font-weight:700; white-space:nowrap; }
+
+/* ===== FORM ===== */
+.tool-body { padding:1.75rem 2rem; }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+.form-group { margin-bottom:1.1rem; }
+.form-group label { display:block; font-size:.82rem; font-weight:700; color:#555; margin-bottom:.4rem; text-transform:uppercase; letter-spacing:.04em; }
+html[data-theme="dark"] .form-group label { color:#aaa; }
+.form-group input, .form-group select, .form-group textarea {
+    width:100%; padding:.75rem 1rem; border:1.5px solid #e0e4ff; border-radius:12px;
+    font-size:.92rem; font-family:inherit; transition:all .2s; background:#fff; color:#333;
+    box-sizing:border-box;
+}
+html[data-theme="dark"] .form-group input, html[data-theme="dark"] .form-group select, html[data-theme="dark"] .form-group textarea { background:#252545; border-color:#3a3a6a; color:#e0e0ff; }
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline:none; border-color:var(--g1); box-shadow:0 0 0 4px rgba(102,126,234,.1); }
+.form-group textarea { resize:vertical; min-height:120px; font-family:'Courier New',monospace; }
+.code-area { min-height:200px; font-size:.85rem; }
+
+/* ===== SUBMIT BTN ===== */
+.submit-row { display:flex; align-items:center; gap:1rem; flex-wrap:wrap; }
+.btn-submit { background:linear-gradient(135deg,var(--g1),var(--g2)); color:#fff; border:none; border-radius:50px; padding:.85rem 2rem; font-size:1rem; font-weight:800; cursor:pointer; transition:all .3s; display:flex; align-items:center; gap:.5rem; box-shadow:0 6px 20px rgba(102,126,234,.4); }
+.btn-submit:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 10px 30px rgba(102,126,234,.5); }
+.btn-submit:disabled { opacity:.55; cursor:not-allowed; transform:none; }
+.usage-info { font-size:.8rem; color:#999; }
+.usage-info span { color:var(--g1); font-weight:700; }
+
+/* ===== RESULT ===== */
+.result-box { margin-top:1.5rem; border-radius:16px; overflow:hidden; border:1.5px solid rgba(102,126,234,.15); display:none; }
+.result-box.show { display:block; }
+.result-header { padding:.85rem 1.25rem; background:linear-gradient(135deg,rgba(102,126,234,.08),rgba(118,75,162,.08)); display:flex; align-items:center; justify-content:space-between; }
+.result-header h3 { font-size:.9rem; font-weight:800; color:var(--g1); margin:0; }
+.result-body { padding:1.25rem; }
+
+/* ===== CODE REVIEW RESULT ===== */
+.score-ring { display:flex; align-items:center; gap:1.5rem; margin-bottom:1.25rem; flex-wrap:wrap; }
+.score-circle { width:80px; height:80px; border-radius:50%; display:flex; flex-direction:column; align-items:center; justify-content:center; font-weight:900; flex-shrink:0; }
+.score-circle .score-num { font-size:1.6rem; line-height:1; }
+.score-circle .score-label { font-size:.65rem; opacity:.7; }
+.score-high { background:linear-gradient(135deg,#d1fae5,#a7f3d0); color:#065f46; }
+.score-mid { background:linear-gradient(135deg,#fef3c7,#fde68a); color:#92400e; }
+.score-low { background:linear-gradient(135deg,#fee2e2,#fecaca); color:#991b1b; }
+.score-summary { flex:1; font-size:.9rem; color:#555; line-height:1.6; }
+html[data-theme="dark"] .score-summary { color:#bbb; }
+
+.issues-list { display:flex; flex-direction:column; gap:.75rem; margin-bottom:1rem; }
+.issue-item { border-radius:12px; padding:.85rem 1rem; border-left:4px solid; }
+.issue-high { background:#fff5f5; border-color:#f87171; }
+.issue-medium { background:#fffbeb; border-color:#fbbf24; }
+.issue-low { background:#f0fdf4; border-color:#4ade80; }
+html[data-theme="dark"] .issue-high { background:#2d1515; }
+html[data-theme="dark"] .issue-medium { background:#2d2510; }
+html[data-theme="dark"] .issue-low { background:#152d1a; }
+.issue-severity { font-size:.7rem; font-weight:800; text-transform:uppercase; letter-spacing:.06em; margin-bottom:.3rem; }
+.issue-high .issue-severity { color:#ef4444; }
+.issue-medium .issue-severity { color:#f59e0b; }
+.issue-low .issue-severity { color:#22c55e; }
+.issue-text { font-size:.85rem; color:#444; margin-bottom:.3rem; }
+html[data-theme="dark"] .issue-text { color:#ccc; }
+.issue-fix { font-size:.8rem; color:#667eea; font-style:italic; }
+
+.strengths-list, .suggestions-list { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:.4rem; }
+.strengths-list li::before { content:'✓ '; color:#22c55e; font-weight:700; }
+.suggestions-list li::before { content:'→ '; color:var(--g1); font-weight:700; }
+.strengths-list li, .suggestions-list li { font-size:.85rem; color:#555; }
+html[data-theme="dark"] .strengths-list li, html[data-theme="dark"] .suggestions-list li { color:#bbb; }
+
+.result-section { margin-bottom:1rem; }
+.result-section h4 { font-size:.8rem; font-weight:800; text-transform:uppercase; letter-spacing:.06em; color:#999; margin:0 0 .6rem; }
+
+/* ===== CV RESULT ===== */
+.cv-preview { background:#fff; border-radius:12px; padding:1.5rem; min-height:200px; }
+html[data-theme="dark"] .cv-preview { background:#252545; }
+.cv-actions { display:flex; gap:.75rem; flex-wrap:wrap; margin-top:1rem; }
+.btn-action { background:rgba(102,126,234,.1); border:1.5px solid rgba(102,126,234,.2); color:var(--g1); border-radius:50px; padding:.55rem 1.25rem; font-size:.85rem; font-weight:700; cursor:pointer; transition:all .2s; display:flex; align-items:center; gap:.4rem; }
+.btn-action:hover { background:var(--g1); color:#fff; border-color:transparent; }
+
+/* ===== VIP BANNER ===== */
+.vip-banner { background:linear-gradient(135deg,rgba(240,147,251,.12),rgba(245,87,108,.12)); border:1.5px solid rgba(240,147,251,.3); border-radius:16px; padding:1.25rem 1.5rem; display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem; flex-wrap:wrap; }
+.vip-banner-text { flex:1; }
+.vip-banner-text h4 { font-size:.95rem; font-weight:800; color:#1a1a2e; margin:0 0 .2rem; }
+html[data-theme="dark"] .vip-banner-text h4 { color:#e8e8ff; }
+.vip-banner-text p { font-size:.8rem; color:#888; margin:0; }
+.btn-vip { background:linear-gradient(135deg,#f093fb,#f5576c); color:#fff; border:none; border-radius:50px; padding:.6rem 1.5rem; font-size:.88rem; font-weight:800; cursor:pointer; white-space:nowrap; text-decoration:none; display:inline-block; transition:all .2s; }
+.btn-vip:hover { opacity:.88; transform:translateY(-1px); }
+
+/* ===== ERROR ===== */
+.error-box { background:#fff5f5; border:1.5px solid #fecaca; border-radius:12px; padding:1rem 1.25rem; color:#dc2626; font-size:.88rem; display:none; margin-top:1rem; }
+.error-box.show { display:block; }
+
+/* ===== PRICING SECTION ===== */
+.pricing-section { max-width:900px; margin:0 auto; padding:0 1.25rem 4rem; }
+.pricing-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; }
+.pricing-card { background:#fff; border-radius:20px; padding:2rem; box-shadow:0 12px 40px rgba(0,0,0,.15); position:relative; overflow:hidden; }
+html[data-theme="dark"] .pricing-card { background:#1a1a2e; }
+.pricing-card.featured { background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; }
+.pricing-card.featured .pricing-price, .pricing-card.featured .pricing-name { color:#fff; }
+.pricing-card.featured .pricing-feature { color:rgba(255,255,255,.85); }
+.pricing-card.featured .pricing-feature::before { color:#fff; }
+.pricing-name { font-size:.85rem; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:#999; margin-bottom:.5rem; }
+.pricing-price { font-size:2.5rem; font-weight:900; color:#1a1a2e; line-height:1; margin-bottom:.25rem; }
+.pricing-price span { font-size:1rem; font-weight:500; opacity:.6; }
+.pricing-period { font-size:.8rem; color:#999; margin-bottom:1.5rem; }
+.pricing-features { list-style:none; padding:0; margin:0 0 1.5rem; display:flex; flex-direction:column; gap:.6rem; }
+.pricing-feature { font-size:.88rem; color:#555; }
+html[data-theme="dark"] .pricing-feature { color:#bbb; }
+.pricing-feature::before { content:'✓ '; font-weight:800; color:var(--g1); }
+.btn-pricing { width:100%; padding:.85rem; border-radius:50px; font-size:.95rem; font-weight:800; cursor:pointer; border:none; transition:all .3s; text-align:center; display:block; text-decoration:none; }
+.btn-pricing-free { background:rgba(102,126,234,.1); color:var(--g1); }
+.btn-pricing-free:hover { background:rgba(102,126,234,.2); }
+.btn-pricing-vip { background:#fff; color:var(--g1); box-shadow:0 6px 20px rgba(0,0,0,.2); }
+.btn-pricing-vip:hover { transform:translateY(-2px); box-shadow:0 10px 30px rgba(0,0,0,.25); }
+.pricing-badge { position:absolute; top:1rem; right:1rem; background:rgba(255,255,255,.2); color:#fff; border-radius:50px; padding:.25rem .75rem; font-size:.72rem; font-weight:800; }
+
+/* ===== SECTION TITLE ===== */
+.section-title { text-align:center; color:#fff; margin-bottom:2rem; }
+.section-title h2 { font-size:1.8rem; font-weight:900; margin-bottom:.5rem; }
+.section-title p { opacity:.75; font-size:.95rem; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width:640px) {
+    .form-row { grid-template-columns:1fr; }
+    .pricing-grid { grid-template-columns:1fr; }
+    .tool-body { padding:1.25rem; }
+    .tool-header { padding:1.25rem; }
+    .submit-row { flex-direction:column; align-items:stretch; }
+    .btn-submit { justify-content:center; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<header>
+  <nav>
+    <div class="logo">✦ Clitus PC</div>
+    <ul id="navMenu">
+      <li><a href="index.html">Trang Chủ</a></li>
+      <li><a href="index.html#about">Về Tôi</a></li>
+      <li><a href="blog.html">Blog</a></li>
+      <li class="nav-dropdown">
+        <a href="#" class="nav-dropdown-toggle">Công Cụ <i class="fas fa-chevron-down nav-chevron"></i></a>
+        <ul class="nav-dropdown-menu">
+          <li><a href="tools.html"><span class="dd-icon">🤖</span> AI Tools</a></li>
+          <li><a href="roadmap.html"><span class="dd-icon">🗺️</span> Roadmap</a></li>
+          <li><a href="proposal.html"><span class="dd-icon">💼</span> Proposal</a></li>
+          <li><a href="invoice.html"><span class="dd-icon">🧾</span> Invoice</a></li>
+          <li><a href="payment.html"><span class="dd-icon">💳</span> Dịch Vụ & VIP</a></li>
+        </ul>
+      </li>
+    </ul>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+      <button class="nav-hamburger" id="navHamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+</header>
+
+<!-- HERO -->
+<div class="tools-hero">
+  <h1>🤖 AI Tools</h1>
+  <p>Công cụ AI miễn phí giúp bạn review code và tạo CV chuyên nghiệp trong vài giây</p>
+  <div class="hero-badges">
+    <span class="badge"><i class="fas fa-bolt"></i> Powered by GPT-4.1</span>
+    <span class="badge"><i class="fas fa-gift"></i> 3 lần/ngày miễn phí</span>
+    <span class="badge vip"><i class="fas fa-crown"></i> VIP: Không giới hạn</span>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tools-tabs">
+  <button class="tab-btn active" onclick="switchTab('code-review', this)">
+    <i class="fas fa-code"></i> AI Code Review
+  </button>
+  <button class="tab-btn" onclick="switchTab('cv-gen', this)">
+    <i class="fas fa-file-user"></i> AI CV Generator
+  </button>
+</div>
+
+<!-- MAIN -->
+<div class="tools-main">
+
+  <!-- VIP BANNER -->
+  <div class="vip-banner">
+    <div style="font-size:2rem">👑</div>
+    <div class="vip-banner-text">
+      <h4>Nâng cấp VIP — 99.000 VNĐ/tháng</h4>
+      <p>Dùng không giới hạn tất cả AI tools + ưu tiên xử lý + hỗ trợ 1-1</p>
+    </div>
+    <a href="payment.html" class="btn-vip">Nâng Cấp Ngay</a>
+  </div>
+
+  <!-- ===== CODE REVIEW PANEL ===== -->
+  <div class="tool-panel active" id="panel-code-review">
+    <div class="tool-card">
+      <div class="tool-header">
+        <div class="tool-icon"><i class="fas fa-magnifying-glass-code"></i></div>
+        <div class="tool-header-text">
+          <h2>AI Code Review</h2>
+          <p>Phân tích code, tìm bug, đề xuất cải thiện tức thì</p>
+        </div>
+        <span class="free-badge">FREE 3x/ngày</span>
+      </div>
+      <div class="tool-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Ngôn ngữ</label>
+            <select id="cr-lang">
+              <option value="">Auto detect</option>
+              <option value="javascript">JavaScript</option>
+              <option value="typescript">TypeScript</option>
+              <option value="python">Python</option>
+              <option value="java">Java</option>
+              <option value="cpp">C/C++</option>
+              <option value="csharp">C#</option>
+              <option value="php">PHP</option>
+              <option value="go">Go</option>
+              <option value="rust">Rust</option>
+              <option value="sql">SQL</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Email VIP (nếu có)</label>
+            <input type="email" id="cr-email" placeholder="email@example.com để dùng VIP">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Dán code vào đây <span style="color:#f5576c">*</span></label>
+          <textarea id="cr-code" class="code-area" placeholder="// Dán code của bạn vào đây...&#10;function example() {&#10;  // ...&#10;}"></textarea>
+        </div>
+        <div class="submit-row">
+          <button class="btn-submit" id="cr-btn" onclick="runCodeReview()">
+            <i class="fas fa-wand-magic-sparkles"></i> Review Code
+          </button>
+          <div class="usage-info">Còn <span id="cr-usage">3</span> lượt hôm nay</div>
+        </div>
+        <div class="error-box" id="cr-error"></div>
+        <div class="result-box" id="cr-result">
+          <div class="result-header">
+            <h3><i class="fas fa-chart-bar"></i> Kết Quả Review</h3>
+            <button class="btn-action" onclick="copyReview()"><i class="fas fa-copy"></i> Copy</button>
+          </div>
+          <div class="result-body" id="cr-result-body"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CV GENERATOR PANEL ===== -->
+  <div class="tool-panel" id="panel-cv-gen">
+    <div class="tool-card">
+      <div class="tool-header">
+        <div class="tool-icon" style="background:linear-gradient(135deg,#11998e,#38ef7d)"><i class="fas fa-id-card"></i></div>
+        <div class="tool-header-text">
+          <h2>AI CV Generator</h2>
+          <p>Tạo CV chuyên nghiệp sẵn sàng in chỉ trong 10 giây</p>
+        </div>
+        <span class="free-badge">FREE 3x/ngày</span>
+      </div>
+      <div class="tool-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Họ & Tên <span style="color:#f5576c">*</span></label>
+            <input type="text" id="cv-name" placeholder="Nguyễn Văn A">
+          </div>
+          <div class="form-group">
+            <label>Chức danh</label>
+            <input type="text" id="cv-title" placeholder="Full Stack Developer">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="cv-email" placeholder="email@example.com">
+          </div>
+          <div class="form-group">
+            <label>Số điện thoại</label>
+            <input type="text" id="cv-phone" placeholder="+84 xxx xxx xxx">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Tóm tắt bản thân</label>
+          <textarea id="cv-summary" style="min-height:80px" placeholder="Mô tả ngắn về bản thân, kinh nghiệm và mục tiêu nghề nghiệp..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Kỹ năng</label>
+          <textarea id="cv-skills" style="min-height:70px" placeholder="React, Node.js, Python, SQL, Docker, Git..."></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Kinh nghiệm làm việc</label>
+            <textarea id="cv-exp" style="min-height:100px" placeholder="Công ty A (2022-nay): Senior Dev&#10;- Xây dựng hệ thống X&#10;- Tăng performance 40%"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Học vấn</label>
+            <textarea id="cv-edu" style="min-height:100px" placeholder="ĐH Bách Khoa TP.HCM&#10;Kỹ sư CNTT (2018-2022)"></textarea>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Ngôn ngữ CV</label>
+            <select id="cv-lang">
+              <option value="vi">Tiếng Việt</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Email VIP (nếu có)</label>
+            <input type="email" id="cv-vip-email" placeholder="email@example.com để dùng VIP">
+          </div>
+        </div>
+        <div class="submit-row">
+          <button class="btn-submit" id="cv-btn" onclick="runCVGen()">
+            <i class="fas fa-wand-magic-sparkles"></i> Tạo CV
+          </button>
+          <div class="usage-info">Còn <span id="cv-usage">3</span> lượt hôm nay</div>
+        </div>
+        <div class="error-box" id="cv-error"></div>
+        <div class="result-box" id="cv-result">
+          <div class="result-header">
+            <h3><i class="fas fa-file-lines"></i> CV Của Bạn</h3>
+          </div>
+          <div class="result-body">
+            <div class="cv-preview" id="cv-preview-body"></div>
+            <div class="cv-actions">
+              <button class="btn-action" onclick="printCV()"><i class="fas fa-print"></i> In / Lưu PDF</button>
+              <button class="btn-action" onclick="copyCV()"><i class="fas fa-copy"></i> Copy HTML</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRICING -->
+<div class="pricing-section">
+  <div class="section-title">
+    <h2>💰 Bảng Giá</h2>
+    <p>Bắt đầu miễn phí, nâng cấp khi cần</p>
+  </div>
+  <div class="pricing-grid">
+    <div class="pricing-card">
+      <div class="pricing-name">Free</div>
+      <div class="pricing-price">0 <span>VNĐ</span></div>
+      <div class="pricing-period">Mãi mãi miễn phí</div>
+      <ul class="pricing-features">
+        <li class="pricing-feature">3 lần Code Review / ngày</li>
+        <li class="pricing-feature">3 lần CV Generator / ngày</li>
+        <li class="pricing-feature">GPT-4.1 Mini</li>
+        <li class="pricing-feature">Xuất PDF cơ bản</li>
+      </ul>
+      <a href="#panel-code-review" class="btn-pricing btn-pricing-free" onclick="switchTab('code-review',document.querySelector('.tab-btn'))">Dùng Miễn Phí</a>
+    </div>
+    <div class="pricing-card featured">
+      <div class="pricing-badge">⭐ Phổ biến</div>
+      <div class="pricing-name">VIP</div>
+      <div class="pricing-price">99K <span>VNĐ/tháng</span></div>
+      <div class="pricing-period">Thanh toán hàng tháng</div>
+      <ul class="pricing-features">
+        <li class="pricing-feature">Không giới hạn Code Review</li>
+        <li class="pricing-feature">Không giới hạn CV Generator</li>
+        <li class="pricing-feature">GPT-4.1 Mini ưu tiên</li>
+        <li class="pricing-feature">Xuất PDF chất lượng cao</li>
+        <li class="pricing-feature">Hỗ trợ 1-1 qua Zalo</li>
+        <li class="pricing-feature">Tất cả tools tương lai</li>
+      </ul>
+      <a href="payment.html" class="btn-pricing btn-pricing-vip">Nâng Cấp VIP</a>
+    </div>
+  </div>
+</div>
+
+<footer style="text-align:center;color:rgba(255,255,255,.7);padding:2rem;font-size:.88rem;">
+  © 2026 Clitus PC · <a href="index.html" style="color:#fff;font-weight:700;">Portfolio</a> · <a href="payment.html" style="color:#f093fb;font-weight:700;">VIP</a>
+</footer>
+
+<script>
+const API = '';
+
+// ===== TABS =====
+function switchTab(id, btn) {
+  document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ===== USAGE COUNTER (localStorage) =====
+function getUsage(key) {
+  const today = new Date().toDateString();
+  const stored = JSON.parse(localStorage.getItem('ai_usage') || '{}');
+  if (stored.date !== today) return 0;
+  return stored[key] || 0;
+}
+function incUsage(key) {
+  const today = new Date().toDateString();
+  const stored = JSON.parse(localStorage.getItem('ai_usage') || '{}');
+  if (stored.date !== today) { localStorage.setItem('ai_usage', JSON.stringify({ date: today, [key]: 1 })); return 1; }
+  stored[key] = (stored[key] || 0) + 1;
+  localStorage.setItem('ai_usage', JSON.stringify(stored));
+  return stored[key];
+}
+function updateUsageUI() {
+  const crUsed = getUsage('cr'); const cvUsed = getUsage('cv');
+  document.getElementById('cr-usage').textContent = Math.max(0, 3 - crUsed);
+  document.getElementById('cv-usage').textContent = Math.max(0, 3 - cvUsed);
+}
+updateUsageUI();
+
+// ===== CODE REVIEW =====
+async function runCodeReview() {
+  const code = document.getElementById('cr-code').value.trim();
+  const lang = document.getElementById('cr-lang').value;
+  const email = document.getElementById('cr-email').value.trim();
+  const btn = document.getElementById('cr-btn');
+  const errBox = document.getElementById('cr-error');
+  const resultBox = document.getElementById('cr-result');
+
+  errBox.classList.remove('show'); resultBox.classList.remove('show');
+  if (!code) { errBox.textContent = '⚠️ Vui lòng dán code vào ô bên trên.'; errBox.classList.add('show'); return; }
+
+  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang phân tích...';
+  try {
+    const res = await fetch('/api/tools/code-review', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code, language: lang, email })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      errBox.innerHTML = `❌ ${data.error}${data.upgradeUrl ? ` <a href="${data.upgradeUrl}" style="color:var(--g1);font-weight:700;">Nâng cấp VIP →</a>` : ''}`;
+      errBox.classList.add('show'); return;
+    }
+    if (!email) incUsage('cr');
+    updateUsageUI();
+    renderCodeReview(data.result);
+    resultBox.classList.add('show');
+    resultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  } catch(e) {
+    errBox.textContent = '❌ Lỗi kết nối. Vui lòng thử lại.'; errBox.classList.add('show');
+  } finally {
+    btn.disabled = false; btn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Review Code';
+  }
+}
+
+function renderCodeReview(r) {
+  const score = r.score || 0;
+  const cls = score >= 75 ? 'score-high' : score >= 50 ? 'score-mid' : 'score-low';
+  const issues = (r.issues || []).map(i => `
+    <div class="issue-item issue-${i.severity || 'low'}">
+      <div class="issue-severity">${i.severity === 'high' ? '🔴 Nghiêm trọng' : i.severity === 'medium' ? '🟡 Trung bình' : '🟢 Nhỏ'}</div>
+      ${i.line ? `<div style="font-size:.75rem;color:#999;margin-bottom:.2rem;">Dòng: ${i.line}</div>` : ''}
+      <div class="issue-text">${i.issue}</div>
+      ${i.fix ? `<div class="issue-fix">💡 ${i.fix}</div>` : ''}
+    </div>`).join('');
+  const strengths = (r.strengths || []).map(s => `<li>${s}</li>`).join('');
+  const suggestions = (r.suggestions || []).map(s => `<li>${s}</li>`).join('');
+
+  document.getElementById('cr-result-body').innerHTML = `
+    <div class="score-ring">
+      <div class="score-circle ${cls}"><span class="score-num">${score}</span><span class="score-label">/ 100</span></div>
+      <div class="score-summary">${r.summary || ''}</div>
+    </div>
+    ${issues ? `<div class="result-section"><h4>🐛 Vấn đề phát hiện (${r.issues.length})</h4><div class="issues-list">${issues}</div></div>` : ''}
+    ${strengths ? `<div class="result-section"><h4>✅ Điểm mạnh</h4><ul class="strengths-list">${strengths}</ul></div>` : ''}
+    ${suggestions ? `<div class="result-section"><h4>💡 Đề xuất cải thiện</h4><ul class="suggestions-list">${suggestions}</ul></div>` : ''}`;
+}
+
+function copyReview() {
+  const text = document.getElementById('cr-result-body').innerText;
+  navigator.clipboard.writeText(text).then(() => showToast('✓ Đã copy kết quả!', 'success', 2000));
+}
+
+// ===== CV GENERATOR =====
+let cvHTML = '';
+async function runCVGen() {
+  const name = document.getElementById('cv-name').value.trim();
+  const btn = document.getElementById('cv-btn');
+  const errBox = document.getElementById('cv-error');
+  const resultBox = document.getElementById('cv-result');
+
+  errBox.classList.remove('show'); resultBox.classList.remove('show');
+  if (!name) { errBox.textContent = '⚠️ Vui lòng nhập họ tên.'; errBox.classList.add('show'); return; }
+
+  const email = document.getElementById('cv-vip-email').value.trim();
+  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tạo CV...';
+  try {
+    const res = await fetch('/api/tools/cv-generate', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name, title: document.getElementById('cv-title').value.trim(),
+        email: document.getElementById('cv-email').value.trim(),
+        phone: document.getElementById('cv-phone').value.trim(),
+        summary: document.getElementById('cv-summary').value.trim(),
+        skills: document.getElementById('cv-skills').value.trim(),
+        experience: document.getElementById('cv-exp').value.trim(),
+        education: document.getElementById('cv-edu').value.trim(),
+        language: document.getElementById('cv-lang').value,
+        email
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      errBox.innerHTML = `❌ ${data.error}${data.upgradeUrl ? ` <a href="${data.upgradeUrl}" style="color:var(--g1);font-weight:700;">Nâng cấp VIP →</a>` : ''}`;
+      errBox.classList.add('show'); return;
+    }
+    if (!email) incUsage('cv');
+    updateUsageUI();
+    cvHTML = data.html || '';
+    document.getElementById('cv-preview-body').innerHTML = cvHTML;
+    resultBox.classList.add('show');
+    resultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  } catch(e) {
+    errBox.textContent = '❌ Lỗi kết nối. Vui lòng thử lại.'; errBox.classList.add('show');
+  } finally {
+    btn.disabled = false; btn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Tạo CV';
+  }
+}
+
+function printCV() {
+  if (!cvHTML) return;
+  const w = window.open('', '_blank');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>CV</title><style>body{margin:0;padding:20px;font-family:'Segoe UI',sans-serif;}@media print{body{padding:0;}}</style></head><body>${cvHTML}</body></html>`);
+  w.document.close(); w.focus(); setTimeout(() => w.print(), 500);
+}
+function copyCV() {
+  navigator.clipboard.writeText(cvHTML).then(() => showToast('✓ Đã copy HTML!', 'success', 2000));
+}
+
+// ===== TOAST =====
+function showToast(msg, type='info', dur=3000) {
+  let c = document.querySelector('.toast-container');
+  if (!c) { c = document.createElement('div'); c.className='toast-container'; document.body.appendChild(c); }
+  const t = document.createElement('div'); t.className=`toast ${type}`;
+  t.innerHTML=`<span class="toast-icon">${{success:'✓',error:'✕',info:'ℹ'}[type]||'ℹ'}</span><span class="toast-message">${msg}</span>`;
+  c.appendChild(t); setTimeout(()=>{ t.style.animation='slideOutToastRight .3s ease'; setTimeout(()=>t.remove(),300); }, dur);
+}
+
+// ===== DARK MODE =====
+const htmlEl = document.documentElement;
+const themeToggle = document.getElementById('themeToggle');
+if (localStorage.getItem('theme') === 'dark') { htmlEl.setAttribute('data-theme','dark'); themeToggle && (themeToggle.innerHTML='<i class="fas fa-sun"></i>'); }
+themeToggle && themeToggle.addEventListener('click', () => {
+  const isDark = htmlEl.getAttribute('data-theme') === 'dark';
+  htmlEl.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  localStorage.setItem('theme', isDark ? 'light' : 'dark');
+  themeToggle.innerHTML = isDark ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+});
+
+// ===== HAMBURGER =====
+const hamburger = document.getElementById('navHamburger');
+const navUl = document.querySelector('nav ul');
+if (hamburger && navUl) {
+  hamburger.addEventListener('click', e => { e.stopPropagation(); const o = hamburger.classList.toggle('open'); navUl.classList.toggle('open', o); document.body.style.overflow = o ? 'hidden' : ''; });
+  document.addEventListener('click', e => { if (navUl.classList.contains('open') && !navUl.contains(e.target) && e.target !== hamburger) { hamburger.classList.remove('open'); navUl.classList.remove('open'); document.body.style.overflow = ''; } });
+}
+document.querySelectorAll('.nav-dropdown').forEach(dd => {
+  dd.querySelector('.nav-dropdown-toggle').addEventListener('click', e => { if (window.innerWidth <= 768) { e.preventDefault(); dd.classList.toggle('open'); } });
+  document.addEventListener('click', e => { if (!dd.contains(e.target)) dd.classList.remove('open'); });
+});
+</script>
+</body>
+</html>

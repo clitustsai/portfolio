@@ -749,6 +749,88 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'index.html'));
 });
 
+// ========== AI TOOLS — Code Review & CV Generator ==========
+const aiToolsLimiter = rateLimit({ windowMs: 24 * 60 * 60 * 1000, max: 3, keyGenerator: (req) => req.ip + '_tools', message: { error: 'Hết lượt miễn phí hôm nay (3 lần). Nâng cấp VIP để dùng không giới hạn.' } });
+
+async function callOpenRouter(messages, maxTokens = 1500) {
+    const apiKey = process.env.OPENROUTER_API_KEY;
+    if (!apiKey) throw new Error('API key chưa cấu hình');
+    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}`, 'HTTP-Referer': 'https://portfolio-utbu.onrender.com', 'X-Title': 'Clitus PC Tools' },
+        body: JSON.stringify({ model: 'openai/gpt-4.1-mini', messages, max_tokens: maxTokens, temperature: 0.7 })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message || 'AI error');
+    return data?.choices?.[0]?.message?.content || '';
+}
+
+function checkVIP(email) {
+    if (!email) return false;
+    const sub = get("SELECT * FROM subscriptions WHERE email=? AND status='active' AND expires_at > datetime('now')", [email.trim()]);
+    return !!sub;
+}
+
+// AI Code Review
+app.post('/api/tools/code-review', async (req, res) => {
+    const { code, language, email } = req.body;
+    if (!code?.trim()) return res.status(400).json({ error: 'Thiếu code' });
+    const isVip = checkVIP(email);
+    if (!isVip) {
+        // Apply rate limit manually for free users
+        const key = `cr_${req.ip}`;
+        const today = new Date().toDateString();
+        const usageKey = `usage_${key}_${today}`;
+        const usage = get('SELECT value FROM site_stats WHERE key=?', [usageKey]);
+        const count = parseInt(usage?.value || '0');
+        if (count >= 3) return res.status(429).json({ error: 'Hết lượt miễn phí hôm nay (3 lần). Nâng cấp VIP để dùng không giới hạn.', upgradeUrl: '/payment.html' });
+        if (!usage) run('INSERT INTO site_stats (key, value) VALUES (?,?)', [usageKey, '1']);
+        else run('UPDATE site_stats SET value=? WHERE key=?', [String(count + 1), usageKey]);
+    }
+    try {
+        const result = await callOpenRouter([
+            { role: 'system', content: `Bạn là senior code reviewer chuyên nghiệp. Phân tích code và trả về JSON với format:\n{"score":85,"summary":"...","issues":[{"severity":"high|medium|low","line":"...","issue":"...","fix":"..."}],"strengths":["..."],"suggestions":["..."]}` },
+            { role: 'user', content: `Language: ${language || 'auto-detect'}\n\nCode:\n\`\`\`\n${code.slice(0, 3000)}\n\`\`\`` }
+        ], 1500);
+        // Parse JSON từ response
+        const jsonMatch = result.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+            res.json({ ok: true, result: JSON.parse(jsonMatch[0]), isVip });
+        } else {
+            res.json({ ok: true, result: { score: 0, summary: result, issues: [], strengths: [], suggestions: [] }, isVip });
+        }
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// AI CV Generator
+app.post('/api/tools/cv-generate', async (req, res) => {
+    const { name, title, email: userEmail, phone, summary, skills, experience, education, language, email } = req.body;
+    if (!name?.trim()) return res.status(400).json({ error: 'Thiếu tên' });
+    const isVip = checkVIP(email);
+    if (!isVip) {
+        const key = `cv_${req.ip}`;
+        const today = new Date().toDateString();
+        const usageKey = `usage_${key}_${today}`;
+        const usage = get('SELECT value FROM site_stats WHERE key=?', [usageKey]);
+        const count = parseInt(usage?.value || '0');
+        if (count >= 3) return res.status(429).json({ error: 'Hết lượt miễn phí hôm nay (3 lần). Nâng cấp VIP để dùng không giới hạn.', upgradeUrl: '/payment.html' });
+        if (!usage) run('INSERT INTO site_stats (key, value) VALUES (?,?)', [usageKey, '1']);
+        else run('UPDATE site_stats SET value=? WHERE key=?', [String(count + 1), usageKey]);
+    }
+    try {
+        const lang = language === 'en' ? 'English' : 'Vietnamese';
+        const result = await callOpenRouter([
+            { role: 'system', content: `Bạn là chuyên gia viết CV chuyên nghiệp. Tạo CV hoàn chỉnh bằng ${lang} dựa trên thông tin được cung cấp. Trả về HTML đẹp, sẵn sàng in, với inline CSS. Dùng màu #667eea cho accent. Không dùng external CSS.` },
+            { role: 'user', content: `Tên: ${name}\nChức danh: ${title || ''}\nEmail: ${userEmail || ''}\nPhone: ${phone || ''}\nTóm tắt: ${summary || ''}\nKỹ năng: ${skills || ''}\nKinh nghiệm: ${experience || ''}\nHọc vấn: ${education || ''}` }
+        ], 2000);
+        res.json({ ok: true, html: result, isVip });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Khởi động: init DB trước rồi mới listen
 getDb().then(() => {
     app.listen(PORT, () => {
