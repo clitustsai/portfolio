@@ -620,51 +620,6 @@ function updateUsageUI() {
   if (cvEl) { cvEl.textContent = window._isVip ? '∞' : cvLeft; cvEl.style.color = (!window._isVip && cvLeft === 0) ? '#f5576c' : (!window._isVip && cvLeft === 1) ? '#f59e0b' : 'var(--g1)'; }
 }
 
-// ===== TABS =====
-function switchTab(id, btn) {
-  document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('panel-' + id).classList.add('active');
-  btn.classList.add('active');
-}
-
-// ===== USAGE COUNTER =====
-// Luôn track theo localStorage, bất kể có email hay không
-// Server sẽ quyết định VIP hay free — client chỉ hiển thị UI
-function getUsage(key) {
-  const today = new Date().toDateString();
-  const stored = JSON.parse(localStorage.getItem('ai_usage') || '{}');
-  if (stored.date !== today) return 0;
-  return stored[key] || 0;
-}
-function incUsage(key) {
-  const today = new Date().toDateString();
-  const stored = JSON.parse(localStorage.getItem('ai_usage') || '{}');
-  if (stored.date !== today) {
-    localStorage.setItem('ai_usage', JSON.stringify({ date: today, [key]: 1 }));
-    return 1;
-  }
-  stored[key] = (stored[key] || 0) + 1;
-  localStorage.setItem('ai_usage', JSON.stringify(stored));
-  return stored[key];
-}
-function updateUsageUI() {
-  const crUsed = getUsage('cr'); const cvUsed = getUsage('cv');
-  const crEl = document.getElementById('cr-usage');
-  const cvEl = document.getElementById('cv-usage');
-  const crLeft = Math.max(0, 3 - crUsed);
-  const cvLeft = Math.max(0, 3 - cvUsed);
-  if (crEl) {
-    crEl.textContent = crLeft;
-    crEl.style.color = crLeft === 0 ? '#f5576c' : crLeft === 1 ? '#f59e0b' : 'var(--g1)';
-  }
-  if (cvEl) {
-    cvEl.textContent = cvLeft;
-    cvEl.style.color = cvLeft === 0 ? '#f5576c' : cvLeft === 1 ? '#f59e0b' : 'var(--g1)';
-  }
-}
-document.addEventListener('DOMContentLoaded', updateUsageUI);
-
 // ===== UPSELL MODAL (hết lượt → mua VIP) =====
 function showUpsellModal(toolName) {
   const existing = document.getElementById('upsell-modal');
