@@ -540,9 +540,23 @@
 
     <!-- Hero Section -->
     <section class="hero" id="home">
-        <div class="hero-content">
-            <h1 data-i18n="hero.title"><span class="hero-name-gradient"></span>Xin Chào! 👋</span></h1>
-            <p data-i18n="hero.desc">Chào mừng bạn đến với trang cá nhân của tôi. Tôi là một lập trình viên chuyên về phát triển ứng dụng web và hệ thống. Tôi tập trung vào việc xây dựng các giải pháp công nghệ ổn định, hiệu quả và có khả năng mở rộng, đáp ứng nhu cầu thực tế của doanh nghiệp và người dùng.</p>
+        <!-- Particle Canvas Background -->
+        <canvas id="heroCanvas"></canvas>
+
+        <div class="hero-content hero-3d-card">
+            <div class="hero-badge">
+                <span class="hero-badge-dot"></span>
+                <span>Available for work</span>
+            </div>
+            <h1 data-i18n="hero.title">
+                <span class="hero-line hero-line-1">Xin Chào! 👋</span>
+                <span class="hero-line hero-line-2">Tôi là <span class="hero-name-gradient typewriter-name"></span></span>
+                <span class="hero-line hero-line-3 hero-role-wrap">Full Stack <span class="hero-role-cycle"></span></span>
+            </h1>
+            <p class="hero-desc-anim" data-i18n="hero.desc">Chào mừng bạn đến với trang cá nhân của tôi. Tôi là một lập trình viên chuyên về phát triển ứng dụng web và hệ thống. Tôi tập trung vào việc xây dựng các giải pháp công nghệ ổn định, hiệu quả và có khả năng mở rộng, đáp ứng nhu cầu thực tế của doanh nghiệp và người dùng.</p>
+            <div class="hero-tech-stack">
+                <span>React</span><span>Node.js</span><span>Vue.js</span><span>Python</span><span>TypeScript</span>
+            </div>
             <div class="hero-buttons">
                 <a href="#about" class="btn btn-primary" data-i18n="hero.btn1">Tìm Hiểu Thêm</a>
                 <a href="#contact" class="btn btn-secondary" data-i18n="hero.btn2">Liên Hệ Với Tôi</a>
@@ -570,8 +584,12 @@
                 </button>
             </div>
         </div>
-        <div class="hero-image">
+        <div class="hero-image hero-img-3d">
+            <div class="hero-img-ring hero-img-ring-1"></div>
+            <div class="hero-img-ring hero-img-ring-2"></div>
+            <div class="hero-img-ring hero-img-ring-3"></div>
             <img src="./img/z7643593902682_1d1e5b7671cc398923d350f14dd68934.jpg" alt="Profile Avatar" class="profile-image">
+            <div class="hero-img-glow"></div>
         </div>
     </section>
 
@@ -2066,5 +2084,149 @@
   }
 })();
 </script>
+
+<script>
+// ===== HERO CANVAS PARTICLES =====
+(function() {
+  const canvas = document.getElementById('heroCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [], mouse = { x: -9999, y: -9999 };
+  const COUNT = window.innerWidth < 768 ? 40 : 90;
+  const MAX_DIST = 130;
+
+  function resize() {
+    const hero = document.getElementById('home');
+    W = canvas.width = hero ? hero.offsetWidth : window.innerWidth;
+    H = canvas.height = hero ? hero.offsetHeight : window.innerHeight;
+  }
+
+  function Particle() {
+    this.reset = function() {
+      this.x = Math.random() * W;
+      this.y = Math.random() * H;
+      this.vx = (Math.random() - 0.5) * 0.6;
+      this.vy = (Math.random() - 0.5) * 0.6;
+      this.r = Math.random() * 2.5 + 1;
+      this.alpha = Math.random() * 0.5 + 0.2;
+    };
+    this.reset();
+    this.update = function() {
+      this.x += this.vx;
+      this.y += this.vy;
+      if (this.x < 0 || this.x > W) this.vx *= -1;
+      if (this.y < 0 || this.y > H) this.vy *= -1;
+      const dx = this.x - mouse.x, dy = this.y - mouse.y;
+      const d = Math.sqrt(dx*dx + dy*dy);
+      if (d < 80) { this.x += dx / d * 1.5; this.y += dy / d * 1.5; }
+    };
+    this.draw = function() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(200,214,255,${this.alpha})`;
+      ctx.fill();
+    };
+  }
+
+  function init() {
+    resize();
+    particles = [];
+    for (let i = 0; i < COUNT; i++) particles.push(new Particle());
+  }
+
+  function drawLines() {
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const d = Math.sqrt(dx*dx + dy*dy);
+        if (d < MAX_DIST) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(180,200,255,${0.18 * (1 - d / MAX_DIST)})`;
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  function loop() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => { p.update(); p.draw(); });
+    drawLines();
+    requestAnimationFrame(loop);
+  }
+
+  window.addEventListener('resize', resize);
+  const hero = document.getElementById('home');
+  if (hero) {
+    hero.addEventListener('mousemove', e => {
+      const r = hero.getBoundingClientRect();
+      mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top;
+    });
+    hero.addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; });
+    hero.addEventListener('touchmove', e => {
+      const r = hero.getBoundingClientRect();
+      mouse.x = e.touches[0].clientX - r.left; mouse.y = e.touches[0].clientY - r.top;
+    }, { passive: true });
+  }
+  init(); loop();
+})();
+
+// ===== TYPEWRITER NAME =====
+(function() {
+  const el = document.querySelector('.typewriter-name');
+  if (!el) return;
+  const name = 'Clitus PC';
+  let i = 0;
+  function type() {
+    if (i <= name.length) {
+      el.textContent = name.slice(0, i++);
+      setTimeout(type, i === 1 ? 800 : 90);
+    } else { el.classList.add('done'); }
+  }
+  setTimeout(type, 1200);
+})();
+
+// ===== ROLE CYCLE =====
+(function() {
+  const el = document.querySelector('.hero-role-cycle');
+  if (!el) return;
+  const roles = ['Developer', 'Designer', 'Problem Solver', 'Freelancer'];
+  let idx = 0;
+  function setRole() {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(10px)';
+    setTimeout(() => {
+      el.textContent = roles[idx++ % roles.length];
+      el.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+    }, 300);
+  }
+  setTimeout(() => { setRole(); setInterval(setRole, 2800); }, 1800);
+})();
+
+// ===== 3D TILT (desktop only) =====
+(function() {
+  if (window.innerWidth < 768) return;
+  const card = document.querySelector('.hero-3d-card');
+  if (!card) return;
+  card.addEventListener('mousemove', e => {
+    const r = card.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width - 0.5;
+    const y = (e.clientY - r.top) / r.height - 0.5;
+    card.style.transform = `perspective(800px) rotateY(${x * 8}deg) rotateX(${-y * 6}deg)`;
+  });
+  card.addEventListener('mouseleave', () => {
+    card.style.transition = 'transform 0.6s ease';
+    card.style.transform = 'perspective(800px) rotateY(0) rotateX(0)';
+    setTimeout(() => card.style.transition = 'transform 0.1s ease', 600);
+  });
+})();
+</script>
+
 </body>
 </html>

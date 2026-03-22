@@ -588,3 +588,235 @@ footer {
   .hero-image img { animation: none !important; }
   .about-card:hover, .skill-item:hover, .project-card:hover { transform: none !important; }
 }
+
+
+/* ============================================================
+   HERO CANVAS + 3D + ANIMATIONS — Ultra Pro
+   ============================================================ */
+
+/* ===== CANVAS BACKGROUND ===== */
+#heroCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.7;
+}
+.hero {
+  position: relative;
+  overflow: hidden;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+.hero > * { position: relative; z-index: 1; }
+
+/* ===== HERO BADGE ===== */
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 50px;
+  padding: 0.4rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.95);
+  margin-bottom: 1.25rem;
+  opacity: 0;
+  animation: heroFadeUp 0.6s ease 0.2s forwards;
+}
+.hero-badge-dot {
+  width: 8px; height: 8px;
+  background: #4ade80;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(74,222,128,0.3);
+  animation: pulseDot 2s ease infinite;
+}
+@keyframes pulseDot {
+  0%,100% { box-shadow: 0 0 0 3px rgba(74,222,128,0.3); }
+  50%      { box-shadow: 0 0 0 6px rgba(74,222,128,0.1); }
+}
+
+/* ===== HERO H1 LINES ===== */
+.hero h1 {
+  display: flex !important;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-bottom: 1.25rem;
+}
+.hero-line {
+  display: block;
+  opacity: 0;
+  transform: translateY(24px);
+}
+.hero-line-1 { animation: heroFadeUp 0.6s ease 0.4s forwards; font-size: 1.4rem !important; font-weight: 500 !important; opacity: 0.9; }
+.hero-line-2 { animation: heroFadeUp 0.6s ease 0.55s forwards; font-size: clamp(2rem,4.5vw,3.2rem) !important; }
+.hero-line-3 { animation: heroFadeUp 0.6s ease 0.7s forwards; font-size: clamp(1.6rem,3.5vw,2.4rem) !important; font-weight: 700 !important; }
+
+@keyframes heroFadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== TYPEWRITER NAME ===== */
+.typewriter-name {
+  background: linear-gradient(135deg, #fff 0%, #c8d6ff 40%, #e8b4ff 80%, #fff 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 4s linear infinite;
+  font-weight: 900 !important;
+  border-right: 3px solid rgba(255,255,255,0.7);
+  padding-right: 3px;
+}
+.typewriter-name.done { border-right: none; }
+
+/* ===== ROLE CYCLE ===== */
+.hero-role-wrap { color: rgba(255,255,255,0.9); }
+.hero-role-cycle {
+  display: inline-block;
+  color: #c8d6ff;
+  font-weight: 800 !important;
+  min-width: 180px;
+  position: relative;
+}
+
+/* ===== HERO DESC ===== */
+.hero-desc-anim {
+  opacity: 0;
+  animation: heroFadeUp 0.6s ease 0.9s forwards;
+}
+
+/* ===== TECH STACK PILLS ===== */
+.hero-tech-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  animation: heroFadeUp 0.6s ease 1.05s forwards;
+}
+.hero-tech-stack span {
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.9);
+  padding: 0.3rem 0.85rem;
+  border-radius: 50px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  transition: all 0.25s;
+  cursor: default;
+}
+.hero-tech-stack span:hover {
+  background: rgba(255,255,255,0.22);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* ===== HERO BUTTONS ANIM ===== */
+.hero-buttons {
+  opacity: 0;
+  animation: heroFadeUp 0.6s ease 1.2s forwards;
+}
+
+/* ===== 3D TILT CARD ===== */
+.hero-3d-card {
+  transform-style: preserve-3d;
+  transition: transform 0.1s ease;
+  will-change: transform;
+}
+
+/* ===== HERO IMAGE 3D ===== */
+.hero-img-3d {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  animation: heroFadeUp 0.8s ease 0.5s forwards;
+}
+.hero-img-3d img {
+  position: relative;
+  z-index: 2;
+  width: 300px !important;
+  height: 300px !important;
+  border-radius: 50% !important;
+  object-fit: cover;
+  border: 4px solid rgba(255,255,255,0.5) !important;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.35), 0 0 60px rgba(102,126,234,0.4) !important;
+  animation: floatAvatar 5s ease-in-out infinite !important;
+  transition: box-shadow 0.3s !important;
+}
+.hero-img-3d img:hover {
+  box-shadow: 0 32px 100px rgba(0,0,0,0.45), 0 0 80px rgba(102,126,234,0.6) !important;
+}
+
+/* Rotating rings */
+.hero-img-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  pointer-events: none;
+}
+.hero-img-ring-1 {
+  width: 340px; height: 340px;
+  border-color: rgba(102,126,234,0.35);
+  animation: ringRotate 8s linear infinite;
+  border-style: dashed;
+}
+.hero-img-ring-2 {
+  width: 390px; height: 390px;
+  border-color: rgba(118,75,162,0.2);
+  animation: ringRotate 14s linear infinite reverse;
+}
+.hero-img-ring-3 {
+  width: 440px; height: 440px;
+  border-color: rgba(240,147,251,0.12);
+  animation: ringRotate 20s linear infinite;
+  border-style: dotted;
+}
+@keyframes ringRotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Glow blob */
+.hero-img-glow {
+  position: absolute;
+  width: 280px; height: 280px;
+  background: radial-gradient(circle, rgba(102,126,234,0.4) 0%, transparent 70%);
+  border-radius: 50%;
+  filter: blur(30px);
+  z-index: 0;
+  animation: glowPulse 4s ease-in-out infinite;
+}
+@keyframes glowPulse {
+  0%,100% { transform: scale(1); opacity: 0.6; }
+  50%      { transform: scale(1.2); opacity: 1; }
+}
+
+/* ===== MOBILE HERO ===== */
+@media (max-width: 768px) {
+  #heroCanvas { opacity: 0.4; }
+  .hero-img-ring-1 { width: 200px; height: 200px; }
+  .hero-img-ring-2 { width: 240px; height: 240px; }
+  .hero-img-ring-3 { display: none; }
+  .hero-img-3d img { width: 160px !important; height: 160px !important; }
+  .hero-img-glow { width: 160px; height: 160px; }
+  .hero-tech-stack { gap: 0.35rem; }
+  .hero-tech-stack span { font-size: 0.72rem; padding: 0.25rem 0.65rem; }
+  .hero-badge { font-size: 0.75rem; }
+  .hero-3d-card { transform: none !important; }
+}
