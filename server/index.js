@@ -326,6 +326,68 @@ app.post('/api/push/send', requireAdmin, async (req, res) => {
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok', time: new Date().toISOString() }));
 
+// ========== LIVE ACTIVITY ==========
+// In-memory store — reset khi server restart (OK cho Render free tier)
+const liveStore = {
+    heartbeats: new Map(), // sessionId -> { page, ts }
+    recentEvents: [],      // [{type, msg, ts}] — max 20
+};
+
+// Ping từ client mỗi 30s
+app.post('/api/live/ping', (req, res) => {
+    const { sessionId, page } = req.body;
+    if (!sessionId) return res.status(400).json({ error: 'missing sessionId' });
+    liveStore.heartbeats.set(sessionId, { page: page || '/', ts: Date.now() });
+    res.json({ ok: true });
+});
+
+// Push event (mua VIP, dùng AI, v.v.) — gọi từ client sau action
+app.post('/api/live/event', (req, res) => {
+    const { type, msg } = req.body;
+    if (!type || !msg) return res.status(400).json({ error: 'missing fields' });
+    const allowed = ['vip','ai','game','join','review'];
+    if (!allowed.includes(type)) return res.status(400).json({ error: 'invalid type' });
+    liveStore.recentEvents.unshift({ type, msg: msg.slice(0, 80), ts: Date.now() });
+    if (liveStore.recentEvents.length > 20) liveStore.recentEvents.pop();
+    res.json({ ok: true });
+});
+
+// GET live stats
+app.get('/api/live/stats', (req, res) => {
+    const now = Date.now();
+    const cutoff = now - 90 * 1000; // 90 giây = "đang online"
+
+    // Dọn heartbeat cũ
+    for (const [id, v] of liveStore.heartbeats) {
+        if (v.ts < cutoff) liveStore.heartbeats.delete(id);
+    }
+
+    const sessions = [...liveStore.heartbeats.values()];
+    const activeCount = sessions.length;
+
+    // Đếm theo page
+    const byPage = {};
+    sessions.forEach(s => { byPage[s.page] = (byPage[s.page] || 0) + 1; });
+
+    // Recent events (5 phút gần nhất)
+    const recentEvents = liveStore.recentEvents.filter(e => e.ts > now - 5 * 60 * 1000).slice(0, 8);
+
+    // VIP count hôm nay từ DB
+    const today = new Date().toISOString().slice(0, 10);
+    const vipToday = get("SELECT COUNT(*) as c FROM subscriptions WHERE status='active' AND DATE(activated_at)=?", [today]);
+
+    // AI usage hôm nay
+    const aiToday = get("SELECT SUM(count) as c FROM user_usage WHERE date=?", [today]);
+
+    res.json({
+        activeCount,
+        byPage,
+        recentEvents,
+        vipToday: vipToday?.c || 0,
+        aiToday: aiToday?.c || 0,
+    });
+});
+
 // ========== USER AUTH ==========
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');

@@ -360,6 +360,7 @@ async function handleRegister(e) {
         updateCommentForms();
         if (typeof onToolsAuthSuccess === 'function') onToolsAuthSuccess(user);
         if (typeof showToast === 'function') showToast(`🎉 Đăng ký thành công! Chào ${user.username}!`, 'success', 4000);
+        if (typeof laEvent === 'function') laEvent('join', 'Thành viên mới vừa tham gia cộng đồng!');
     } catch(err) {
         errEl.textContent = err.message;
     } finally {

@@ -232,7 +232,7 @@ async function runCodeReview() {
     }
     if (!data.isVip) incUsage('cr');
     updateUsageUI();
-    // Save history server-side
+    if (typeof laEvent === 'function') laEvent('ai', 'Ai đó vừa dùng AI Code Review');
     try { fetch(API_BASE + '/user/ai-history', { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+getToken()}, body:JSON.stringify({tool:'cr',input:code.slice(0,80)}) }); } catch(e){}
     // Save history localStorage (fallback)
     try { const hist=JSON.parse(localStorage.getItem('ai_history')||'[]'); hist.push({tool:'cr',input:code.slice(0,80),time:Date.now()}); if(hist.length>50)hist.splice(0,hist.length-50); localStorage.setItem('ai_history',JSON.stringify(hist)); } catch(e){}
@@ -318,7 +318,7 @@ async function runCVGen() {
     }
     if (!data.isVip) incUsage('cv');
     updateUsageUI();
-    // Save history server-side
+    if (typeof laEvent === 'function') laEvent('ai', 'Ai đó vừa tạo CV bằng AI');
     try { fetch(API_BASE + '/user/ai-history', { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+getToken()}, body:JSON.stringify({tool:'cv',input:name}) }); } catch(e){}
     // Save history localStorage (fallback)
     try { const hist=JSON.parse(localStorage.getItem('ai_history')||'[]'); hist.push({tool:'cv',input:name,time:Date.now()}); if(hist.length>50)hist.splice(0,hist.length-50); localStorage.setItem('ai_history',JSON.stringify(hist)); } catch(e){}
@@ -474,7 +474,7 @@ async function runImageAI() {
     }
     if (!data.isVip) incUsage('img');
     updateUsageUI();
-    // Format kết quả — xuống dòng đẹp
+    if (typeof laEvent === 'function') laEvent('ai', 'Ai đó vừa dùng AI phân tích ảnh');
     const body = document.getElementById('img-result-body');
     body.innerHTML = formatImgResult(data.result);
     resultBox.classList.add('show');
