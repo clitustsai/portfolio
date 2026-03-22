@@ -412,6 +412,7 @@ function updateNavAuth() {
                     '</div>' +
                     '<div class="nud-divider"></div>' +
                     '<button class="nud-item" onclick="openProfileModal()"><i class="fas fa-user-edit"></i> Chỉnh sửa hồ sơ</button>' +
+                    '<a class="nud-item" href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>' +
                     '<a class="nud-item" href="tools.html"><i class="fas fa-robot"></i> AI Tools</a>' +
                     '<a class="nud-item" href="payment.html"><i class="fas fa-crown"></i> ' + (window._navVipStatus ? 'Quản lý VIP' : 'Nâng cấp VIP') + '</a>' +
                     '<div class="nud-divider"></div>' +

@@ -662,6 +662,14 @@ body { background: linear-gradient(135deg,#0f0c29,#302b63,#24243e); min-height:1
 </footer>
 
 <script>
+// ===== SAVE AI HISTORY =====
+function saveAiHistory(tool, input) {
+  const hist = JSON.parse(localStorage.getItem('ai_history') || '[]');
+  hist.push({ tool, input: (input || '').slice(0, 80), time: Date.now() });
+  if (hist.length > 50) hist.splice(0, hist.length - 50);
+  localStorage.setItem('ai_history', JSON.stringify(hist));
+}
+
 // ===== CONFIG =====
 const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3001/api' : '/api';
 
@@ -752,6 +760,7 @@ async function runHomework() {
     if (!res.ok) { svToast('❌ ' + (data.error || 'Lỗi server'), 'error'); return; }
     incSvUsage('hw');
     updateSvUsageUI();
+    saveAiHistory('hw', question);
     showAiResult('hw-result', data.answer || '');
   } catch(e) {
     svToast('❌ Lỗi kết nối. Thử lại!', 'error');
@@ -783,6 +792,7 @@ async function runFixCode() {
     if (!res.ok) { svToast('❌ ' + (data.error || 'Lỗi server'), 'error'); return; }
     incSvUsage('fix');
     updateSvUsageUI();
+    saveAiHistory('fix', code.slice(0, 80));
     showAiResult('fix-result', data.result || '');
   } catch(e) {
     svToast('❌ Lỗi kết nối. Thử lại!', 'error');
@@ -813,6 +823,7 @@ async function runVideoScript() {
     if (!res.ok) { svToast('❌ ' + (data.error || 'Lỗi server'), 'error'); return; }
     incSvUsage('vid');
     updateSvUsageUI();
+    saveAiHistory('vid', topic);
     showAiResult('vid-result', data.script || '');
   } catch(e) {
     svToast('❌ Lỗi kết nối. Thử lại!', 'error');

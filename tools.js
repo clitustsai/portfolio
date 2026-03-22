@@ -216,6 +216,8 @@ async function runCodeReview() {
     }
     if (!data.isVip) incUsage('cr');
     updateUsageUI();
+    // Save history
+    try { const hist=JSON.parse(localStorage.getItem('ai_history')||'[]'); hist.push({tool:'cr',input:code.slice(0,80),time:Date.now()}); if(hist.length>50)hist.splice(0,hist.length-50); localStorage.setItem('ai_history',JSON.stringify(hist)); } catch(e){}
     renderCodeReview(data.result);
     resultBox.classList.add('show');
     resultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -290,6 +292,8 @@ async function runCVGen() {
     }
     if (!data.isVip) incUsage('cv');
     updateUsageUI();
+    // Save history
+    try { const hist=JSON.parse(localStorage.getItem('ai_history')||'[]'); hist.push({tool:'cv',input:name,time:Date.now()}); if(hist.length>50)hist.splice(0,hist.length-50); localStorage.setItem('ai_history',JSON.stringify(hist)); } catch(e){}
     cvHTML = data.html || '';
     document.getElementById('cv-preview-body').innerHTML = cvHTML;
     resultBox.classList.add('show');

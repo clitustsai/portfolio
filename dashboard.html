@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Clitus PC</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="modern.css">
+<script src="api.js" defer></script>
+<script src="auth.js" defer></script>
+<script src="nav.js" defer></script>
+<style>
+:root{--g1:#667eea;--g2:#764ba2;--g3:#f093fb;}
+*{box-sizing:border-box;}
+body{background:linear-gradient(135deg,#0f0c29,#55545e,#24243e);min-height:100vh;color:#fff;}
+.db-wrap{max-width:1100px;margin:0 auto;padding:2rem 1.25rem 5rem;}
+.db-hero{text-align:center;padding:2.5rem 1rem 2rem;position:relative;}
+.db-hero h1{font-size:clamp(1.6rem,4vw,2.4rem);font-weight:900;margin:0 0 .4rem;
+  background:linear-gradient(135deg,#fff 0%,#c4b5fd 50%,#f9a8d4 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.db-hero p{opacity:.65;font-size:.9rem;}
+.db-avatar{width:72px;height:72px;border-radius:50%;border:3px solid rgba(102,126,234,.5);
+  object-fit:cover;margin:0 auto 1rem;display:block;background:linear-gradient(135deg,var(--g1),var(--g2));
+  display:flex;align-items:center;justify-content:center;font-size:1.8rem;}
+.db-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.25rem;margin-bottom:1.5rem;}
+.db-card{background:rgba(255,255,255,.07);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.12);
+  border-radius:20px;padding:1.5rem;transition:all .3s;}
+.db-card:hover{border-color:rgba(102,126,234,.35);transform:translateY(-3px);}
+.db-card-title{font-size:.72rem;font-weight:800;color:rgba(255,255,255,.5);text-transform:uppercase;
+  letter-spacing:.08em;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;}
+/* Plan card */
+.plan-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1.25rem;border-radius:50px;
+  font-size:.95rem;font-weight:900;margin-bottom:1rem;}
+.plan-vip{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;box-shadow:0 4px 16px rgba(245,158,11,.4);}
+.plan-free{background:rgba(255,255,255,.12);color:rgba(255,255,255,.8);}
+.plan-expires{font-size:.8rem;color:rgba(255,255,255,.55);margin-bottom:1.25rem;}
+.plan-expires span{color:#4ade80;font-weight:700;}
+.plan-expires.expired span{color:#f87171;}
+/* Usage bars */
+.usage-item{margin-bottom:1rem;}
+.usage-label{display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:.4rem;}
+.usage-label span:first-child{color:rgba(255,255,255,.7);}
+.usage-label span:last-child{font-weight:700;color:#a5f3fc;}
+.usage-track{height:6px;background:rgba(255,255,255,.1);border-radius:10px;overflow:hidden;}
+.usage-fill{height:100%;border-radius:10px;transition:width .6s ease;background:linear-gradient(90deg,var(--g1),var(--g3));}
+.usage-fill.full{background:linear-gradient(90deg,#f5576c,#f093fb);}
+/* Stats row */
+.stat-row-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:1rem;}
+.stat-box{background:rgba(255,255,255,.06);border-radius:14px;padding:1rem;text-align:center;}
+.stat-box .num{font-size:1.5rem;font-weight:900;background:linear-gradient(135deg,#a5f3fc,#818cf8);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.stat-box .lbl{font-size:.7rem;color:rgba(255,255,255,.5);margin-top:.2rem;}
+/* History table */
+.history-list{display:flex;flex-direction:column;gap:.6rem;max-height:320px;overflow-y:auto;}
+.history-list::-webkit-scrollbar{width:4px;}
+.history-list::-webkit-scrollbar-track{background:rgba(255,255,255,.05);}
+.history-list::-webkit-scrollbar-thumb{background:rgba(102,126,234,.4);border-radius:4px;}
+.history-item{background:rgba(255,255,255,.05);border-radius:12px;padding:.85rem 1rem;
+  display:flex;align-items:flex-start;gap:.75rem;border:1px solid rgba(255,255,255,.07);}
+.history-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;
+  justify-content:center;font-size:.95rem;flex-shrink:0;}
+.history-content{flex:1;min-width:0;}
+.history-tool{font-size:.75rem;font-weight:800;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.05em;}
+.history-text{font-size:.83rem;color:rgba(255,255,255,.8);margin:.15rem 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.history-time{font-size:.7rem;color:rgba(255,255,255,.35);}
+.history-empty{text-align:center;padding:2rem;color:rgba(255,255,255,.3);font-size:.88rem;}
+/* Buttons */
+.btn-db{display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.4rem;border-radius:50px;
+  font-size:.88rem;font-weight:700;cursor:pointer;border:none;transition:all .25s;text-decoration:none;}
+.btn-db-primary{background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;box-shadow:0 6px 20px rgba(102,126,234,.4);}
+.btn-db-primary:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(102,126,234,.55);}
+.btn-db-gold{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;box-shadow:0 6px 20px rgba(245,158,11,.4);}
+.btn-db-gold:hover{transform:translateY(-2px);}
+.btn-db-outline{background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.2)!important;color:#fff;}
+.btn-db-outline:hover{background:rgba(255,255,255,.15);}
+/* Profile edit */
+.profile-field{margin-bottom:.85rem;}
+.profile-field label{display:block;font-size:.72rem;font-weight:700;color:rgba(255,255,255,.5);
+  text-transform:uppercase;letter-spacing:.05em;margin-bottom:.35rem;}
+.profile-field input{width:100%;padding:.65rem 1rem;background:rgba(255,255,255,.08);
+  border:1.5px solid rgba(255,255,255,.15);border-radius:12px;color:#fff;font-size:.88rem;
+  font-family:inherit;outline:none;transition:all .2s;}
+.profile-field input:focus{border-color:rgba(102,126,234,.6);background:rgba(102,126,234,.1);}
+/* Loading */
+.db-loading{text-align:center;padding:4rem;color:rgba(255,255,255,.4);}
+.db-loading i{font-size:2rem;animation:spin 1s linear infinite;display:block;margin-bottom:.75rem;}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* Toast */
+.db-toast{position:fixed;bottom:24px;right:24px;z-index:9999;background:rgba(20,20,50,.95);
+  border:1.5px solid #4ade80;color:#fff;padding:.75rem 1.25rem;border-radius:14px;
+  font-size:.88rem;font-weight:600;box-shadow:0 8px 30px rgba(0,0,0,.4);
+  animation:toastIn .3s ease;display:none;}
+@keyframes toastIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:640px){.db-grid{grid-template-columns:1fr;}.stat-row-grid{grid-template-columns:repeat(3,1fr);}}
+</style>
+</head>
+<body>
+<header>
+  <nav>
+    <a href="index.html" class="logo">
+      <span class="logo-icon">💻</span>
+      <span class="logo-text">Clitus<span class="logo-accent">PC</span></span>
+    </a>
+    <ul id="navMenu">
+      <li><a href="index.html">Trang Chủ</a></li>
+      <li><a href="blog.html">Blog</a></li>
+      <li class="nav-dropdown">
+        <a href="#" class="nav-dropdown-toggle">Công Cụ <i class="fas fa-chevron-down nav-chevron"></i></a>
+        <ul class="nav-dropdown-menu">
+          <li><a href="tools.html"><span class="dd-icon">🤖</span> AI Tools</a></li>
+          <li><a href="services.html"><span class="dd-icon">🛍️</span> Dịch Vụ</a></li>
+          <li><a href="roadmap.html"><span class="dd-icon">🗺️</span> Roadmap</a></li>
+          <li><a href="proposal.html"><span class="dd-icon">💼</span> Proposal</a></li>
+          <li><a href="invoice.html"><span class="dd-icon">🧾</span> Invoice</a></li>
+          <li><a href="payment.html"><span class="dd-icon">💳</span> Dịch Vụ & VIP</a></li>
+        </ul>
+      </li>
+    </ul>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+      <div class="nav-auth-slot"></div>
+      <button class="nav-hamburger" id="navHamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+</header>
+
+<div id="dbLoading" class="db-loading">
+  <i class="fas fa-spinner"></i>
+  Đang tải dashboard...
+</div>
+
+<div id="dbMain" class="db-wrap" style="display:none">
+  <div class="db-hero">
+    <div class="db-avatar" id="dbAvatar">👤</div>
+    <h1 id="dbName">Xin chào!</h1>
+    <p id="dbEmail"></p>
+  </div>
+
+  <!-- Stats row -->
+  <div class="stat-row-grid" style="margin-bottom:1.5rem;">
+    <div class="stat-box"><div class="num" id="statAiTotal">0</div><div class="lbl">Tổng AI dùng</div></div>
+    <div class="stat-box"><div class="num" id="statAiToday">0</div><div class="lbl">Hôm nay</div></div>
+    <div class="stat-box"><div class="num" id="statDaysLeft">—</div><div class="lbl">Ngày còn lại</div></div>
+  </div>
+
+  <div class="db-grid">
+    <!-- Gói hiện tại -->
+    <div class="db-card">
+      <div class="db-card-title"><i class="fas fa-crown"></i> Gói Hiện Tại</div>
+      <div id="planBadge" class="plan-badge plan-free">🆓 Free</div>
+      <div class="plan-expires" id="planExpires">3 lượt/ngày · Mỗi tool</div>
+      <div style="display:flex;flex-direction:column;gap:.6rem;">
+        <a href="payment.html#vip" class="btn-db btn-db-gold" id="btnUpgrade">
+          <i class="fas fa-crown"></i> Nâng cấp VIP — 99k/tháng
+        </a>
+        <a href="payment.html#vip" class="btn-db btn-db-outline" id="btnRenew" style="display:none">
+          <i class="fas fa-redo"></i> Gia hạn VIP
+        </a>
+      </div>
+      <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.08);">
+        <div style="font-size:.75rem;color:rgba(255,255,255,.4);margin-bottom:.5rem;">VIP bao gồm:</div>
+        <div style="display:flex;flex-direction:column;gap:.3rem;font-size:.8rem;color:rgba(255,255,255,.65);">
+          <span>✅ Không giới hạn AI Tools</span>
+          <span>✅ AI Giải bài tập, Fix code, Video script</span>
+          <span>✅ Code Review + CV Generator</span>
+          <span>✅ Ưu tiên hỗ trợ qua Zalo</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lượt dùng hôm nay -->
+    <div class="db-card">
+      <div class="db-card-title"><i class="fas fa-chart-bar"></i> Lượt Dùng Hôm Nay</div>
+      <div id="usageBars">
+        <div class="usage-item">
+          <div class="usage-label"><span>📚 Giải Bài Tập</span><span id="u-hw">0/3</span></div>
+          <div class="usage-track"><div class="usage-fill" id="uf-hw" style="width:0%"></div></div>
+        </div>
+        <div class="usage-item">
+          <div class="usage-label"><span>🔧 Fix Code</span><span id="u-fix">0/3</span></div>
+          <div class="usage-track"><div class="usage-fill" id="uf-fix" style="width:0%"></div></div>
+        </div>
+        <div class="usage-item">
+          <div class="usage-label"><span>🎬 Video Script</span><span id="u-vid">0/3</span></div>
+          <div class="usage-track"><div class="usage-fill" id="uf-vid" style="width:0%"></div></div>
+        </div>
+        <div class="usage-item">
+          <div class="usage-label"><span>💻 Code Review</span><span id="u-cr">0/3</span></div>
+          <div class="usage-track"><div class="usage-fill" id="uf-cr" style="width:0%"></div></div>
+        </div>
+        <div class="usage-item">
+          <div class="usage-label"><span>📄 CV Generator</span><span id="u-cv">0/3</span></div>
+          <div class="usage-track"><div class="usage-fill" id="uf-cv" style="width:0%"></div></div>
+        </div>
+      </div>
+      <div style="margin-top:.75rem;font-size:.75rem;color:rgba(255,255,255,.35);text-align:center;" id="usageNote">
+        Reset lúc 00:00 mỗi ngày
+      </div>
+    </div>
+
+    <!-- Profile -->
+    <div class="db-card">
+      <div class="db-card-title"><i class="fas fa-user-edit"></i> Hồ Sơ</div>
+      <div class="profile-field">
+        <label>Tên hiển thị</label>
+        <input type="text" id="editName" placeholder="Tên của bạn">
+      </div>
+      <div class="profile-field">
+        <label>Avatar URL</label>
+        <input type="text" id="editAvatar" placeholder="https://...">
+      </div>
+      <div style="display:flex;gap:.6rem;margin-top:.25rem;">
+        <button class="btn-db btn-db-primary" onclick="saveProfile()" style="flex:1;justify-content:center;">
+          <i class="fas fa-save"></i> Lưu
+        </button>
+        <button class="btn-db btn-db-outline" onclick="confirmLogout()" style="justify-content:center;">
+          <i class="fas fa-sign-out-alt"></i> Đăng xuất
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lịch sử AI -->
+  <div class="db-card" style="margin-top:0">
+    <div class="db-card-title" style="margin-bottom:1.25rem;">
+      <i class="fas fa-history"></i> Lịch Sử Sử Dụng AI
+      <span style="margin-left:auto;font-size:.7rem;color:rgba(255,255,255,.3);font-weight:400;text-transform:none;letter-spacing:0;">Lưu trên thiết bị này</span>
+    </div>
+    <div class="history-list" id="historyList">
+      <div class="history-empty"><i class="fas fa-robot" style="display:block;font-size:2rem;margin-bottom:.5rem;opacity:.3;"></i>Chưa có lịch sử</div>
+    </div>
+    <button onclick="clearHistory()" style="margin-top:1rem;background:none;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.4);padding:.45rem 1rem;border-radius:8px;cursor:pointer;font-size:.75rem;transition:all .2s;" onmouseover="this.style.borderColor='rgba(248,113,113,.5)';this.style.color='#f87171'" onmouseout="this.style.borderColor='rgba(255,255,255,.15)';this.style.color='rgba(255,255,255,.4)'">
+      <i class="fas fa-trash"></i> Xóa lịch sử
+    </button>
+  </div>
+
+  <!-- Quick links -->
+  <div style="display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1.5rem;justify-content:center;">
+    <a href="tools.html" class="btn-db btn-db-primary"><i class="fas fa-robot"></i> AI Tools</a>
+    <a href="services.html" class="btn-db btn-db-outline"><i class="fas fa-store"></i> Dịch Vụ</a>
+    <a href="blog.html" class="btn-db btn-db-outline"><i class="fas fa-blog"></i> Blog</a>
+    <a href="payment.html" class="btn-db btn-db-gold"><i class="fas fa-crown"></i> VIP</a>
+  </div>
+</div>
+
+<div class="db-toast" id="dbToast"></div>
+
+<script>
+const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3001/api' : '/api';
+
+// ===== TOAST =====
+function toast(msg, color) {
+  const t = document.getElementById('dbToast');
+  t.textContent = msg;
+  t.style.borderColor = color || '#4ade80';
+  t.style.display = 'block';
+  setTimeout(() => { t.style.display = 'none'; }, 3000);
+}
+
+// ===== USAGE (localStorage) =====
+const USAGE_KEYS = { hw:'hw', fix:'fix', vid:'vid', cr:'cr', cv:'cv' };
+const USAGE_LABELS = { hw:'📚 Giải Bài Tập', fix:'🔧 Fix Code', vid:'🎬 Video Script', cr:'💻 Code Review', cv:'📄 CV Generator' };
+
+function getUsage(key) {
+  const today = new Date().toDateString();
+  const s = JSON.parse(localStorage.getItem('sv_usage') || '{}');
+  const s2 = JSON.parse(localStorage.getItem('ai_usage') || '{}');
+  if (key === 'cr' || key === 'cv') return s2.date === today ? (s2[key] || 0) : 0;
+  return s.date === today ? (s[key] || 0) : 0;
+}
+
+function getTotalUsage() {
+  let total = 0, today = 0;
+  const allKeys = ['hw','fix','vid','cr','cv'];
+  allKeys.forEach(k => {
+    const v = getUsage(k);
+    today += v;
+    // rough total from history
+  });
+  const hist = getHistory();
+  total = hist.length;
+  return { total, today };
+}
+
+function renderUsage(isVip) {
+  const keys = ['hw','fix','vid','cr','cv'];
+  keys.forEach(k => {
+    const used = getUsage(k);
+    const max = isVip ? '∞' : 3;
+    const pct = isVip ? 30 : Math.min(100, (used / 3) * 100);
+    const el = document.getElementById('u-' + k);
+    const bar = document.getElementById('uf-' + k);
+    if (el) el.textContent = isVip ? used + '/∞' : used + '/3';
+    if (bar) {
+      bar.style.width = pct + '%';
+      bar.classList.toggle('full', !isVip && used >= 3);
+    }
+  });
+  const note = document.getElementById('usageNote');
+  if (note) note.textContent = isVip ? '👑 VIP — Không giới hạn lượt dùng' : 'Reset lúc 00:00 mỗi ngày';
+}
+
+// ===== HISTORY (localStorage) =====
+function getHistory() {
+  return JSON.parse(localStorage.getItem('ai_history') || '[]');
+}
+
+function renderHistory() {
+  const list = document.getElementById('historyList');
+  const hist = getHistory();
+  if (!hist.length) {
+    list.innerHTML = '<div class="history-empty"><i class="fas fa-robot" style="display:block;font-size:2rem;margin-bottom:.5rem;opacity:.3;"></i>Chưa có lịch sử</div>';
+    return;
+  }
+  const icons = { hw:'📚', fix:'🔧', vid:'🎬', cr:'💻', cv:'📄', chat:'💬' };
+  const colors = { hw:'linear-gradient(135deg,#667eea,#764ba2)', fix:'linear-gradient(135deg,#11998e,#38ef7d)', vid:'linear-gradient(135deg,#f093fb,#f5576c)', cr:'linear-gradient(135deg,#4facfe,#00f2fe)', cv:'linear-gradient(135deg,#fa709a,#fee140)', chat:'linear-gradient(135deg,#a18cd1,#fbc2eb)' };
+  list.innerHTML = hist.slice().reverse().map(h => `
+    <div class="history-item">
+      <div class="history-icon" style="background:${colors[h.tool]||colors.chat}">${icons[h.tool]||'🤖'}</div>
+      <div class="history-content">
+        <div class="history-tool">${USAGE_LABELS[h.tool] || h.tool}</div>
+        <div class="history-text">${h.input || '—'}</div>
+        <div class="history-time">${timeAgo(h.time)}</div>
+      </div>
+    </div>`).join('');
+}
+
+function clearHistory() {
+  if (!confirm('Xóa toàn bộ lịch sử AI?')) return;
+  localStorage.removeItem('ai_history');
+  renderHistory();
+  toast('🗑️ Đã xóa lịch sử', '#f87171');
+}
+
+function timeAgo(ts) {
+  const s = (Date.now() - ts) / 1000;
+  if (s < 60) return 'Vừa xong';
+  if (s < 3600) return Math.floor(s/60) + ' phút trước';
+  if (s < 86400) return Math.floor(s/3600) + ' giờ trước';
+  return Math.floor(s/86400) + ' ngày trước';
+}
+
+// ===== PLAN =====
+async function loadPlan(email) {
+  try {
+    const r = await fetch(API_BASE + '/subscription/check?email=' + encodeURIComponent(email));
+    const d = await r.json();
+    const badge = document.getElementById('planBadge');
+    const expires = document.getElementById('planExpires');
+    const btnUp = document.getElementById('btnUpgrade');
+    const btnRenew = document.getElementById('btnRenew');
+    const daysLeft = document.getElementById('statDaysLeft');
+
+    if (d.hasSubscription && d.subscription?.expires_at) {
+      const exp = new Date(d.subscription.expires_at);
+      const days = Math.max(0, Math.ceil((exp - Date.now()) / 86400000));
+      badge.className = 'plan-badge plan-vip';
+      badge.textContent = '👑 VIP';
+      expires.innerHTML = 'Hết hạn: <span>' + exp.toLocaleDateString('vi-VN') + '</span>';
+      expires.className = 'plan-expires' + (days <= 5 ? ' expired' : '');
+      daysLeft.textContent = days;
+      btnUp.style.display = 'none';
+      btnRenew.style.display = 'flex';
+    } else {
+      daysLeft.textContent = '—';
+    }
+    return d.hasSubscription;
+  } catch(e) { return false; }
+}
+
+// ===== PROFILE SAVE =====
+async function saveProfile() {
+  const name = document.getElementById('editName').value.trim();
+  const avatar = document.getElementById('editAvatar').value.trim();
+  if (!name) { toast('⚠️ Tên không được để trống', '#f87171'); return; }
+  try {
+    const r = await fetch(API_BASE + '/auth/profile', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'x-user-token': localStorage.getItem('userToken') || '' },
+      body: JSON.stringify({ nickname: name, avatar })
+    });
+    const d = await r.json();
+    if (!r.ok) { toast('❌ ' + d.error, '#f87171'); return; }
+    localStorage.setItem('user', JSON.stringify(d.user));
+    document.getElementById('dbName').textContent = d.user.username;
+    if (d.user.avatar) document.getElementById('dbAvatar').innerHTML = `<img src="${d.user.avatar}" style="width:72px;height:72px;border-radius:50%;object-fit:cover;">`;
+    toast('✅ Đã lưu hồ sơ!');
+  } catch(e) { toast('❌ Lỗi kết nối', '#f87171'); }
+}
+
+// ===== LOGOUT =====
+function confirmLogout() {
+  if (!confirm('Đăng xuất khỏi tài khoản?')) return;
+  fetch(API_BASE + '/auth/logout', { method: 'POST', headers: { 'x-user-token': localStorage.getItem('userToken') || '' } }).catch(()=>{});
+  localStorage.removeItem('userToken');
+  localStorage.removeItem('user');
+  window.location.href = 'index.html';
+}
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', async () => {
+  const token = localStorage.getItem('userToken');
+  const userStr = localStorage.getItem('user');
+
+  if (!token || !userStr) {
+    window.location.href = 'index.html';
+    return;
+  }
+
+  const user = JSON.parse(userStr);
+
+  // Verify token
+  try {
+    const r = await fetch(API_BASE + '/auth/me', { headers: { 'x-user-token': token } });
+    if (!r.ok) { window.location.href = 'index.html'; return; }
+  } catch(e) {}
+
+  // Show UI
+  document.getElementById('dbLoading').style.display = 'none';
+  document.getElementById('dbMain').style.display = 'block';
+
+  // Fill profile
+  document.getElementById('dbName').textContent = user.username || 'User';
+  document.getElementById('dbEmail').textContent = user.email || '';
+  document.getElementById('editName').value = user.username || '';
+  document.getElementById('editAvatar').value = user.avatar || '';
+  if (user.avatar) {
+    document.getElementById('dbAvatar').innerHTML = `<img src="${user.avatar}" style="width:72px;height:72px;border-radius:50%;object-fit:cover;">`;
+  }
+
+  // Load plan
+  const isVip = await loadPlan(user.email);
+
+  // Usage
+  renderUsage(isVip);
+  const { total, today } = getTotalUsage();
+  document.getElementById('statAiTotal').textContent = total;
+  document.getElementById('statAiToday').textContent = today;
+
+  // History
+  renderHistory();
+});
+</script>
+</body>
+</html>
