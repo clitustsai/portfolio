@@ -74,6 +74,24 @@
   .donate-method:hover{border-color:#667eea;transform:translateY(-3px);}
   .donate-method img{width:48px;height:48px;border-radius:10px;object-fit:contain;}
   .donate-method span{font-size:0.8rem;font-weight:700;color:var(--text);}
+  /* Donate QR Cards */
+  .donate-qr-card{
+    background:var(--card);border-radius:16px;padding:1.25rem;border:1.5px solid var(--border);
+    cursor:pointer;transition:all 0.3s;text-align:center;width:180px;
+    box-shadow:0 4px 16px rgba(0,0,0,0.06);
+  }
+  .donate-qr-card:hover{transform:translateY(-6px);box-shadow:0 12px 32px rgba(102,126,234,0.15);border-color:#667eea;}
+  .donate-qr-logo{border-radius:10px;padding:0.4rem 0.75rem;display:inline-flex;align-items:center;justify-content:center;margin-bottom:0.75rem;min-width:60px;}
+  .donate-qr-img{width:140px;height:140px;border-radius:10px;object-fit:cover;border:1px solid var(--border);}
+  .qr-placeholder{width:140px;height:140px;border-radius:10px;background:var(--bg);border:1px solid var(--border);align-items:center;justify-content:center;font-size:3rem;color:var(--sub);}
+  .donate-qr-name{font-size:0.82rem;font-weight:800;color:var(--text);margin-top:0.6rem;}
+  .donate-qr-sub{font-size:0.75rem;color:var(--sub);}
+  /* QR Fullscreen Modal */
+  #qrFullModal{display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;padding:1rem;}
+  .qr-full-box{position:relative;z-index:1;background:var(--card);border-radius:24px;padding:2rem;text-align:center;max-width:340px;width:100%;box-shadow:0 24px 80px rgba(0,0,0,0.3);animation:slideIn 0.3s ease;}
+  .qr-full-box img{width:260px;height:260px;border-radius:12px;object-fit:cover;margin:1rem auto;display:block;}
+  .qr-full-name{font-size:1rem;font-weight:800;color:var(--text);}
+  .qr-full-sub{font-size:0.82rem;color:var(--sub);margin-top:0.25rem;}
   /* Payment Modal */
   #payModal{display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;padding:1rem;}
   .pay-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);}
@@ -222,7 +240,7 @@
       </div>
 
       <!-- DONATE -->
-      <div class="section-title">☕ Ủng Hộ / Donate</div>
+      <div id="donate" class="section-title">☕ Ủng Hộ / Donate</div>
       <div class="donate-section">
         <div style="font-size:2rem;">☕</div>
         <div class="donate-desc">Nếu nội dung của mình có ích, hãy mời mình một ly cà phê nhé! Mọi sự ủng hộ đều được trân trọng 🙏</div>
@@ -232,18 +250,37 @@
           <button class="donate-amt" onclick="selectDonate(this,'100.000 VNĐ')">🎁 100k</button>
           <button class="donate-amt" onclick="selectDonate(this,'200.000 VNĐ')">💎 200k</button>
         </div>
-        <div class="donate-methods">
-          <div class="donate-method" onclick="openPayModal('Donate ☕',window._donateAmt||'20.000 VNĐ')">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Momo_Logo.png/240px-Momo_Logo.png" alt="MoMo" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 48 48%22><rect width=%2248%22 height=%2248%22 rx=%228%22 fill=%22%23a50064%22/><text y=%2232%22 x=%2224%22 text-anchor=%22middle%22 font-size=%2220%22 fill=%22white%22>M</text></svg>'">
-            <span>MoMo</span>
+        <!-- QR Cards -->
+        <div style="display:flex;flex-wrap:wrap;gap:1.5rem;justify-content:center;margin-top:1.5rem;">
+          <!-- ZaloPay -->
+          <div class="donate-qr-card" onclick="openDonateQR('zalopay')">
+            <div class="donate-qr-logo" style="background:#0068ff;">
+              <span style="color:#fff;font-weight:900;font-size:0.85rem;">Zalo<span style="color:#00e5ff;">Pay</span></span>
+            </div>
+            <img src="img/qr-zalopay.jpg" alt="QR ZaloPay" class="donate-qr-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="qr-placeholder" style="display:none"><i class="fas fa-qrcode"></i></div>
+            <div class="donate-qr-name">THÁI TUẤN KIỆT</div>
+            <div class="donate-qr-sub">ZaloPay</div>
           </div>
-          <div class="donate-method" onclick="openPayModal('Donate ☕',window._donateAmt||'20.000 VNĐ')">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Vietcombank_logo.svg/240px-Vietcombank_logo.svg.png" alt="Bank" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 48 48%22><rect width=%2248%22 height=%2248%22 rx=%228%22 fill=%22%23006633%22/><text y=%2232%22 x=%2224%22 text-anchor=%22middle%22 font-size=%2214%22 fill=%22white%22>VCB</text></svg>'">
-            <span>Chuyển khoản</span>
+          <!-- ACB -->
+          <div class="donate-qr-card" onclick="openDonateQR('acb')">
+            <div class="donate-qr-logo" style="background:#003087;">
+              <span style="color:#fff;font-weight:900;font-size:1rem;">ACB</span>
+            </div>
+            <img src="img/qr-acb.jpg" alt="QR ACB" class="donate-qr-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="qr-placeholder" style="display:none"><i class="fas fa-qrcode"></i></div>
+            <div class="donate-qr-name">THÁI TUẤN KIỆT</div>
+            <div class="donate-qr-sub">ACB · 26996867</div>
           </div>
-          <div class="donate-method" onclick="openPayModal('Donate ☕',window._donateAmt||'20.000 VNĐ')">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/PayPal.svg/240px-PayPal.svg.png" alt="PayPal" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 48 48%22><rect width=%2248%22 height=%2248%22 rx=%228%22 fill=%22%23003087%22/><text y=%2232%22 x=%2224%22 text-anchor=%22middle%22 font-size=%2212%22 fill=%22white%22>PayPal</text></svg>'">
-            <span>PayPal</span>
+          <!-- MoMo -->
+          <div class="donate-qr-card" onclick="openDonateQR('momo')">
+            <div class="donate-qr-logo" style="background:#a50064;">
+              <span style="color:#fff;font-weight:900;font-size:1rem;">MoMo</span>
+            </div>
+            <img src="img/qr-momo.jpg" alt="QR MoMo" class="donate-qr-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="qr-placeholder" style="display:none"><i class="fas fa-qrcode"></i></div>
+            <div class="donate-qr-name">THÁI TUẤN KIỆT</div>
+            <div class="donate-qr-sub">MoMo · *****331</div>
           </div>
         </div>
       </div>
@@ -262,12 +299,30 @@
       </div>
       <img class="qr-pay" id="modalQR" src="" alt="QR thanh toán">
       <div class="bank-info">
-        <div class="bank-row"><span>Ngân hàng</span><span class="val">Vietcombank</span></div>
-        <div class="bank-row"><span>Số tài khoản</span><span class="val">1234567890 <button class="copy-bank" onclick="copyText('1234567890')">Copy</button></span></div>
-        <div class="bank-row"><span>Chủ tài khoản</span><span class="val">NGUYEN VAN A</span></div>
+        <div class="bank-row"><span>Ngân hàng</span><span class="val">ACB</span></div>
+        <div class="bank-row"><span>Số tài khoản</span><span class="val">26996867 <button class="copy-bank" onclick="copyText('26996867')">Copy</button></span></div>
+        <div class="bank-row"><span>Chủ tài khoản</span><span class="val">THAI TUAN KIET</span></div>
         <div class="bank-row"><span>Nội dung CK</span><span class="val" id="modalContent"></span></div>
       </div>
       <div class="modal-note">Sau khi thanh toán, vui lòng liên hệ để xác nhận và nhận sản phẩm</div>
+      <button class="contact-after" onclick="window.open('https://zalo.me/0906857331','_blank')">
+        <i class="fab fa-facebook-messenger"></i> Liên hệ Zalo xác nhận
+      </button>
+    </div>
+  </div>
+
+  <!-- QR Fullscreen Modal -->
+  <div id="qrFullModal">
+    <div class="pay-overlay" onclick="closeQRFull()"></div>
+    <div class="qr-full-box">
+      <button class="modal-close" onclick="closeQRFull()">×</button>
+      <div id="qrFullLogo"></div>
+      <img id="qrFullImg" src="" alt="QR">
+      <div class="qr-full-name">THÁI TUẤN KIỆT</div>
+      <div class="qr-full-sub" id="qrFullSub"></div>
+      <div style="margin-top:1rem;font-size:0.78rem;color:var(--sub);">Quét mã để chuyển tiền</div>
+    </div>
+  </div>
       <button class="contact-after" onclick="window.open('https://zalo.me/0906857331','_blank')">
         <i class="fab fa-facebook-messenger"></i> Liên hệ Zalo xác nhận
       </button>
@@ -283,14 +338,33 @@
     el.classList.add('active');
     window._donateAmt = amt;
   }
+
+  const donateInfo = {
+    zalopay: { img:'img/qr-zalopay.jpg', sub:'ZaloPay · THÁI TUẤN KIỆT', logo:'<div style="background:#0068ff;border-radius:10px;padding:0.4rem 1rem;display:inline-block;margin-bottom:0.5rem;"><span style="color:#fff;font-weight:900;">Zalo<span style="color:#00e5ff;">Pay</span></span></div>' },
+    acb:     { img:'img/qr-acb.jpg',     sub:'ACB · 26996867',            logo:'<div style="background:#003087;border-radius:10px;padding:0.4rem 1rem;display:inline-block;margin-bottom:0.5rem;"><span style="color:#fff;font-weight:900;font-size:1.1rem;">ACB</span></div>' },
+    momo:    { img:'img/qr-momo.jpg',    sub:'MoMo · *****331',           logo:'<div style="background:#a50064;border-radius:10px;padding:0.4rem 1rem;display:inline-block;margin-bottom:0.5rem;"><span style="color:#fff;font-weight:900;">MoMo</span></div>' }
+  };
+
+  function openDonateQR(type) {
+    const d = donateInfo[type];
+    document.getElementById('qrFullImg').src = d.img;
+    document.getElementById('qrFullSub').textContent = d.sub;
+    document.getElementById('qrFullLogo').innerHTML = d.logo;
+    document.getElementById('qrFullModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+  function closeQRFull() {
+    document.getElementById('qrFullModal').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
   function openPayModal(name, price) {
     document.getElementById('modalTitle').textContent = name;
     document.getElementById('modalPrice').textContent = price;
     const content = 'CLITUSPC ' + name.replace(/[^a-zA-Z0-9]/g,'').toUpperCase().slice(0,15);
     document.getElementById('modalContent').textContent = content;
-    // QR chuyển khoản VietQR
-    const qrUrl = `https://img.vietqr.io/image/VCB-1234567890-compact2.png?amount=${price.replace(/[^0-9]/g,'')}&addInfo=${encodeURIComponent(content)}&accountName=NGUYEN%20VAN%20A`;
-    document.getElementById('modalQR').src = qrUrl;
+    const amt = price.replace(/[^0-9]/g,'');
+    document.getElementById('modalQR').src = `https://img.vietqr.io/image/ACB-26996867-compact2.png?amount=${amt}&addInfo=${encodeURIComponent(content)}&accountName=THAI%20TUAN%20KIET`;
     document.getElementById('payModal').style.display = 'flex';
     document.body.style.overflow = 'hidden';
   }
