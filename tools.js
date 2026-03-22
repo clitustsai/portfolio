@@ -345,8 +345,22 @@ document.addEventListener('DOMContentLoaded', function() {
     var user = getUser();
     checkVipStatus(user.email);
     updateUsageUI();
+    // Load coin balance
+    _loadToolsCoins();
   } else {
     document.querySelectorAll('.tools-tabs,.tools-main,.pricing-section').forEach(function(el) { el.style.display = 'none'; });
     openAuthModal('login');
   }
 });
+
+async function _loadToolsCoins() {
+  try {
+    var token = getToken();
+    var r = await fetch(API_BASE + '/coins/balance', { headers: { 'Authorization': 'Bearer ' + token } });
+    var d = await r.json();
+    var bar = document.getElementById('toolsCoinBar');
+    var cnt = document.getElementById('toolsCoinCount');
+    if (bar) bar.style.display = 'inline-flex';
+    if (cnt) cnt.textContent = d.coins || 0;
+  } catch(e) {}
+}

@@ -413,7 +413,7 @@ function updateNavAuth() {
                     '<div class="nud-divider"></div>' +
                     '<button class="nud-item" onclick="openProfileModal()"><i class="fas fa-user-edit"></i> Chỉnh sửa hồ sơ</button>' +
                     '<a class="nud-item" href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>' +
-                    '<a class="nud-item" href="arcade.html"><i class="fas fa-gamepad"></i> Arcade 🎮</a>' +
+                    '<a class="nud-item" href="arcade.html"><i class="fas fa-gamepad"></i> Arcade 🎮 <span id="navCoinBadge" style="margin-left:auto;background:rgba(245,158,11,.15);color:#fbbf24;font-size:.65rem;font-weight:800;padding:1px 7px;border-radius:50px;">🪙 ...</span></a>' +
                     '<a class="nud-item" href="tools.html"><i class="fas fa-robot"></i> AI Tools</a>' +
                     '<a class="nud-item" href="payment.html"><i class="fas fa-crown"></i> ' + (window._navVipStatus ? 'Quản lý VIP' : 'Nâng cấp VIP') + '</a>' +
                     '<div class="nud-divider"></div>' +
@@ -422,6 +422,7 @@ function updateNavAuth() {
                 '</div>';
             // Check VIP status async
             _checkNavVip(user.email);
+            _loadNavCoins();
         } else {
             slot.innerHTML =
                 '<button class="nav-login-btn" onclick="openAuthModal(\'login\')">' +
@@ -438,6 +439,17 @@ async function _checkNavVip(email) {
         const d = await r.json();
         window._navVipStatus = d.hasSubscription;
         if (d.hasSubscription) updateNavAuth(); // re-render with VIP badge
+    } catch(e) {}
+}
+
+async function _loadNavCoins() {
+    try {
+        const token = getToken();
+        if (!token) return;
+        const r = await fetch(API_BASE + '/coins/balance', { headers: { 'Authorization': 'Bearer ' + token } });
+        const d = await r.json();
+        const badge = document.getElementById('navCoinBadge');
+        if (badge) badge.textContent = '🪙 ' + (d.coins || 0);
     } catch(e) {}
 }
 
