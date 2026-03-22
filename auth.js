@@ -88,6 +88,7 @@ function initAuthModal() {
         <div class="auth-tabs">
             <button class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Đăng Nhập</button>
             <button class="auth-tab" id="tabRegister" onclick="switchAuthTab('register')">Đăng Ký</button>
+            <button class="auth-tab" id="tabPhone" onclick="switchAuthTab('phone')">📱 SĐT</button>
         </div>
 
         <!-- Login form -->
@@ -179,6 +180,82 @@ function initAuthModal() {
                 <i class="fas fa-paper-plane"></i> Gửi link đặt lại
             </button>
             <p class="auth-switch"><a onclick="switchAuthTab('login')">← Quay lại đăng nhập</a></p>
+        </form>
+
+        <!-- Phone OTP form -->
+        <form id="phoneForm" class="auth-form" style="display:none" onsubmit="handlePhoneSendOTP(event)">
+            <div class="auth-logo">📱</div>
+            <h3 id="phoneFormTitle">Đăng nhập bằng SĐT</h3>
+            <p class="auth-sub" id="phoneFormSub">Nhập số điện thoại để nhận mã OTP</p>
+
+            <!-- Step 1: nhập SĐT -->
+            <div id="phoneStep1">
+                <div class="auth-field">
+                    <i class="fas fa-phone"></i>
+                    <input type="tel" id="phoneInput" placeholder="Số điện thoại (VD: 0901234567)" required autocomplete="tel">
+                </div>
+                <div id="phoneUsernameWrap" style="display:none">
+                    <div class="auth-field">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="phoneUsername" placeholder="Tên hiển thị *" minlength="2" maxlength="50">
+                    </div>
+                </div>
+                <p class="auth-error" id="phoneError"></p>
+                <button type="submit" class="auth-submit-btn" id="phoneSendBtn" style="background:linear-gradient(135deg,#10b981,#059669);">
+                    <i class="fas fa-paper-plane"></i> Gửi OTP
+                </button>
+            </div>
+
+            <!-- Step 2: nhập OTP -->
+            <div id="phoneStep2" style="display:none">
+                <p style="text-align:center;font-size:.85rem;color:#666;margin-bottom:1rem;">
+                    Đã gửi OTP đến <strong id="phoneSentTo"></strong>
+                </p>
+                <div class="auth-field">
+                    <i class="fas fa-key"></i>
+                    <input type="text" id="otpInput" placeholder="Nhập mã OTP 6 số" maxlength="6" pattern="[0-9]{6}" inputmode="numeric" autocomplete="one-time-code">
+                </div>
+                <p style="text-align:center;font-size:.8rem;color:#999;margin-bottom:.75rem;">
+                    Hết hạn sau: <span id="otpCountdown" style="color:#f59e0b;font-weight:700;">5:00</span>
+                </p>
+                <p class="auth-error" id="otpError"></p>
+                <button type="button" class="auth-submit-btn" id="otpVerifyBtn" onclick="handleOTPVerify()" style="background:linear-gradient(135deg,#667eea,#764ba2);">
+                    <i class="fas fa-check-circle"></i> Xác nhận OTP
+                </button>
+                <p style="text-align:center;margin-top:.75rem;">
+                    <a id="otpResendBtn" onclick="handlePhoneResend()" style="color:#667eea;cursor:pointer;font-size:.82rem;font-weight:600;text-decoration:underline;">Gửi lại OTP</a>
+                    <span id="otpResendCountdown" style="color:#999;font-size:.82rem;"></span>
+                </p>
+                <p style="text-align:center;margin-top:.5rem;">
+                    <a onclick="resetPhoneForm()" style="color:#999;cursor:pointer;font-size:.78rem;">← Đổi số điện thoại</a>
+                </p>
+            </div>
+
+            <div class="auth-divider" style="margin-top:1rem"><span>hoặc chọn</span></div>
+            <div style="display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:.5rem">
+                <a onclick="setPhoneMode('login')" id="phoneModeLogin" style="cursor:pointer;font-size:.8rem;padding:.3rem .8rem;border-radius:50px;border:1.5px solid #667eea;color:#667eea;font-weight:700;">Đăng nhập</a>
+                <a onclick="setPhoneMode('register')" id="phoneModeRegister" style="cursor:pointer;font-size:.8rem;padding:.3rem .8rem;border-radius:50px;border:1.5px solid #e0e4ff;color:#999;font-weight:600;">Đăng ký</a>
+                <a onclick="setPhoneMode('reset')" id="phoneModeReset" style="cursor:pointer;font-size:.8rem;padding:.3rem .8rem;border-radius:50px;border:1.5px solid #e0e4ff;color:#999;font-weight:600;">Quên MK</a>
+            </div>
+        </form>
+
+        <!-- Phone Reset Password Step 3 -->
+        <form id="phoneResetForm" class="auth-form" style="display:none" onsubmit="handlePhoneResetPassword(event)">
+            <div class="auth-logo">🔐</div>
+            <h3>Tạo mật khẩu mới</h3>
+            <p class="auth-sub">Nhập mật khẩu mới cho tài khoản</p>
+            <div class="auth-field">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="phoneNewPassword" placeholder="Mật khẩu mới (tối thiểu 6 ký tự)" required minlength="6">
+            </div>
+            <div class="auth-field">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="phoneConfirmPassword" placeholder="Xác nhận mật khẩu" required minlength="6">
+            </div>
+            <p class="auth-error" id="phoneResetError"></p>
+            <button type="submit" class="auth-submit-btn" id="phoneResetBtn" style="background:linear-gradient(135deg,#10b981,#059669);">
+                <i class="fas fa-save"></i> Đặt mật khẩu mới
+            </button>
         </form>
     </div>`;
 
@@ -329,11 +406,16 @@ function switchAuthTab(tab) {
     document.getElementById('loginForm').style.display    = tab === 'login'    ? 'block' : 'none';
     document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
     document.getElementById('forgotForm').style.display   = tab === 'forgot'   ? 'block' : 'none';
+    document.getElementById('phoneForm').style.display    = tab === 'phone'    ? 'block' : 'none';
+    if (document.getElementById('phoneResetForm'))
+        document.getElementById('phoneResetForm').style.display = 'none';
     document.getElementById('tabLogin').classList.toggle('active',    tab === 'login');
     document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
+    document.getElementById('tabPhone').classList.toggle('active',    tab === 'phone');
     document.getElementById('loginError').textContent    = '';
     document.getElementById('registerError').textContent = '';
     if (document.getElementById('forgotError')) document.getElementById('forgotError').textContent = '';
+    if (tab === 'phone') { resetPhoneForm(); setPhoneMode('login'); }
 }
 
 async function handleLogin(e) {
@@ -804,6 +886,230 @@ document.addEventListener('DOMContentLoaded', () => {
     updateCommentForms();
     handleOAuthCallback();
 });
+
+// ========== PHONE OTP AUTH ==========
+let _phoneMode = 'login'; // 'login' | 'register' | 'reset'
+let _phoneOtpTimer = null;
+let _phoneResendTimer = null;
+let _phoneResetToken = null;
+
+function setPhoneMode(mode) {
+    _phoneMode = mode;
+    const titles = { login: 'Đăng nhập bằng SĐT', register: 'Đăng ký bằng SĐT', reset: 'Quên mật khẩu qua SĐT' };
+    const subs = { login: 'Nhập số điện thoại để nhận mã OTP', register: 'Nhập SĐT và tên hiển thị', reset: 'Nhập SĐT để đặt lại mật khẩu' };
+    const el = (id) => document.getElementById(id);
+    if (el('phoneFormTitle')) el('phoneFormTitle').textContent = titles[mode];
+    if (el('phoneFormSub')) el('phoneFormSub').textContent = subs[mode];
+    if (el('phoneUsernameWrap')) el('phoneUsernameWrap').style.display = mode === 'register' ? 'block' : 'none';
+    if (el('phoneUsername')) el('phoneUsername').required = mode === 'register';
+    // Highlight active mode button
+    ['login','register','reset'].forEach(m => {
+        const btn = el('phoneMode' + m.charAt(0).toUpperCase() + m.slice(1));
+        if (btn) {
+            btn.style.borderColor = m === mode ? '#667eea' : '#e0e4ff';
+            btn.style.color = m === mode ? '#667eea' : '#999';
+            btn.style.fontWeight = m === mode ? '700' : '600';
+        }
+    });
+}
+
+function resetPhoneForm() {
+    clearInterval(_phoneOtpTimer);
+    clearInterval(_phoneResendTimer);
+    const el = (id) => document.getElementById(id);
+    if (el('phoneStep1')) el('phoneStep1').style.display = 'block';
+    if (el('phoneStep2')) el('phoneStep2').style.display = 'none';
+    if (el('phoneInput')) el('phoneInput').value = '';
+    if (el('otpInput')) el('otpInput').value = '';
+    if (el('phoneError')) el('phoneError').textContent = '';
+    if (el('otpError')) el('otpError').textContent = '';
+    if (el('phoneSendBtn')) { el('phoneSendBtn').disabled = false; el('phoneSendBtn').innerHTML = '<i class="fas fa-paper-plane"></i> Gửi OTP'; }
+}
+
+function startOtpCountdown(seconds) {
+    clearInterval(_phoneOtpTimer);
+    const el = document.getElementById('otpCountdown');
+    if (!el) return;
+    let remaining = seconds;
+    el.textContent = `${Math.floor(remaining/60)}:${String(remaining%60).padStart(2,'0')}`;
+    _phoneOtpTimer = setInterval(() => {
+        remaining--;
+        if (remaining <= 0) {
+            clearInterval(_phoneOtpTimer);
+            el.textContent = 'Hết hạn';
+            el.style.color = '#f5576c';
+        } else {
+            el.textContent = `${Math.floor(remaining/60)}:${String(remaining%60).padStart(2,'0')}`;
+        }
+    }, 1000);
+}
+
+function startResendCountdown(seconds) {
+    clearInterval(_phoneResendTimer);
+    const resendBtn = document.getElementById('otpResendBtn');
+    const resendCd = document.getElementById('otpResendCountdown');
+    if (resendBtn) resendBtn.style.display = 'none';
+    let remaining = seconds;
+    if (resendCd) resendCd.textContent = ` (${remaining}s)`;
+    _phoneResendTimer = setInterval(() => {
+        remaining--;
+        if (remaining <= 0) {
+            clearInterval(_phoneResendTimer);
+            if (resendBtn) resendBtn.style.display = 'inline';
+            if (resendCd) resendCd.textContent = '';
+        } else {
+            if (resendCd) resendCd.textContent = ` (${remaining}s)`;
+        }
+    }, 1000);
+}
+
+async function handlePhoneSendOTP(e) {
+    e.preventDefault();
+    const phone = (document.getElementById('phoneInput').value || '').trim();
+    const errEl = document.getElementById('phoneError');
+    const btn = document.getElementById('phoneSendBtn');
+    errEl.textContent = '';
+    if (!phone) { errEl.textContent = 'Vui lòng nhập số điện thoại'; return; }
+
+    if (_phoneMode === 'register') {
+        const username = (document.getElementById('phoneUsername').value || '').trim();
+        if (!username) { errEl.textContent = 'Vui lòng nhập tên hiển thị'; return; }
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
+    try {
+        const r = await fetch(`${API_BASE}/auth/phone/send-otp`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phone, purpose: _phoneMode })
+        });
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.error || 'Lỗi gửi OTP');
+
+        // Chuyển sang step 2
+        document.getElementById('phoneStep1').style.display = 'none';
+        document.getElementById('phoneStep2').style.display = 'block';
+        const sentTo = document.getElementById('phoneSentTo');
+        if (sentTo) sentTo.textContent = phone;
+        startOtpCountdown(5 * 60);
+        startResendCountdown(60);
+        document.getElementById('otpInput').focus();
+    } catch(err) {
+        errEl.textContent = err.message;
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Gửi OTP';
+    }
+}
+
+async function handlePhoneResend() {
+    const phone = (document.getElementById('phoneInput').value || '').trim();
+    const errEl = document.getElementById('otpError');
+    errEl.textContent = '';
+    try {
+        const r = await fetch(`${API_BASE}/auth/phone/send-otp`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phone, purpose: _phoneMode })
+        });
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.error || 'Lỗi gửi OTP');
+        startOtpCountdown(5 * 60);
+        startResendCountdown(60);
+        if (typeof showToast === 'function') showToast('📱 Đã gửi lại OTP!', 'success', 3000);
+    } catch(err) {
+        errEl.textContent = err.message;
+    }
+}
+
+async function handleOTPVerify() {
+    const otp = (document.getElementById('otpInput').value || '').trim();
+    const phone = (document.getElementById('phoneInput').value || '').trim();
+    const errEl = document.getElementById('otpError');
+    const btn = document.getElementById('otpVerifyBtn');
+    errEl.textContent = '';
+    if (!otp || otp.length !== 6) { errEl.textContent = 'Vui lòng nhập đủ 6 số OTP'; return; }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xác nhận...';
+    try {
+        let endpoint, body;
+        if (_phoneMode === 'login') {
+            endpoint = '/auth/phone/verify-login';
+            body = { phone, otp };
+        } else if (_phoneMode === 'register') {
+            const username = (document.getElementById('phoneUsername').value || '').trim();
+            endpoint = '/auth/phone/verify-register';
+            body = { phone, otp, username };
+        } else if (_phoneMode === 'reset') {
+            endpoint = '/auth/phone/verify-reset';
+            body = { phone, otp };
+        }
+
+        const r = await fetch(`${API_BASE}${endpoint}`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.error || 'Lỗi xác nhận OTP');
+
+        clearInterval(_phoneOtpTimer);
+        clearInterval(_phoneResendTimer);
+
+        if (_phoneMode === 'reset') {
+            // Chuyển sang form đặt mật khẩu mới
+            _phoneResetToken = d.resetToken;
+            document.getElementById('phoneForm').style.display = 'none';
+            document.getElementById('phoneResetForm').style.display = 'block';
+        } else {
+            // login hoặc register thành công
+            saveSession(d.user, d.token);
+            closeAuthModal();
+            updateNavAuth();
+            updateCommentForms();
+            if (typeof onToolsAuthSuccess === 'function') onToolsAuthSuccess(d.user);
+            const msg = _phoneMode === 'register'
+                ? `🎉 Đăng ký thành công! Chào ${d.user.username}!`
+                : `👋 Chào mừng trở lại, ${d.user.username}!`;
+            if (typeof showToast === 'function') showToast(msg, 'success', 3000);
+            if (_phoneMode === 'register' && typeof laEvent === 'function')
+                laEvent('join', 'Thành viên mới vừa tham gia cộng đồng!');
+        }
+    } catch(err) {
+        errEl.textContent = err.message;
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-check-circle"></i> Xác nhận OTP';
+    }
+}
+
+async function handlePhoneResetPassword(e) {
+    e.preventDefault();
+    const password = document.getElementById('phoneNewPassword').value;
+    const confirm = document.getElementById('phoneConfirmPassword').value;
+    const errEl = document.getElementById('phoneResetError');
+    const btn = document.getElementById('phoneResetBtn');
+    errEl.textContent = '';
+    if (password !== confirm) { errEl.textContent = 'Mật khẩu xác nhận không khớp'; return; }
+    if (password.length < 6) { errEl.textContent = 'Mật khẩu tối thiểu 6 ký tự'; return; }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang lưu...';
+    try {
+        const r = await fetch(`${API_BASE}/auth/phone/reset-password`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ resetToken: _phoneResetToken, password })
+        });
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.error || 'Lỗi đặt mật khẩu');
+        saveSession(d.user, d.token);
+        closeAuthModal();
+        updateNavAuth();
+        updateCommentForms();
+        if (typeof showToast === 'function') showToast('✅ Đặt mật khẩu mới thành công!', 'success', 3000);
+    } catch(err) {
+        errEl.textContent = err.message;
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-save"></i> Đặt mật khẩu mới';
+    }
+}
 
 // ========== OAUTH ==========
 function loginWithGoogle() {

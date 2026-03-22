@@ -187,6 +187,16 @@ async function getDb() {
             coins_given INTEGER NOT NULL DEFAULT 0,
             created_at DATETIME DEFAULT (datetime('now'))
         );
+        CREATE TABLE IF NOT EXISTS phone_otps (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            phone TEXT NOT NULL,
+            otp_hash TEXT NOT NULL,
+            purpose TEXT NOT NULL DEFAULT 'login',
+            expires_at DATETIME NOT NULL,
+            used INTEGER DEFAULT 0,
+            attempt_count INTEGER DEFAULT 0,
+            created_at DATETIME DEFAULT (datetime('now'))
+        );
         CREATE TABLE IF NOT EXISTS chat_messages (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER,
@@ -221,8 +231,10 @@ async function getDb() {
     try { db.exec(`ALTER TABLE chat_messages ADD COLUMN sticker TEXT DEFAULT ''`); } catch(e) {}
     try { db.exec(`CREATE TABLE IF NOT EXISTS password_resets (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, token TEXT UNIQUE NOT NULL, expires_at DATETIME NOT NULL, used INTEGER DEFAULT 0, created_at DATETIME DEFAULT (datetime('now')))`); } catch(e) {}
     try { db.exec(`ALTER TABLE users ADD COLUMN referral_code TEXT DEFAULT ''`); } catch(e) {}
+    try { db.exec(`ALTER TABLE users ADD COLUMN phone TEXT DEFAULT ''`); } catch(e) {}
     try { db.exec(`CREATE TABLE IF NOT EXISTS spin_rewards (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, spun_date TEXT NOT NULL, coins_earned INTEGER NOT NULL DEFAULT 0, UNIQUE(user_id, spun_date))`); } catch(e) {}
     try { db.exec(`CREATE TABLE IF NOT EXISTS referrals (id INTEGER PRIMARY KEY AUTOINCREMENT, referrer_id INTEGER NOT NULL, referred_id INTEGER NOT NULL, code TEXT NOT NULL, coins_given INTEGER NOT NULL DEFAULT 0, created_at DATETIME DEFAULT (datetime('now')))`); } catch(e) {}
+    try { db.exec(`CREATE TABLE IF NOT EXISTS phone_otps (id INTEGER PRIMARY KEY AUTOINCREMENT, phone TEXT NOT NULL, otp_hash TEXT NOT NULL, purpose TEXT NOT NULL DEFAULT 'login', expires_at DATETIME NOT NULL, used INTEGER DEFAULT 0, attempt_count INTEGER DEFAULT 0, created_at DATETIME DEFAULT (datetime('now')))`); } catch(e) {}
 
     save();
     return db;

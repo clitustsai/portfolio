@@ -416,6 +416,7 @@ app.get('/api/live/stats', (req, res) => {
 // ========== USER AUTH ==========
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'clituspc_jwt_secret_2026';
 const JWT_EXPIRES = '30d';
@@ -487,13 +488,33 @@ app.post('/api/auth/register', (req, res) => {
     res.status(201).json({ user, token });
 });
 
-app.post('/api/auth/login', (req, res) => {
+app.post('/api/auth/login', async (req, res) => {
     const { email, password } = req.body;
     if (!email?.trim() || !password?.trim())
         return res.status(400).json({ error: 'Vui lòng nhập email và mật khẩu' });
     const user = get('SELECT * FROM users WHERE email=?', [email.trim()]);
-    if (!user || user.password_hash !== hashPassword(password))
-        return res.status(401).json({ error: 'Email hoặc mật khẩu không đúng' });
+    if (!user) return res.status(401).json({ error: 'Email hoặc mật khẩu không đúng' });
+
+    // Migrate: nếu hash là SHA256 (64 hex chars) → verify SHA256 rồi migrate sang bcrypt
+    let passwordOk = false;
+    const sha256Hash = hashPassword(password);
+    if (user.password_hash && user.password_hash.length === 64 && /^[0-9a-f]+$/.test(user.password_hash)) {
+        // SHA256 hash cũ
+        if (user.password_hash === sha256Hash) {
+            passwordOk = true;
+            // Migrate sang bcrypt
+            const newHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
+            run('UPDATE users SET password_hash=? WHERE id=?', [newHash, user.id]);
+        }
+    } else if (user.password_hash && user.password_hash.startsWith('$2')) {
+        // bcrypt hash
+        passwordOk = await bcrypt.compare(password, user.password_hash);
+    } else {
+        // Fallback SHA256
+        passwordOk = user.password_hash === sha256Hash;
+    }
+
+    if (!passwordOk) return res.status(401).json({ error: 'Email hoặc mật khẩu không đúng' });
     const token = signJWT({ id: user.id, email: user.email, role: user.role });
     res.json({ user: { id:user.id, username:user.username, email:user.email, avatar:user.avatar, role:user.role, created_at:user.created_at }, token });
 });
@@ -1606,6 +1627,199 @@ app.get('/api/referral/stats', requireUser, (req, res) => {
     const totalCoins = refs.reduce((s, r) => s + (r.coins_given || 0), 0);
     res.json({ count: refs.length, totalCoins, referrals: refs });
 });
+
+// ========== PHONE OTP AUTH ==========
+const BCRYPT_ROUNDS = 10;
+const OTP_EXPIRY_MINUTES = 5;
+const OTP_MAX_ATTEMPTS = 5;
+
+// Rate limit riêng cho OTP
+const otpSendLimiter = rateLimit({
+    windowMs: 10 * 60 * 1000, // 10 phút
+    max: 3,
+    keyGenerator: (req) => (req.body.phone || '') + '_' + req.ip,
+    message: { error: 'Gửi OTP quá nhiều lần. Thử lại sau 10 phút.' }
+});
+const otpIpLimiter = rateLimit({
+    windowMs: 10 * 60 * 1000,
+    max: 10,
+    message: { error: 'Quá nhiều yêu cầu OTP từ IP này. Thử lại sau 10 phút.' }
+});
+
+function validateVNPhone(phone) {
+    // Chuẩn hóa: 0xxxxxxxxx hoặc +84xxxxxxxxx
+    const cleaned = phone.replace(/\s+/g, '');
+    const match = cleaned.match(/^(?:\+84|84|0)(3[2-9]|5[6-9]|7[06-9]|8[0-9]|9[0-9])\d{7}$/);
+    if (!match) return null;
+    // Chuẩn hóa về dạng 0xxxxxxxxx
+    return cleaned.replace(/^(?:\+84|84)/, '0');
+}
+
+function generateOTP() {
+    return String(Math.floor(100000 + Math.random() * 900000));
+}
+
+async function sendOTP(phone, otp, purpose) {
+    // DEV MODE: log ra console, pluggable để swap sang Twilio/ESMS
+    console.log(`\n📱 [OTP ${purpose.toUpperCase()}] Phone: ${phone} | OTP: ${otp} | Expires: ${OTP_EXPIRY_MINUTES} phút\n`);
+    // TODO: swap sang Twilio/ESMS:
+    // await twilioClient.messages.create({ to: phone, from: TWILIO_FROM, body: `Mã OTP: ${otp}` });
+    return true;
+}
+
+async function createOTP(phone, purpose) {
+    const otp = generateOTP();
+    const hash = await bcrypt.hash(otp, BCRYPT_ROUNDS);
+    const expiresAt = new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000).toISOString();
+    // Xóa OTP cũ chưa dùng của phone+purpose
+    run('DELETE FROM phone_otps WHERE phone=? AND purpose=? AND used=0', [phone, purpose]);
+    run('INSERT INTO phone_otps (phone, otp_hash, purpose, expires_at) VALUES (?,?,?,?)',
+        [phone, hash, purpose, expiresAt]);
+    return otp;
+}
+
+async function verifyOTP(phone, otp, purpose) {
+    const row = get(
+        "SELECT * FROM phone_otps WHERE phone=? AND purpose=? AND used=0 AND expires_at > datetime('now') ORDER BY id DESC LIMIT 1",
+        [phone, purpose]
+    );
+    if (!row) return { ok: false, error: 'Mã OTP không hợp lệ hoặc đã hết hạn' };
+    if (row.attempt_count >= OTP_MAX_ATTEMPTS) {
+        run('UPDATE phone_otps SET used=1 WHERE id=?', [row.id]);
+        return { ok: false, error: 'Nhập sai quá nhiều lần. Vui lòng gửi lại OTP.' };
+    }
+    const match = await bcrypt.compare(otp, row.otp_hash);
+    if (!match) {
+        run('UPDATE phone_otps SET attempt_count=attempt_count+1 WHERE id=?', [row.id]);
+        const remaining = OTP_MAX_ATTEMPTS - row.attempt_count - 1;
+        return { ok: false, error: `Mã OTP không đúng. Còn ${remaining} lần thử.` };
+    }
+    run('UPDATE phone_otps SET used=1 WHERE id=?', [row.id]);
+    return { ok: true };
+}
+
+// POST /api/auth/phone/send-otp
+app.post('/api/auth/phone/send-otp', otpIpLimiter, otpSendLimiter, async (req, res) => {
+    const { phone: rawPhone, purpose } = req.body;
+    const validPurposes = ['register', 'login', 'reset'];
+    if (!rawPhone || !validPurposes.includes(purpose))
+        return res.status(400).json({ error: 'Thiếu thông tin hoặc mục đích không hợp lệ' });
+
+    const phone = validateVNPhone(rawPhone);
+    if (!phone) return res.status(400).json({ error: 'Số điện thoại không hợp lệ (VD: 0901234567)' });
+
+    // Kiểm tra logic theo purpose
+    const existingUser = get('SELECT id FROM users WHERE phone=?', [phone]);
+    if (purpose === 'register' && existingUser)
+        return res.status(409).json({ error: 'Số điện thoại này đã được đăng ký' });
+    if ((purpose === 'login' || purpose === 'reset') && !existingUser)
+        return res.status(404).json({ error: 'Số điện thoại chưa được đăng ký' });
+
+    try {
+        const otp = await createOTP(phone, purpose);
+        await sendOTP(phone, otp, purpose);
+        res.json({ ok: true, message: `Đã gửi OTP đến ${phone}. Có hiệu lực ${OTP_EXPIRY_MINUTES} phút.` });
+    } catch(err) {
+        console.error('OTP error:', err.message);
+        res.status(500).json({ error: 'Lỗi gửi OTP, thử lại sau' });
+    }
+});
+
+// POST /api/auth/phone/verify-register
+app.post('/api/auth/phone/verify-register', async (req, res) => {
+    const { phone: rawPhone, otp, username } = req.body;
+    if (!rawPhone || !otp || !username?.trim())
+        return res.status(400).json({ error: 'Thiếu thông tin' });
+
+    const phone = validateVNPhone(rawPhone);
+    if (!phone) return res.status(400).json({ error: 'Số điện thoại không hợp lệ' });
+
+    const result = await verifyOTP(phone, otp, 'register');
+    if (!result.ok) return res.status(400).json({ error: result.error });
+
+    // Kiểm tra username trùng
+    const dupUser = get('SELECT id FROM users WHERE username=?', [username.trim()]);
+    if (dupUser) return res.status(409).json({ error: 'Tên đăng nhập đã tồn tại' });
+
+    // Tạo user mới (không có email, không có password)
+    const fakeEmail = `phone_${phone}@clituspc.local`;
+    run('INSERT INTO users (username, email, password_hash, phone, role) VALUES (?,?,?,?,?)',
+        [username.trim().slice(0,50), fakeEmail, '', phone, 'free']);
+    const user = get('SELECT id,username,email,avatar,role,created_at FROM users ORDER BY id DESC LIMIT 1');
+    const token = signJWT({ id: user.id, email: user.email, role: user.role });
+
+    // Referral bonus
+    const refCode = (req.body.ref || '').trim().toUpperCase();
+    if (refCode) {
+        const referrer = get('SELECT id FROM users WHERE referral_code=?', [refCode]);
+        if (referrer && referrer.id !== user.id) {
+            addCoins(user.id, 50, 'referral_bonus', `Đăng ký qua ref ${refCode}`);
+            addCoins(referrer.id, 50, 'referral_reward', `Mời ${user.username} đăng ký`);
+            run('INSERT INTO referrals (referrer_id, referred_id, code, coins_given) VALUES (?,?,?,?)',
+                [referrer.id, user.id, refCode, 50]);
+        }
+    }
+
+    res.status(201).json({ user, token });
+});
+
+// POST /api/auth/phone/verify-login
+app.post('/api/auth/phone/verify-login', async (req, res) => {
+    const { phone: rawPhone, otp } = req.body;
+    if (!rawPhone || !otp) return res.status(400).json({ error: 'Thiếu thông tin' });
+
+    const phone = validateVNPhone(rawPhone);
+    if (!phone) return res.status(400).json({ error: 'Số điện thoại không hợp lệ' });
+
+    const result = await verifyOTP(phone, otp, 'login');
+    if (!result.ok) return res.status(400).json({ error: result.error });
+
+    const user = get('SELECT id,username,email,avatar,role,created_at FROM users WHERE phone=?', [phone]);
+    if (!user) return res.status(404).json({ error: 'Tài khoản không tồn tại' });
+
+    const token = signJWT({ id: user.id, email: user.email, role: user.role });
+    res.json({ user, token });
+});
+
+// POST /api/auth/phone/verify-reset — xác thực OTP để reset password
+app.post('/api/auth/phone/verify-reset', async (req, res) => {
+    const { phone: rawPhone, otp } = req.body;
+    if (!rawPhone || !otp) return res.status(400).json({ error: 'Thiếu thông tin' });
+
+    const phone = validateVNPhone(rawPhone);
+    if (!phone) return res.status(400).json({ error: 'Số điện thoại không hợp lệ' });
+
+    const result = await verifyOTP(phone, otp, 'reset');
+    if (!result.ok) return res.status(400).json({ error: result.error });
+
+    // Tạo temp token để dùng cho bước đặt mật khẩu mới
+    const tempToken = crypto.randomBytes(24).toString('hex');
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+    const user = get('SELECT id FROM users WHERE phone=?', [phone]);
+    run('INSERT INTO password_resets (user_id, token, expires_at) VALUES (?,?,?)',
+        [user.id, tempToken, expiresAt]);
+
+    res.json({ ok: true, resetToken: tempToken });
+});
+
+// POST /api/auth/phone/reset-password — đặt mật khẩu mới
+app.post('/api/auth/phone/reset-password', async (req, res) => {
+    const { resetToken, password } = req.body;
+    if (!resetToken || !password) return res.status(400).json({ error: 'Thiếu thông tin' });
+    if (password.length < 6) return res.status(400).json({ error: 'Mật khẩu tối thiểu 6 ký tự' });
+
+    const row = get("SELECT * FROM password_resets WHERE token=? AND used=0 AND expires_at > datetime('now')", [resetToken]);
+    if (!row) return res.status(400).json({ error: 'Token không hợp lệ hoặc đã hết hạn' });
+
+    run('UPDATE users SET password_hash=? WHERE id=?', [hashPassword(password), row.user_id]);
+    run('UPDATE password_resets SET used=1 WHERE id=?', [row.id]);
+
+    const user = get('SELECT id,username,email,avatar,role FROM users WHERE id=?', [row.user_id]);
+    const token = signJWT({ id: user.id, email: user.email, role: user.role });
+    res.json({ ok: true, message: 'Đặt lại mật khẩu thành công!', user, token });
+});
+
+// Migrate login: nếu password_hash là SHA256 (64 hex) → tự động migrate sang bcrypt
 
 // Serve index.html chỉ cho các route không phải file tĩnh và không phải API
 app.get('*', (req, res) => {
