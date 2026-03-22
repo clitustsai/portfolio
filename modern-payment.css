@@ -1,0 +1,285 @@
+/* ============================================================
+   MODERN PAYMENT — Đồng bộ hiệu ứng với index.html
+   ============================================================ */
+
+/* ===== HERO ===== */
+.pay-hero h1 {
+  font-weight: 900 !important;
+  letter-spacing: -1px;
+  animation: heroFadeUp 0.8s cubic-bezier(.4,0,.2,1) both;
+}
+.pay-hero p {
+  animation: heroFadeUp 0.8s cubic-bezier(.4,0,.2,1) 0.15s both;
+}
+.hero-stats {
+  animation: heroFadeUp 0.8s cubic-bezier(.4,0,.2,1) 0.3s both;
+}
+@keyframes heroFadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Hero stat hover */
+.hero-stat {
+  transition: all 0.3s ease;
+  cursor: default;
+}
+.hero-stat:hover {
+  transform: translateY(-5px) scale(1.05);
+}
+.hero-stat .num {
+  font-weight: 900 !important;
+  background: linear-gradient(135deg, #fff, #c8d6ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ===== SECTION HEADINGS ===== */
+.section-head h2 {
+  font-weight: 900 !important;
+  letter-spacing: -0.5px;
+  position: relative;
+  display: inline-block;
+}
+.section-head h2::after {
+  content: '';
+  position: absolute;
+  bottom: -8px; left: 50%; transform: translateX(-50%);
+  width: 50px; height: 4px;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  border-radius: 4px;
+}
+
+/* ===== SERVICE CARDS ===== */
+.svc-card {
+  transition: all 0.35s cubic-bezier(.4,0,.2,1) !important;
+  position: relative;
+}
+.svc-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+  border-radius: 24px 24px 0 0;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+.svc-card:hover::after { transform: scaleX(1); }
+.svc-card:hover {
+  transform: translateY(-10px) !important;
+  box-shadow: 0 24px 60px rgba(102,126,234,0.22) !important;
+}
+
+/* Hire buttons */
+.hire-btn {
+  border-radius: 14px !important;
+  font-weight: 700 !important;
+  transition: all 0.25s cubic-bezier(.4,0,.2,1) !important;
+  position: relative;
+  overflow: hidden;
+}
+.hire-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.15);
+  transform: translateX(-100%) skewX(-15deg);
+  transition: transform 0.5s ease;
+}
+.hire-btn:hover::before { transform: translateX(200%) skewX(-15deg); }
+.hire-btn.solid:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 12px 32px rgba(102,126,234,0.45) !important;
+}
+.hire-btn.outline:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 12px 32px rgba(102,126,234,0.25) !important;
+}
+
+/* Service price gradient animation */
+.svc-price .amount {
+  background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientShift 4s linear infinite;
+}
+@keyframes gradientShift {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+/* ===== SOURCE CODE CARDS ===== */
+.src-card {
+  transition: all 0.35s cubic-bezier(.4,0,.2,1) !important;
+  position: relative;
+  overflow: hidden;
+}
+.src-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(102,126,234,0.04), rgba(118,75,162,0.04));
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.src-card:hover {
+  transform: translateY(-8px) !important;
+  box-shadow: 0 20px 50px rgba(102,126,234,0.18) !important;
+  border-color: rgba(102,126,234,0.25) !important;
+}
+.src-card:hover::before { opacity: 1; }
+
+.src-btn {
+  transition: all 0.25s cubic-bezier(.4,0,.2,1) !important;
+  position: relative;
+  overflow: hidden;
+}
+.src-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.2);
+  transform: translateX(-100%);
+  transition: transform 0.4s ease;
+}
+.src-btn:hover::before { transform: translateX(100%); }
+.src-btn:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 8px 24px rgba(102,126,234,0.4) !important;
+}
+
+/* Source price gradient */
+.src-price {
+  background: linear-gradient(135deg, #667eea, #764ba2, #f093fb) !important;
+  background-size: 200% auto !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  animation: gradientShift 4s linear infinite !important;
+  font-weight: 900 !important;
+}
+
+/* ===== DONATE / QR CARDS ===== */
+.qr-card {
+  transition: all 0.35s cubic-bezier(.4,0,.2,1) !important;
+  position: relative;
+  overflow: hidden;
+}
+.qr-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.1), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.qr-card:hover {
+  transform: translateY(-10px) scale(1.03) !important;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.35) !important;
+  border-color: rgba(102,126,234,0.6) !important;
+}
+.qr-card:hover::before { opacity: 1; }
+
+.qr-card img {
+  transition: transform 0.4s ease !important;
+}
+.qr-card:hover img {
+  transform: scale(1.05) !important;
+}
+
+/* Donate amount buttons */
+.d-amt {
+  transition: all 0.25s cubic-bezier(.4,0,.2,1) !important;
+  position: relative;
+  overflow: hidden;
+}
+.d-amt::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.1);
+  transform: translateX(-100%);
+  transition: transform 0.4s ease;
+}
+.d-amt:hover::before { transform: translateX(100%); }
+.d-amt:hover, .d-amt.active {
+  transform: scale(1.06) !important;
+  box-shadow: 0 8px 24px rgba(102,126,234,0.4) !important;
+}
+
+/* ===== MODAL ===== */
+.modal-box {
+  border: 1px solid rgba(102,126,234,0.15) !important;
+}
+.modal-close {
+  transition: all 0.25s ease !important;
+}
+.modal-close:hover {
+  transform: rotate(90deg) scale(1.1) !important;
+}
+
+.zalo-btn {
+  transition: all 0.25s cubic-bezier(.4,0,.2,1) !important;
+  position: relative;
+  overflow: hidden;
+}
+.zalo-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.15);
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+}
+.zalo-btn:hover::before { transform: translateX(100%); }
+.zalo-btn:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 12px 32px rgba(0,104,255,0.45) !important;
+}
+
+/* ===== SCROLL REVEAL ===== */
+.svc-card, .src-card {
+  opacity: 0;
+  transform: translateY(28px);
+  animation: cardReveal 0.6s cubic-bezier(.4,0,.2,1) forwards;
+}
+@keyframes cardReveal {
+  to { opacity: 1; transform: translateY(0); }
+}
+.svc-card:nth-child(1) { animation-delay: 0.05s; }
+.svc-card:nth-child(2) { animation-delay: 0.15s; }
+.svc-card:nth-child(3) { animation-delay: 0.25s; }
+.src-card:nth-child(1) { animation-delay: 0.05s; }
+.src-card:nth-child(2) { animation-delay: 0.12s; }
+.src-card:nth-child(3) { animation-delay: 0.19s; }
+.src-card:nth-child(4) { animation-delay: 0.26s; }
+
+/* ===== NAV ===== */
+nav ul li a {
+  position: relative;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+}
+nav ul li a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  border-radius: 2px;
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+nav ul li a:hover::after { transform: scaleX(1); }
+nav ul li a:hover { color: #667eea !important; transform: translateY(-1px); }
+
+/* ===== MOBILE ===== */
+@media (max-width: 768px) {
+  .svc-card:hover, .src-card:hover, .qr-card:hover { transform: none !important; }
+  .svc-card, .src-card { animation: none !important; opacity: 1 !important; transform: none !important; }
+}
