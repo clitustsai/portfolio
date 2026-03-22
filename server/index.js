@@ -260,7 +260,7 @@ app.get('/api/blog/admin/posts', requireAdmin, (req, res) => {
     res.json(all('SELECT * FROM blog_posts ORDER BY created_at DESC').map(parsePost));
 });
 
-app.post('/api/blog/posts', requireAdmin, (req, res) => {
+app.post('/api/blog/posts', requireAdmin, async (req, res) => {
     const { title, slug, excerpt, content, cover, tags, read_time, published } = req.body;
     if (!title?.trim() || !slug?.trim()) return res.status(400).json({ error: 'Thiếu title/slug' });
     run('INSERT INTO blog_posts (title,slug,excerpt,content,cover,tags,read_time,published) VALUES (?,?,?,?,?,?,?,?)', [
@@ -270,6 +270,31 @@ app.post('/api/blog/posts', requireAdmin, (req, res) => {
         parseInt(read_time)||5, published===false?0:1
     ]);
     const post = get('SELECT * FROM blog_posts ORDER BY id DESC LIMIT 1');
+
+    // Auto-send push notification khi bài được publish
+    if (published !== false && process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+        const subs = all('SELECT * FROM push_subscriptions');
+        if (subs.length > 0) {
+            const appUrl = process.env.APP_URL || 'https://portfolio-utbu.onrender.com';
+            const payload = JSON.stringify({
+                title: '📝 Bài viết mới!',
+                body: title.trim().slice(0, 80),
+                icon: '/img/icon-192.png',
+                url: `${appUrl}/blog-post.html?slug=${post.slug}`
+            });
+            Promise.allSettled(subs.map(s =>
+                webpush.sendNotification(
+                    { endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } }, payload
+                ).catch(err => {
+                    if (err.statusCode === 410) run('DELETE FROM push_subscriptions WHERE endpoint=?', [s.endpoint]);
+                })
+            )).then(results => {
+                const sent = results.filter(r => r.status === 'fulfilled').length;
+                console.log(`📬 Push sent to ${sent}/${subs.length} subscribers`);
+            });
+        }
+    }
+
     res.status(201).json(parsePost(post));
 });
 
