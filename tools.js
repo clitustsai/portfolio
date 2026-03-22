@@ -53,7 +53,7 @@ function incUsage(key) {
 function updateUsageUI() {
   var crLeft = window._isVip ? Infinity : Math.max(0, 3 - getUsage('cr'));
   var cvLeft = window._isVip ? Infinity : Math.max(0, 3 - getUsage('cv'));
-  var imgLeft = window._isVip ? Infinity : Math.max(0, 3 - getUsage('img'));
+  var imgLeft = window._isVip ? Infinity : Math.max(0, 5 - getUsage('img'));
   var crEl = document.getElementById('cr-usage');
   var cvEl = document.getElementById('cv-usage');
   var imgEl = document.getElementById('img-usage');
@@ -374,21 +374,54 @@ async function _loadToolsCoins() {
 // ===== AI IMAGE ANALYZER =====
 let _imgBase64 = null;
 
+const IMG_MODE_LABELS = {
+  solve:     '🧮 Giải Bài Tập',
+  describe:  '🔍 Phân Tích Ảnh',
+  text:      '📝 Đọc Chữ (OCR)',
+  code:      '💻 Đọc Code',
+  translate: '🌐 Dịch Văn Bản',
+  identify:  '🏷️ Nhận Diện',
+  nutrition: '🍱 Phân Tích Dinh Dưỡng',
+  plant:     '🌿 Nhận Diện Cây',
+  emotion:   '😊 Phân Tích Cảm Xúc',
+  scene:     '🌆 Phân Tích Cảnh Vật',
+};
+
+function setImgMode(mode, el) {
+  document.getElementById('img-mode').value = mode;
+  document.querySelectorAll('.img-mode-chip').forEach(c => c.classList.remove('active'));
+  if (el) el.classList.add('active');
+  const label = IMG_MODE_LABELS[mode] || 'Phân Tích Ảnh';
+  const btnLabel = document.getElementById('img-btn-label');
+  if (btnLabel) btnLabel.textContent = label;
+}
+
+function clearImgPreview() {
+  _imgBase64 = null;
+  document.getElementById('img-preview-wrap').style.display = 'none';
+  document.getElementById('img-btn').disabled = true;
+  const zone = document.getElementById('img-drop-zone');
+  zone.style.borderColor = '';
+  document.getElementById('img-drop-label').textContent = 'Kéo thả ảnh vào đây';
+  document.getElementById('img-drop-icon').textContent = '🖼️';
+}
+
 function handleImgFile(file) {
   if (!file) return;
   if (file.size > 5 * 1024 * 1024) { alert('Ảnh quá lớn! Tối đa 5MB.'); return; }
   const reader = new FileReader();
   reader.onload = function(e) {
-    _imgBase64 = e.target.result; // data:image/...;base64,...
+    _imgBase64 = e.target.result;
     document.getElementById('img-preview').src = _imgBase64;
     document.getElementById('img-preview-wrap').style.display = 'block';
     document.getElementById('img-file-info').textContent = file.name + ' · ' + (file.size/1024).toFixed(0) + ' KB';
     document.getElementById('img-btn').disabled = false;
-    // Drag zone feedback
     const zone = document.getElementById('img-drop-zone');
     zone.style.borderColor = '#667eea';
-    zone.innerHTML = '<div style="font-size:1.5rem;color:#667eea;font-weight:700;">✅ Ảnh đã tải lên</div><div style="font-size:.8rem;color:#999;margin-top:.25rem;">Click để đổi ảnh khác</div><input type="file" id="img-file" accept="image/*" style="display:none" onchange="handleImgFile(this.files[0])">';
-    zone.onclick = function() { document.getElementById('img-file').click(); };
+    const lbl = document.getElementById('img-drop-label');
+    const ico = document.getElementById('img-drop-icon');
+    if (lbl) lbl.textContent = 'Click để đổi ảnh khác';
+    if (ico) ico.textContent = '✅';
   };
   reader.readAsDataURL(file);
 }
@@ -408,8 +441,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 async function runImageAI() {
   if (!isLoggedIn()) { openAuthModal('login'); return; }
-  if (!_imgBase64) { document.getElementById('img-error').textContent = '⚠️ Vui lòng chọn ảnh trước.'; document.getElementById('img-error').classList.add('show'); return; }
-  if (!window._isVip && getUsage('img') >= 3) {
+  if (!_imgBase64) {
+    const errBox = document.getElementById('img-error');
+    errBox.textContent = '⚠️ Vui lòng chọn ảnh trước.'; errBox.classList.add('show'); return;
+  }
+  if (!window._isVip && getUsage('img') >= 5) {
     const extras = JSON.parse(localStorage.getItem('coin_extras') || '{}');
     if (extras.img > 0) { extras.img--; localStorage.setItem('coin_extras', JSON.stringify(extras)); }
     else { showUpsellModal('AI Image Analyzer'); return; }
@@ -418,9 +454,11 @@ async function runImageAI() {
   const errBox = document.getElementById('img-error');
   const resultBox = document.getElementById('img-result');
   errBox.classList.remove('show'); resultBox.classList.remove('show');
-  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang phân tích...';
+  const mode = document.getElementById('img-mode').value || 'solve';
+  const btnLabel = IMG_MODE_LABELS[mode] || 'Phân Tích Ảnh';
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
   try {
-    const mode = document.getElementById('img-mode').value;
     const lang = document.getElementById('img-lang').value;
     const question = document.getElementById('img-question').value.trim();
     const res = await fetch(API_BASE + '/tools/image-analyze', {
@@ -436,21 +474,43 @@ async function runImageAI() {
     }
     if (!data.isVip) incUsage('img');
     updateUsageUI();
-    document.getElementById('img-result-body').textContent = data.result;
+    // Format kết quả — xuống dòng đẹp
+    const body = document.getElementById('img-result-body');
+    body.innerHTML = formatImgResult(data.result);
     resultBox.classList.add('show');
     resultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    // Save history
-    try { fetch(API_BASE + '/user/ai-history', { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+getToken()}, body:JSON.stringify({tool:'img',input:'[image]'}) }); } catch(e){}
+    try { fetch(API_BASE + '/user/ai-history', { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+getToken()}, body:JSON.stringify({tool:'img',input:'[image:'+mode+']'}) }); } catch(e){}
   } catch(e) {
     errBox.textContent = '❌ Lỗi kết nối. Vui lòng thử lại.'; errBox.classList.add('show');
   } finally {
-    btn.disabled = false; btn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Phân Tích Ảnh';
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> <span id="img-btn-label">' + btnLabel + '</span>';
   }
 }
 
+function formatImgResult(text) {
+  // Escape HTML rồi format markdown-lite
+  const esc = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return esc
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/^(#{1,3})\s+(.+)$/gm, (_, h, t) => `<strong style="font-size:${h.length===1?'1.05rem':'1rem'};color:#667eea">${t}</strong>`)
+    .replace(/^(\d+)\.\s+/gm, '<span style="color:#667eea;font-weight:700">$1.</span> ')
+    .replace(/^[-•]\s+/gm, '<span style="color:#f5576c">▸</span> ')
+    .replace(/\n/g, '<br>');
+}
+
 function copyImgResult() {
-  const text = document.getElementById('img-result-body').textContent;
+  const text = document.getElementById('img-result-body').innerText;
   navigator.clipboard.writeText(text).then(function() { showToast('✓ Đã copy kết quả!', 'success', 2000); });
+}
+
+function shareImgResult() {
+  const text = document.getElementById('img-result-body').innerText;
+  if (navigator.share) {
+    navigator.share({ title: 'Kết quả AI Image', text: text.slice(0, 500) });
+  } else {
+    navigator.clipboard.writeText(text).then(() => showToast('✓ Đã copy để chia sẻ!', 'success', 2000));
+  }
 }
 
 // ===== SMART NOTIFICATIONS =====

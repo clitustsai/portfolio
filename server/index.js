@@ -1030,16 +1030,20 @@ app.post('/api/tools/image-analyze', async (req, res) => {
     const isVip = checkVIP(payload.id);
     if (!isVip) {
         const count = getToolUsage(payload.id, 'img');
-        if (count >= 3) return res.status(429).json({ error: 'Hết lượt miễn phí hôm nay (3 lần). Nâng cấp VIP để dùng không giới hạn.', upgradeUrl: '/payment.html' });
+        if (count >= 5) return res.status(429).json({ error: 'Hết lượt miễn phí hôm nay (5 lần). Nâng cấp VIP để dùng không giới hạn.', upgradeUrl: '/payment.html' });
     }
 
     const modePrompts = {
-        describe: 'Mô tả chi tiết nội dung ảnh này: màu sắc, đối tượng, bối cảnh, cảm xúc, chi tiết đáng chú ý.',
-        identify: 'Nhận diện và liệt kê tất cả đối tượng, vật thể, con người, động vật trong ảnh. Ước tính số lượng nếu có nhiều.',
-        text: 'Đọc và trích xuất toàn bộ văn bản, chữ viết có trong ảnh. Giữ nguyên định dạng nếu có thể.',
-        emotion: 'Phân tích cảm xúc, tâm trạng trong ảnh: biểu cảm khuôn mặt, ngôn ngữ cơ thể, không khí tổng thể.',
-        scene: 'Phân tích cảnh vật: địa điểm, thời gian trong ngày, thời tiết, phong cách kiến trúc, môi trường.',
-        code: 'Đọc và trích xuất toàn bộ code, công thức, sơ đồ kỹ thuật trong ảnh. Giữ nguyên cú pháp.'
+        describe:  'Mô tả chi tiết nội dung ảnh này: màu sắc, đối tượng, bối cảnh, cảm xúc, chi tiết đáng chú ý.',
+        identify:  'Nhận diện và liệt kê tất cả đối tượng, vật thể, con người, động vật trong ảnh. Ước tính số lượng nếu có nhiều.',
+        text:      'Đọc và trích xuất toàn bộ văn bản, chữ viết có trong ảnh. Giữ nguyên định dạng nếu có thể.',
+        emotion:   'Phân tích cảm xúc, tâm trạng trong ảnh: biểu cảm khuôn mặt, ngôn ngữ cơ thể, không khí tổng thể.',
+        scene:     'Phân tích cảnh vật: địa điểm, thời gian trong ngày, thời tiết, phong cách kiến trúc, môi trường.',
+        code:      'Đọc và trích xuất toàn bộ code, công thức, sơ đồ kỹ thuật trong ảnh. Giữ nguyên cú pháp.',
+        solve:     `Đây là ảnh chụp bài tập / bài toán. Hãy:\n1. Đọc và ghi lại đề bài đầy đủ\n2. Phân tích dạng bài\n3. Giải từng bước chi tiết, rõ ràng (đánh số bước)\n4. Ghi rõ kết quả cuối cùng\n5. Giải thích ngắn gọn để học sinh hiểu\nNếu có nhiều câu, giải từng câu riêng biệt.`,
+        translate: 'Đọc toàn bộ văn bản trong ảnh và dịch sang ngôn ngữ được yêu cầu. Giữ nguyên cấu trúc, định dạng.',
+        nutrition: 'Nhận diện món ăn / thực phẩm trong ảnh. Ước tính: tên món, thành phần chính, calories, giá trị dinh dưỡng cơ bản.',
+        plant:     'Nhận diện loài cây / hoa / thực vật trong ảnh. Cho biết: tên khoa học, tên thường gọi, đặc điểm nhận dạng, công dụng.',
     };
 
     const langNote = lang === 'en' ? 'Respond in English.' : 'Trả lời bằng tiếng Việt.';
@@ -1067,7 +1071,7 @@ app.post('/api/tools/image-analyze', async (req, res) => {
                         { type: 'image_url', image_url: { url: imageBase64, detail: 'auto' } }
                     ]}
                 ],
-                max_tokens: 1000
+                max_tokens: mode === 'solve' ? 2000 : 1000
             })
         });
         const data = await response.json();

@@ -59,6 +59,12 @@ html[data-theme="dark"] .tool-card { background:#1a1a2e; }
 .tool-header-text h2 { font-size:1.2rem; font-weight:800; color:#1a1a2e; margin:0 0 .2rem; }
 html[data-theme="dark"] .tool-header-text h2 { color:#e8e8ff; }
 .tool-header-text p { font-size:.82rem; color:#888; margin:0; }
+/* ===== IMG MODE CHIPS ===== */
+.img-mode-chip { background:rgba(102,126,234,.08); border:1.5px solid rgba(102,126,234,.15); color:#667eea; border-radius:50px; padding:.3rem .85rem; font-size:.78rem; font-weight:700; cursor:pointer; transition:all .2s; white-space:nowrap; }
+.img-mode-chip:hover { background:rgba(102,126,234,.15); }
+.img-mode-chip.active { background:linear-gradient(135deg,#f093fb,#f5576c); border-color:transparent; color:#fff; box-shadow:0 4px 12px rgba(240,147,251,.35); }
+html[data-theme="dark"] .img-mode-chip { background:rgba(102,126,234,.12); color:#a78bfa; border-color:rgba(102,126,234,.25); }
+html[data-theme="dark"] .img-mode-chip.active { color:#fff; }
 .free-badge { margin-left:auto; background:linear-gradient(135deg,#11998e,#38ef7d); color:#fff; border-radius:50px; padding:.3rem .85rem; font-size:.75rem; font-weight:700; white-space:nowrap; }
 
 /* ===== FORM ===== */
@@ -413,36 +419,46 @@ html[data-theme="dark"] .pricing-feature { color:#bbb; }
         <div class="tool-icon" style="background:linear-gradient(135deg,#f093fb,#f5576c)"><i class="fas fa-image"></i></div>
         <div class="tool-header-text">
           <h2>AI Image Analyzer</h2>
-          <p>Upload ảnh → AI nhận diện, mô tả, phân tích nội dung</p>
+          <p>Upload ảnh → AI nhận diện, giải bài, mô tả, dịch, phân tích</p>
         </div>
-        <span class="free-badge">FREE 3x/ngày</span>
+        <span class="free-badge">FREE 5x/ngày</span>
       </div>
       <div class="tool-body">
+
+        <!-- Mode quick-select chips -->
+        <div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1rem;">
+          <button class="img-mode-chip active" data-mode="solve"     onclick="setImgMode('solve',this)">🧮 Giải bài tập</button>
+          <button class="img-mode-chip"        data-mode="describe"  onclick="setImgMode('describe',this)">🔍 Mô tả ảnh</button>
+          <button class="img-mode-chip"        data-mode="text"      onclick="setImgMode('text',this)">📝 Đọc chữ (OCR)</button>
+          <button class="img-mode-chip"        data-mode="code"      onclick="setImgMode('code',this)">💻 Đọc code</button>
+          <button class="img-mode-chip"        data-mode="translate" onclick="setImgMode('translate',this)">🌐 Dịch văn bản</button>
+          <button class="img-mode-chip"        data-mode="identify"  onclick="setImgMode('identify',this)">🏷️ Nhận diện</button>
+          <button class="img-mode-chip"        data-mode="nutrition" onclick="setImgMode('nutrition',this)">🍱 Dinh dưỡng</button>
+          <button class="img-mode-chip"        data-mode="plant"     onclick="setImgMode('plant',this)">🌿 Nhận diện cây</button>
+          <button class="img-mode-chip"        data-mode="emotion"   onclick="setImgMode('emotion',this)">😊 Cảm xúc</button>
+          <button class="img-mode-chip"        data-mode="scene"     onclick="setImgMode('scene',this)">🌆 Cảnh vật</button>
+        </div>
+
         <!-- Upload zone -->
-        <div id="img-drop-zone" onclick="document.getElementById('img-file').click()" style="border:2.5px dashed rgba(102,126,234,.35);border-radius:16px;padding:2.5rem 1rem;text-align:center;cursor:pointer;transition:all .25s;background:rgba(102,126,234,.04);margin-bottom:1rem;">
-          <div style="font-size:2.5rem;margin-bottom:.5rem;">🖼️</div>
-          <div style="font-weight:700;color:#667eea;margin-bottom:.25rem;">Kéo thả ảnh vào đây</div>
-          <div style="font-size:.8rem;color:#999;">hoặc click để chọn · JPG, PNG, WEBP, GIF · Tối đa 5MB</div>
+        <div id="img-drop-zone" onclick="document.getElementById('img-file').click()"
+          style="border:2.5px dashed rgba(102,126,234,.35);border-radius:16px;padding:2rem 1rem;text-align:center;cursor:pointer;transition:all .25s;background:rgba(102,126,234,.04);margin-bottom:1rem;position:relative;">
+          <div id="img-drop-icon" style="font-size:2.5rem;margin-bottom:.5rem;">🖼️</div>
+          <div style="font-weight:700;color:#667eea;margin-bottom:.25rem;" id="img-drop-label">Kéo thả ảnh vào đây</div>
+          <div style="font-size:.78rem;color:#999;">hoặc click để chọn · JPG, PNG, WEBP · Tối đa 5MB</div>
           <input type="file" id="img-file" accept="image/*" style="display:none" onchange="handleImgFile(this.files[0])">
         </div>
+
         <!-- Preview -->
-        <div id="img-preview-wrap" style="display:none;margin-bottom:1rem;text-align:center;">
-          <img id="img-preview" style="max-width:100%;max-height:300px;border-radius:12px;border:2px solid rgba(102,126,234,.2);object-fit:contain;" alt="Preview">
-          <div style="margin-top:.5rem;font-size:.78rem;color:#999;" id="img-file-info"></div>
+        <div id="img-preview-wrap" style="display:none;margin-bottom:1rem;position:relative;">
+          <img id="img-preview" style="max-width:100%;max-height:260px;border-radius:12px;border:2px solid rgba(102,126,234,.2);object-fit:contain;display:block;margin:0 auto;" alt="Preview">
+          <button onclick="clearImgPreview()" style="position:absolute;top:6px;right:6px;background:rgba(0,0,0,.55);border:none;color:#fff;border-radius:50%;width:26px;height:26px;cursor:pointer;font-size:.8rem;display:flex;align-items:center;justify-content:center;">✕</button>
+          <div style="margin-top:.4rem;font-size:.75rem;color:#999;text-align:center;" id="img-file-info"></div>
         </div>
-        <!-- Mode select -->
-        <div class="form-row" style="margin-bottom:1rem;">
-          <div class="form-group">
-            <label>Chế độ phân tích</label>
-            <select id="img-mode">
-              <option value="describe">🔍 Mô tả ảnh chi tiết</option>
-              <option value="identify">🏷️ Nhận diện đối tượng</option>
-              <option value="text">📝 Đọc chữ trong ảnh (OCR)</option>
-              <option value="emotion">😊 Phân tích cảm xúc</option>
-              <option value="scene">🌆 Phân tích cảnh vật</option>
-              <option value="code">💻 Đọc code từ ảnh</option>
-            </select>
-          </div>
+
+        <!-- Hidden mode select (driven by chips) -->
+        <input type="hidden" id="img-mode" value="solve">
+
+        <div class="form-row" style="margin-bottom:.75rem;">
           <div class="form-group">
             <label>Ngôn ngữ kết quả</label>
             <select id="img-lang">
@@ -450,25 +466,32 @@ html[data-theme="dark"] .pricing-feature { color:#bbb; }
               <option value="en">English</option>
             </select>
           </div>
+          <div class="form-group">
+            <label>Câu hỏi thêm (tuỳ chọn)</label>
+            <input type="text" id="img-question" placeholder="Ví dụ: Bước nào sai? Giải thích thêm...">
+          </div>
         </div>
-        <div class="form-group">
-          <label>Câu hỏi thêm (tuỳ chọn)</label>
-          <input type="text" id="img-question" placeholder="Ví dụ: Có bao nhiêu người trong ảnh? Màu chủ đạo là gì?">
-        </div>
+
         <div class="submit-row">
           <button class="btn-submit" id="img-btn" onclick="runImageAI()" style="background:linear-gradient(135deg,#f093fb,#f5576c);" disabled>
-            <i class="fas fa-wand-magic-sparkles"></i> Phân Tích Ảnh
+            <i class="fas fa-wand-magic-sparkles"></i> <span id="img-btn-label">Giải Bài Tập</span>
           </button>
-          <div class="usage-info">Còn <span id="img-usage">3</span> lượt hôm nay</div>
+          <div class="usage-info">Còn <span id="img-usage">5</span> lượt hôm nay</div>
         </div>
+
         <div class="error-box" id="img-error"></div>
+
         <div class="result-box" id="img-result">
           <div class="result-header">
             <h3><i class="fas fa-sparkles"></i> Kết Quả AI</h3>
-            <button class="btn-action" onclick="copyImgResult()"><i class="fas fa-copy"></i> Copy</button>
+            <div style="display:flex;gap:.5rem;">
+              <button class="btn-action" onclick="copyImgResult()"><i class="fas fa-copy"></i> Copy</button>
+              <button class="btn-action" onclick="shareImgResult()" style="background:rgba(16,185,129,.1);color:#10b981;"><i class="fas fa-share-alt"></i> Chia sẻ</button>
+            </div>
           </div>
-          <div class="result-body" id="img-result-body" style="white-space:pre-wrap;line-height:1.7;font-size:.9rem;"></div>
+          <div class="result-body" id="img-result-body" style="white-space:pre-wrap;line-height:1.8;font-size:.88rem;"></div>
         </div>
+
       </div>
     </div>
   </div>
