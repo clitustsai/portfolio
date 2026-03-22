@@ -516,16 +516,10 @@ app.post('/api/blog/posts/:id/comments/auth', requireUser, (req, res) => {
 });
 
 // ========== INVOICE ==========
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 
-function createTransporter() {
-    return nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: process.env.GMAIL_USER,
-            pass: process.env.GMAIL_APP_PASSWORD
-        }
-    });
+function getResend() {
+    return new Resend(process.env.RESEND_API_KEY);
 }
 
 function genInvoiceId() {
@@ -637,19 +631,19 @@ app.post('/api/invoice/create', async (req, res) => {
 
     // Gửi email nếu có cấu hình
     let emailSent = false;
-    if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
+    if (process.env.RESEND_API_KEY) {
         try {
-            const transporter = createTransporter();
-            await transporter.sendMail({
-                from: `"Clitus PC" <${process.env.GMAIL_USER}>`,
-                to: clientEmail.trim(),
-                cc: process.env.GMAIL_USER,
+            const resend = getResend();
+            await resend.emails.send({
+                from: 'Clitus PC <onboarding@resend.dev>',
+                to: [clientEmail.trim()],
+                cc: [process.env.RESEND_FROM_EMAIL || 'infoclituspc@gmail.com'],
                 subject: `🧾 Hóa đơn ${invoiceId} - Clitus PC`,
                 html
             });
             emailSent = true;
         } catch(e) {
-            console.error('Email error:', e.message);
+            console.error('Resend error:', e.message);
         }
     }
 
