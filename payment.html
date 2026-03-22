@@ -3,379 +3,421 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Thanh Toán & Dịch Vụ - Clitus PC</title>
+  <title>Dịch Vụ & Thanh Toán - Clitus PC</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="styles-new.css">
   <style>
-  :root{--bg:#f8f9ff;--card:#fff;--text:#1a1a2e;--sub:#666;--border:#e0e4ff;}
-  html[data-theme="dark"]{--bg:#0d0d1a;--card:#1a1a2e;--text:#e0e0ff;--sub:#9090b0;--border:#2a2a4a;}
-  .pay-page{min-height:100vh;padding:6rem 1rem 4rem;background:var(--bg);}
-  .pay-wrap{max-width:1000px;margin:0 auto;}
-  .pay-header{text-align:center;margin-bottom:3rem;}
-  .pay-header h1{font-size:clamp(1.8rem,4vw,2.6rem);color:var(--text);margin:0 0 0.5rem;}
-  .pay-header p{color:var(--sub);font-size:1rem;}
-  .section-title{font-size:1.2rem;font-weight:800;color:var(--text);margin:0 0 1.25rem;display:flex;align-items:center;gap:0.5rem;}
-  /* Service Cards */
-  .services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;margin-bottom:3rem;}
-  .service-card{
-    background:var(--card);border-radius:20px;padding:1.75rem;border:1px solid var(--border);
-    box-shadow:0 4px 20px rgba(0,0,0,0.06);transition:all 0.3s;position:relative;overflow:hidden;
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{--bg:#f0f2ff;--card:#fff;--text:#1a1a2e;--sub:#6b7280;--border:#e5e7ff;--grad1:#667eea;--grad2:#764ba2;}
+  html[data-theme="dark"]{--bg:#080818;--card:#12122a;--text:#e8e8ff;--sub:#8888aa;--border:#1e1e3a;}
+
+  body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;}
+
+  /* ── HERO ── */
+  .pay-hero{
+    position:relative;overflow:hidden;
+    background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
+    padding:7rem 1.5rem 5rem;text-align:center;
   }
-  .service-card:hover{transform:translateY(-6px);box-shadow:0 12px 40px rgba(102,126,234,0.15);}
-  .service-card.featured{border-color:#667eea;box-shadow:0 4px 20px rgba(102,126,234,0.2);}
-  .badge{position:absolute;top:1rem;right:1rem;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:0.7rem;font-weight:800;padding:0.25rem 0.65rem;border-radius:50px;}
-  .service-icon{font-size:2.5rem;margin-bottom:1rem;}
-  .service-name{font-size:1.1rem;font-weight:800;color:var(--text);margin:0 0 0.4rem;}
-  .service-desc{font-size:0.85rem;color:var(--sub);margin:0 0 1rem;line-height:1.6;}
-  .service-price{font-size:1.6rem;font-weight:900;color:#667eea;margin-bottom:1rem;}
-  .service-price span{font-size:0.8rem;color:var(--sub);font-weight:400;}
-  .service-features{list-style:none;padding:0;margin:0 0 1.25rem;}
-  .service-features li{font-size:0.82rem;color:var(--sub);padding:0.3rem 0;display:flex;gap:0.5rem;}
-  .service-features li::before{content:'✓';color:#11998e;font-weight:800;flex-shrink:0;}
-  .buy-btn{
-    width:100%;padding:0.85rem;border:none;border-radius:12px;
-    background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;
-    font-size:0.93rem;font-weight:700;cursor:pointer;transition:all 0.2s;
+  .pay-hero::before{
+    content:'';position:absolute;inset:0;
+    background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(102,126,234,0.35),transparent);
+  }
+  .hero-particles{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
+  .hero-particles span{
+    position:absolute;width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,0.6);
+    animation:float linear infinite;
+  }
+  @keyframes float{0%{transform:translateY(100vh) scale(0);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-10vh) scale(1);opacity:0}}
+  .hero-badge{
+    display:inline-flex;align-items:center;gap:0.5rem;
+    background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);
+    border-radius:50px;padding:0.4rem 1rem;font-size:0.78rem;color:rgba(255,255,255,0.8);
+    margin-bottom:1.5rem;backdrop-filter:blur(10px);
+  }
+  .pay-hero h1{font-size:clamp(2rem,5vw,3.2rem);font-weight:900;color:#fff;line-height:1.2;margin-bottom:1rem;}
+  .pay-hero h1 span{background:linear-gradient(135deg,#a78bfa,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+  .pay-hero p{color:rgba(255,255,255,0.65);font-size:1.05rem;max-width:520px;margin:0 auto 2rem;}
+  .hero-stats{display:flex;gap:2.5rem;justify-content:center;flex-wrap:wrap;}
+  .hero-stat{text-align:center;}
+  .hero-stat .num{font-size:1.8rem;font-weight:900;color:#fff;}
+  .hero-stat .lbl{font-size:0.75rem;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.08em;}
+
+  /* ── LAYOUT ── */
+  .pay-body{max-width:1100px;margin:0 auto;padding:4rem 1.5rem 5rem;}
+  .section-head{text-align:center;margin-bottom:2.5rem;}
+  .section-head .eyebrow{font-size:0.75rem;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--grad1);margin-bottom:0.5rem;}
+  .section-head h2{font-size:clamp(1.5rem,3vw,2rem);font-weight:900;color:var(--text);}
+  .section-head p{color:var(--sub);font-size:0.93rem;margin-top:0.4rem;}
+  .divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:3.5rem 0;}
+
+  /* ── SERVICE CARDS ── */
+  .services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem;}
+  .svc-card{
+    background:var(--card);border-radius:24px;padding:2rem;
+    border:1px solid var(--border);position:relative;overflow:hidden;
+    transition:all 0.35s cubic-bezier(.4,0,.2,1);
+    box-shadow:0 4px 24px rgba(0,0,0,0.06);
+  }
+  .svc-card:hover{transform:translateY(-8px);box-shadow:0 20px 60px rgba(102,126,234,0.18);}
+  .svc-card.featured{border-color:transparent;background:linear-gradient(var(--card),var(--card)) padding-box,linear-gradient(135deg,#667eea,#764ba2) border-box;}
+  .svc-card.featured::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(102,126,234,0.04),rgba(118,75,162,0.04));pointer-events:none;}
+  .svc-badge{position:absolute;top:1.25rem;right:1.25rem;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:0.68rem;font-weight:800;padding:0.3rem 0.75rem;border-radius:50px;letter-spacing:0.05em;}
+  .svc-icon-wrap{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin-bottom:1.25rem;}
+  .svc-name{font-size:1.15rem;font-weight:800;color:var(--text);margin-bottom:0.4rem;}
+  .svc-desc{font-size:0.85rem;color:var(--sub);line-height:1.65;margin-bottom:1.25rem;}
+  .svc-price{display:flex;align-items:baseline;gap:0.3rem;margin-bottom:1.25rem;}
+  .svc-price .amount{font-size:1.75rem;font-weight:900;background:linear-gradient(135deg,#667eea,#764ba2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+  .svc-price .unit{font-size:0.82rem;color:var(--sub);}
+  .svc-features{list-style:none;margin-bottom:1.5rem;}
+  .svc-features li{font-size:0.83rem;color:var(--sub);padding:0.35rem 0;display:flex;align-items:center;gap:0.6rem;border-bottom:1px solid var(--border);}
+  .svc-features li:last-child{border:none;}
+  .svc-features li i{color:#10b981;font-size:0.7rem;flex-shrink:0;}
+  .hire-btn{
+    width:100%;padding:0.9rem;border:none;border-radius:14px;cursor:pointer;
+    font-size:0.93rem;font-weight:700;transition:all 0.25s;
     display:flex;align-items:center;justify-content:center;gap:0.5rem;
   }
-  .buy-btn:hover{opacity:0.88;transform:translateY(-2px);}
-  .buy-btn.outline{background:none;border:2px solid #667eea;color:#667eea;}
-  .buy-btn.outline:hover{background:#667eea;color:#fff;}
-  /* Source Code */
-  .source-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.25rem;margin-bottom:3rem;}
-  .source-card{
-    background:var(--card);border-radius:16px;padding:1.5rem;border:1px solid var(--border);
-    box-shadow:0 4px 16px rgba(0,0,0,0.05);transition:all 0.3s;
+  .hire-btn.solid{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;box-shadow:0 6px 20px rgba(102,126,234,0.35);}
+  .hire-btn.solid:hover{opacity:0.88;transform:translateY(-2px);}
+  .hire-btn.outline{background:none;border:2px solid var(--grad1);color:var(--grad1);}
+  .hire-btn.outline:hover{background:var(--grad1);color:#fff;}
+
+  /* ── SOURCE CODE ── */
+  .source-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.25rem;}
+  .src-card{
+    background:var(--card);border-radius:20px;padding:1.5rem;
+    border:1px solid var(--border);transition:all 0.3s;
+    box-shadow:0 2px 16px rgba(0,0,0,0.05);
   }
-  .source-card:hover{transform:translateY(-4px);box-shadow:0 8px 28px rgba(102,126,234,0.12);}
-  .source-tech{display:flex;flex-wrap:wrap;gap:0.35rem;margin-bottom:0.75rem;}
-  .tech-pill{padding:0.2rem 0.6rem;border-radius:50px;font-size:0.72rem;font-weight:700;background:rgba(102,126,234,0.1);color:#667eea;}
-  .source-name{font-size:1rem;font-weight:800;color:var(--text);margin:0 0 0.35rem;}
-  .source-desc{font-size:0.82rem;color:var(--sub);margin:0 0 1rem;}
-  .source-price-row{display:flex;align-items:center;justify-content:space-between;gap:0.75rem;}
-  .source-price{font-size:1.2rem;font-weight:900;color:#764ba2;}
-  /* Donate */
-  .donate-section{background:var(--card);border-radius:20px;padding:2rem;border:1px solid var(--border);margin-bottom:3rem;text-align:center;}
-  .donate-desc{color:var(--sub);font-size:0.9rem;margin:0.5rem 0 1.5rem;}
-  .donate-amounts{display:flex;flex-wrap:wrap;gap:0.75rem;justify-content:center;margin-bottom:1.5rem;}
-  .donate-amt{
-    padding:0.6rem 1.4rem;border-radius:50px;border:2px solid var(--border);
-    background:var(--bg);color:var(--text);font-size:0.9rem;font-weight:700;
-    cursor:pointer;transition:all 0.2s;
+  .src-card:hover{transform:translateY(-5px);box-shadow:0 12px 36px rgba(102,126,234,0.14);}
+  .src-techs{display:flex;flex-wrap:wrap;gap:0.35rem;margin-bottom:0.85rem;}
+  .src-tech{padding:0.22rem 0.65rem;border-radius:50px;font-size:0.7rem;font-weight:700;background:rgba(102,126,234,0.1);color:#667eea;border:1px solid rgba(102,126,234,0.18);}
+  .src-name{font-size:1rem;font-weight:800;color:var(--text);margin-bottom:0.35rem;}
+  .src-desc{font-size:0.81rem;color:var(--sub);line-height:1.6;margin-bottom:1rem;}
+  .src-footer{display:flex;align-items:center;justify-content:space-between;gap:0.75rem;}
+  .src-price{font-size:1.15rem;font-weight:900;background:linear-gradient(135deg,#667eea,#764ba2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+  .src-btn{padding:0.55rem 1.1rem;border:none;border-radius:10px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:0.8rem;font-weight:700;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+  .src-btn:hover{opacity:0.85;transform:translateY(-2px);}
+
+  /* ── DONATE ── */
+  .donate-wrap{
+    background:linear-gradient(135deg,#0f0c29,#302b63);
+    border-radius:28px;padding:3rem 2rem;text-align:center;
+    position:relative;overflow:hidden;
   }
-  .donate-amt:hover,.donate-amt.active{border-color:#667eea;background:#667eea;color:#fff;}
-  .donate-methods{display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;}
-  .donate-method{
-    display:flex;flex-direction:column;align-items:center;gap:0.5rem;
-    padding:1.25rem 1.75rem;border-radius:16px;border:1.5px solid var(--border);
-    background:var(--bg);cursor:pointer;transition:all 0.2s;min-width:120px;
+  .donate-wrap::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(102,126,234,0.3),transparent);}
+  .donate-wrap h2{font-size:1.6rem;font-weight:900;color:#fff;margin-bottom:0.5rem;position:relative;}
+  .donate-wrap p{color:rgba(255,255,255,0.6);font-size:0.9rem;margin-bottom:2rem;position:relative;}
+  .donate-amts{display:flex;flex-wrap:wrap;gap:0.75rem;justify-content:center;margin-bottom:2.5rem;position:relative;}
+  .d-amt{
+    padding:0.6rem 1.4rem;border-radius:50px;
+    border:1.5px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);
+    color:rgba(255,255,255,0.8);font-size:0.88rem;font-weight:700;cursor:pointer;
+    transition:all 0.2s;backdrop-filter:blur(8px);
   }
-  .donate-method:hover{border-color:#667eea;transform:translateY(-3px);}
-  .donate-method img{width:48px;height:48px;border-radius:10px;object-fit:contain;}
-  .donate-method span{font-size:0.8rem;font-weight:700;color:var(--text);}
-  /* Donate QR Cards */
-  .donate-qr-card{
-    background:var(--card);border-radius:16px;padding:1.25rem;border:1.5px solid var(--border);
-    cursor:pointer;transition:all 0.3s;text-align:center;width:180px;
-    box-shadow:0 4px 16px rgba(0,0,0,0.06);
+  .d-amt:hover,.d-amt.active{background:linear-gradient(135deg,#667eea,#764ba2);border-color:transparent;color:#fff;transform:scale(1.05);}
+  .qr-cards{display:flex;flex-wrap:wrap;gap:1.5rem;justify-content:center;position:relative;}
+  .qr-card{
+    background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);
+    border-radius:20px;padding:1.5rem;cursor:pointer;transition:all 0.3s;
+    backdrop-filter:blur(12px);width:180px;text-align:center;
   }
-  .donate-qr-card:hover{transform:translateY(-6px);box-shadow:0 12px 32px rgba(102,126,234,0.15);border-color:#667eea;}
-  .donate-qr-logo{border-radius:10px;padding:0.4rem 0.75rem;display:inline-flex;align-items:center;justify-content:center;margin-bottom:0.75rem;min-width:60px;}
-  .donate-qr-img{width:140px;height:140px;border-radius:10px;object-fit:cover;border:1px solid var(--border);}
-  .qr-placeholder{width:140px;height:140px;border-radius:10px;background:var(--bg);border:1px solid var(--border);align-items:center;justify-content:center;font-size:3rem;color:var(--sub);}
-  .donate-qr-name{font-size:0.82rem;font-weight:800;color:var(--text);margin-top:0.6rem;}
-  .donate-qr-sub{font-size:0.75rem;color:var(--sub);}
-  /* QR Fullscreen Modal */
-  #qrFullModal{display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;padding:1rem;}
-  .qr-full-box{position:relative;z-index:1;background:var(--card);border-radius:24px;padding:2rem;text-align:center;max-width:340px;width:100%;box-shadow:0 24px 80px rgba(0,0,0,0.3);animation:slideIn 0.3s ease;}
-  .qr-full-box img{width:260px;height:260px;border-radius:12px;object-fit:cover;margin:1rem auto;display:block;}
-  .qr-full-name{font-size:1rem;font-weight:800;color:var(--text);}
-  .qr-full-sub{font-size:0.82rem;color:var(--sub);margin-top:0.25rem;}
-  /* Payment Modal */
-  #payModal{display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;padding:1rem;}
-  .pay-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);}
-  .pay-modal-box{
-    position:relative;z-index:1;background:var(--card);border-radius:24px;
-    padding:2rem;width:100%;max-width:440px;box-shadow:0 24px 80px rgba(0,0,0,0.25);
-    animation:slideIn 0.3s ease;
+  .qr-card:hover{background:rgba(255,255,255,0.12);transform:translateY(-6px);border-color:rgba(102,126,234,0.5);box-shadow:0 16px 40px rgba(0,0,0,0.3);}
+  .qr-card-logo{border-radius:10px;padding:0.35rem 0.85rem;display:inline-flex;align-items:center;justify-content:center;margin-bottom:0.85rem;font-weight:900;font-size:0.88rem;}
+  .qr-card img{width:130px;height:130px;border-radius:10px;object-fit:cover;border:2px solid rgba(255,255,255,0.15);}
+  .qr-card-name{font-size:0.8rem;font-weight:800;color:#fff;margin-top:0.65rem;}
+  .qr-card-sub{font-size:0.72rem;color:rgba(255,255,255,0.5);margin-top:0.2rem;}
+  .qr-hint{color:rgba(255,255,255,0.4);font-size:0.75rem;margin-top:1.5rem;position:relative;}
+
+  /* ── MODALS ── */
+  .modal-wrap{display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;padding:1rem;}
+  .modal-bg{position:absolute;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);}
+  .modal-box{
+    position:relative;z-index:1;background:var(--card);border-radius:28px;
+    padding:2.5rem 2rem;width:100%;max-width:420px;
+    box-shadow:0 32px 100px rgba(0,0,0,0.35);animation:popIn 0.3s cubic-bezier(.34,1.56,.64,1);
   }
-  @keyframes slideIn{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
-  .modal-close{position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.4rem;cursor:pointer;color:#999;}
-  .modal-title{font-size:1.1rem;font-weight:800;color:var(--text);margin:0 0 0.25rem;}
-  .modal-price{font-size:2rem;font-weight:900;color:#667eea;margin:0.5rem 0 1.25rem;}
-  .qr-pay{width:200px;height:200px;border-radius:12px;margin:0 auto 1rem;display:block;}
-  .bank-info{background:var(--bg);border-radius:12px;padding:1rem;font-size:0.85rem;color:var(--text);margin-bottom:1rem;}
-  .bank-row{display:flex;justify-content:space-between;padding:0.3rem 0;border-bottom:1px solid var(--border);}
+  @keyframes popIn{from{opacity:0;transform:scale(0.85) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+  .modal-close{position:absolute;top:1.25rem;right:1.25rem;width:32px;height:32px;border-radius:50%;background:var(--bg);border:none;cursor:pointer;color:var(--sub);font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+  .modal-close:hover{background:var(--border);color:var(--text);}
+  .modal-icon{width:60px;height:60px;border-radius:18px;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin:0 auto 1rem;}
+  .modal-title{font-size:1.1rem;font-weight:800;color:var(--text);text-align:center;margin-bottom:0.25rem;}
+  .modal-price{font-size:2rem;font-weight:900;text-align:center;background:linear-gradient(135deg,#667eea,#764ba2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:1.5rem;}
+  .modal-qr{width:200px;height:200px;border-radius:16px;display:block;margin:0 auto 1.25rem;border:3px solid var(--border);}
+  .bank-table{background:var(--bg);border-radius:14px;overflow:hidden;margin-bottom:1rem;}
+  .bank-row{display:flex;justify-content:space-between;align-items:center;padding:0.65rem 1rem;border-bottom:1px solid var(--border);font-size:0.83rem;}
   .bank-row:last-child{border:none;}
-  .bank-row .val{font-weight:700;color:#667eea;}
-  .copy-bank{background:none;border:none;color:#667eea;cursor:pointer;font-size:0.8rem;font-weight:700;}
-  .modal-note{font-size:0.78rem;color:var(--sub);text-align:center;margin-top:0.75rem;}
-  .contact-after{
-    width:100%;padding:0.75rem;border:none;border-radius:12px;margin-top:0.75rem;
-    background:linear-gradient(135deg,#11998e,#38ef7d);color:#fff;
-    font-size:0.9rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.5rem;
+  .bank-row .k{color:var(--sub);}
+  .bank-row .v{font-weight:700;color:var(--text);display:flex;align-items:center;gap:0.4rem;}
+  .copy-btn{background:none;border:none;color:var(--grad1);cursor:pointer;font-size:0.75rem;font-weight:700;padding:0.15rem 0.4rem;border-radius:6px;transition:background 0.2s;}
+  .copy-btn:hover{background:rgba(102,126,234,0.1);}
+  .modal-note{font-size:0.75rem;color:var(--sub);text-align:center;margin-bottom:1rem;}
+  .zalo-btn{
+    width:100%;padding:0.85rem;border:none;border-radius:14px;cursor:pointer;
+    background:linear-gradient(135deg,#0068ff,#00c6ff);color:#fff;
+    font-size:0.93rem;font-weight:700;display:flex;align-items:center;justify-content:center;gap:0.5rem;
+    transition:all 0.2s;box-shadow:0 6px 20px rgba(0,104,255,0.3);
   }
+  .zalo-btn:hover{opacity:0.88;transform:translateY(-2px);}
+  /* QR Full */
+  .qr-full-box{
+    position:relative;z-index:1;background:linear-gradient(135deg,#0f0c29,#302b63);
+    border-radius:28px;padding:2.5rem 2rem;width:100%;max-width:360px;text-align:center;
+    box-shadow:0 32px 100px rgba(0,0,0,0.5);animation:popIn 0.3s cubic-bezier(.34,1.56,.64,1);
+    border:1px solid rgba(255,255,255,0.1);
+  }
+  .qr-full-box img{width:260px;height:260px;border-radius:16px;object-fit:cover;margin:1rem auto;display:block;border:3px solid rgba(255,255,255,0.15);}
+  .qr-full-name{font-size:1rem;font-weight:800;color:#fff;}
+  .qr-full-sub{font-size:0.82rem;color:rgba(255,255,255,0.5);margin-top:0.3rem;}
+  .qr-full-hint{font-size:0.75rem;color:rgba(255,255,255,0.35);margin-top:1rem;}
   </style>
 </head>
 <body>
-  <header>
-    <nav>
-      <div class="logo"><a href="index.html" style="color:inherit;text-decoration:none">Portfolio</a></div>
-      <ul>
-        <li><a href="index.html#home">Trang Chủ</a></li>
-        <li><a href="proposal.html">💼 Proposal</a></li>
-        <li><a href="blog.html">Blog</a></li>
+<header>
+  <nav>
+    <div class="logo"><a href="index.html" style="color:inherit;text-decoration:none">Portfolio</a></div>
+    <ul>
+      <li><a href="index.html">Trang Chủ</a></li>
+      <li><a href="proposal.html">💼 Proposal</a></li>
+      <li><a href="blog.html">Blog</a></li>
+    </ul>
+    <div class="nav-auth-slot"></div>
+  </nav>
+</header>
+
+<main>
+<!-- HERO -->
+<div class="pay-hero">
+  <div class="hero-particles" id="heroParticles"></div>
+  <div style="position:relative;">
+    <div class="hero-badge"><i class="fas fa-shield-halved"></i> Thanh toán an toàn · Bảo mật 100%</div>
+    <h1>Dịch Vụ &<br><span>Thanh Toán</span></h1>
+    <p>Thuê tôi làm dự án, mua source code, hoặc ủng hộ một ly cà phê ☕</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="num">50+</div><div class="lbl">Dự án</div></div>
+      <div class="hero-stat"><div class="num">10+</div><div class="lbl">Năm KN</div></div>
+      <div class="hero-stat"><div class="num">100%</div><div class="lbl">Hài lòng</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="pay-body">
+
+  <!-- HIRE ME -->
+  <div class="section-head">
+    <div class="eyebrow">💼 Dịch vụ</div>
+    <h2>Thuê Tôi Làm Dự Án</h2>
+    <p>Giải pháp web chuyên nghiệp, bàn giao đúng hạn, hỗ trợ tận tình</p>
+  </div>
+  <div class="services-grid">
+    <div class="svc-card">
+      <div class="svc-icon-wrap" style="background:linear-gradient(135deg,rgba(16,185,129,0.15),rgba(5,150,105,0.15));">🌐</div>
+      <div class="svc-name">Landing Page</div>
+      <div class="svc-desc">Website giới thiệu sản phẩm/dịch vụ, responsive, tối ưu SEO, tốc độ cao.</div>
+      <div class="svc-price"><span class="amount">3.000.000</span><span class="unit">VNĐ</span></div>
+      <ul class="svc-features">
+        <li><i class="fas fa-check"></i>Responsive mobile/tablet/desktop</li>
+        <li><i class="fas fa-check"></i>SEO cơ bản + tốc độ tải nhanh</li>
+        <li><i class="fas fa-check"></i>Form liên hệ + Google Maps</li>
+        <li><i class="fas fa-check"></i>Bàn giao trong 5-7 ngày</li>
       </ul>
-      <div class="nav-auth-slot"></div>
-    </nav>
-  </header>
-
-  <main class="pay-page">
-    <div class="pay-wrap">
-      <div class="pay-header">
-        <div style="font-size:3rem;margin-bottom:0.5rem;">💳</div>
-        <h1>Dịch Vụ & Thanh Toán</h1>
-        <p>Thuê tôi làm dự án, mua source code, hoặc ủng hộ một ly cà phê ☕</p>
-      </div>
-
-      <!-- HIRE ME -->
-      <div class="section-title">💼 Thuê Tôi Làm Dự Án</div>
-      <div class="services-grid">
-        <div class="service-card">
-          <div class="service-icon">🌐</div>
-          <div class="service-name">Landing Page</div>
-          <div class="service-desc">Website giới thiệu sản phẩm/dịch vụ, responsive, tối ưu SEO, tốc độ cao.</div>
-          <div class="service-price">3.000.000 <span>VNĐ</span></div>
-          <ul class="service-features">
-            <li>Responsive mobile/tablet/desktop</li>
-            <li>SEO cơ bản + tốc độ tải nhanh</li>
-            <li>Form liên hệ + Google Maps</li>
-            <li>Bàn giao trong 5-7 ngày</li>
-          </ul>
-          <button class="buy-btn" onclick="openPayModal('Landing Page','3.000.000 VNĐ')">
-            <i class="fas fa-briefcase"></i> Thuê Ngay
-          </button>
-        </div>
-        <div class="service-card featured">
-          <div class="badge">⭐ Phổ biến</div>
-          <div class="service-icon">🛒</div>
-          <div class="service-name">Website Bán Hàng</div>
-          <div class="service-desc">E-commerce đầy đủ: giỏ hàng, thanh toán, quản lý đơn hàng, admin panel.</div>
-          <div class="service-price">15.000.000 <span>VNĐ</span></div>
-          <ul class="service-features">
-            <li>Giỏ hàng + thanh toán online</li>
-            <li>Quản lý sản phẩm/đơn hàng</li>
-            <li>Admin dashboard</li>
-            <li>Bàn giao trong 30-45 ngày</li>
-          </ul>
-          <button class="buy-btn" onclick="openPayModal('Website Bán Hàng','15.000.000 VNĐ')">
-            <i class="fas fa-briefcase"></i> Thuê Ngay
-          </button>
-        </div>
-        <div class="service-card">
-          <div class="service-icon">⚙️</div>
-          <div class="service-name">Web App / SaaS</div>
-          <div class="service-desc">Ứng dụng web phức tạp: dashboard, API, authentication, real-time features.</div>
-          <div class="service-price">30.000.000 <span>VNĐ</span></div>
-          <ul class="service-features">
-            <li>Full Stack (React + Node.js)</li>
-            <li>Database + REST API</li>
-            <li>Auth + phân quyền</li>
-            <li>Deploy + bảo trì 3 tháng</li>
-          </ul>
-          <button class="buy-btn" onclick="openPayModal('Web App / SaaS','30.000.000 VNĐ')">
-            <i class="fas fa-briefcase"></i> Thuê Ngay
-          </button>
-        </div>
-      </div>
-
-      <!-- SOURCE CODE -->
-      <div class="section-title">📦 Mua Source Code</div>
-      <div class="source-grid">
-        <div class="source-card">
-          <div class="source-tech"><span class="tech-pill">React</span><span class="tech-pill">Node.js</span><span class="tech-pill">MongoDB</span></div>
-          <div class="source-name">Portfolio Template Pro</div>
-          <div class="source-desc">Template portfolio như trang này: blog, AI chat, dark mode, PWA, auth.</div>
-          <div class="source-price-row">
-            <div class="source-price">299.000 VNĐ</div>
-            <button class="buy-btn" style="width:auto;padding:0.6rem 1.2rem;" onclick="openPayModal('Portfolio Template Pro','299.000 VNĐ')">
-              <i class="fas fa-shopping-cart"></i> Mua
-            </button>
-          </div>
-        </div>
-        <div class="source-card">
-          <div class="source-tech"><span class="tech-pill">React</span><span class="tech-pill">Stripe</span><span class="tech-pill">Firebase</span></div>
-          <div class="source-name">E-Commerce Starter</div>
-          <div class="source-desc">Boilerplate bán hàng: giỏ hàng, Stripe payment, quản lý sản phẩm.</div>
-          <div class="source-price-row">
-            <div class="source-price">599.000 VNĐ</div>
-            <button class="buy-btn" style="width:auto;padding:0.6rem 1.2rem;" onclick="openPayModal('E-Commerce Starter','599.000 VNĐ')">
-              <i class="fas fa-shopping-cart"></i> Mua
-            </button>
-          </div>
-        </div>
-        <div class="source-card">
-          <div class="source-tech"><span class="tech-pill">Vue.js</span><span class="tech-pill">Python</span><span class="tech-pill">PostgreSQL</span></div>
-          <div class="source-name">Dashboard Analytics</div>
-          <div class="source-desc">Admin dashboard với charts, báo cáo, export Excel/PDF, dark mode.</div>
-          <div class="source-price-row">
-            <div class="source-price">499.000 VNĐ</div>
-            <button class="buy-btn" style="width:auto;padding:0.6rem 1.2rem;" onclick="openPayModal('Dashboard Analytics','499.000 VNĐ')">
-              <i class="fas fa-shopping-cart"></i> Mua
-            </button>
-          </div>
-        </div>
-        <div class="source-card">
-          <div class="source-tech"><span class="tech-pill">React Native</span><span class="tech-pill">Expo</span></div>
-          <div class="source-name">Mobile App Template</div>
-          <div class="source-desc">Template React Native: auth, navigation, API integration, push notification.</div>
-          <div class="source-price-row">
-            <div class="source-price">399.000 VNĐ</div>
-            <button class="buy-btn" style="width:auto;padding:0.6rem 1.2rem;" onclick="openPayModal('Mobile App Template','399.000 VNĐ')">
-              <i class="fas fa-shopping-cart"></i> Mua
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- DONATE -->
-      <div id="donate" class="section-title">☕ Ủng Hộ / Donate</div>
-      <div class="donate-section">
-        <div style="font-size:2rem;">☕</div>
-        <div class="donate-desc">Nếu nội dung của mình có ích, hãy mời mình một ly cà phê nhé! Mọi sự ủng hộ đều được trân trọng 🙏</div>
-        <div class="donate-amounts">
-          <button class="donate-amt active" onclick="selectDonate(this,'20.000 VNĐ')">☕ 20k</button>
-          <button class="donate-amt" onclick="selectDonate(this,'50.000 VNĐ')">☕☕ 50k</button>
-          <button class="donate-amt" onclick="selectDonate(this,'100.000 VNĐ')">🎁 100k</button>
-          <button class="donate-amt" onclick="selectDonate(this,'200.000 VNĐ')">💎 200k</button>
-        </div>
-        <!-- QR Cards -->
-        <div style="display:flex;flex-wrap:wrap;gap:1.5rem;justify-content:center;margin-top:1.5rem;">
-          <!-- ZaloPay -->
-          <div class="donate-qr-card" onclick="openDonateQR('zalopay')">
-            <div class="donate-qr-logo" style="background:#0068ff;">
-              <span style="color:#fff;font-weight:900;font-size:0.85rem;">Zalo<span style="color:#00e5ff;">Pay</span></span>
-            </div>
-            <img src="img/qr-zalopay.jpg" alt="QR ZaloPay" class="donate-qr-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-            <div class="qr-placeholder" style="display:none"><i class="fas fa-qrcode"></i></div>
-            <div class="donate-qr-name">THÁI TUẤN KIỆT</div>
-            <div class="donate-qr-sub">ZaloPay</div>
-          </div>
-          <!-- ACB -->
-          <div class="donate-qr-card" onclick="openDonateQR('acb')">
-            <div class="donate-qr-logo" style="background:#003087;">
-              <span style="color:#fff;font-weight:900;font-size:1rem;">ACB</span>
-            </div>
-            <img src="img/qr-acb.jpg" alt="QR ACB" class="donate-qr-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-            <div class="qr-placeholder" style="display:none"><i class="fas fa-qrcode"></i></div>
-            <div class="donate-qr-name">THÁI TUẤN KIỆT</div>
-            <div class="donate-qr-sub">ACB · 26996867</div>
-          </div>
-          <!-- MoMo -->
-          <div class="donate-qr-card" onclick="openDonateQR('momo')">
-            <div class="donate-qr-logo" style="background:#a50064;">
-              <span style="color:#fff;font-weight:900;font-size:1rem;">MoMo</span>
-            </div>
-            <img src="img/qr-momo.jpg" alt="QR MoMo" class="donate-qr-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-            <div class="qr-placeholder" style="display:none"><i class="fas fa-qrcode"></i></div>
-            <div class="donate-qr-name">THÁI TUẤN KIỆT</div>
-            <div class="donate-qr-sub">MoMo · *****331</div>
-          </div>
-        </div>
-      </div>
+      <button class="hire-btn outline" onclick="openPayModal('Landing Page','3.000.000 VNĐ')"><i class="fas fa-briefcase"></i> Thuê Ngay</button>
     </div>
-  </main>
-
-  <!-- Payment Modal -->
-  <div id="payModal">
-    <div class="pay-overlay" onclick="closePayModal()"></div>
-    <div class="pay-modal-box">
-      <button class="modal-close" onclick="closePayModal()">×</button>
-      <div style="text-align:center;">
-        <div style="font-size:2rem;margin-bottom:0.5rem;">💳</div>
-        <div class="modal-title" id="modalTitle">Thanh toán</div>
-        <div class="modal-price" id="modalPrice"></div>
-      </div>
-      <img class="qr-pay" id="modalQR" src="" alt="QR thanh toán">
-      <div class="bank-info">
-        <div class="bank-row"><span>Ngân hàng</span><span class="val">ACB</span></div>
-        <div class="bank-row"><span>Số tài khoản</span><span class="val">26996867 <button class="copy-bank" onclick="copyText('26996867')">Copy</button></span></div>
-        <div class="bank-row"><span>Chủ tài khoản</span><span class="val">THAI TUAN KIET</span></div>
-        <div class="bank-row"><span>Nội dung CK</span><span class="val" id="modalContent"></span></div>
-      </div>
-      <div class="modal-note">Sau khi thanh toán, vui lòng liên hệ để xác nhận và nhận sản phẩm</div>
-      <button class="contact-after" onclick="window.open('https://zalo.me/0906857331','_blank')">
-        <i class="fab fa-facebook-messenger"></i> Liên hệ Zalo xác nhận
-      </button>
+    <div class="svc-card featured">
+      <div class="svc-badge">⭐ Phổ biến</div>
+      <div class="svc-icon-wrap" style="background:linear-gradient(135deg,rgba(102,126,234,0.15),rgba(118,75,162,0.15));">🛒</div>
+      <div class="svc-name">Website Bán Hàng</div>
+      <div class="svc-desc">E-commerce đầy đủ: giỏ hàng, thanh toán, quản lý đơn hàng, admin panel.</div>
+      <div class="svc-price"><span class="amount">15.000.000</span><span class="unit">VNĐ</span></div>
+      <ul class="svc-features">
+        <li><i class="fas fa-check"></i>Giỏ hàng + thanh toán online</li>
+        <li><i class="fas fa-check"></i>Quản lý sản phẩm/đơn hàng</li>
+        <li><i class="fas fa-check"></i>Admin dashboard</li>
+        <li><i class="fas fa-check"></i>Bàn giao trong 30-45 ngày</li>
+      </ul>
+      <button class="hire-btn solid" onclick="openPayModal('Website Bán Hàng','15.000.000 VNĐ')"><i class="fas fa-briefcase"></i> Thuê Ngay</button>
+    </div>
+    <div class="svc-card">
+      <div class="svc-icon-wrap" style="background:linear-gradient(135deg,rgba(245,87,108,0.15),rgba(240,147,251,0.15));">⚙️</div>
+      <div class="svc-name">Web App / SaaS</div>
+      <div class="svc-desc">Ứng dụng web phức tạp: dashboard, API, authentication, real-time features.</div>
+      <div class="svc-price"><span class="amount">30.000.000</span><span class="unit">VNĐ</span></div>
+      <ul class="svc-features">
+        <li><i class="fas fa-check"></i>Full Stack (React + Node.js)</li>
+        <li><i class="fas fa-check"></i>Database + REST API</li>
+        <li><i class="fas fa-check"></i>Auth + phân quyền</li>
+        <li><i class="fas fa-check"></i>Deploy + bảo trì 3 tháng</li>
+      </ul>
+      <button class="hire-btn outline" onclick="openPayModal('Web App / SaaS','30.000.000 VNĐ')"><i class="fas fa-briefcase"></i> Thuê Ngay</button>
     </div>
   </div>
 
-  <!-- QR Fullscreen Modal -->
-  <div id="qrFullModal">
-    <div class="pay-overlay" onclick="closeQRFull()"></div>
-    <div class="qr-full-box">
-      <button class="modal-close" onclick="closeQRFull()">×</button>
-      <div id="qrFullLogo"></div>
-      <img id="qrFullImg" src="" alt="QR">
-      <div class="qr-full-name">THÁI TUẤN KIỆT</div>
-      <div class="qr-full-sub" id="qrFullSub"></div>
-      <div style="margin-top:1rem;font-size:0.78rem;color:var(--sub);">Quét mã để chuyển tiền</div>
+  <div class="divider"></div>
+
+  <!-- SOURCE CODE -->
+  <div class="section-head">
+    <div class="eyebrow">📦 Source Code</div>
+    <h2>Mua Source Code</h2>
+    <p>Template chất lượng cao, code sạch, có tài liệu hướng dẫn</p>
+  </div>
+  <div class="source-grid">
+    <div class="src-card">
+      <div class="src-techs"><span class="src-tech">React</span><span class="src-tech">Node.js</span><span class="src-tech">MongoDB</span></div>
+      <div class="src-name">Portfolio Template Pro</div>
+      <div class="src-desc">Template portfolio như trang này: blog, AI chat, dark mode, PWA, auth.</div>
+      <div class="src-footer"><div class="src-price">299.000 VNĐ</div><button class="src-btn" onclick="openPayModal('Portfolio Template Pro','299.000 VNĐ')"><i class="fas fa-shopping-cart"></i> Mua</button></div>
+    </div>
+    <div class="src-card">
+      <div class="src-techs"><span class="src-tech">React</span><span class="src-tech">Stripe</span><span class="src-tech">Firebase</span></div>
+      <div class="src-name">E-Commerce Starter</div>
+      <div class="src-desc">Boilerplate bán hàng: giỏ hàng, Stripe payment, quản lý sản phẩm.</div>
+      <div class="src-footer"><div class="src-price">599.000 VNĐ</div><button class="src-btn" onclick="openPayModal('E-Commerce Starter','599.000 VNĐ')"><i class="fas fa-shopping-cart"></i> Mua</button></div>
+    </div>
+    <div class="src-card">
+      <div class="src-techs"><span class="src-tech">Vue.js</span><span class="src-tech">Python</span><span class="src-tech">PostgreSQL</span></div>
+      <div class="src-name">Dashboard Analytics</div>
+      <div class="src-desc">Admin dashboard với charts, báo cáo, export Excel/PDF, dark mode.</div>
+      <div class="src-footer"><div class="src-price">499.000 VNĐ</div><button class="src-btn" onclick="openPayModal('Dashboard Analytics','499.000 VNĐ')"><i class="fas fa-shopping-cart"></i> Mua</button></div>
+    </div>
+    <div class="src-card">
+      <div class="src-techs"><span class="src-tech">React Native</span><span class="src-tech">Expo</span></div>
+      <div class="src-name">Mobile App Template</div>
+      <div class="src-desc">Template React Native: auth, navigation, API integration, push notification.</div>
+      <div class="src-footer"><div class="src-price">399.000 VNĐ</div><button class="src-btn" onclick="openPayModal('Mobile App Template','399.000 VNĐ')"><i class="fas fa-shopping-cart"></i> Mua</button></div>
     </div>
   </div>
-      <button class="contact-after" onclick="window.open('https://zalo.me/0906857331','_blank')">
-        <i class="fab fa-facebook-messenger"></i> Liên hệ Zalo xác nhận
-      </button>
+
+  <div class="divider"></div>
+
+  <!-- DONATE -->
+  <div id="donate" class="donate-wrap">
+    <h2>☕ Ủng Hộ / Donate</h2>
+    <p>Nếu nội dung của mình có ích, hãy mời mình một ly cà phê nhé! Mọi sự ủng hộ đều được trân trọng 🙏</p>
+    <div class="donate-amts">
+      <button class="d-amt active" onclick="selAmt(this,'20.000')">☕ 20k</button>
+      <button class="d-amt" onclick="selAmt(this,'50.000')">☕☕ 50k</button>
+      <button class="d-amt" onclick="selAmt(this,'100.000')">🎁 100k</button>
+      <button class="d-amt" onclick="selAmt(this,'200.000')">💎 200k</button>
     </div>
+    <div class="qr-cards">
+      <div class="qr-card" onclick="openQRFull('zalopay')">
+        <div class="qr-card-logo" style="background:#0068ff;color:#fff;">Zalo<span style="color:#00e5ff;">Pay</span></div>
+        <img src="img/qr-zalopay.jpg" alt="ZaloPay QR">
+        <div class="qr-card-name">THÁI TUẤN KIỆT</div>
+        <div class="qr-card-sub">ZaloPay</div>
+      </div>
+      <div class="qr-card" onclick="openQRFull('acb')">
+        <div class="qr-card-logo" style="background:#003087;color:#fff;font-size:1rem;">ACB</div>
+        <img src="img/qr-acb.jpg" alt="ACB QR">
+        <div class="qr-card-name">THÁI TUẤN KIỆT</div>
+        <div class="qr-card-sub">ACB · 26996867</div>
+      </div>
+      <div class="qr-card" onclick="openQRFull('momo')">
+        <div class="qr-card-logo" style="background:#a50064;color:#fff;">MoMo</div>
+        <img src="img/qr-momo.jpg" alt="MoMo QR">
+        <div class="qr-card-name">THÁI TUẤN KIỆT</div>
+        <div class="qr-card-sub">MoMo · *****331</div>
+      </div>
+    </div>
+    <div class="qr-hint"><i class="fas fa-hand-pointer"></i> Click vào QR để phóng to</div>
   </div>
 
-  <script src="api.js"></script>
-  <script src="auth.js"></script>
-  <script>
-  window._donateAmt = '20.000 VNĐ';
-  function selectDonate(el, amt) {
-    document.querySelectorAll('.donate-amt').forEach(b=>b.classList.remove('active'));
-    el.classList.add('active');
-    window._donateAmt = amt;
-  }
+</div>
+</main>
 
-  const donateInfo = {
-    zalopay: { img:'img/qr-zalopay.jpg', sub:'ZaloPay · THÁI TUẤN KIỆT', logo:'<div style="background:#0068ff;border-radius:10px;padding:0.4rem 1rem;display:inline-block;margin-bottom:0.5rem;"><span style="color:#fff;font-weight:900;">Zalo<span style="color:#00e5ff;">Pay</span></span></div>' },
-    acb:     { img:'img/qr-acb.jpg',     sub:'ACB · 26996867',            logo:'<div style="background:#003087;border-radius:10px;padding:0.4rem 1rem;display:inline-block;margin-bottom:0.5rem;"><span style="color:#fff;font-weight:900;font-size:1.1rem;">ACB</span></div>' },
-    momo:    { img:'img/qr-momo.jpg',    sub:'MoMo · *****331',           logo:'<div style="background:#a50064;border-radius:10px;padding:0.4rem 1rem;display:inline-block;margin-bottom:0.5rem;"><span style="color:#fff;font-weight:900;">MoMo</span></div>' }
-  };
+<!-- Payment Modal -->
+<div class="modal-wrap" id="payModal">
+  <div class="modal-bg" onclick="closePayModal()"></div>
+  <div class="modal-box">
+    <button class="modal-close" onclick="closePayModal()"><i class="fas fa-times"></i></button>
+    <div class="modal-icon">💳</div>
+    <div class="modal-title" id="mTitle"></div>
+    <div class="modal-price" id="mPrice"></div>
+    <img class="modal-qr" id="mQR" src="" alt="QR">
+    <div class="bank-table">
+      <div class="bank-row"><span class="k">Ngân hàng</span><span class="v">ACB</span></div>
+      <div class="bank-row"><span class="k">Số tài khoản</span><span class="v">26996867 <button class="copy-btn" onclick="cp('26996867')"><i class="fas fa-copy"></i></button></span></div>
+      <div class="bank-row"><span class="k">Chủ tài khoản</span><span class="v">THAI TUAN KIET</span></div>
+      <div class="bank-row"><span class="k">Nội dung CK</span><span class="v" id="mContent" style="font-size:0.78rem;"></span></div>
+    </div>
+    <div class="modal-note">Sau khi thanh toán, liên hệ Zalo để xác nhận và nhận sản phẩm</div>
+    <button class="zalo-btn" onclick="window.open('https://zalo.me/0906857331','_blank')">
+      <i class="fas fa-comment-dots"></i> Liên hệ Zalo xác nhận
+    </button>
+  </div>
+</div>
 
-  function openDonateQR(type) {
-    const d = donateInfo[type];
-    document.getElementById('qrFullImg').src = d.img;
-    document.getElementById('qrFullSub').textContent = d.sub;
-    document.getElementById('qrFullLogo').innerHTML = d.logo;
-    document.getElementById('qrFullModal').style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-  }
-  function closeQRFull() {
-    document.getElementById('qrFullModal').style.display = 'none';
-    document.body.style.overflow = '';
-  }
+<!-- QR Fullscreen -->
+<div class="modal-wrap" id="qrFullModal">
+  <div class="modal-bg" onclick="closeQRFull()"></div>
+  <div class="qr-full-box">
+    <button class="modal-close" onclick="closeQRFull()" style="background:rgba(255,255,255,0.1);color:#fff;"><i class="fas fa-times"></i></button>
+    <div id="qrFullLogo"></div>
+    <img id="qrFullImg" src="" alt="QR">
+    <div class="qr-full-name">THÁI TUẤN KIỆT</div>
+    <div class="qr-full-sub" id="qrFullSub"></div>
+    <div class="qr-full-hint"><i class="fas fa-mobile-screen"></i> Quét mã bằng camera điện thoại</div>
+  </div>
+</div>
 
-  function openPayModal(name, price) {
-    document.getElementById('modalTitle').textContent = name;
-    document.getElementById('modalPrice').textContent = price;
-    const content = 'CLITUSPC ' + name.replace(/[^a-zA-Z0-9]/g,'').toUpperCase().slice(0,15);
-    document.getElementById('modalContent').textContent = content;
-    const amt = price.replace(/[^0-9]/g,'');
-    document.getElementById('modalQR').src = `https://img.vietqr.io/image/ACB-26996867-compact2.png?amount=${amt}&addInfo=${encodeURIComponent(content)}&accountName=THAI%20TUAN%20KIET`;
-    document.getElementById('payModal').style.display = 'flex';
-    document.body.style.overflow = 'hidden';
+<script src="api.js"></script>
+<script src="auth.js"></script>
+<script>
+// Particles
+(function(){
+  const c = document.getElementById('heroParticles');
+  for(let i=0;i<25;i++){
+    const s = document.createElement('span');
+    s.style.cssText = `left:${Math.random()*100}%;animation-duration:${6+Math.random()*10}s;animation-delay:${Math.random()*8}s;width:${2+Math.random()*3}px;height:${2+Math.random()*3}px;opacity:${0.3+Math.random()*0.5}`;
+    c.appendChild(s);
   }
-  function closePayModal() {
-    document.getElementById('payModal').style.display = 'none';
-    document.body.style.overflow = '';
-  }
-  function copyText(t) {
-    navigator.clipboard.writeText(t);
-    if(typeof showToast==='function') showToast('✅ Đã copy!','success',1500);
-  }
-  </script>
+})();
+
+let _amt = '20.000';
+function selAmt(el, amt) {
+  document.querySelectorAll('.d-amt').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active'); _amt = amt;
+}
+
+const qrData = {
+  zalopay:{img:'img/qr-zalopay.jpg',sub:'ZaloPay',logo:'<div style="background:#0068ff;border-radius:10px;padding:0.4rem 1rem;display:inline-block;margin-bottom:0.75rem;font-weight:900;font-size:1rem;color:#fff;">Zalo<span style="color:#00e5ff;">Pay</span></div>'},
+  acb:    {img:'img/qr-acb.jpg',    sub:'ACB · 26996867',logo:'<div style="background:#003087;border-radius:10px;padding:0.4rem 1.2rem;display:inline-block;margin-bottom:0.75rem;font-weight:900;font-size:1.2rem;color:#fff;">ACB</div>'},
+  momo:   {img:'img/qr-momo.jpg',   sub:'MoMo · *****331',logo:'<div style="background:#a50064;border-radius:10px;padding:0.4rem 1rem;display:inline-block;margin-bottom:0.75rem;font-weight:900;font-size:1rem;color:#fff;">MoMo</div>'}
+};
+
+function openQRFull(type) {
+  const d = qrData[type];
+  document.getElementById('qrFullImg').src = d.img;
+  document.getElementById('qrFullSub').textContent = d.sub;
+  document.getElementById('qrFullLogo').innerHTML = d.logo;
+  document.getElementById('qrFullModal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+function closeQRFull() {
+  document.getElementById('qrFullModal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function openPayModal(name, price) {
+  document.getElementById('mTitle').textContent = name;
+  document.getElementById('mPrice').textContent = price;
+  const content = 'CLITUSPC ' + name.replace(/[^a-zA-Z0-9]/g,'').toUpperCase().slice(0,12);
+  document.getElementById('mContent').textContent = content;
+  const amt = price.replace(/[^0-9]/g,'');
+  document.getElementById('mQR').src = `https://img.vietqr.io/image/ACB-26996867-compact2.png?amount=${amt}&addInfo=${encodeURIComponent(content)}&accountName=THAI%20TUAN%20KIET`;
+  document.getElementById('payModal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+function closePayModal() {
+  document.getElementById('payModal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+function cp(t) {
+  navigator.clipboard.writeText(t);
+  if(typeof showToast==='function') showToast('✅ Đã copy!','success',1500);
+}
+</script>
 </body>
 </html>
