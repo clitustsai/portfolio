@@ -515,6 +515,158 @@ app.post('/api/blog/posts/:id/comments/auth', requireUser, (req, res) => {
     res.status(201).json(c);
 });
 
+// ========== INVOICE ==========
+const nodemailer = require('nodemailer');
+
+function createTransporter() {
+    return nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: process.env.GMAIL_USER,
+            pass: process.env.GMAIL_APP_PASSWORD
+        }
+    });
+}
+
+function genInvoiceId() {
+    const d = new Date();
+    return `INV-${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}-${Math.floor(Math.random()*9000+1000)}`;
+}
+
+function buildInvoiceHTML(inv) {
+    const rows = inv.items.map(it => `
+        <tr>
+          <td style="padding:12px 16px;border-bottom:1px solid #f0f0f0;">${it.name}</td>
+          <td style="padding:12px 16px;border-bottom:1px solid #f0f0f0;text-align:center;">${it.qty||1}</td>
+          <td style="padding:12px 16px;border-bottom:1px solid #f0f0f0;text-align:right;">${Number(it.price).toLocaleString('vi-VN')} VNĐ</td>
+          <td style="padding:12px 16px;border-bottom:1px solid #f0f0f0;text-align:right;font-weight:700;">${Number((it.qty||1)*it.price).toLocaleString('vi-VN')} VNĐ</td>
+        </tr>`).join('');
+    const total = inv.items.reduce((s,i)=>s+(i.qty||1)*i.price,0);
+    return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body style="margin:0;padding:0;background:#f4f6ff;font-family:'Segoe UI',Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6ff;padding:40px 20px;">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.1);">
+  <!-- Header -->
+  <tr><td style="background:linear-gradient(135deg,#667eea,#764ba2);padding:40px;text-align:center;">
+    <div style="font-size:28px;font-weight:900;color:#fff;letter-spacing:-0.5px;">Clitus PC</div>
+    <div style="color:rgba(255,255,255,0.75);font-size:13px;margin-top:4px;">Full Stack Developer · TP.HCM</div>
+    <div style="background:rgba(255,255,255,0.15);border-radius:50px;display:inline-block;padding:6px 20px;margin-top:16px;color:#fff;font-size:13px;font-weight:700;">HÓA ĐƠN THANH TOÁN</div>
+  </td></tr>
+  <!-- Invoice Info -->
+  <tr><td style="padding:32px 40px 0;">
+    <table width="100%"><tr>
+      <td><div style="font-size:12px;color:#999;text-transform:uppercase;letter-spacing:0.08em;">Số hóa đơn</div><div style="font-size:16px;font-weight:800;color:#667eea;margin-top:4px;">${inv.invoiceId}</div></td>
+      <td align="right"><div style="font-size:12px;color:#999;text-transform:uppercase;letter-spacing:0.08em;">Ngày phát hành</div><div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-top:4px;">${new Date().toLocaleDateString('vi-VN')}</div></td>
+    </tr></table>
+  </td></tr>
+  <!-- Client Info -->
+  <tr><td style="padding:24px 40px 0;">
+    <table width="100%"><tr>
+      <td style="background:#f8f9ff;border-radius:12px;padding:20px;" width="48%">
+        <div style="font-size:11px;color:#999;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Từ</div>
+        <div style="font-weight:800;color:#1a1a2e;">Clitus PC</div>
+        <div style="font-size:13px;color:#666;margin-top:4px;">infoclituspc@gmail.com</div>
+        <div style="font-size:13px;color:#666;">+84 906857331</div>
+        <div style="font-size:13px;color:#666;">TP.HCM, Việt Nam</div>
+      </td>
+      <td width="4%"></td>
+      <td style="background:#f8f9ff;border-radius:12px;padding:20px;" width="48%">
+        <div style="font-size:11px;color:#999;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Gửi đến</div>
+        <div style="font-weight:800;color:#1a1a2e;">${inv.clientName}</div>
+        <div style="font-size:13px;color:#666;margin-top:4px;">${inv.clientEmail}</div>
+        ${inv.clientPhone ? `<div style="font-size:13px;color:#666;">${inv.clientPhone}</div>` : ''}
+      </td>
+    </tr></table>
+  </td></tr>
+  <!-- Items Table -->
+  <tr><td style="padding:24px 40px 0;">
+    <table width="100%" style="border-collapse:collapse;">
+      <thead><tr style="background:#f8f9ff;">
+        <th style="padding:12px 16px;text-align:left;font-size:11px;color:#999;text-transform:uppercase;letter-spacing:0.08em;">Dịch vụ / Sản phẩm</th>
+        <th style="padding:12px 16px;text-align:center;font-size:11px;color:#999;text-transform:uppercase;letter-spacing:0.08em;">SL</th>
+        <th style="padding:12px 16px;text-align:right;font-size:11px;color:#999;text-transform:uppercase;letter-spacing:0.08em;">Đơn giá</th>
+        <th style="padding:12px 16px;text-align:right;font-size:11px;color:#999;text-transform:uppercase;letter-spacing:0.08em;">Thành tiền</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </td></tr>
+  <!-- Total -->
+  <tr><td style="padding:16px 40px 0;">
+    <table width="100%"><tr>
+      <td></td>
+      <td width="260" style="background:linear-gradient(135deg,rgba(102,126,234,0.08),rgba(118,75,162,0.08));border-radius:12px;padding:20px;">
+        <div style="display:flex;justify-content:space-between;font-size:13px;color:#666;margin-bottom:8px;"><span>Tạm tính</span><span>${Number(total).toLocaleString('vi-VN')} VNĐ</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;color:#666;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid rgba(102,126,234,0.2);"><span>Thuế (0%)</span><span>0 VNĐ</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:18px;font-weight:900;color:#667eea;"><span>Tổng cộng</span><span>${Number(total).toLocaleString('vi-VN')} VNĐ</span></div>
+      </td>
+    </tr></table>
+  </td></tr>
+  <!-- Status -->
+  <tr><td style="padding:24px 40px 0;text-align:center;">
+    <div style="display:inline-flex;align-items:center;gap:8px;background:#d1fae5;border-radius:50px;padding:10px 24px;">
+      <span style="color:#059669;font-size:16px;">✓</span>
+      <span style="color:#059669;font-weight:800;font-size:14px;">ĐÃ THANH TOÁN</span>
+    </div>
+    ${inv.note ? `<div style="margin-top:16px;font-size:13px;color:#666;background:#f8f9ff;border-radius:10px;padding:12px 20px;">${inv.note}</div>` : ''}
+  </td></tr>
+  <!-- Footer -->
+  <tr><td style="padding:32px 40px;text-align:center;border-top:1px solid #f0f0f0;margin-top:24px;">
+    <div style="font-size:12px;color:#999;">Cảm ơn bạn đã tin tưởng sử dụng dịch vụ của Clitus PC 🙏</div>
+    <div style="font-size:12px;color:#bbb;margin-top:8px;">portfolio-utbu.onrender.com · infoclituspc@gmail.com</div>
+  </td></tr>
+</table>
+</td></tr></table>
+</body></html>`;
+}
+
+app.post('/api/invoice/create', async (req, res) => {
+    const { clientName, clientEmail, clientPhone, items, note } = req.body;
+    if (!clientName?.trim() || !clientEmail?.trim() || !items?.length)
+        return res.status(400).json({ error: 'Thiếu thông tin hóa đơn' });
+
+    const invoiceId = genInvoiceId();
+    const inv = { invoiceId, clientName, clientEmail, clientPhone, items, note };
+    const html = buildInvoiceHTML(inv);
+
+    // Lưu vào DB
+    const total = items.reduce((s,i)=>s+(i.qty||1)*i.price, 0);
+    run('INSERT INTO invoices (invoice_id, client_name, client_email, client_phone, items_json, total, note) VALUES (?,?,?,?,?,?,?)', [
+        invoiceId, clientName.trim(), clientEmail.trim(), clientPhone||'',
+        JSON.stringify(items), total, note||''
+    ]);
+
+    // Gửi email nếu có cấu hình
+    let emailSent = false;
+    if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
+        try {
+            const transporter = createTransporter();
+            await transporter.sendMail({
+                from: `"Clitus PC" <${process.env.GMAIL_USER}>`,
+                to: clientEmail.trim(),
+                cc: process.env.GMAIL_USER,
+                subject: `🧾 Hóa đơn ${invoiceId} - Clitus PC`,
+                html
+            });
+            emailSent = true;
+        } catch(e) {
+            console.error('Email error:', e.message);
+        }
+    }
+
+    const invoice = get('SELECT * FROM invoices WHERE invoice_id=?', [invoiceId]);
+    res.status(201).json({ ok: true, invoiceId, emailSent, invoice });
+});
+
+app.get('/api/invoice/:id', (req, res) => {
+    const inv = get('SELECT * FROM invoices WHERE invoice_id=?', [req.params.id]);
+    if (!inv) return res.status(404).json({ error: 'Không tìm thấy hóa đơn' });
+    res.json({ ...inv, items: JSON.parse(inv.items_json||'[]') });
+});
+
+app.get('/api/invoice/admin/list', requireAdmin, (req, res) => {
+    res.json(all('SELECT * FROM invoices ORDER BY created_at DESC'));
+});
+
 // Serve index.html cho tất cả các route không phải API
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'index.html'));

@@ -94,6 +94,17 @@ async function getDb() {
             expires_at DATETIME NOT NULL,
             created_at DATETIME DEFAULT (datetime('now'))
         );
+        CREATE TABLE IF NOT EXISTS invoices (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            invoice_id TEXT UNIQUE NOT NULL,
+            client_name TEXT NOT NULL,
+            client_email TEXT NOT NULL,
+            client_phone TEXT DEFAULT '',
+            items_json TEXT DEFAULT '[]',
+            total REAL DEFAULT 0,
+            note TEXT DEFAULT '',
+            created_at DATETIME DEFAULT (datetime('now'))
+        );
     `);
     save();
     return db;
