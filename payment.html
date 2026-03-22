@@ -469,19 +469,19 @@
     <div class="qr-cards">
       <div class="qr-card" onclick="openQRFull('zalopay')">
         <div class="qr-card-logo" style="background:#0068ff;color:#fff;">Zalo<span style="color:#00e5ff;">Pay</span></div>
-        <img src="img/qr-zalopay.jpg" alt="ZaloPay QR">
+        <img src="img/qr-zalopay.webp" alt="ZaloPay QR">
         <div class="qr-card-name">THÁI TUẤN KIỆT</div>
         <div class="qr-card-sub">ZaloPay</div>
       </div>
       <div class="qr-card" onclick="openQRFull('acb')">
         <div class="qr-card-logo" style="background:#003087;color:#fff;font-size:1rem;">ACB</div>
-        <img src="img/qr-acb.jpg" alt="ACB QR">
+        <img src="img/qr-acb.webp" alt="ACB QR">
         <div class="qr-card-name">THÁI TUẤN KIỆT</div>
         <div class="qr-card-sub">ACB · 26996867</div>
       </div>
       <div class="qr-card" onclick="openQRFull('momo')">
         <div class="qr-card-logo" style="background:#a50064;color:#fff;">MoMo</div>
-        <img src="img/qr-momo.jpg" alt="MoMo QR">
+        <img src="img/qr-momo.webp" alt="MoMo QR">
         <div class="qr-card-name">THÁI TUẤN KIỆT</div>
         <div class="qr-card-sub">MoMo · *****331</div>
       </div>
@@ -517,7 +517,7 @@
           <div class="bank-row"><span class="k">Nội dung</span><span class="v" style="font-size:0.78rem;">VIP [email của bạn]</span></div>
         </div>
       </div>
-      <img src="img/qr-acb.jpg" alt="QR ACB" style="width:140px;height:140px;border-radius:12px;display:block;margin:0 auto 1rem;border:2px solid var(--border);">
+      <img src="img/qr-acb.webp" alt="QR ACB" style="width:140px;height:140px;border-radius:12px;display:block;margin:0 auto 1rem;border:2px solid var(--border);">
       <input type="text" id="vipRef" placeholder="Nội dung chuyển khoản (tuỳ chọn)" style="width:100%;padding:0.75rem 1rem;border:1.5px solid var(--border);border-radius:12px;background:var(--bg);color:var(--text);font-size:0.88rem;outline:none;margin-bottom:1rem;font-family:inherit;">
       <button onclick="submitVip()" style="width:100%;padding:0.9rem;border:none;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-size:0.95rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.5rem;box-shadow:0 6px 20px rgba(245,158,11,0.4);transition:all 0.2s;" id="vipSubmitBtn">
         <i class="fas fa-crown"></i> Xác nhận đã chuyển khoản
@@ -651,9 +651,9 @@ function selAmt(el, amt) {
 }
 
 const qrData = {
-  zalopay:{img:'img/qr-zalopay.jpg',sub:'ZaloPay',logo:'<div style="background:#0068ff;border-radius:10px;padding:0.4rem 1rem;display:inline-block;margin-bottom:0.75rem;font-weight:900;font-size:1rem;color:#fff;">Zalo<span style="color:#00e5ff;">Pay</span></div>'},
-  acb:    {img:'img/qr-acb.jpg',    sub:'ACB · 26996867',logo:'<div style="background:#003087;border-radius:10px;padding:0.4rem 1.2rem;display:inline-block;margin-bottom:0.75rem;font-weight:900;font-size:1.2rem;color:#fff;">ACB</div>'},
-  momo:   {img:'img/qr-momo.jpg',   sub:'MoMo · *****331',logo:'<div style="background:#a50064;border-radius:10px;padding:0.4rem 1rem;display:inline-block;margin-bottom:0.75rem;font-weight:900;font-size:1rem;color:#fff;">MoMo</div>'}
+  zalopay:{img:'img/qr-zalopay.webp',sub:'ZaloPay',logo:'<div style="background:#0068ff;border-radius:10px;padding:0.4rem 1rem;display:inline-block;margin-bottom:0.75rem;font-weight:900;font-size:1rem;color:#fff;">Zalo<span style="color:#00e5ff;">Pay</span></div>'},
+  acb:    {img:'img/qr-acb.webp',    sub:'ACB · 26996867',logo:'<div style="background:#003087;border-radius:10px;padding:0.4rem 1.2rem;display:inline-block;margin-bottom:0.75rem;font-weight:900;font-size:1.2rem;color:#fff;">ACB</div>'},
+  momo:   {img:'img/qr-momo.webp',   sub:'MoMo · *****331',logo:'<div style="background:#a50064;border-radius:10px;padding:0.4rem 1rem;display:inline-block;margin-bottom:0.75rem;font-weight:900;font-size:1rem;color:#fff;">MoMo</div>'}
 };
 
 function openQRFull(type) {

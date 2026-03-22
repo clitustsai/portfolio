@@ -141,7 +141,7 @@ function showUpsellModal(toolName) {
     '<div style="display:flex;justify-content:space-between;"><span style="color:#888;">Số tiền</span><span style="font-weight:800;color:#667eea;">99.000 VNĐ</span></div>' +
     '<div style="display:flex;justify-content:space-between;"><span style="color:#888;">Nội dung</span><span style="font-weight:700;font-size:.78rem;">VIP [email của bạn]</span></div>' +
     '</div></div>' +
-    '<img src="img/qr-acb.jpg" alt="QR ACB" style="width:120px;height:120px;border-radius:12px;display:block;margin:0 auto .85rem;border:2px solid #e0e4ff;">' +
+    '<img src="img/qr-acb.webp" alt="QR ACB" style="width:120px;height:120px;border-radius:12px;display:block;margin:0 auto .85rem;border:2px solid #e0e4ff;">' +
     '<input id="us-ref" type="text" placeholder="Nội dung chuyển khoản (tuỳ chọn)" style="' + inputStyle + 'margin-bottom:1rem;">' +
     '<div id="us-err" style="display:none;background:#fff5f5;border:1.5px solid #fecaca;border-radius:10px;padding:.65rem 1rem;color:#dc2626;font-size:.82rem;margin-bottom:.75rem;"></div>' +
     '<button id="us-btn" onclick="submitUpsell()" style="width:100%;padding:.9rem;border:none;border-radius:50px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:.95rem;font-weight:800;cursor:pointer;box-shadow:0 6px 20px rgba(102,126,234,.4);">👑 Xác nhận đã chuyển khoản</button>' +
