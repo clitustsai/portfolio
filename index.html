@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -552,6 +552,9 @@
                 <button class="btn btn-qr" onclick="openQRModal()">
                     <i class="fas fa-qrcode"></i> QR Profile
                 </button>
+                <button class="btn btn-ai-video" onclick="openAIVideoModal()">
+                    <i class="fas fa-film"></i> AI Video Intro
+                </button>
             </div>
         </div>
 
@@ -574,6 +577,39 @@
             <img src="./img/z7643593902682_1d1e5b7671cc398923d350f14dd68934.jpg" alt="Profile Avatar" class="profile-image">
         </div>
     </section>
+
+    <!-- ===== AI VIDEO INTRO MODAL ===== -->
+    <div id="aiVideoModal" class="aiv-modal">
+        <div class="aiv-backdrop" onclick="closeAIVideoModal()"></div>
+        <div class="aiv-box">
+            <div class="aiv-header">
+                <span><i class="fas fa-film"></i> AI Video Intro Generator</span>
+                <button class="aiv-close" onclick="closeAIVideoModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="aiv-body">
+                <canvas id="aivCanvas" width="800" height="450"></canvas>
+                <div class="aiv-controls" id="aivControls">
+                    <div class="aiv-status" id="aivStatus">
+                        <i class="fas fa-magic"></i> Sẵn sàng tạo video intro của bạn
+                    </div>
+                    <div class="aiv-themes">
+                        <button class="aiv-theme-btn active" data-theme="dark" onclick="selectTheme(this,'dark')">🌙 Dark</button>
+                        <button class="aiv-theme-btn" data-theme="purple" onclick="selectTheme(this,'purple')">💜 Purple</button>
+                        <button class="aiv-theme-btn" data-theme="ocean" onclick="selectTheme(this,'ocean')">🌊 Ocean</button>
+                        <button class="aiv-theme-btn" data-theme="fire" onclick="selectTheme(this,'fire')">🔥 Fire</button>
+                    </div>
+                    <div class="aiv-actions">
+                        <button class="aiv-btn-generate" id="aivGenBtn" onclick="generateAIVideo()">
+                            <i class="fas fa-play"></i> Tạo Video
+                        </button>
+                        <button class="aiv-btn-download" id="aivDlBtn" onclick="downloadAIVideo()" disabled>
+                            <i class="fas fa-download"></i> Tải Xuống
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- About Section -->
     <section class="about" id="about">
@@ -921,6 +957,64 @@
         </div>
     </div>
 
+    <!-- Floating Action Buttons -->
+    <div id="fabGroup">
+      <div id="fabMenu" style="display:none;flex-direction:column;gap:0.5rem;align-items:flex-end;margin-bottom:0.25rem;">
+        <a href="payment.html" style="display:flex;align-items:center;gap:0.6rem;text-decoration:none;">
+          <span style="background:#fff;color:#1a1a2e;font-size:0.8rem;font-weight:700;padding:0.35rem 0.85rem;border-radius:50px;box-shadow:0 2px 10px rgba(0,0,0,0.15);white-space:nowrap;">💼 Thuê tôi ngay</span>
+          <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(102,126,234,0.4);flex-shrink:0;"><i class="fas fa-briefcase" style="color:#fff;font-size:1rem;"></i></div>
+        </a>
+        <a href="payment.html#pay" style="display:flex;align-items:center;gap:0.6rem;text-decoration:none;">
+          <span style="background:#fff;color:#1a1a2e;font-size:0.8rem;font-weight:700;padding:0.35rem 0.85rem;border-radius:50px;box-shadow:0 2px 10px rgba(0,0,0,0.15);white-space:nowrap;">💳 Thanh toán</span>
+          <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#11998e,#38ef7d);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(17,153,142,0.4);flex-shrink:0;"><i class="fas fa-credit-card" style="color:#fff;font-size:1rem;"></i></div>
+        </a>
+        <a href="payment.html#donate" style="display:flex;align-items:center;gap:0.6rem;text-decoration:none;">
+          <span style="background:#fff;color:#1a1a2e;font-size:0.8rem;font-weight:700;padding:0.35rem 0.85rem;border-radius:50px;box-shadow:0 2px 10px rgba(0,0,0,0.15);white-space:nowrap;">☕ Donate</span>
+          <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#f093fb,#f5576c);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(245,87,108,0.4);flex-shrink:0;"><i class="fas fa-mug-hot" style="color:#fff;font-size:1rem;"></i></div>
+        </a>
+      </div>
+      <button id="fabMain" onclick="toggleFab()" style="width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);border:none;cursor:pointer;box-shadow:0 6px 20px rgba(102,126,234,0.45);display:flex;align-items:center;justify-content:center;transition:all 0.3s;">
+        <i class="fas fa-plus" id="fabIcon" style="color:#fff;font-size:1.2rem;transition:transform 0.3s;"></i>
+      </button>
+    </div>
+    <script>
+    let fabOpen = false;
+    function toggleFab() {
+      fabOpen = !fabOpen;
+      const menu = document.getElementById('fabMenu');
+      const icon = document.getElementById('fabIcon');
+      menu.style.display = fabOpen ? 'flex' : 'none';
+      icon.style.transform = fabOpen ? 'rotate(45deg)' : 'rotate(0)';
+    }
+    document.addEventListener('click', e => {
+      if (fabOpen && !document.getElementById('fabGroup').contains(e.target)) {
+        fabOpen = false;
+        document.getElementById('fabMenu').style.display = 'none';
+        document.getElementById('fabIcon').style.transform = 'rotate(0)';
+      }
+    });
+    </script>
+    <script>
+    const QR_URL = 'https://portfolio-utbu.onrender.com';
+    function openQRModal() {
+        const modal = document.getElementById('qrModal');
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        const container = document.getElementById('qrCanvas');
+        if (container.querySelector('img')) return;
+        const img = document.createElement('img');
+        img.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(QR_URL)}&color=1a1a2e&bgcolor=ffffff&margin=10`;
+        img.width = 220; img.height = 220; img.style.borderRadius = '12px'; img.alt = 'QR Portfolio';
+        container.innerHTML = ''; container.appendChild(img);
+    }
+    function closeQRModal() { document.getElementById('qrModal').style.display = 'none'; document.body.style.overflow = ''; }
+    function downloadQR() {
+        const a = document.createElement('a'); a.download = 'clituspc-qr.png';
+        a.href = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(QR_URL)}&color=1a1a2e&bgcolor=ffffff&margin=10`;
+        a.target = '_blank'; a.click();
+    }
+    </script>
+
     <footer>
         <h3 data-i18n="footer.follow">Theo Dõi Tôi</h3>
         <div class="social-links">
@@ -1122,6 +1216,7 @@
         </div>
     </div>
 
+
     <script src="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -1140,11 +1235,9 @@
             container.appendChild(toast);
             setTimeout(() => { toast.style.animation = 'slideOutToastRight 0.3s ease'; setTimeout(() => toast.remove(), 300); }, duration);
         }
-
         window.addEventListener('load', () => {
             setTimeout(() => showToast('👋 Chào mừng bạn đến với trang cá nhân của tôi!', 'success', 3000), 500);
         });
-
         // ===== CHAT WIDGET =====
         const chatToggle = document.getElementById('chatToggle');
         const chatWidget = document.getElementById('chatWidget');
@@ -1153,70 +1246,36 @@
         const chatInput = document.getElementById('chatInput');
         const chatMessages = document.getElementById('chatMessages');
         let isOpen = false;
-
         chatToggle && chatToggle.addEventListener('click', () => {
             isOpen = !isOpen;
-            if (isOpen) {
-                chatWidget.classList.add('open');
-                chatToggle.classList.add('hidden');
-                if (chatMessages.children.length === 0) addBotMessage('Xin chào! 👋 Tôi có thể giúp gì cho bạn?');
-            }
+            if (isOpen) { chatWidget.classList.add('open'); chatToggle.classList.add('hidden'); if (chatMessages.children.length === 0) addBotMessage('Xin chào! 👋 Tôi có thể giúp gì cho bạn?'); }
         });
         chatClose && chatClose.addEventListener('click', () => { isOpen = false; chatWidget.classList.remove('open'); chatToggle && chatToggle.classList.remove('hidden'); });
         sendBtn && sendBtn.addEventListener('click', sendMessage);
         chatInput && chatInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendMessage(); });
-
         function addMessage(text, isUser) {
             if (!chatMessages) return;
-            const el = document.createElement('div');
-            el.className = `message ${isUser ? 'user' : 'bot'}`;
-            el.innerHTML = `<div class="message-content">${text}</div>`;
-            chatMessages.appendChild(el);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+            const el = document.createElement('div'); el.className = `message ${isUser ? 'user' : 'bot'}`;
+            el.innerHTML = `<div class="message-content">${text}</div>`; chatMessages.appendChild(el); chatMessages.scrollTop = chatMessages.scrollHeight;
         }
         function addBotMessage(text) { addMessage(text, false); }
         async function sendMessage() {
-            if (!chatInput) return;
-            const text = chatInput.value.trim();
-            if (!text) return;
-            addMessage(text, true);
-            chatInput.value = '';
-            sendBtn && (sendBtn.disabled = true);
-
-            // Typing indicator
-            const typingEl = document.createElement('div');
-            typingEl.className = 'message bot typing-indicator';
+            if (!chatInput) return; const text = chatInput.value.trim(); if (!text) return;
+            addMessage(text, true); chatInput.value = ''; sendBtn && (sendBtn.disabled = true);
+            const typingEl = document.createElement('div'); typingEl.className = 'message bot typing-indicator';
             typingEl.innerHTML = '<div class="message-content"><span>.</span><span>.</span><span>.</span></div>';
-            chatMessages && chatMessages.appendChild(typingEl);
-            chatMessages && (chatMessages.scrollTop = chatMessages.scrollHeight);
-
-            // Gọi AI thật qua backend
+            chatMessages && chatMessages.appendChild(typingEl); chatMessages && (chatMessages.scrollTop = chatMessages.scrollHeight);
             let reply = null;
-            if (typeof sendChatMessage === 'function') {
-                reply = await sendChatMessage(text);
-            }
-
-            // Fallback keyword nếu backend offline
+            if (typeof sendChatMessage === 'function') reply = await sendChatMessage(text);
             if (!reply) {
-                const responses = {
-                    'xin chào': 'Xin chào bạn! 👋 Rất vui được gặp bạn.',
-                    'bạn là ai': 'Tôi là AI Assistant của Clitus PC Portfolio.',
-                    'dự án': 'Clitus đã xây dựng: E-Commerce (React/Node.js), Project Management (React Native), Data Dashboard (Vue.js/Python).',
-                    'kỹ năng': 'Kỹ năng: Frontend 95%, Backend 90%, Database 85%, UI/UX 88%.',
-                    'liên hệ': 'Email: infoclituspc@gmail.com | Phone: +84 906857331',
-                    'hello': 'Hello! How can I help you today? 😊',
-                    'hi': 'Hi there! 😊',
-                };
-                const lower = text.toLowerCase();
-                reply = 'Cảm ơn bạn đã hỏi! Tôi có thể giúp bạn tìm hiểu về kỹ năng, dự án, hoặc liên hệ với Clitus. 😊';
+                const responses = { 'xin chào':'Xin chào bạn! 👋 Rất vui được gặp bạn.','bạn là ai':'Tôi là AI Assistant của Clitus PC Portfolio.','dự án':'Clitus đã xây dựng: E-Commerce (React/Node.js), Project Management (React Native), Data Dashboard (Vue.js/Python).','kỹ năng':'Kỹ năng: Frontend 95%, Backend 90%, Database 85%, UI/UX 88%.','liên hệ':'Email: infoclituspc@gmail.com | Phone: +84 906857331','hello':'Hello! How can I help you today? 😊','hi':'Hi there! 😊' };
+                const lower = text.toLowerCase(); reply = 'Cảm ơn bạn đã hỏi! Tôi có thể giúp bạn tìm hiểu về kỹ năng, dự án, hoặc liên hệ với Clitus. 😊';
                 for (const [k, v] of Object.entries(responses)) { if (lower.includes(k)) { reply = v; break; } }
             }
-
-            typingEl.remove();
-            sendBtn && (sendBtn.disabled = false);
-            addBotMessage(reply);
+            typingEl.remove(); sendBtn && (sendBtn.disabled = false); addBotMessage(reply);
         }
-
+    </script>
+    <script>
         // ===== DARK MODE =====
         const themeToggle = document.getElementById('themeToggle');
         const htmlEl = document.documentElement;
@@ -1228,276 +1287,138 @@
             themeToggle.innerHTML = isDark ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
             showToast(isDark ? '☀️ Chế độ sáng bật' : '🌙 Chế độ tối bật', 'info', 2000);
         });
-
         // ===== BACK TO TOP =====
         const backToTopBtn = document.getElementById('backToTop');
         window.addEventListener('scroll', () => backToTopBtn && backToTopBtn.classList.toggle('show', window.pageYOffset > 300));
         backToTopBtn && backToTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-
         // ===== SMOOTH SCROLL =====
         document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', function(e) {
-            e.preventDefault();
-            const t = document.querySelector(this.getAttribute('href'));
-            if (t) t.scrollIntoView({ behavior: 'smooth' });
+            e.preventDefault(); const t = document.querySelector(this.getAttribute('href')); if (t) t.scrollIntoView({ behavior: 'smooth' });
         }));
-
         // ===== PROJECT FILTER =====
         const filterBtns = document.querySelectorAll('.filter-btn');
         const projectCards = document.querySelectorAll('.project-card');
         filterBtns.forEach(btn => btn.addEventListener('click', () => {
-            filterBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+            filterBtns.forEach(b => b.classList.remove('active')); btn.classList.add('active');
             const f = btn.getAttribute('data-filter');
             projectCards.forEach(card => {
                 card.style.opacity = '0'; card.style.transform = 'scale(0.8)';
-                setTimeout(() => {
-                    const cf = card.getAttribute('data-filter');
-                    card.style.display = (f === '*' || (cf && cf.includes(f))) ? 'block' : 'none';
-                    setTimeout(() => { if (card.style.display !== 'none') { card.style.opacity = '1'; card.style.transform = 'scale(1)'; } }, 50);
-                }, 300);
+                setTimeout(() => { const cf = card.getAttribute('data-filter'); card.style.display = (f === '*' || (cf && cf.includes(f))) ? 'block' : 'none'; setTimeout(() => { if (card.style.display !== 'none') { card.style.opacity = '1'; card.style.transform = 'scale(1)'; } }, 50); }, 300);
             });
         }));
-
         // ===== CONTACT FORM =====
         const contactForm = document.getElementById('contactForm');
         const formSuccess = document.getElementById('formSuccess');
         contactForm && contactForm.addEventListener('submit', function() {
             showToast('📤 Đang gửi tin nhắn...', 'info');
-            // Lưu lên backend thật
             const name = document.getElementById('name')?.value?.trim();
             const email = document.getElementById('email')?.value?.trim();
             const subject = document.getElementById('subject')?.value?.trim();
             const message = document.getElementById('message')?.value?.trim();
-            if (name && message && typeof postMessage === 'function') {
-                postMessage({ name, email, subject, message });
-            }
-            setTimeout(() => {
-                showToast('✓ Gửi thành công! Cảm ơn bạn đã liên hệ.', 'success', 4000);
-                if (formSuccess) { formSuccess.style.display = 'block'; setTimeout(() => formSuccess.style.display = 'none', 5000); }
-            }, 1000);
+            if (name && message && typeof postMessage === 'function') postMessage({ name, email, subject, message });
+            setTimeout(() => { showToast('✓ Gửi thành công! Cảm ơn bạn đã liên hệ.', 'success', 4000); if (formSuccess) { formSuccess.style.display = 'block'; setTimeout(() => formSuccess.style.display = 'none', 5000); } }, 1000);
         });
-
-        // ===== AOS — tắt trên mobile để tránh lỗi touch =====
+        // ===== AOS =====
         if (typeof AOS !== 'undefined') {
-            if (window.innerWidth > 768) {
-                AOS.init({ duration: 800, offset: 100, once: true });
-            } else {
-                // Mobile: xóa tất cả data-aos để element hiện ngay, không bị ẩn
-                document.querySelectorAll('[data-aos]').forEach(el => {
-                    el.removeAttribute('data-aos');
-                    el.removeAttribute('data-aos-delay');
-                    el.style.opacity = '1';
-                    el.style.transform = 'none';
-                });
-            }
+            if (window.innerWidth > 768) { AOS.init({ duration: 800, offset: 100, once: true }); }
+            else { document.querySelectorAll('[data-aos]').forEach(el => { el.removeAttribute('data-aos'); el.removeAttribute('data-aos-delay'); el.style.opacity = '1'; el.style.transform = 'none'; }); }
         }
-
+    </script>
+    <script>
         // ===== LIKE / VIEW / COMMENT SYSTEM =====
         const STORAGE_KEY = 'portfolio_interactions';
-        // liked state lưu localStorage (per-browser)
         const likedProjects = JSON.parse(localStorage.getItem('liked_projects') || '{}');
         const likedComments = JSON.parse(localStorage.getItem('liked_comments') || '{}');
-
         function loadData() {
-            const raw = localStorage.getItem(STORAGE_KEY);
-            if (raw) return JSON.parse(raw);
-            return {
-                projects: { 1:{views:142,likes:38,liked:false}, 2:{views:97,likes:21,liked:false}, 3:{views:215,likes:54,liked:false} },
-                totalViews: 1284, totalLikes: 113,
-                comments: [
-                    { id:1, name:'Nguyễn Minh Tuấn', email:'', text:'Portfolio rất ấn tượng! Thiết kế đẹp và chuyên nghiệp. Tôi đặc biệt thích phần dự án thương mại điện tử.', rating:5, date:new Date(Date.now()-2*86400000).toISOString(), likes:12, liked:false },
-                    { id:2, name:'Trần Thị Lan', email:'', text:'Kỹ năng kỹ thuật rất đa dạng. Mong được hợp tác trong tương lai!', rating:5, date:new Date(Date.now()-5*86400000).toISOString(), likes:8, liked:false },
-                    { id:3, name:'Phạm Quốc Hùng', email:'', text:'Dashboard phân tích dữ liệu trông rất xịn. Bạn có thể chia sẻ thêm về tech stack không?', rating:4, date:new Date(Date.now()-8*86400000).toISOString(), likes:5, liked:false },
-                    { id:4, name:'Lê Thị Hoa', email:'', text:'Trang web load nhanh, giao diện mượt mà. Chúc bạn thành công hơn nữa!', rating:5, date:new Date(Date.now()-12*86400000).toISOString(), likes:15, liked:false }
-                ]
-            };
+            const raw = localStorage.getItem(STORAGE_KEY); if (raw) return JSON.parse(raw);
+            return { projects: { 1:{views:142,likes:38,liked:false}, 2:{views:97,likes:21,liked:false}, 3:{views:215,likes:54,liked:false} }, totalViews: 1284, totalLikes: 113,
+                comments: [ { id:1, name:'Nguyễn Minh Tuấn', email:'', text:'Portfolio rất ấn tượng! Thiết kế đẹp và chuyên nghiệp.', rating:5, date:new Date(Date.now()-2*86400000).toISOString(), likes:12, liked:false }, { id:2, name:'Trần Thị Lan', email:'', text:'Kỹ năng kỹ thuật rất đa dạng. Mong được hợp tác!', rating:5, date:new Date(Date.now()-5*86400000).toISOString(), likes:8, liked:false } ] };
         }
         function saveData(d) { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }
         let interactionData = loadData();
-
-        // Load stats thật từ backend
         async function loadRealStats() {
-            const stats = await fetchStats();
-            if (!stats) return;
-            interactionData.totalViews = stats.totalViews;
-            interactionData.totalLikes = stats.totalLikes;
-            Object.entries(stats.projects).forEach(([id, p]) => {
-                if (!interactionData.projects[id]) interactionData.projects[id] = { views:0, likes:0, liked:false };
-                interactionData.projects[id].views = p.views;
-                interactionData.projects[id].likes = p.likes;
-                interactionData.projects[id].liked = !!likedProjects[id];
-            });
-            saveData(interactionData);
-            initProjectStats();
-            updateStatsBar();
+            const stats = await fetchStats(); if (!stats) return;
+            interactionData.totalViews = stats.totalViews; interactionData.totalLikes = stats.totalLikes;
+            Object.entries(stats.projects).forEach(([id, p]) => { if (!interactionData.projects[id]) interactionData.projects[id] = { views:0, likes:0, liked:false }; interactionData.projects[id].views = p.views; interactionData.projects[id].likes = p.likes; interactionData.projects[id].liked = !!likedProjects[id]; });
+            saveData(interactionData); initProjectStats(); updateStatsBar();
         }
-
-        // Load comments thật từ backend
         async function loadRealComments(sort) {
-            const comments = await fetchComments(sort);
-            if (!comments) return;
-            interactionData.comments = comments.map(c => ({
-                id: c.id,
-                name: c.name,
-                email: c.email || '',
-                text: c.text,
-                rating: c.rating,
-                date: c.created_at,
-                likes: c.likes,
-                liked: !!likedComments[c.id]
-            }));
-            saveData(interactionData);
-            renderComments(true); // skipFetch=true để tránh loop
-            updateStatsBar();
+            const comments = await fetchComments(sort); if (!comments) return;
+            interactionData.comments = comments.map(c => ({ id:c.id, name:c.name, email:c.email||'', text:c.text, rating:c.rating, date:c.created_at, likes:c.likes, liked:!!likedComments[c.id] }));
+            saveData(interactionData); renderComments(true); updateStatsBar();
         }
-
         function initProjectStats() {
             document.querySelectorAll('.project-card').forEach(card => {
-                const id = parseInt(card.getAttribute('data-project-id'));
-                if (!id) return;
+                const id = parseInt(card.getAttribute('data-project-id')); if (!id) return;
                 if (!interactionData.projects[id]) interactionData.projects[id] = { views:0, likes:0, liked:false };
                 const p = interactionData.projects[id];
                 const vEl = card.querySelector('.view-number'); if (vEl) vEl.textContent = formatNumber(p.views);
                 const lEl = card.querySelector('.like-number'); if (lEl) lEl.textContent = formatNumber(p.likes);
-                const btn = card.querySelector('.like-btn');
-                if (btn && p.liked) { btn.querySelector('i').className = 'fas fa-heart'; btn.classList.add('liked'); }
+                const btn = card.querySelector('.like-btn'); if (btn && p.liked) { btn.querySelector('i').className = 'fas fa-heart'; btn.classList.add('liked'); }
             });
         }
-
         async function trackProjectView(id) {
             if (!interactionData.projects[id]) return;
-            // Gọi backend
             const result = await apiTrackView(id);
-            if (result) {
-                interactionData.projects[id].views = result.views;
-            } else {
-                interactionData.projects[id].views++;
-            }
-            interactionData.totalViews++;
-            saveData(interactionData);
-            const vEl = document.querySelector(`[data-project-id="${id}"] .view-number`);
-            if (vEl) vEl.textContent = formatNumber(interactionData.projects[id].views);
+            if (result) interactionData.projects[id].views = result.views; else interactionData.projects[id].views++;
+            interactionData.totalViews++; saveData(interactionData);
+            const vEl = document.querySelector(`[data-project-id="${id}"] .view-number`); if (vEl) vEl.textContent = formatNumber(interactionData.projects[id].views);
             updateStatsBar();
         }
-
         async function toggleLike(id) {
             const p = interactionData.projects[id]; if (!p) return;
             const card = document.querySelector(`[data-project-id="${id}"]`);
-            const btn = card && card.querySelector('.like-btn');
-            const icon = btn && btn.querySelector('i');
-            const action = p.liked ? 'unlike' : 'like';
-
-            // Gọi backend
-            const result = await apiToggleLike(id, action);
-
-            if (p.liked) {
-                p.liked = false; likedProjects[id] = false;
-                if (result) p.likes = result.likes; else p.likes = Math.max(0, p.likes-1);
-                interactionData.totalLikes = Math.max(0, interactionData.totalLikes-1);
-                if (icon) icon.className = 'far fa-heart'; if (btn) btn.classList.remove('liked');
-            } else {
-                p.liked = true; likedProjects[id] = true;
-                if (result) p.likes = result.likes; else p.likes++;
-                interactionData.totalLikes++;
-                if (icon) icon.className = 'fas fa-heart';
-                if (btn) { btn.classList.add('liked','pop'); setTimeout(() => btn.classList.remove('pop'), 400); }
-                showToast('❤️ Đã thích dự án này!', 'success', 2000);
-            }
+            const btn = card && card.querySelector('.like-btn'); const icon = btn && btn.querySelector('i');
+            const action = p.liked ? 'unlike' : 'like'; const result = await apiToggleLike(id, action);
+            if (p.liked) { p.liked = false; likedProjects[id] = false; if (result) p.likes = result.likes; else p.likes = Math.max(0, p.likes-1); interactionData.totalLikes = Math.max(0, interactionData.totalLikes-1); if (icon) icon.className = 'far fa-heart'; if (btn) btn.classList.remove('liked'); }
+            else { p.liked = true; likedProjects[id] = true; if (result) p.likes = result.likes; else p.likes++; interactionData.totalLikes++; if (icon) icon.className = 'fas fa-heart'; if (btn) { btn.classList.add('liked','pop'); setTimeout(() => btn.classList.remove('pop'), 400); } showToast('❤️ Đã thích dự án này!', 'success', 2000); }
             localStorage.setItem('liked_projects', JSON.stringify(likedProjects));
             const lEl = card && card.querySelector('.like-number'); if (lEl) lEl.textContent = formatNumber(p.likes);
             saveData(interactionData); updateStatsBar();
         }
-
-        const viewObserver = new IntersectionObserver(entries => {
-            entries.forEach(e => { if (e.isIntersecting) { const id = parseInt(e.target.getAttribute('data-project-id')); if (id) { setTimeout(() => trackProjectView(id), 800); viewObserver.unobserve(e.target); } } });
-        }, { threshold: 0.5 });
+        const viewObserver = new IntersectionObserver(entries => { entries.forEach(e => { if (e.isIntersecting) { const id = parseInt(e.target.getAttribute('data-project-id')); if (id) { setTimeout(() => trackProjectView(id), 800); viewObserver.unobserve(e.target); } } }); }, { threshold: 0.5 });
         document.querySelectorAll('.project-card[data-project-id]').forEach(c => viewObserver.observe(c));
-
         function updateStatsBar() {
             const d = interactionData;
             const vEl = document.getElementById('totalViews'); if (vEl) animateCount(vEl, d.totalViews||0);
             const lEl = document.getElementById('totalLikes'); if (lEl) animateCount(lEl, d.totalLikes||0);
             const cEl = document.getElementById('totalComments'); if (cEl) animateCount(cEl, (d.comments||[]).length);
-            const rEl = document.getElementById('avgRating');
-            if (rEl) { const rs = (d.comments||[]).map(c=>c.rating).filter(r=>r>0); rEl.textContent = rs.length ? (rs.reduce((a,b)=>a+b,0)/rs.length).toFixed(1) : '0.0'; }
+            const rEl = document.getElementById('avgRating'); if (rEl) { const rs = (d.comments||[]).map(c=>c.rating).filter(r=>r>0); rEl.textContent = rs.length ? (rs.reduce((a,b)=>a+b,0)/rs.length).toFixed(1) : '0.0'; }
         }
-
         function animateCount(el, target) {
-            const t2 = parseInt(target)||0;
-            const cur = parseInt(el.textContent)||0; if (cur===t2) return;
+            const t2 = parseInt(target)||0; const cur = parseInt(el.textContent)||0; if (cur===t2) return;
             const step = Math.ceil(Math.abs(t2-cur)/20)||1; let val = cur;
-            const timer = setInterval(() => {
-                val += t2>cur ? step : -step;
-                if ((t2>cur&&val>=t2)||(t2<cur&&val<=t2)) { val=t2; clearInterval(timer); }
-                el.textContent = formatNumber(val);
-            }, 30);
+            const timer = setInterval(() => { val += t2>cur ? step : -step; if ((t2>cur&&val>=t2)||(t2<cur&&val<=t2)) { val=t2; clearInterval(timer); } el.textContent = formatNumber(val); }, 30);
         }
-
         function formatNumber(n) { const num = parseInt(n)||0; return num >= 1000 ? (num/1000).toFixed(1)+'k' : num.toString(); }
-
+    </script>
+    <script>
         // ===== COMMENTS =====
         const avatarColors = ['#667eea','#764ba2','#f093fb','#f5576c','#4facfe','#43e97b','#fa709a','#fee140'];
         function getInitials(name) { return name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2); }
         function getAvatarColor(name) { let h=0; for (let c of name) h=c.charCodeAt(0)+((h<<5)-h); return avatarColors[Math.abs(h)%avatarColors.length]; }
-        function timeAgo(d) {
-            const s=(Date.now()-new Date(d))/1000;
-            if(s<60) return 'Vừa xong'; if(s<3600) return Math.floor(s/60)+' phút trước';
-            if(s<86400) return Math.floor(s/3600)+' giờ trước'; if(s<2592000) return Math.floor(s/86400)+' ngày trước';
-            return new Date(d).toLocaleDateString('vi-VN');
-        }
+        function timeAgo(d) { const s=(Date.now()-new Date(d))/1000; if(s<60) return 'Vừa xong'; if(s<3600) return Math.floor(s/60)+' phút trước'; if(s<86400) return Math.floor(s/3600)+' giờ trước'; if(s<2592000) return Math.floor(s/86400)+' ngày trước'; return new Date(d).toLocaleDateString('vi-VN'); }
         function renderStars(r) { return Array.from({length:5},(_,i)=>`<i class="${i<r?'fas':'far'} fa-star"></i>`).join(''); }
-
         function renderComments(skipFetch) {
             const list = document.getElementById('feedbackList'); if (!list) return;
             const sort = document.getElementById('sortComments')?.value||'newest';
-
-            // Nếu backend online và không phải gọi từ loadRealComments, fetch data thật
-            if (!skipFetch && typeof fetchComments === 'function') {
-                loadRealComments(sort);
-                return;
-            }
-
+            if (!skipFetch && typeof fetchComments === 'function') { loadRealComments(sort); return; }
             let comments = [...interactionData.comments];
             if (sort==='newest') comments.sort((a,b)=>new Date(b.date)-new Date(a.date));
             else if (sort==='oldest') comments.sort((a,b)=>new Date(a.date)-new Date(b.date));
             else if (sort==='rating') comments.sort((a,b)=>b.rating-a.rating);
             const cEl = document.getElementById('commentCount'); if (cEl) cEl.textContent = comments.length;
             if (!comments.length) { list.innerHTML = '<div class="no-comments"><i class="far fa-comment-dots"></i><p>Chưa có bình luận nào. Hãy là người đầu tiên!</p></div>'; return; }
-            list.innerHTML = comments.map(c => `
-                <div class="comment-card" data-id="${c.id}">
-                    <div class="comment-avatar" style="background:${getAvatarColor(c.name)}">${getInitials(c.name)}</div>
-                    <div class="comment-body">
-                        <div class="comment-header"><span class="comment-name">${c.name}</span><span class="comment-time">${timeAgo(c.date)}</span></div>
-                        <div class="comment-rating">${renderStars(c.rating)}</div>
-                        <p class="comment-text">${c.text}</p>
-                        <div class="comment-actions">
-                            <button class="comment-like-btn ${c.liked?'liked':''}" onclick="likeComment(${c.id})"><i class="${c.liked?'fas':'far'} fa-thumbs-up"></i> <span>${c.likes}</span></button>
-                            <button class="comment-reply-btn" onclick="replyToComment('${c.name}')"><i class="fas fa-reply"></i> Trả lời</button>
-                        </div>
-                    </div>
-                </div>`).join('');
+            list.innerHTML = comments.map(c => `<div class="comment-card" data-id="${c.id}"><div class="comment-avatar" style="background:${getAvatarColor(c.name)}">${getInitials(c.name)}</div><div class="comment-body"><div class="comment-header"><span class="comment-name">${c.name}</span><span class="comment-time">${timeAgo(c.date)}</span></div><div class="comment-rating">${renderStars(c.rating)}</div><p class="comment-text">${c.text}</p><div class="comment-actions"><button class="comment-like-btn ${c.liked?'liked':''}" onclick="likeComment(${c.id})"><i class="${c.liked?'fas':'far'} fa-thumbs-up"></i> <span>${c.likes}</span></button><button class="comment-reply-btn" onclick="replyToComment('${c.name}')"><i class="fas fa-reply"></i> Trả lời</button></div></div></div>`).join('');
         }
-
         async function likeComment(id) {
             const c = interactionData.comments.find(c=>c.id===id); if (!c) return;
-            // Gọi backend
             const result = await apiLikeComment(id);
-            if (result) {
-                c.likes = result.likes;
-            } else {
-                c.liked ? (c.liked=false, c.likes=Math.max(0,c.likes-1)) : (c.liked=true, c.likes++);
-            }
-            c.liked = !c.liked; // toggle local state
-            likedComments[id] = c.liked;
-            localStorage.setItem('liked_comments', JSON.stringify(likedComments));
-            saveData(interactionData); renderComments(true);
+            if (result) c.likes = result.likes; else c.liked ? (c.liked=false, c.likes=Math.max(0,c.likes-1)) : (c.liked=true, c.likes++);
+            c.liked = !c.liked; likedComments[id] = c.liked;
+            localStorage.setItem('liked_comments', JSON.stringify(likedComments)); saveData(interactionData); renderComments(true);
         }
-
-        function replyToComment(name) {
-            const ta = document.getElementById('feedbackText');
-            if (ta) { ta.value = `@${name} `; ta.focus(); document.querySelector('.feedback-form-wrapper').scrollIntoView({behavior:'smooth'}); }
-        }
-
+        function replyToComment(name) { const ta = document.getElementById('feedbackText'); if (ta) { ta.value = `@${name} `; ta.focus(); document.querySelector('.feedback-form-wrapper').scrollIntoView({behavior:'smooth'}); } }
         const ratingStars = document.getElementById('ratingStars');
         const ratingInput = document.getElementById('feedbackRating');
         let currentRating = 0;
@@ -1508,9 +1429,7 @@
                 star.addEventListener('click', () => { currentRating=parseInt(star.getAttribute('data-rating')); if(ratingInput) ratingInput.value=currentRating; ratingStars.querySelectorAll('i').forEach((s,i)=>s.className=i<currentRating?'fas fa-star':'far fa-star'); });
             });
         }
-
         document.getElementById('sortComments')?.addEventListener('change', () => renderComments(false));
-
         const feedbackForm = document.getElementById('feedbackForm');
         feedbackForm && feedbackForm.addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -1519,392 +1438,460 @@
             const rating = parseInt(document.getElementById('feedbackRating').value)||0;
             if (!name||!text) { showToast('⚠️ Vui lòng điền đầy đủ thông tin!','error',3000); return; }
             if (!rating) { showToast('⭐ Vui lòng chọn số sao đánh giá!','warning',3000); return; }
-
-            // Kiểm tra đăng nhập
-            if (typeof isLoggedIn === 'function' && !isLoggedIn()) {
-                openAuthModal('login'); return;
-            }
-
+            if (typeof isLoggedIn === 'function' && !isLoggedIn()) { openAuthModal('login'); return; }
             const submitBtn = feedbackForm.querySelector('.feedback-submit-btn');
             if (submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...'; }
-
             try {
                 let newComment = null;
-                // Dùng auth endpoint nếu đã đăng nhập
-                if (typeof postCommentAuth === 'function' && isLoggedIn()) {
-                    newComment = await postCommentAuth({ text, rating });
-                } else {
-                    newComment = await postComment({ name, email: document.getElementById('feedbackEmail').value.trim(), text, rating });
-                }
-
-                if (newComment) {
-                    interactionData.comments.unshift({
-                        id: newComment.id, name: newComment.name, email: newComment.email || '',
-                        text: newComment.text, rating: newComment.rating,
-                        date: newComment.created_at, likes: 0, liked: false
-                    });
-                } else {
-                    interactionData.comments.unshift({ id:Date.now(), name, email:document.getElementById('feedbackEmail').value.trim(), text, rating, date:new Date().toISOString(), likes:0, liked:false });
-                }
-
+                if (typeof postCommentAuth === 'function' && isLoggedIn()) newComment = await postCommentAuth({ text, rating });
+                else newComment = await postComment({ name, email: document.getElementById('feedbackEmail').value.trim(), text, rating });
+                if (newComment) interactionData.comments.unshift({ id:newComment.id, name:newComment.name, email:newComment.email||'', text:newComment.text, rating:newComment.rating, date:newComment.created_at, likes:0, liked:false });
+                else interactionData.comments.unshift({ id:Date.now(), name, email:document.getElementById('feedbackEmail').value.trim(), text, rating, date:new Date().toISOString(), likes:0, liked:false });
                 saveData(interactionData); renderComments(true); updateStatsBar();
                 feedbackForm.reset(); currentRating=0;
                 if (ratingStars) ratingStars.querySelectorAll('i').forEach(s=>s.className='far fa-star');
                 if (ratingInput) ratingInput.value=0;
                 showToast('✅ Bình luận của bạn đã được đăng!','success',3000);
                 setTimeout(() => { const l=document.getElementById('feedbackList'); if(l) l.scrollIntoView({behavior:'smooth'}); }, 300);
-            } catch(err) {
-                showToast('❌ ' + (err.message || 'Lỗi khi gửi bình luận'), 'error', 3000);
-            } finally {
-                if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> <span data-i18n="feedback.send">Gửi Bình Luận</span>'; }
-            }
+            } catch(err) { showToast('❌ ' + (err.message || 'Lỗi khi gửi bình luận'), 'error', 3000); }
+            finally { if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> <span>Gửi Bình Luận</span>'; } }
         });
-
-        // Init
         initProjectStats(); updateStatsBar(); renderComments(false);
-        // Load data thật từ backend (async, không block UI)
         loadRealStats();
         interactionData.totalViews++; saveData(interactionData);
-
+    </script>
+    <script>
         // ===== PWA: SERVICE WORKER =====
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', async () => {
                 try {
                     const reg = await navigator.serviceWorker.register('/sw.js');
-                    console.log('✅ SW registered:', reg.scope);
                     window._swReg = reg;
-
-                    // Kiểm tra update SW
-                    reg.addEventListener('updatefound', () => {
-                        const newSW = reg.installing;
-                        newSW.addEventListener('statechange', () => {
-                            if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
-                                showToast('🔄 Có phiên bản mới! Tải lại để cập nhật.', 'info', 6000);
-                            }
-                        });
-                    });
-                } catch (err) {
-                    console.warn('SW registration failed:', err);
-                }
+                    reg.addEventListener('updatefound', () => { const newSW = reg.installing; newSW.addEventListener('statechange', () => { if (newSW.state === 'installed' && navigator.serviceWorker.controller) showToast('🔄 Có phiên bản mới! Tải lại để cập nhật.', 'info', 6000); }); });
+                } catch (err) { console.warn('SW registration failed:', err); }
             });
         }
-
-        // ===== PWA: INSTALL PROMPT =====
         let _deferredPrompt = null;
-        window.addEventListener('beforeinstallprompt', e => {
-            e.preventDefault();
-            _deferredPrompt = e;
-            // Hiện nút cài app sau 3 giây
-            setTimeout(() => showInstallBanner(), 3000);
-        });
-
-        window.addEventListener('appinstalled', () => {
-            _deferredPrompt = null;
-            const banner = document.getElementById('pwa-install-banner');
-            if (banner) banner.remove();
-            showToast('🎉 App đã được cài đặt thành công!', 'success', 4000);
-        });
-
+        window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); _deferredPrompt = e; setTimeout(() => showInstallBanner(), 3000); });
+        window.addEventListener('appinstalled', () => { _deferredPrompt = null; const banner = document.getElementById('pwa-install-banner'); if (banner) banner.remove(); showToast('🎉 App đã được cài đặt thành công!', 'success', 4000); });
         function showInstallBanner() {
             if (!_deferredPrompt || document.getElementById('pwa-install-banner')) return;
-            const banner = document.createElement('div');
-            banner.id = 'pwa-install-banner';
-            banner.innerHTML = `
-                <div class="pwa-banner-content">
-                    <span class="pwa-banner-icon">📱</span>
-                    <div class="pwa-banner-text">
-                        <strong>Cài App Clitus PC</strong>
-                        <small>Dùng offline, nhanh hơn trình duyệt</small>
-                    </div>
-                    <button class="pwa-install-btn" onclick="installPWA()">Cài Ngay</button>
-                    <button class="pwa-dismiss-btn" onclick="this.closest('#pwa-install-banner').remove()">✕</button>
-                </div>`;
-            document.body.appendChild(banner);
-            setTimeout(() => banner.classList.add('show'), 100);
+            const banner = document.createElement('div'); banner.id = 'pwa-install-banner';
+            banner.innerHTML = `<div class="pwa-banner-content"><span class="pwa-banner-icon">📱</span><div class="pwa-banner-text"><strong>Cài App Clitus PC</strong><small>Dùng offline, nhanh hơn trình duyệt</small></div><button class="pwa-install-btn" onclick="installPWA()">Cài Ngay</button><button class="pwa-dismiss-btn" onclick="this.closest('#pwa-install-banner').remove()">✕</button></div>`;
+            document.body.appendChild(banner); setTimeout(() => banner.classList.add('show'), 100);
         }
-
         async function installPWA() {
-            if (!_deferredPrompt) return;
-            _deferredPrompt.prompt();
-            const { outcome } = await _deferredPrompt.userChoice;
-            _deferredPrompt = null;
-            const banner = document.getElementById('pwa-install-banner');
-            if (banner) banner.remove();
+            if (!_deferredPrompt) return; _deferredPrompt.prompt();
+            const { outcome } = await _deferredPrompt.userChoice; _deferredPrompt = null;
+            const banner = document.getElementById('pwa-install-banner'); if (banner) banner.remove();
             if (outcome === 'accepted') showToast('🎉 Đang cài đặt app...', 'success', 3000);
         }
-
-        // ===== PWA: PUSH NOTIFICATIONS =====
         async function requestPushPermission() {
             if (!('Notification' in window)) return;
             if (Notification.permission === 'granted') return subscribeToNotifications();
             if (Notification.permission === 'denied') return;
             const perm = await Notification.requestPermission();
-            if (perm === 'granted') {
-                subscribeToNotifications();
-                showToast('🔔 Đã bật thông báo!', 'success', 3000);
-            }
+            if (perm === 'granted') { subscribeToNotifications(); showToast('🔔 Đã bật thông báo!', 'success', 3000); }
         }
-
         async function subscribeToNotifications() {
             if (!window._swReg) return;
             try {
-                const existing = await window._swReg.pushManager.getSubscription();
-                if (existing) return;
-                // VAPID public key từ server
-                const res = await fetch('/api/push/vapid-public-key');
-                if (!res.ok) return;
+                const existing = await window._swReg.pushManager.getSubscription(); if (existing) return;
+                const res = await fetch('/api/push/vapid-public-key'); if (!res.ok) return;
                 const { publicKey } = await res.json();
-                const sub = await window._swReg.pushManager.subscribe({
-                    userVisibleOnly: true,
-                    applicationServerKey: urlBase64ToUint8Array(publicKey)
-                });
-                // Gửi subscription lên server
-                await fetch('/api/push/subscribe', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(sub)
-                });
-            } catch (err) {
-                console.warn('Push subscription failed:', err);
-            }
+                const sub = await window._swReg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(publicKey) });
+                await fetch('/api/push/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(sub) });
+            } catch (err) { console.warn('Push subscription failed:', err); }
         }
-
         function urlBase64ToUint8Array(base64String) {
             const padding = '='.repeat((4 - base64String.length % 4) % 4);
             const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-            const raw = window.atob(base64);
-            return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
+            const raw = window.atob(base64); return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
         }
-
-        // Hỏi permission sau 5 giây
         setTimeout(() => requestPushPermission(), 5000);
-
-        // ===== OFFLINE INDICATOR =====
         function updateOnlineStatus() {
-            const isOnline = navigator.onLine;
-            let bar = document.getElementById('offline-bar');
-            if (!isOnline) {
-                if (!bar) {
-                    bar = document.createElement('div');
-                    bar.id = 'offline-bar';
-                    bar.textContent = '📡 Bạn đang offline — đang dùng dữ liệu đã cache';
-                    document.body.prepend(bar);
-                }
-            } else {
-                if (bar) { bar.textContent = '✅ Đã kết nối lại!'; setTimeout(() => bar.remove(), 2000); }
-            }
+            const isOnline = navigator.onLine; let bar = document.getElementById('offline-bar');
+            if (!isOnline) { if (!bar) { bar = document.createElement('div'); bar.id = 'offline-bar'; bar.textContent = '📡 Bạn đang offline — đang dùng dữ liệu đã cache'; document.body.prepend(bar); } }
+            else { if (bar) { bar.textContent = '✅ Đã kết nối lại!'; setTimeout(() => bar.remove(), 2000); } }
         }
-        window.addEventListener('online', updateOnlineStatus);
-        window.addEventListener('offline', updateOnlineStatus);
-        updateOnlineStatus();
+        window.addEventListener('online', updateOnlineStatus); window.addEventListener('offline', updateOnlineStatus); updateOnlineStatus();
     </script>
     <script>
         // Hamburger menu
         const hamburger = document.getElementById('navHamburger');
         const navUl = document.querySelector('nav ul');
-        function closeMenu() {
-            if (!hamburger) return;
-            hamburger.classList.remove('open');
-            navUl.classList.remove('open');
-            document.body.style.overflow = '';
-        }
+        function closeMenu() { if (!hamburger) return; hamburger.classList.remove('open'); navUl.classList.remove('open'); document.body.style.overflow = ''; }
         if (hamburger && navUl) {
-            hamburger.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const isOpen = hamburger.classList.toggle('open');
-                navUl.classList.toggle('open', isOpen);
-                document.body.style.overflow = isOpen ? 'hidden' : '';
-            });
+            hamburger.addEventListener('click', (e) => { e.stopPropagation(); const isOpen = hamburger.classList.toggle('open'); navUl.classList.toggle('open', isOpen); document.body.style.overflow = isOpen ? 'hidden' : ''; });
             navUl.querySelectorAll('a:not(.nav-dropdown-toggle)').forEach(a => a.addEventListener('click', closeMenu));
-            document.addEventListener('click', (e) => {
-                if (navUl.classList.contains('open') && !navUl.contains(e.target) && e.target !== hamburger) closeMenu();
-            });
+            document.addEventListener('click', (e) => { if (navUl.classList.contains('open') && !navUl.contains(e.target) && e.target !== hamburger) closeMenu(); });
             document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
         }
-
-        // Dropdown menu
         document.querySelectorAll('.nav-dropdown').forEach(dd => {
             const toggle = dd.querySelector('.nav-dropdown-toggle');
             const isMobile = () => window.innerWidth <= 768;
-            // Desktop: hover handled by CSS; Mobile: click toggle
-            toggle.addEventListener('click', (e) => {
-                if (isMobile()) {
-                    e.preventDefault();
-                    dd.classList.toggle('open');
-                }
-            });
-            // Close dropdown when clicking outside
-            document.addEventListener('click', (e) => {
-                if (!dd.contains(e.target)) dd.classList.remove('open');
-            });
+            toggle.addEventListener('click', (e) => { if (isMobile()) { e.preventDefault(); dd.classList.toggle('open'); } });
+            document.addEventListener('click', (e) => { if (!dd.contains(e.target)) dd.classList.remove('open'); });
         });
     </script>
     <script>
         // ===== MUSIC PLAYER =====
-        const TRACKS = [
-            { id: 'jfKfPfyJRdk', name: 'Lo-fi Chill Beats' },
-            { id: '5qap5aO4i9A', name: 'Lo-fi Hip Hop' },
-            { id: 'DWcJFNfaw9c', name: 'Nature Sounds' },
-        ];
-        let musicPlaying = false, currentTrackIdx = 0, ytPlayer = null, panelOpen = false;
-        let autoplayTriggered = false;
-
-        // Load YouTube IFrame API
-        const tag = document.createElement('script');
-        tag.src = 'https://www.youtube.com/iframe_api';
-        document.head.appendChild(tag);
-
+        const TRACKS = [ { id: 'jfKfPfyJRdk', name: 'Lo-fi Chill Beats' }, { id: '5qap5aO4i9A', name: 'Lo-fi Hip Hop' }, { id: 'DWcJFNfaw9c', name: 'Nature Sounds' } ];
+        let musicPlaying = false, currentTrackIdx = 0, ytPlayer = null, panelOpen = false, autoplayTriggered = false;
+        const tag = document.createElement('script'); tag.src = 'https://www.youtube.com/iframe_api'; document.head.appendChild(tag);
         window.onYouTubeIframeAPIReady = function() {
-            ytPlayer = new YT.Player('musicIframe', {
-                height: '0', width: '0',
-                videoId: TRACKS[0].id,
-                playerVars: { autoplay: 1, controls: 0, loop: 1, playlist: TRACKS[0].id, mute: 0 },
-                events: {
-                    onReady: (e) => {
-                        e.target.setVolume(40);
-                        // Thử autoplay ngay — nếu browser cho phép
-                        e.target.playVideo();
-                    },
-                    onStateChange: (e) => {
-                        if (e.data === YT.PlayerState.PLAYING) setPlayingUI(true);
-                        else if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED) setPlayingUI(false);
-                    }
-                }
+            ytPlayer = new YT.Player('musicIframe', { height: '0', width: '0', videoId: TRACKS[0].id, playerVars: { autoplay: 1, controls: 0, loop: 1, playlist: TRACKS[0].id, mute: 0 },
+                events: { onReady: (e) => { e.target.setVolume(40); e.target.playVideo(); }, onStateChange: (e) => { if (e.data === YT.PlayerState.PLAYING) setPlayingUI(true); else if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED) setPlayingUI(false); } }
             });
         };
+        function tryAutoplay() { if (autoplayTriggered || !ytPlayer) return; autoplayTriggered = true; try { ytPlayer.playVideo(); } catch(e) {} ['click','touchstart','scroll','keydown'].forEach(ev => document.removeEventListener(ev, tryAutoplay)); }
+        ['click','touchstart','scroll','keydown'].forEach(ev => document.addEventListener(ev, tryAutoplay, { once: true, passive: true }));
+        function toggleMusic() { panelOpen = !panelOpen; const panel = document.getElementById('musicPanel'); panel.classList.toggle('open', panelOpen); if (panelOpen && ytPlayer && !musicPlaying) { try { ytPlayer.playVideo(); } catch(e) {} } }
+        function togglePlay() { if (!ytPlayer) return; if (musicPlaying) ytPlayer.pauseVideo(); else ytPlayer.playVideo(); }
+        function setPlayingUI(playing) { musicPlaying = playing; if (playing) autoplayTriggered = true; const btn = document.getElementById('musicPlayBtn'); const disc = document.getElementById('musicDisc'); const musicBtn = document.getElementById('musicToggle'); if (btn) btn.innerHTML = playing ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>'; if (disc) disc.classList.toggle('spinning', playing); if (musicBtn) musicBtn.classList.toggle('playing', playing); }
+        function prevTrack() { currentTrackIdx = (currentTrackIdx - 1 + TRACKS.length) % TRACKS.length; loadTrack(currentTrackIdx); }
+        function nextTrack() { currentTrackIdx = (currentTrackIdx + 1) % TRACKS.length; loadTrack(currentTrackIdx); }
+        function selectTrack(btn, id, name) { document.querySelectorAll('.track-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); currentTrackIdx = TRACKS.findIndex(t => t.id === id); loadTrack(currentTrackIdx); }
+        function loadTrack(idx) { const t = TRACKS[idx]; if (!ytPlayer) return; ytPlayer.loadVideoById({ videoId: t.id, suggestedQuality: 'small' }); document.querySelector('.music-title').textContent = t.name; document.querySelectorAll('.track-btn').forEach((b, i) => b.classList.toggle('active', i === idx)); }
+        function setVolume(val) { if (ytPlayer) ytPlayer.setVolume(parseInt(val)); }
+    </script>
+<script>
+// ===== AI VIDEO INTRO GENERATOR =====
+(function() {
+  const THEMES = {
+    dark:   { bg: ['#0a0a1a','#1a0a2e'], accent: '#667eea', accent2: '#764ba2', text: '#ffffff' },
+    purple: { bg: ['#1a0030','#2d0060'], accent: '#f093fb', accent2: '#c471ed', text: '#ffffff' },
+    ocean:  { bg: ['#001a2e','#003060'], accent: '#00d2ff', accent2: '#3a7bd5', text: '#ffffff' },
+    fire:   { bg: ['#1a0500','#3d0f00'], accent: '#f5576c', accent2: '#f093fb', text: '#ffffff' }
+  };
 
-        // Fallback: phát ngay khi user tương tác lần đầu (click/scroll/touch)
-        function tryAutoplay() {
-            if (autoplayTriggered || !ytPlayer) return;
-            autoplayTriggered = true;
-            try { ytPlayer.playVideo(); } catch(e) {}
-            // Xóa listeners sau khi đã trigger
-            ['click','touchstart','scroll','keydown'].forEach(ev =>
-                document.removeEventListener(ev, tryAutoplay)
-            );
-        }
-        ['click','touchstart','scroll','keydown'].forEach(ev =>
-            document.addEventListener(ev, tryAutoplay, { once: true, passive: true })
-        );
+  let currentTheme = 'dark';
+  let recordedBlob = null;
+  let isGenerating = false;
 
-        function toggleMusic() {
-            panelOpen = !panelOpen;
-            const panel = document.getElementById('musicPanel');
-            panel.classList.toggle('open', panelOpen);
-            // Mở panel lần đầu → thử phát
-            if (panelOpen && ytPlayer && !musicPlaying) {
-                try { ytPlayer.playVideo(); } catch(e) {}
-            }
-        }
+  window.openAIVideoModal = function() {
+    const m = document.getElementById('aiVideoModal');
+    m.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    drawPreview();
+  };
+  window.closeAIVideoModal = function() {
+    document.getElementById('aiVideoModal').classList.remove('open');
+    document.body.style.overflow = '';
+  };
+  window.selectTheme = function(btn, theme) {
+    document.querySelectorAll('.aiv-theme-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentTheme = theme;
+    drawPreview();
+  };
 
-        function togglePlay() {
-            if (!ytPlayer) return;
-            if (musicPlaying) { ytPlayer.pauseVideo(); }
-            else { ytPlayer.playVideo(); }
-        }
+  // Draw static preview on canvas
+  function drawPreview() {
+    const canvas = document.getElementById('aivCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const t = THEMES[currentTheme];
 
-        function setPlayingUI(playing) {
-            musicPlaying = playing;
-            if (playing) autoplayTriggered = true;
-            const btn = document.getElementById('musicPlayBtn');
-            const disc = document.getElementById('musicDisc');
-            const musicBtn = document.getElementById('musicToggle');
-            if (btn) btn.innerHTML = playing ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
-            if (disc) disc.classList.toggle('spinning', playing);
-            if (musicBtn) musicBtn.classList.toggle('playing', playing);
-        }
+    // Background gradient
+    const grad = ctx.createLinearGradient(0, 0, W, H);
+    grad.addColorStop(0, t.bg[0]);
+    grad.addColorStop(1, t.bg[1]);
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
 
-        function prevTrack() {
-            currentTrackIdx = (currentTrackIdx - 1 + TRACKS.length) % TRACKS.length;
-            loadTrack(currentTrackIdx);
-        }
-        function nextTrack() {
-            currentTrackIdx = (currentTrackIdx + 1) % TRACKS.length;
-            loadTrack(currentTrackIdx);
-        }
-        function selectTrack(btn, id, name) {
-            document.querySelectorAll('.track-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentTrackIdx = TRACKS.findIndex(t => t.id === id);
-            loadTrack(currentTrackIdx);
-        }
-        function loadTrack(idx) {
-            const t = TRACKS[idx];
-            if (!ytPlayer) return;
-            ytPlayer.loadVideoById({ videoId: t.id, suggestedQuality: 'small' });
-            document.querySelector('.music-title').textContent = t.name;
-            document.querySelectorAll('.track-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
-        }
-        function setVolume(val) {
-            if (ytPlayer) ytPlayer.setVolume(parseInt(val));
-        }
-        </script>
-    <!-- Floating Action Buttons -->
-    <div id="fabGroup">
-      <div id="fabMenu" style="display:none;flex-direction:column;gap:0.5rem;align-items:flex-end;margin-bottom:0.25rem;">
-        <a href="payment.html" style="display:flex;align-items:center;gap:0.6rem;text-decoration:none;">
-          <span style="background:#fff;color:#1a1a2e;font-size:0.8rem;font-weight:700;padding:0.35rem 0.85rem;border-radius:50px;box-shadow:0 2px 10px rgba(0,0,0,0.15);white-space:nowrap;">💼 Thuê tôi ngay</span>
-          <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(102,126,234,0.4);flex-shrink:0;"><i class="fas fa-briefcase" style="color:#fff;font-size:1rem;"></i></div>
-        </a>
-        <a href="payment.html#pay" style="display:flex;align-items:center;gap:0.6rem;text-decoration:none;">
-          <span style="background:#fff;color:#1a1a2e;font-size:0.8rem;font-weight:700;padding:0.35rem 0.85rem;border-radius:50px;box-shadow:0 2px 10px rgba(0,0,0,0.15);white-space:nowrap;">💳 Thanh toán</span>
-          <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#11998e,#38ef7d);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(17,153,142,0.4);flex-shrink:0;"><i class="fas fa-credit-card" style="color:#fff;font-size:1rem;"></i></div>
-        </a>
-        <a href="payment.html#donate" style="display:flex;align-items:center;gap:0.6rem;text-decoration:none;">
-          <span style="background:#fff;color:#1a1a2e;font-size:0.8rem;font-weight:700;padding:0.35rem 0.85rem;border-radius:50px;box-shadow:0 2px 10px rgba(0,0,0,0.15);white-space:nowrap;">☕ Donate</span>
-          <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#f093fb,#f5576c);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(245,87,108,0.4);flex-shrink:0;"><i class="fas fa-mug-hot" style="color:#fff;font-size:1rem;"></i></div>
-        </a>
-      </div>
-      <button id="fabMain" onclick="toggleFab()" style="width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);border:none;cursor:pointer;box-shadow:0 6px 20px rgba(102,126,234,0.45);display:flex;align-items:center;justify-content:center;transition:all 0.3s;">
-        <i class="fas fa-plus" id="fabIcon" style="color:#fff;font-size:1.2rem;transition:transform 0.3s;"></i>
-      </button>
-    </div>
-    <script>
-    let fabOpen = false;
-    function toggleFab() {
-      fabOpen = !fabOpen;
-      const menu = document.getElementById('fabMenu');
-      const icon = document.getElementById('fabIcon');
-      menu.style.display = fabOpen ? 'flex' : 'none';
-      icon.style.transform = fabOpen ? 'rotate(45deg)' : 'rotate(0)';
+    // Grid lines
+    ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+    ctx.lineWidth = 1;
+    for (let x = 0; x < W; x += 60) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+    for (let y = 0; y < H; y += 60) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+
+    // Glow circle
+    const glow = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, 280);
+    glow.addColorStop(0, t.accent + '22');
+    glow.addColorStop(1, 'transparent');
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, W, H);
+
+    // Preview text
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx.font = '600 16px Inter, sans-serif';
+    ctx.fillText('Chọn theme và nhấn "Tạo Video"', W/2, H/2 - 10);
+    ctx.font = '500 13px Inter, sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.18)';
+    ctx.fillText('Video 15 giây • 800×450 • WebM', W/2, H/2 + 18);
+  }
+
+  window.generateAIVideo = async function() {
+    if (isGenerating) return;
+    const canvas = document.getElementById('aivCanvas');
+    const genBtn = document.getElementById('aivGenBtn');
+    const dlBtn  = document.getElementById('aivDlBtn');
+    const status = document.getElementById('aivStatus');
+    if (!canvas) return;
+
+    // Check MediaRecorder support
+    if (!window.MediaRecorder || !MediaRecorder.isTypeSupported('video/webm')) {
+      status.innerHTML = '⚠️ Trình duyệt không hỗ trợ ghi video. Dùng Chrome/Edge.';
+      return;
     }
-    document.addEventListener('click', e => {
-      if (fabOpen && !document.getElementById('fabGroup').contains(e.target)) {
-        fabOpen = false;
-        document.getElementById('fabMenu').style.display = 'none';
-        document.getElementById('fabIcon').style.transform = 'rotate(0)';
+
+    isGenerating = true;
+    genBtn.disabled = true;
+    dlBtn.disabled = true;
+    recordedBlob = null;
+
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const t = THEMES[currentTheme];
+    const FPS = 30;
+    const DURATION = 15; // seconds
+    const TOTAL_FRAMES = FPS * DURATION;
+
+    // Profile data
+    const profile = {
+      name: 'Clitus PC',
+      role: 'Full Stack Developer',
+      location: 'TP. Hồ Chí Minh, Việt Nam',
+      skills: ['React', 'Node.js', 'Vue.js', 'Python', 'TypeScript'],
+      url: 'portfolio-utbu.onrender.com',
+      exp: '10+ năm kinh nghiệm'
+    };
+
+    // Scenes: [startFrame, endFrame, drawFn]
+    const scenes = [
+      { start: 0,   end: 60,  label: 'intro' },
+      { start: 60,  end: 150, label: 'name' },
+      { start: 150, end: 240, label: 'role' },
+      { start: 240, end: 330, label: 'skills' },
+      { start: 330, end: 420, label: 'contact' },
+      { start: 420, end: 450, label: 'outro' }
+    ];
+
+    // Setup MediaRecorder
+    const stream = canvas.captureStream(FPS);
+    const recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9', videoBitsPerSecond: 4000000 });
+    const chunks = [];
+    recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+    recorder.onstop = () => {
+      recordedBlob = new Blob(chunks, { type: 'video/webm' });
+      dlBtn.disabled = false;
+      genBtn.disabled = false;
+      isGenerating = false;
+      status.innerHTML = '✅ Video đã tạo xong! Nhấn "Tải Xuống" để lưu.';
+    };
+
+    recorder.start();
+    let frame = 0;
+
+    function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+    function easeInOut(t) { return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2; }
+
+    function drawBg() {
+      const grad = ctx.createLinearGradient(0, 0, W, H);
+      grad.addColorStop(0, t.bg[0]);
+      grad.addColorStop(1, t.bg[1]);
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, W, H);
+      // Grid
+      ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+      ctx.lineWidth = 1;
+      for (let x = 0; x < W; x += 60) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+      for (let y = 0; y < H; y += 60) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+    }
+
+    function drawGlow(x, y, r, color, alpha) {
+      const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+      g.addColorStop(0, color + Math.round(alpha*255).toString(16).padStart(2,'0'));
+      g.addColorStop(1, 'transparent');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, W, H);
+    }
+
+    function drawParticles(seed, count, alpha) {
+      ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+      for (let i = 0; i < count; i++) {
+        const px = ((seed * 137 + i * 73) % W);
+        const py = ((seed * 89  + i * 53) % H);
+        const pr = 1 + (i % 3) * 0.5;
+        ctx.beginPath(); ctx.arc(px, py, pr, 0, Math.PI*2); ctx.fill();
       }
-    });
-    </script>
-    <script>
-    const QR_URL = 'https://portfolio-utbu.onrender.com';
-    function openQRModal() {
-        const modal = document.getElementById('qrModal');
-        modal.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-        const container = document.getElementById('qrCanvas');
-        if (container.querySelector('img')) return;
-        const img = document.createElement('img');
-        img.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(QR_URL)}&color=1a1a2e&bgcolor=ffffff&margin=10`;
-        img.width = 220; img.height = 220;
-        img.style.borderRadius = '12px';
-        img.alt = 'QR Portfolio';
-        container.innerHTML = '';
-        container.appendChild(img);
     }
-    function closeQRModal() {
-        document.getElementById('qrModal').style.display = 'none';
-        document.body.style.overflow = '';
+
+    function drawText(text, x, y, size, color, alpha, weight='700') {
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = color;
+      ctx.font = `${weight} ${size}px Inter, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillText(text, x, y);
+      ctx.globalAlpha = 1;
     }
-    function downloadQR() {
-        const a = document.createElement('a');
-        a.download = 'clituspc-qr.png';
-        a.href = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(QR_URL)}&color=1a1a2e&bgcolor=ffffff&margin=10`;
-        a.target = '_blank';
-        a.click();
+
+    function drawGradientText(text, x, y, size, c1, c2, alpha) {
+      const g = ctx.createLinearGradient(x - 200, y, x + 200, y);
+      g.addColorStop(0, c1); g.addColorStop(1, c2);
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = g;
+      ctx.font = `900 ${size}px Inter, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillText(text, x, y);
+      ctx.globalAlpha = 1;
     }
-    </script>
+
+    function drawPill(text, cx, cy, alpha) {
+      ctx.globalAlpha = alpha;
+      ctx.font = '600 14px Inter, sans-serif';
+      const tw = ctx.measureText(text).width;
+      const pw = tw + 28, ph = 32;
+      ctx.fillStyle = t.accent + '33';
+      ctx.strokeStyle = t.accent + '88';
+      ctx.lineWidth = 1.5;
+      roundRect(ctx, cx - pw/2, cy - ph/2, pw, ph, 16);
+      ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#fff';
+      ctx.textAlign = 'center';
+      ctx.fillText(text, cx, cy + 5);
+      ctx.globalAlpha = 1;
+    }
+
+    function roundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x+r, y);
+      ctx.lineTo(x+w-r, y); ctx.arcTo(x+w,y,x+w,y+r,r);
+      ctx.lineTo(x+w, y+h-r); ctx.arcTo(x+w,y+h,x+w-r,y+h,r);
+      ctx.lineTo(x+r, y+h); ctx.arcTo(x,y+h,x,y+h-r,r);
+      ctx.lineTo(x, y+r); ctx.arcTo(x,y,x+r,y,r);
+      ctx.closePath();
+    }
+
+    function renderFrame(f) {
+      drawBg();
+      drawParticles(Math.floor(f/3), 40, 0.12);
+
+      // Animated glow
+      const glowX = W/2 + Math.sin(f * 0.04) * 80;
+      const glowY = H/2 + Math.cos(f * 0.03) * 40;
+      drawGlow(glowX, glowY, 300, t.accent, 0.12);
+      drawGlow(W - glowX/2, glowY, 200, t.accent2, 0.08);
+
+      const scene = scenes.find(s => f >= s.start && f < s.end) || scenes[scenes.length-1];
+      const sp = (f - scene.start) / (scene.end - scene.start); // scene progress 0→1
+
+      if (scene.label === 'intro') {
+        const a = easeOut(Math.min(sp * 3, 1));
+        drawGradientText('PORTFOLIO', W/2, H/2 - 20, 64, t.accent, t.accent2, a);
+        drawText('INTRO', W/2, H/2 + 30, 22, 'rgba(255,255,255,0.5)', a * 0.8, '400');
+        // Line
+        ctx.globalAlpha = a * 0.6;
+        ctx.strokeStyle = t.accent;
+        ctx.lineWidth = 2;
+        const lw = easeOut(sp) * 200;
+        ctx.beginPath(); ctx.moveTo(W/2 - lw, H/2 + 50); ctx.lineTo(W/2 + lw, H/2 + 50); ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+
+      else if (scene.label === 'name') {
+        const a = easeOut(Math.min(sp * 2, 1));
+        const slideY = (1 - easeOut(Math.min(sp * 2, 1))) * 30;
+        drawText('Xin chào, tôi là', W/2, H/2 - 55 + slideY, 18, 'rgba(255,255,255,0.55)', a, '400');
+        drawGradientText(profile.name, W/2, H/2 + 10 + slideY, 72, t.accent, t.accent2, a);
+        drawText(profile.exp, W/2, H/2 + 55 + slideY, 16, 'rgba(255,255,255,0.45)', a * 0.8, '500');
+      }
+
+      else if (scene.label === 'role') {
+        const a = easeOut(Math.min(sp * 2, 1));
+        drawText('Chuyên môn', W/2, H/2 - 60, 16, 'rgba(255,255,255,0.4)', a, '400');
+        drawGradientText(profile.role, W/2, H/2, 44, t.accent, t.accent2, a);
+        drawText(profile.location, W/2, H/2 + 50, 16, 'rgba(255,255,255,0.5)', a, '400');
+        // Location dot
+        ctx.globalAlpha = a;
+        ctx.fillStyle = '#4ade80';
+        ctx.beginPath(); ctx.arc(W/2 - ctx.measureText(profile.location).width/2 - 14, H/2 + 44, 5, 0, Math.PI*2); ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+
+      else if (scene.label === 'skills') {
+        const a = easeOut(Math.min(sp * 2, 1));
+        drawText('Tech Stack', W/2, H/2 - 80, 18, 'rgba(255,255,255,0.5)', a, '600');
+        const cols = profile.skills.length;
+        const spacing = 130;
+        const startX = W/2 - (cols-1) * spacing / 2;
+        profile.skills.forEach((sk, i) => {
+          const delay = i * 0.15;
+          const sa = easeOut(Math.max(0, Math.min((sp - delay) * 3, 1)));
+          const sy = (1 - easeOut(Math.max(0, Math.min((sp - delay) * 3, 1)))) * 20;
+          drawPill(sk, startX + i * spacing, H/2 + sy, sa);
+        });
+      }
+
+      else if (scene.label === 'contact') {
+        const a = easeOut(Math.min(sp * 2, 1));
+        drawText('Liên hệ hợp tác', W/2, H/2 - 60, 18, 'rgba(255,255,255,0.5)', a, '400');
+        drawGradientText('🌐 ' + profile.url, W/2, H/2, 28, t.accent, t.accent2, a);
+        // Animated underline
+        ctx.globalAlpha = a * 0.7;
+        ctx.strokeStyle = t.accent;
+        ctx.lineWidth = 2;
+        const lw = easeOut(sp) * 260;
+        ctx.beginPath(); ctx.moveTo(W/2 - lw/2, H/2 + 20); ctx.lineTo(W/2 + lw/2, H/2 + 20); ctx.stroke();
+        ctx.globalAlpha = 1;
+        drawText('portfolio-utbu.onrender.com', W/2, H/2 + 55, 14, 'rgba(255,255,255,0.35)', a, '400');
+      }
+
+      else if (scene.label === 'outro') {
+        const fadeOut = 1 - easeInOut(sp);
+        drawGradientText(profile.name, W/2, H/2 - 10, 56, t.accent, t.accent2, fadeOut);
+        drawText('Full Stack Developer', W/2, H/2 + 40, 20, 'rgba(255,255,255,0.6)', fadeOut, '500');
+      }
+
+      // Frame counter / progress bar
+      const prog = f / TOTAL_FRAMES;
+      ctx.fillStyle = 'rgba(255,255,255,0.08)';
+      ctx.fillRect(0, H - 3, W, 3);
+      const barGrad = ctx.createLinearGradient(0, 0, W * prog, 0);
+      barGrad.addColorStop(0, t.accent);
+      barGrad.addColorStop(1, t.accent2);
+      ctx.fillStyle = barGrad;
+      ctx.fillRect(0, H - 3, W * prog, 3);
+    }
+
+    // Animate frames
+    function tick() {
+      if (frame >= TOTAL_FRAMES) {
+        recorder.stop();
+        return;
+      }
+      renderFrame(frame);
+      const pct = Math.round((frame / TOTAL_FRAMES) * 100);
+      status.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Đang tạo video... ${pct}%`;
+      frame++;
+      requestAnimationFrame(tick);
+    }
+    tick();
+  };
+
+  window.downloadAIVideo = function() {
+    if (!recordedBlob) return;
+    const url = URL.createObjectURL(recordedBlob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'clituspc-intro.webm';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // Init preview when modal opens
+  document.addEventListener('DOMContentLoaded', () => {
+    const canvas = document.getElementById('aivCanvas');
+    if (canvas) drawPreview && setTimeout(()=>{}, 0);
+  });
+})();
+</script>
+
     <style>
+    /* ===== QR + AI VIDEO BUTTON STYLES ===== */
     .btn-qr {
         background: linear-gradient(135deg, #11998e, #38ef7d);
         color: #fff; border: none; border-radius: 50px;
@@ -1914,157 +1901,57 @@
         box-shadow: 0 4px 15px rgba(17,153,142,0.35);
     }
     .btn-qr:hover { opacity: 0.88; transform: translateY(-3px); }
+    .btn-ai-video {
+        background: linear-gradient(135deg, #f093fb, #f5576c);
+        color: #fff; border: none; border-radius: 50px;
+        padding: 0.75rem 1.5rem; font-size: 1rem; font-weight: 700;
+        cursor: pointer; transition: all 0.3s;
+        box-shadow: 0 4px 15px rgba(240,147,251,0.4);
+        display: inline-flex; align-items: center; gap: 0.5rem;
+    }
+    .btn-ai-video:hover { opacity: 0.88; transform: translateY(-3px); box-shadow: 0 8px 25px rgba(240,147,251,0.5); }
+    /* ===== AI VIDEO MODAL ===== */
+    .aiv-modal { position: fixed; inset: 0; z-index: 99998; display: none; align-items: center; justify-content: center; padding: 1rem; }
+    .aiv-modal.open { display: flex; }
+    .aiv-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); }
+    .aiv-box { position: relative; z-index: 1; background: #0d0d1a; border-radius: 20px; width: 100%; max-width: 860px; box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(102,126,234,0.2); overflow: hidden; animation: aivSlideIn 0.35s cubic-bezier(0.4,0,0.2,1); }
+    @keyframes aivSlideIn { from { opacity:0; transform: scale(0.92) translateY(20px); } to { opacity:1; transform: scale(1) translateY(0); } }
+    .aiv-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.25rem; background: linear-gradient(135deg, rgba(102,126,234,0.15), rgba(118,75,162,0.15)); border-bottom: 1px solid rgba(102,126,234,0.2); color: #fff; font-weight: 700; font-size: 1rem; }
+    .aiv-close { background: rgba(255,255,255,0.08); border: none; color: rgba(255,255,255,0.7); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; font-size: 0.9rem; }
+    .aiv-close:hover { background: rgba(245,87,108,0.3); color: #fff; transform: rotate(90deg); }
+    .aiv-body { padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; }
+    #aivCanvas { width: 100%; border-radius: 12px; background: #000; display: block; box-shadow: 0 8px 30px rgba(0,0,0,0.5); }
+    .aiv-controls { display: flex; flex-direction: column; gap: 0.85rem; }
+    .aiv-status { text-align: center; color: rgba(255,255,255,0.6); font-size: 0.88rem; padding: 0.5rem; background: rgba(255,255,255,0.04); border-radius: 10px; }
+    .aiv-themes { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; }
+    .aiv-theme-btn { background: rgba(255,255,255,0.07); border: 1.5px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.7); border-radius: 50px; padding: 0.45rem 1rem; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+    .aiv-theme-btn:hover, .aiv-theme-btn.active { background: linear-gradient(135deg, #667eea, #764ba2); border-color: transparent; color: #fff; box-shadow: 0 4px 14px rgba(102,126,234,0.4); }
+    .aiv-actions { display: flex; gap: 0.75rem; justify-content: center; }
+    .aiv-btn-generate { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; border: none; border-radius: 50px; padding: 0.7rem 1.75rem; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 16px rgba(102,126,234,0.4); display: flex; align-items: center; gap: 0.5rem; }
+    .aiv-btn-generate:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(102,126,234,0.5); }
+    .aiv-btn-generate:disabled, .aiv-btn-download:disabled { opacity: 0.4; cursor: not-allowed; }
+    .aiv-btn-download { background: rgba(255,255,255,0.08); border: 1.5px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.8); border-radius: 50px; padding: 0.7rem 1.75rem; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 0.5rem; }
+    .aiv-btn-download:hover:not(:disabled) { background: rgba(255,255,255,0.15); color: #fff; }
+    /* ===== FAB GROUP ===== */
+    #fabGroup { position: fixed !important; bottom: 24px !important; right: 20px !important; z-index: 9990 !important; display: flex; flex-direction: column; align-items: flex-end; }
+    @media (max-width: 600px) { .aiv-actions { flex-direction: column; } .aiv-btn-generate, .aiv-btn-download { justify-content: center; } }
     </style>
-
-<!-- ===== MODERN EFFECTS SCRIPT ===== -->
-<script>
-(function() {
-  // 1. SCROLL REVEAL
-  const revealEls = document.querySelectorAll(
-    '.about-card, .skill-item, .project-card, .certificate-card, .comment-card, .stat-item'
-  );
-  revealEls.forEach((el, i) => {
-    el.classList.add('reveal');
-    el.style.transitionDelay = (i % 4) * 0.08 + 's';
-  });
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
-  }, { threshold: 0.12 });
-  revealEls.forEach(el => observer.observe(el));
-
-  // 2. CURSOR TRAIL (desktop only)
-  if (window.innerWidth > 768 && !('ontouchstart' in window)) {
-    const dot = document.createElement('div'); dot.className = 'cursor-dot';
-    const ring = document.createElement('div'); ring.className = 'cursor-ring';
-    document.body.appendChild(dot); document.body.appendChild(ring);
-    let mx = 0, my = 0, rx = 0, ry = 0;
-    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; dot.style.left = mx - 4 + 'px'; dot.style.top = my - 4 + 'px'; });
-    (function animRing() {
-      rx += (mx - rx - 16) * 0.18;
-      ry += (my - ry - 16) * 0.18;
-      ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
-      requestAnimationFrame(animRing);
+    <script>
+    // ===== VOICE GREETING =====
+    (function() {
+        if (!window.speechSynthesis || sessionStorage.getItem('greeted')) return;
+        sessionStorage.setItem('greeted', '1');
+        const h = new Date().getHours();
+        const greet = h < 12 ? 'Chào buổi sáng!' : h < 18 ? 'Chào buổi chiều!' : 'Chào buổi tối!';
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const u = new SpeechSynthesisUtterance(greet + ' Chào mừng bạn đến với trang cá nhân của Clitus PC.');
+                u.lang = 'vi-VN'; u.rate = 0.9; u.pitch = 1;
+                window.speechSynthesis.speak(u);
+            }, 1500);
+        });
     })();
-    document.querySelectorAll('a, button, .btn, .project-card, .about-card').forEach(el => {
-      el.addEventListener('mouseenter', () => { ring.style.transform = 'scale(1.8)'; ring.style.borderColor = 'rgba(102,126,234,0.8)'; });
-      el.addEventListener('mouseleave', () => { ring.style.transform = 'scale(1)'; ring.style.borderColor = 'rgba(102,126,234,0.5)'; });
-    });
-  }
+    </script>
 
-  // 3. MARQUEE — duplicate items for seamless loop
-  const mc = document.querySelector('.marquee-content');
-  if (mc) {
-    const clone = mc.cloneNode(true);
-    mc.parentElement.appendChild(clone);
-  }
-
-  // 4. TYPEWRITER on hero subtitle
-  const heroP = document.querySelector('.hero-content p');
-  if (heroP) {
-    const texts = [
-      'Full Stack Developer 🚀',
-      'React · Node.js · Python 💻',
-      'Xây dựng giải pháp công nghệ ✨',
-      'TP.HCM, Việt Nam 🇻🇳'
-    ];
-    let ti = 0, ci = 0, deleting = false;
-    const tw = document.createElement('div');
-    tw.style.cssText = 'font-size:1.1rem;font-weight:700;color:rgba(255,255,255,0.95);margin-bottom:1rem;min-height:1.6em;letter-spacing:0.01em;';
-    tw.innerHTML = '<span id="tw-text"></span><span class="typewriter-cursor"></span>';
-    heroP.parentNode.insertBefore(tw, heroP);
-    const twEl = document.getElementById('tw-text');
-    function typeLoop() {
-      const cur = texts[ti];
-      if (!deleting) {
-        twEl.textContent = cur.slice(0, ++ci);
-        if (ci === cur.length) { deleting = true; setTimeout(typeLoop, 1800); return; }
-        setTimeout(typeLoop, 60);
-      } else {
-        twEl.textContent = cur.slice(0, --ci);
-        if (ci === 0) { deleting = false; ti = (ti + 1) % texts.length; setTimeout(typeLoop, 300); return; }
-        setTimeout(typeLoop, 35);
-      }
-    }
-    typeLoop();
-  }
-
-  // 5. SECTION HEADINGS — center the underline
-  document.querySelectorAll('.about h2, .projects h2, .skills h2, .certificates h2, .contact-section h2, .feedback h2').forEach(h => {
-    h.parentElement.style.textAlign = 'center';
-  });
-
-  // 6. FLOATING PARTICLES
-  if (window.innerWidth > 768) {
-    const pb = document.createElement('div'); pb.className = 'particle-bg';
-    for (let i = 0; i < 18; i++) {
-      const s = document.createElement('span');
-      const size = Math.random() * 4 + 2;
-      s.style.cssText = `left:${Math.random()*100}%;width:${size}px;height:${size}px;animation-duration:${Math.random()*15+10}s;animation-delay:${Math.random()*10}s;opacity:${Math.random()*0.4+0.1};`;
-      pb.appendChild(s);
-    }
-    document.body.prepend(pb);
-  }
-})();
-</script>
-
-<script>
-// ===== LỜI CHÀO MỪNG BẰNG GIỌNG NÓI =====
-(function() {
-  if (!window.speechSynthesis) return;
-
-  function getGreeting() {
-    const h = new Date().getHours();
-    if (h >= 5 && h < 12) return 'Chào buổi sáng!';
-    if (h >= 12 && h < 18) return 'Chào buổi chiều!';
-    return 'Chào buổi tối!';
-  }
-
-  function speak(text) {
-    window.speechSynthesis.cancel();
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = 'vi-VN';
-    utter.rate = 0.92;
-    utter.pitch = 1.05;
-    utter.volume = 1;
-    const voices = window.speechSynthesis.getVoices();
-    const viVoice = voices.find(v => v.lang && v.lang.startsWith('vi'))
-                 || voices.find(v => v.lang && v.lang.startsWith('en'));
-    if (viVoice) utter.voice = viVoice;
-    window.speechSynthesis.speak(utter);
-  }
-
-  function doWelcome() {
-    if (sessionStorage.getItem('welcomed')) return;
-    sessionStorage.setItem('welcomed', '1');
-    speak(getGreeting() + ' Chào mừng bạn đến với portfolio của Clitus PC. Chúc bạn có trải nghiệm tuyệt vời!');
-  }
-
-  function trySpeak() {
-    if (window.speechSynthesis.getVoices().length > 0) {
-      doWelcome();
-    } else {
-      window.speechSynthesis.onvoiceschanged = doWelcome;
-    }
-  }
-
-  // Desktop: chạy sau 1s
-  // Mobile: cần user gesture trước — lắng nghe touch/click đầu tiên
-  if (!sessionStorage.getItem('welcomed')) {
-    const onFirstInteraction = function() {
-      document.removeEventListener('touchstart', onFirstInteraction);
-      document.removeEventListener('click', onFirstInteraction);
-      trySpeak();
-    };
-    // Thử chạy ngay (desktop), nếu bị block thì chờ gesture (mobile)
-    setTimeout(() => {
-      if (!sessionStorage.getItem('welcomed')) {
-        try { trySpeak(); } catch(e) {}
-      }
-    }, 1000);
-    document.addEventListener('touchstart', onFirstInteraction, { once: true });
-    document.addEventListener('click', onFirstInteraction, { once: true });
-  }
-})();
-</script>
 </body>
 </html>
