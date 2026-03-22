@@ -653,7 +653,7 @@ function renderHeatmap() {
     document.addEventListener('keydown', e => {
         const tag = document.activeElement && document.activeElement.tagName;
         if (tag === 'INPUT' || tag === 'TEXTAREA') return;
-        buffer += e.key.toUpperCase();
+        buffer += (e.key || '').toUpperCase();
         if (buffer.length > SECRET.length) buffer = buffer.slice(-SECRET.length);
         clearTimeout(timer);
         timer = setTimeout(() => { buffer = ''; }, 1500);
