@@ -1193,6 +1193,25 @@
     }
 }
 
+/* ===== HERO CONTENT — luôn visible sau khi animation chạy xong ===== */
+.hero-line,
+.hero-badge,
+.hero-desc-anim,
+.hero-buttons,
+.hero-img-3d,
+.hero-tech-stack {
+    animation-fill-mode: both !important;
+}
+/* Fallback: nếu animation bị block thì vẫn hiện */
+@media (prefers-reduced-motion: reduce) {
+    .hero-line, .hero-badge, .hero-desc-anim,
+    .hero-buttons, .hero-img-3d, .hero-tech-stack {
+        opacity: 1 !important;
+        transform: none !important;
+        animation: none !important;
+    }
+}
+
 /* ===== SURFACE DUO / NARROW SCREENS (540px) ===== */
 @media (max-width: 560px) {
     .skill-item { padding: 1rem; }
