@@ -15,8 +15,8 @@ html[data-theme="dark"] header {
     border-bottom-color: rgba(102,126,234,0.2) !important;
 }
 
-/* Glass cards — about, skill, project */
-.about-card, .skill-item, .certificate-card {
+/* Glass cards — about, skill */
+.about-card, .skill-item {
     background: rgba(255,255,255,0.65) !important;
     backdrop-filter: blur(12px) saturate(160%) !important;
     -webkit-backdrop-filter: blur(12px) saturate(160%) !important;
@@ -28,6 +28,21 @@ html[data-theme="dark"] .skill-item {
     background: rgba(20,20,45,0.6) !important;
     border-color: rgba(102,126,234,0.2) !important;
     box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05) !important;
+}
+
+/* Certificate cards — giữ gradient gốc, chỉ thêm glass effect nhẹ */
+.certificate-card {
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    border: 1px solid rgba(255,255,255,0.25) !important;
+    box-shadow: 0 8px 32px rgba(102,126,234,0.2), inset 0 1px 0 rgba(255,255,255,0.2) !important;
+}
+/* Đảm bảo text trong certificate card luôn trắng */
+.certificate-card,
+.certificate-card h3,
+.certificate-card p {
+    color: #fff !important;
+    -webkit-text-fill-color: #fff !important;
 }
 
 /* Glass project cards */
