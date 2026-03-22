@@ -1983,5 +1983,50 @@
   }
 })();
 </script>
+
+<script>
+// ===== LỜI CHÀO MỪNG BẰNG GIỌNG NÓI =====
+(function() {
+  if (!window.speechSynthesis) return;
+
+  function speak(text) {
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = 'vi-VN';
+    utter.rate = 0.95;
+    utter.pitch = 1.05;
+    utter.volume = 0.9;
+
+    // Thử giọng tiếng Việt, fallback sang giọng mặc định
+    const voices = window.speechSynthesis.getVoices();
+    const viVoice = voices.find(v => v.lang.startsWith('vi')) || voices.find(v => v.lang.startsWith('en'));
+    if (viVoice) utter.voice = viVoice;
+
+    window.speechSynthesis.speak(utter);
+  }
+
+  function getGreeting() {
+    const h = new Date().getHours();
+    if (h >= 5 && h < 12) return 'Chào buổi sáng!';
+    if (h >= 12 && h < 18) return 'Chào buổi chiều!';
+    return 'Chào buổi tối!';
+  }
+
+  function doWelcome() {
+    // Chỉ chào 1 lần mỗi phiên
+    if (sessionStorage.getItem('welcomed')) return;
+    sessionStorage.setItem('welcomed', '1');
+
+    const greeting = getGreeting();
+    speak(`${greeting} Chào mừng bạn đến với portfolio của Clitus PC. Chúc bạn có trải nghiệm tuyệt vời!`);
+  }
+
+  // Voices load async trên một số trình duyệt
+  if (window.speechSynthesis.getVoices().length > 0) {
+    setTimeout(doWelcome, 800);
+  } else {
+    window.speechSynthesis.onvoiceschanged = () => setTimeout(doWelcome, 800);
+  }
+})();
+</script>
 </body>
 </html>
