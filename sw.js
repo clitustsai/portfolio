@@ -1,5 +1,5 @@
 // ========== SERVICE WORKER - PWA ==========
-const CACHE_NAME = 'clituspc-v17';
+const CACHE_NAME = 'clituspc-v18';
 const OFFLINE_URL = '/offline.html';
 
 // Files cần cache để offline
@@ -19,9 +19,9 @@ const PRECACHE_ASSETS = [
   '/img/z7643593902682_1d1e5b7671cc398923d350f14dd68934.jpg',
   '/img/z7643399499088_fbf2b939d27d107fda73c5053dbb4dd0.jpg',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
-  'https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.css',
-  'https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.js',
-  'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.css',
+  'https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js',
 ];
 
 // ===== INSTALL: cache tất cả assets =====
@@ -50,11 +50,8 @@ self.addEventListener('fetch', event => {
   // Bỏ qua chrome-extension và non-http
   if (!event.request.url.startsWith('http')) return;
 
-  // API calls: luôn đi thẳng ra network, KHÔNG cache, KHÔNG intercept
-  if (url.pathname.startsWith('/api/')) {
-    // Không làm gì — để browser tự xử lý, tránh SW block khi Render cold start
-    return;
-  }
+  // API calls + OAuth redirects: luôn bỏ qua, để browser tự xử lý
+  if (url.pathname.startsWith('/api/')) return;
 
   // Navigation: Network First, fallback offline page
   if (event.request.mode === 'navigate') {
