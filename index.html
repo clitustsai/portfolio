@@ -60,6 +60,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.css">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="styles-new.css">
+    <link rel="stylesheet" href="modern.css">
     <link rel="stylesheet" href="testimonials.css">
     <link rel="stylesheet" href="interactions.css">
     <link rel="stylesheet" href="admin.css">
@@ -534,7 +535,7 @@
     <!-- Hero Section -->
     <section class="hero" id="home">
         <div class="hero-content">
-            <h1 data-i18n="hero.title">Xin Chào! 👋</h1>
+            <h1 data-i18n="hero.title"><span class="hero-name-gradient"></span>Xin Chào! 👋</span></h1>
             <p data-i18n="hero.desc">Chào mừng bạn đến với trang cá nhân của tôi. Tôi là một lập trình viên chuyên về phát triển ứng dụng web và hệ thống. Tôi tập trung vào việc xây dựng các giải pháp công nghệ ổn định, hiệu quả và có khả năng mở rộng, đáp ứng nhu cầu thực tế của doanh nghiệp và người dùng.</p>
             <div class="hero-buttons">
                 <a href="#about" class="btn btn-primary" data-i18n="hero.btn1">Tìm Hiểu Thêm</a>
@@ -1881,5 +1882,96 @@
     }
     .btn-qr:hover { opacity: 0.88; transform: translateY(-3px); }
     </style>
+
+<!-- ===== MODERN EFFECTS SCRIPT ===== -->
+<script>
+(function() {
+  // 1. SCROLL REVEAL
+  const revealEls = document.querySelectorAll(
+    '.about-card, .skill-item, .project-card, .certificate-card, .comment-card, .stat-item'
+  );
+  revealEls.forEach((el, i) => {
+    el.classList.add('reveal');
+    el.style.transitionDelay = (i % 4) * 0.08 + 's';
+  });
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  revealEls.forEach(el => observer.observe(el));
+
+  // 2. CURSOR TRAIL (desktop only)
+  if (window.innerWidth > 768 && !('ontouchstart' in window)) {
+    const dot = document.createElement('div'); dot.className = 'cursor-dot';
+    const ring = document.createElement('div'); ring.className = 'cursor-ring';
+    document.body.appendChild(dot); document.body.appendChild(ring);
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; dot.style.left = mx - 4 + 'px'; dot.style.top = my - 4 + 'px'; });
+    (function animRing() {
+      rx += (mx - rx - 16) * 0.18;
+      ry += (my - ry - 16) * 0.18;
+      ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+      requestAnimationFrame(animRing);
+    })();
+    document.querySelectorAll('a, button, .btn, .project-card, .about-card').forEach(el => {
+      el.addEventListener('mouseenter', () => { ring.style.transform = 'scale(1.8)'; ring.style.borderColor = 'rgba(102,126,234,0.8)'; });
+      el.addEventListener('mouseleave', () => { ring.style.transform = 'scale(1)'; ring.style.borderColor = 'rgba(102,126,234,0.5)'; });
+    });
+  }
+
+  // 3. MARQUEE — duplicate items for seamless loop
+  const mc = document.querySelector('.marquee-content');
+  if (mc) {
+    const clone = mc.cloneNode(true);
+    mc.parentElement.appendChild(clone);
+  }
+
+  // 4. TYPEWRITER on hero subtitle
+  const heroP = document.querySelector('.hero-content p');
+  if (heroP) {
+    const texts = [
+      'Full Stack Developer 🚀',
+      'React · Node.js · Python 💻',
+      'Xây dựng giải pháp công nghệ ✨',
+      'TP.HCM, Việt Nam 🇻🇳'
+    ];
+    let ti = 0, ci = 0, deleting = false;
+    const tw = document.createElement('div');
+    tw.style.cssText = 'font-size:1.1rem;font-weight:700;color:rgba(255,255,255,0.95);margin-bottom:1rem;min-height:1.6em;letter-spacing:0.01em;';
+    tw.innerHTML = '<span id="tw-text"></span><span class="typewriter-cursor"></span>';
+    heroP.parentNode.insertBefore(tw, heroP);
+    const twEl = document.getElementById('tw-text');
+    function typeLoop() {
+      const cur = texts[ti];
+      if (!deleting) {
+        twEl.textContent = cur.slice(0, ++ci);
+        if (ci === cur.length) { deleting = true; setTimeout(typeLoop, 1800); return; }
+        setTimeout(typeLoop, 60);
+      } else {
+        twEl.textContent = cur.slice(0, --ci);
+        if (ci === 0) { deleting = false; ti = (ti + 1) % texts.length; setTimeout(typeLoop, 300); return; }
+        setTimeout(typeLoop, 35);
+      }
+    }
+    typeLoop();
+  }
+
+  // 5. SECTION HEADINGS — center the underline
+  document.querySelectorAll('.about h2, .projects h2, .skills h2, .certificates h2, .contact-section h2, .feedback h2').forEach(h => {
+    h.parentElement.style.textAlign = 'center';
+  });
+
+  // 6. FLOATING PARTICLES
+  if (window.innerWidth > 768) {
+    const pb = document.createElement('div'); pb.className = 'particle-bg';
+    for (let i = 0; i < 18; i++) {
+      const s = document.createElement('span');
+      const size = Math.random() * 4 + 2;
+      s.style.cssText = `left:${Math.random()*100}%;width:${size}px;height:${size}px;animation-duration:${Math.random()*15+10}s;animation-delay:${Math.random()*10}s;opacity:${Math.random()*0.4+0.1};`;
+      pb.appendChild(s);
+    }
+    document.body.prepend(pb);
+  }
+})();
+</script>
 </body>
 </html>
