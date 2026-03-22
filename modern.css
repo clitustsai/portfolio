@@ -776,3 +776,179 @@ html[data-theme="dark"] .about-card:hover,
 html[data-theme="dark"] .cert-card:hover {
   box-shadow: 0 24px 60px rgba(102,126,234,0.4), 0 0 0 1px rgba(102,126,234,0.2) !important;
 }
+
+/* ============================================================
+   VIP UPGRADE v2 — Text auto-run, 3D tilt, magnetic, spotlight
+   ============================================================ */
+
+/* ===== TYPEWRITER CURSOR ===== */
+.typewriter-cursor::after {
+  content: '|';
+  animation: twBlink 0.75s step-end infinite;
+  color: var(--g1, #667eea);
+  font-weight: 300;
+  margin-left: 2px;
+}
+@keyframes twBlink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* ===== SHIMMER TEXT ===== */
+.shimmer-text {
+  background: linear-gradient(90deg, var(--g1) 0%, var(--g3,#f093fb) 40%, var(--g2) 70%, var(--g1) 100%);
+  background-size: 250% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmerMove 3.5s linear infinite;
+}
+@keyframes shimmerMove {
+  0% { background-position: 0% center; }
+  100% { background-position: 250% center; }
+}
+
+/* ===== HEADING GLOW on scroll ===== */
+.heading-glow-active {
+  animation: headingPop 0.6s cubic-bezier(0.4,0,0.2,1) both;
+}
+@keyframes headingPop {
+  0% { opacity:0.4; transform:translateY(12px); }
+  100% { opacity:1; transform:translateY(0); }
+}
+
+/* ===== 3D CARD TILT — spotlight overlay ===== */
+.card-spotlight {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 1;
+  transition: background 0.1s;
+}
+.project-card, .about-card, .cert-card, .blog-card, .tool-card, .pricing-card {
+  position: relative;
+  overflow: hidden;
+  transform-style: preserve-3d;
+}
+
+/* ===== MAGNETIC BUTTON glow trail ===== */
+.btn-submit, .btn-vip, .btn-pricing-vip, .nav-user-btn, .nav-login-btn, .auth-submit-btn {
+  position: relative;
+  overflow: hidden;
+}
+.btn-submit::after, .btn-vip::after, .btn-pricing-vip::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, var(--g1), var(--g3,#f093fb), var(--g2));
+  background-size: 200% 200%;
+  animation: borderGlow 3s linear infinite;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.btn-submit:hover::after, .btn-vip:hover::after, .btn-pricing-vip:hover::after {
+  opacity: 1;
+}
+@keyframes borderGlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ===== HOVER GLOW CARDS ===== */
+.project-card:hover,
+.about-card:hover,
+.cert-card:hover,
+.blog-card:hover,
+.tool-card:hover,
+.pricing-card:hover {
+  box-shadow:
+    0 24px 60px rgba(102,126,234,0.28),
+    0 0 0 1px rgba(102,126,234,0.12),
+    0 0 40px rgba(102,126,234,0.08) !important;
+}
+html[data-theme="dark"] .project-card:hover,
+html[data-theme="dark"] .about-card:hover,
+html[data-theme="dark"] .cert-card:hover,
+html[data-theme="dark"] .blog-card:hover {
+  box-shadow:
+    0 24px 60px rgba(102,126,234,0.45),
+    0 0 0 1px rgba(102,126,234,0.25),
+    0 0 60px rgba(102,126,234,0.15) !important;
+}
+
+/* ===== NAV LINK — glow on hover ===== */
+nav ul li a:hover {
+  color: var(--g1) !important;
+  text-shadow: 0 0 20px rgba(102,126,234,0.5);
+}
+
+/* ===== ICON HOVER SPIN ===== */
+.theme-toggle:hover i,
+.lang-toggle:hover {
+  animation: spinOnce 0.4s ease;
+}
+@keyframes spinOnce {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ===== STAGGER REVEAL ===== */
+.reveal-d1 { transition-delay: 0.08s !important; }
+.reveal-d2 { transition-delay: 0.16s !important; }
+.reveal-d3 { transition-delay: 0.24s !important; }
+.reveal-d4 { transition-delay: 0.32s !important; }
+.reveal-d5 { transition-delay: 0.40s !important; }
+
+/* ===== FLOATING BADGE PULSE ===== */
+.badge.vip, .nud-vip-badge, .free-badge {
+  animation: badgePulse 2.5s ease-in-out infinite;
+}
+@keyframes badgePulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(240,147,251,0.4); }
+  50% { box-shadow: 0 0 0 6px rgba(240,147,251,0); }
+}
+
+/* ===== INPUT FOCUS GLOW ===== */
+input:focus, textarea:focus, select:focus {
+  outline: none !important;
+  border-color: var(--g1) !important;
+  box-shadow: 0 0 0 3px rgba(102,126,234,0.15), 0 2px 8px rgba(102,126,234,0.1) !important;
+  transform: translateY(-1px);
+  transition: all 0.25s ease !important;
+}
+
+/* ===== LINK HOVER UNDERLINE SLIDE ===== */
+a:not(.btn):not(.nav-user-btn):not(.nav-login-btn):not(.nud-item):not([class*="btn-"]) {
+  position: relative;
+  text-decoration: none;
+}
+
+/* ===== SCROLL PROGRESS BAR ===== */
+#scrollProgressBar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--g1), var(--g3,#f093fb), var(--g2));
+  z-index: 99999;
+  width: 0%;
+  transition: width 0.1s linear;
+  border-radius: 0 2px 2px 0;
+}
+
+/* ===== BACK TO TOP PULSE ===== */
+#backToTop.show, .back-to-top.show {
+  animation: backTopPulse 2s ease-in-out infinite;
+}
+@keyframes backTopPulse {
+  0%,100% { box-shadow: 0 4px 14px rgba(102,126,234,0.4); }
+  50% { box-shadow: 0 4px 24px rgba(102,126,234,0.7), 0 0 0 8px rgba(102,126,234,0.08); }
+}
+
+/* ===== MOBILE: tắt heavy effects ===== */
+@media (max-width: 768px) {
+  .card-spotlight { display: none; }
+  .project-card:hover, .about-card:hover, .cert-card:hover,
+  .blog-card:hover, .tool-card:hover { transform: translateY(-4px) !important; }
+  .btn-submit::after, .btn-vip::after { display: none; }
+}
