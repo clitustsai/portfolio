@@ -744,11 +744,6 @@ app.delete('/api/subscription/admin/:id', requireAdmin, (req, res) => {
     res.json({ ok: true });
 });
 
-// Serve index.html cho tất cả các route không phải API
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'index.html'));
-});
-
 // ========== AI TOOLS — Code Review & CV Generator ==========
 const aiToolsLimiter = rateLimit({ windowMs: 24 * 60 * 60 * 1000, max: 3, keyGenerator: (req) => req.ip + '_tools', message: { error: 'Hết lượt miễn phí hôm nay (3 lần). Nâng cấp VIP để dùng không giới hạn.' } });
 
@@ -829,6 +824,11 @@ app.post('/api/tools/cv-generate', async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
+});
+
+// Serve index.html cho tất cả các route không phải API
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'index.html'));
 });
 
 // Khởi động: init DB trước rồi mới listen
