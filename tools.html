@@ -414,7 +414,7 @@ html[data-theme="dark"] .pricing-feature { color:#bbb; }
 </footer>
 
 <script>
-// v2 - fixed
+// v3
 const API = '';
 
 // ===== TABS =====
@@ -425,7 +425,9 @@ function switchTab(id, btn) {
   btn.classList.add('active');
 }
 
-// ===== USAGE COUNTER (localStorage) =====
+// ===== USAGE COUNTER =====
+// Luôn track theo localStorage, bất kể có email hay không
+// Server sẽ quyết định VIP hay free — client chỉ hiển thị UI
 function getUsage(key) {
   const today = new Date().toDateString();
   const stored = JSON.parse(localStorage.getItem('ai_usage') || '{}');
@@ -435,7 +437,10 @@ function getUsage(key) {
 function incUsage(key) {
   const today = new Date().toDateString();
   const stored = JSON.parse(localStorage.getItem('ai_usage') || '{}');
-  if (stored.date !== today) { localStorage.setItem('ai_usage', JSON.stringify({ date: today, [key]: 1 })); return 1; }
+  if (stored.date !== today) {
+    localStorage.setItem('ai_usage', JSON.stringify({ date: today, [key]: 1 }));
+    return 1;
+  }
   stored[key] = (stored[key] || 0) + 1;
   localStorage.setItem('ai_usage', JSON.stringify(stored));
   return stored[key];
@@ -444,10 +449,50 @@ function updateUsageUI() {
   const crUsed = getUsage('cr'); const cvUsed = getUsage('cv');
   const crEl = document.getElementById('cr-usage');
   const cvEl = document.getElementById('cv-usage');
-  if (crEl) crEl.textContent = Math.max(0, 3 - crUsed);
-  if (cvEl) cvEl.textContent = Math.max(0, 3 - cvUsed);
+  const crLeft = Math.max(0, 3 - crUsed);
+  const cvLeft = Math.max(0, 3 - cvUsed);
+  if (crEl) {
+    crEl.textContent = crLeft;
+    crEl.style.color = crLeft === 0 ? '#f5576c' : crLeft === 1 ? '#f59e0b' : 'var(--g1)';
+  }
+  if (cvEl) {
+    cvEl.textContent = cvLeft;
+    cvEl.style.color = cvLeft === 0 ? '#f5576c' : cvLeft === 1 ? '#f59e0b' : 'var(--g1)';
+  }
 }
 document.addEventListener('DOMContentLoaded', updateUsageUI);
+
+// ===== UPSELL MODAL =====
+function showUpsellModal(toolName) {
+  const existing = document.getElementById('upsell-modal');
+  if (existing) existing.remove();
+  const modal = document.createElement('div');
+  modal.id = 'upsell-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;';
+  modal.innerHTML = `
+    <div style="background:#fff;border-radius:24px;padding:2.5rem 2rem;max-width:420px;width:100%;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.3);position:relative;">
+      <button onclick="document.getElementById('upsell-modal').remove()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.4rem;cursor:pointer;color:#999;">✕</button>
+      <div style="font-size:3rem;margin-bottom:1rem;">🔒</div>
+      <h2 style="font-size:1.4rem;font-weight:900;color:#1a1a2e;margin:0 0 .5rem;">Hết lượt miễn phí!</h2>
+      <p style="color:#888;font-size:.9rem;margin:0 0 1.5rem;">Bạn đã dùng hết 3 lượt <strong>${toolName}</strong> hôm nay.<br>Nâng cấp VIP để dùng <strong>không giới hạn</strong>.</p>
+      <div style="background:linear-gradient(135deg,rgba(102,126,234,.06),rgba(118,75,162,.06));border-radius:16px;padding:1.25rem;margin-bottom:1.5rem;">
+        <div style="font-size:2rem;font-weight:900;color:#667eea;">99.000 <span style="font-size:1rem;font-weight:500;color:#999;">VNĐ/tháng</span></div>
+        <div style="font-size:.82rem;color:#888;margin-top:.25rem;">Không giới hạn tất cả AI tools</div>
+        <ul style="list-style:none;padding:0;margin:.75rem 0 0;text-align:left;display:flex;flex-direction:column;gap:.4rem;">
+          <li style="font-size:.85rem;color:#555;">✅ Code Review không giới hạn</li>
+          <li style="font-size:.85rem;color:#555;">✅ CV Generator không giới hạn</li>
+          <li style="font-size:.85rem;color:#555;">✅ Hỗ trợ 1-1 qua Zalo</li>
+          <li style="font-size:.85rem;color:#555;">✅ Tất cả tools tương lai</li>
+        </ul>
+      </div>
+      <a href="payment.html" style="display:block;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:1rem;border-radius:50px;font-size:1rem;font-weight:800;text-decoration:none;box-shadow:0 8px 24px rgba(102,126,234,.4);transition:all .2s;" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
+        👑 Nâng Cấp VIP Ngay
+      </a>
+      <p style="font-size:.78rem;color:#bbb;margin:.75rem 0 0;">Hoặc quay lại vào ngày mai để dùng tiếp miễn phí</p>
+    </div>`;
+  document.body.appendChild(modal);
+  modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+}
 
 // ===== CODE REVIEW =====
 async function runCodeReview() {
@@ -461,6 +506,9 @@ async function runCodeReview() {
   errBox.classList.remove('show'); resultBox.classList.remove('show');
   if (!code) { errBox.textContent = '⚠️ Vui lòng dán code vào ô bên trên.'; errBox.classList.add('show'); return; }
 
+  // Check free limit trước khi gọi API (nếu không có email VIP)
+  if (!email && getUsage('cr') >= 3) { showUpsellModal('AI Code Review'); return; }
+
   btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang phân tích...';
   try {
     const res = await fetch('/api/tools/code-review', {
@@ -469,10 +517,12 @@ async function runCodeReview() {
     });
     const data = await res.json();
     if (!res.ok) {
-      errBox.innerHTML = `❌ ${data.error}${data.upgradeUrl ? ` <a href="${data.upgradeUrl}" style="color:var(--g1);font-weight:700;">Nâng cấp VIP →</a>` : ''}`;
+      if (res.status === 429) { showUpsellModal('AI Code Review'); return; }
+      errBox.innerHTML = `❌ ${data.error}`;
       errBox.classList.add('show'); return;
     }
-    if (!email) incUsage('cr');
+    // Chỉ tăng counter nếu không phải VIP
+    if (!data.isVip) incUsage('cr');
     updateUsageUI();
     renderCodeReview(data.result);
     resultBox.classList.add('show');
@@ -524,6 +574,10 @@ async function runCVGen() {
   if (!name) { errBox.textContent = '⚠️ Vui lòng nhập họ tên.'; errBox.classList.add('show'); return; }
 
   const email = document.getElementById('cv-vip-email').value.trim();
+
+  // Check free limit trước khi gọi API
+  if (!email && getUsage('cv') >= 3) { showUpsellModal('AI CV Generator'); return; }
+
   btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tạo CV...';
   try {
     const res = await fetch('/api/tools/cv-generate', {
@@ -537,15 +591,17 @@ async function runCVGen() {
         experience: document.getElementById('cv-exp').value.trim(),
         education: document.getElementById('cv-edu').value.trim(),
         language: document.getElementById('cv-lang').value,
-        email
+        vipEmail: email
       })
     });
     const data = await res.json();
     if (!res.ok) {
-      errBox.innerHTML = `❌ ${data.error}${data.upgradeUrl ? ` <a href="${data.upgradeUrl}" style="color:var(--g1);font-weight:700;">Nâng cấp VIP →</a>` : ''}`;
+      if (res.status === 429) { showUpsellModal('AI CV Generator'); return; }
+      errBox.innerHTML = `❌ ${data.error}`;
       errBox.classList.add('show'); return;
     }
-    if (!email) incUsage('cv');
+    // Chỉ tăng counter nếu không phải VIP
+    if (!data.isVip) incUsage('cv');
     updateUsageUI();
     cvHTML = data.html || '';
     document.getElementById('cv-preview-body').innerHTML = cvHTML;

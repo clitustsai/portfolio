@@ -801,9 +801,9 @@ app.post('/api/tools/code-review', async (req, res) => {
 
 // AI CV Generator
 app.post('/api/tools/cv-generate', async (req, res) => {
-    const { name, title, email: userEmail, phone, summary, skills, experience, education, language, email } = req.body;
+    const { name, title, email: userEmail, phone, summary, skills, experience, education, language, email, vipEmail } = req.body;
     if (!name?.trim()) return res.status(400).json({ error: 'Thiếu tên' });
-    const isVip = checkVIP(email);
+    const isVip = checkVIP(vipEmail || email);
     if (!isVip) {
         const key = `cv_${req.ip}`;
         const today = new Date().toDateString();
