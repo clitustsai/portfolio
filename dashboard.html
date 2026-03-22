@@ -140,10 +140,26 @@ body{background:linear-gradient(135deg,#0f0c29,#55545e,#24243e);min-height:100vh
   </div>
 
   <!-- Stats row -->
-  <div class="stat-row-grid" style="margin-bottom:1.5rem;">
+  <div class="stat-row-grid" style="margin-bottom:1rem;grid-template-columns:repeat(4,1fr);">
     <div class="stat-box"><div class="num" id="statAiTotal">0</div><div class="lbl">Tổng AI dùng</div></div>
     <div class="stat-box"><div class="num" id="statAiToday">0</div><div class="lbl">Hôm nay</div></div>
-    <div class="stat-box"><div class="num" id="statDaysLeft">—</div><div class="lbl">Ngày còn lại</div></div>
+    <div class="stat-box"><div class="num" id="statDaysLeft">—</div><div class="lbl">Ngày VIP còn</div></div>
+    <div class="stat-box" style="cursor:pointer;" onclick="window.location='arcade.html'">
+      <div class="num" id="statCoins" style="color:#fbbf24;">0</div>
+      <div class="lbl">🪙 Coin</div>
+    </div>
+  </div>
+
+  <!-- Daily reward mini -->
+  <div id="dailyMini" style="background:linear-gradient(135deg,rgba(245,158,11,.12),rgba(251,191,36,.06));border:1.5px solid rgba(245,158,11,.25);border-radius:16px;padding:1rem 1.25rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+    <span style="font-size:1.8rem;">🎁</span>
+    <div style="flex:1;min-width:140px;">
+      <div style="font-size:.85rem;font-weight:800;" id="dailyMiniTitle">Daily Reward</div>
+      <div style="font-size:.75rem;color:rgba(255,255,255,.5);" id="dailyMiniDesc">Nhận coin mỗi ngày</div>
+    </div>
+    <a href="arcade.html" id="btnDailyMini" style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;border-radius:50px;padding:.55rem 1.1rem;font-size:.82rem;font-weight:800;cursor:pointer;text-decoration:none;white-space:nowrap;">
+      🎮 Arcade
+    </a>
   </div>
 
   <div class="db-grid">
@@ -240,6 +256,7 @@ body{background:linear-gradient(135deg,#0f0c29,#55545e,#24243e);min-height:100vh
   <!-- Quick links -->
   <div style="display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1.5rem;justify-content:center;">
     <a href="tools.html" class="btn-db btn-db-primary"><i class="fas fa-robot"></i> AI Tools</a>
+    <a href="arcade.html" class="btn-db btn-db-gold"><i class="fas fa-gamepad"></i> Arcade 🎮</a>
     <a href="services.html" class="btn-db btn-db-outline"><i class="fas fa-store"></i> Dịch Vụ</a>
     <a href="blog.html" class="btn-db btn-db-outline"><i class="fas fa-blog"></i> Blog</a>
     <a href="payment.html" class="btn-db btn-db-gold"><i class="fas fa-crown"></i> VIP</a>
@@ -411,6 +428,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     const todayUsage = Object.values(usage).reduce((a,b) => a+b, 0);
     document.getElementById('statAiTotal').textContent = totalUsage;
     document.getElementById('statAiToday').textContent = todayUsage;
+    document.getElementById('statCoins').textContent = data.coins || 0;
+
+    // Daily reward mini
+    if (!data.dailyClaimed) {
+      document.getElementById('dailyMiniTitle').textContent = '🎁 Daily Reward chờ bạn!';
+      document.getElementById('dailyMiniDesc').textContent = 'Vào Arcade để nhận coin hôm nay';
+      document.getElementById('btnDailyMini').textContent = '🎁 Nhận ngay';
+    } else {
+      document.getElementById('dailyMiniTitle').textContent = '✅ Đã nhận daily reward hôm nay';
+      document.getElementById('dailyMiniDesc').textContent = `Coin hiện có: ${data.coins || 0}🪙 · Chơi game kiếm thêm`;
+    }
 
     // Plan
     renderPlan(isVip, subscription, daysLeft);

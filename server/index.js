@@ -429,7 +429,16 @@ app.get('/api/user/dashboard', requireUser, (req, res) => {
         daysLeft = Math.max(0, Math.ceil((new Date(sub.expires_at) - Date.now()) / 86400000));
     }
 
-    res.json({ user, isVip, subscription: sub || null, daysLeft, usage, totalUsage, history });
+    // Coins
+    const coinRow = get('SELECT coins, total_earned FROM user_coins WHERE user_id=?', [req.userId]);
+    const coins = coinRow?.coins || 0;
+    const totalEarned = coinRow?.total_earned || 0;
+
+    // Daily reward status
+    const today = new Date().toISOString().slice(0,10);
+    const dailyClaimed = !!get('SELECT id FROM daily_rewards WHERE user_id=? AND claimed_date=?', [req.userId, today]);
+
+    res.json({ user, isVip, subscription: sub || null, daysLeft, usage, totalUsage, history, coins, totalEarned, dailyClaimed });
 });
 
 // ========== USER USAGE ==========
@@ -1020,6 +1029,120 @@ app.put('/api/auth/profile', requireUser, (req, res) => {
     run(`UPDATE users SET ${updates.join(',')} WHERE id=?`, params);
     const user = get('SELECT id,username,email,avatar,role,created_at FROM users WHERE id=?', [req.userId]);
     res.json({ ok: true, user });
+});
+
+// ========== COIN SYSTEM ==========
+
+function getCoins(userId) {
+    const row = get('SELECT coins FROM user_coins WHERE user_id=?', [userId]);
+    return row?.coins || 0;
+}
+function addCoins(userId, amount, type, note) {
+    const existing = get('SELECT user_id FROM user_coins WHERE user_id=?', [userId]);
+    if (existing) {
+        run('UPDATE user_coins SET coins=coins+?, total_earned=total_earned+?, updated_at=datetime("now") WHERE user_id=?',
+            [amount, Math.max(0,amount), userId]);
+    } else {
+        run('INSERT INTO user_coins (user_id, coins, total_earned) VALUES (?,?,?)',
+            [userId, Math.max(0,amount), Math.max(0,amount)]);
+    }
+    run('INSERT INTO coin_transactions (user_id, amount, type, note) VALUES (?,?,?,?)',
+        [userId, amount, type, note||'']);
+}
+function spendCoins(userId, amount, note) {
+    const coins = getCoins(userId);
+    if (coins < amount) return false;
+    run('UPDATE user_coins SET coins=coins-?, updated_at=datetime("now") WHERE user_id=?', [amount, userId]);
+    run('INSERT INTO coin_transactions (user_id, amount, type, note) VALUES (?,?,?,?)',
+        [userId, -amount, 'spend', note||'']);
+    return true;
+}
+
+// GET coins balance
+app.get('/api/coins/balance', requireUser, (req, res) => {
+    const row = get('SELECT coins, total_earned FROM user_coins WHERE user_id=?', [req.userId]);
+    res.json({ coins: row?.coins || 0, totalEarned: row?.total_earned || 0 });
+});
+
+// GET coin transactions
+app.get('/api/coins/history', requireUser, (req, res) => {
+    const rows = all('SELECT * FROM coin_transactions WHERE user_id=? ORDER BY id DESC LIMIT 30', [req.userId]);
+    res.json(rows);
+});
+
+// POST spend coins for AI tool
+app.post('/api/coins/spend', requireUser, (req, res) => {
+    const { amount, tool } = req.body;
+    const cost = parseInt(amount) || 10;
+    const ok = spendCoins(req.userId, cost, `AI Tool: ${tool||'unknown'}`);
+    if (!ok) return res.status(400).json({ error: 'Không đủ coin', coins: getCoins(req.userId) });
+    res.json({ ok: true, coins: getCoins(req.userId) });
+});
+
+// ========== DAILY REWARD ==========
+const STREAK_REWARDS = [10, 15, 20, 25, 30, 40, 50]; // ngày 1-7+
+
+app.get('/api/daily-reward/status', requireUser, (req, res) => {
+    const today = new Date().toISOString().slice(0,10);
+    const claimed = get('SELECT * FROM daily_rewards WHERE user_id=? AND claimed_date=?', [req.userId, today]);
+    // Tính streak
+    const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0,10);
+    const lastReward = get('SELECT * FROM daily_rewards WHERE user_id=? ORDER BY id DESC LIMIT 1', [req.userId]);
+    let streak = 1;
+    if (lastReward) {
+        if (lastReward.claimed_date === yesterday) streak = (lastReward.streak || 1) + 1;
+        else if (lastReward.claimed_date === today) streak = lastReward.streak;
+        else streak = 1; // reset streak
+    }
+    const coinsToEarn = STREAK_REWARDS[Math.min(streak-1, STREAK_REWARDS.length-1)];
+    res.json({ claimed: !!claimed, streak, coinsToEarn, coins: getCoins(req.userId) });
+});
+
+app.post('/api/daily-reward/claim', requireUser, (req, res) => {
+    const today = new Date().toISOString().slice(0,10);
+    const already = get('SELECT id FROM daily_rewards WHERE user_id=? AND claimed_date=?', [req.userId, today]);
+    if (already) return res.status(409).json({ error: 'Đã nhận thưởng hôm nay rồi!' });
+
+    const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0,10);
+    const lastReward = get('SELECT * FROM daily_rewards WHERE user_id=? ORDER BY id DESC LIMIT 1', [req.userId]);
+    let streak = 1;
+    if (lastReward && lastReward.claimed_date === yesterday) streak = (lastReward.streak || 1) + 1;
+
+    const coins = STREAK_REWARDS[Math.min(streak-1, STREAK_REWARDS.length-1)];
+    run('INSERT INTO daily_rewards (user_id, streak, coins_earned, claimed_date) VALUES (?,?,?,?)',
+        [req.userId, streak, coins, today]);
+    addCoins(req.userId, coins, 'daily_reward', `Điểm danh ngày ${streak}`);
+    res.json({ ok: true, streak, coinsEarned: coins, coins: getCoins(req.userId) });
+});
+
+// ========== GAME SCORES ==========
+const GAME_COIN_RATES = { snake: 0.05, clicker: 0.02 }; // coins per point
+const GAME_MAX_COINS = { snake: 50, clicker: 30 }; // max coins per session
+
+app.post('/api/game/score', requireUser, (req, res) => {
+    const { game, score } = req.body;
+    if (!game || !score) return res.status(400).json({ error: 'Thiếu thông tin' });
+    const rate = GAME_COIN_RATES[game] || 0.01;
+    const maxCoins = GAME_MAX_COINS[game] || 20;
+    const coinsEarned = Math.min(maxCoins, Math.floor(score * rate));
+
+    run('INSERT INTO game_scores (user_id, game, score, coins_earned) VALUES (?,?,?,?)',
+        [req.userId, game, score, coinsEarned]);
+    if (coinsEarned > 0) addCoins(req.userId, coinsEarned, 'game', `${game} score ${score}`);
+
+    // Leaderboard top 10
+    const leaderboard = all(`SELECT u.username, gs.score, gs.played_at
+        FROM game_scores gs JOIN users u ON u.id=gs.user_id
+        WHERE gs.game=? ORDER BY gs.score DESC LIMIT 10`, [game]);
+
+    res.json({ ok: true, coinsEarned, coins: getCoins(req.userId), leaderboard });
+});
+
+app.get('/api/game/leaderboard/:game', (req, res) => {
+    const rows = all(`SELECT u.username, MAX(gs.score) as score, u.avatar
+        FROM game_scores gs JOIN users u ON u.id=gs.user_id
+        WHERE gs.game=? GROUP BY gs.user_id ORDER BY score DESC LIMIT 10`, [req.params.game]);
+    res.json(rows);
 });
 
 // Serve index.html cho tất cả các route không phải API

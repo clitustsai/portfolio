@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arcade — Clitus PC</title>
+<meta name="description" content="Chơi game kiếm coin, dùng coin mở AI Tools miễn phí!">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="modern.css">
+<script src="api.js" defer></script>
+<script src="auth.js" defer></script>
+<script src="nav.js" defer></script>
+<style>
+:root{--g1:#667eea;--g2:#764ba2;--coin:#f59e0b;}
+*{box-sizing:border-box;}
+body{background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);min-height:100vh;color:#fff;}
+.arc-wrap{max-width:1100px;margin:0 auto;padding:1.5rem 1.25rem 5rem;}
+/* Hero */
+.arc-hero{text-align:center;padding:2rem 1rem 1.5rem;}
+.arc-hero h1{font-size:clamp(1.8rem,5vw,2.8rem);font-weight:900;margin:0 0 .4rem;
+  background:linear-gradient(135deg,#fff 0%,#fbbf24 40%,#f093fb 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.arc-hero p{color:rgba(255,255,255,.6);font-size:.9rem;margin:0;}
+/* Coin bar */
+.coin-bar{display:flex;align-items:center;justify-content:center;gap:1.5rem;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
+  border-radius:20px;padding:1rem 2rem;margin-bottom:1.5rem;flex-wrap:wrap;}
+.coin-stat{display:flex;align-items:center;gap:.5rem;font-size:.9rem;}
+.coin-stat .num{font-size:1.4rem;font-weight:900;color:#fbbf24;}
+.coin-stat .lbl{color:rgba(255,255,255,.5);font-size:.75rem;}
+.coin-icon{font-size:1.5rem;}
+/* Daily reward */
+.daily-card{background:linear-gradient(135deg,rgba(245,158,11,.15),rgba(251,191,36,.08));
+  border:1.5px solid rgba(245,158,11,.3);border-radius:20px;padding:1.25rem 1.5rem;
+  margin-bottom:1.5rem;display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap;}
+.daily-icon{font-size:2.5rem;flex-shrink:0;}
+.daily-info{flex:1;min-width:180px;}
+.daily-info h3{margin:0 0 .2rem;font-size:1rem;font-weight:800;}
+.daily-info p{margin:0;font-size:.8rem;color:rgba(255,255,255,.55);}
+.streak-dots{display:flex;gap:.4rem;margin-top:.5rem;}
+.streak-dot{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.1);
+  display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;
+  border:1.5px solid rgba(255,255,255,.15);transition:all .3s;}
+.streak-dot.done{background:linear-gradient(135deg,#f59e0b,#d97706);border-color:#f59e0b;color:#fff;}
+.streak-dot.today{background:linear-gradient(135deg,#10b981,#059669);border-color:#10b981;color:#fff;
+  box-shadow:0 0 12px rgba(16,185,129,.5);animation:pulse-dot 1.5s infinite;}
+@keyframes pulse-dot{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+.btn-claim{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;
+  border-radius:50px;padding:.7rem 1.5rem;font-size:.9rem;font-weight:800;cursor:pointer;
+  transition:all .25s;box-shadow:0 6px 20px rgba(245,158,11,.4);white-space:nowrap;}
+.btn-claim:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(245,158,11,.55);}
+.btn-claim:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+/* Games grid */
+.games-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.25rem;margin-bottom:1.5rem;}
+.game-card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
+  border-radius:20px;overflow:hidden;transition:all .3s;cursor:pointer;}
+.game-card:hover{border-color:rgba(102,126,234,.4);transform:translateY(-4px);
+  box-shadow:0 16px 40px rgba(0,0,0,.3);}
+.game-thumb{height:160px;display:flex;align-items:center;justify-content:center;
+  font-size:4rem;position:relative;overflow:hidden;}
+.game-thumb-snake{background:linear-gradient(135deg,#11998e,#38ef7d);}
+.game-thumb-clicker{background:linear-gradient(135deg,#f093fb,#f5576c);}
+.game-badge{position:absolute;top:.6rem;right:.6rem;background:rgba(0,0,0,.4);
+  border-radius:50px;padding:.2rem .6rem;font-size:.7rem;font-weight:700;color:#fbbf24;}
+.game-info{padding:1.25rem;}
+.game-info h3{margin:0 0 .3rem;font-size:1rem;font-weight:800;}
+.game-info p{margin:0 0 .75rem;font-size:.8rem;color:rgba(255,255,255,.55);}
+.game-meta{display:flex;gap:.75rem;font-size:.75rem;color:rgba(255,255,255,.4);}
+.game-meta span{display:flex;align-items:center;gap:.3rem;}
+/* Modal game */
+.game-modal{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);
+  z-index:9999;display:none;align-items:center;justify-content:center;padding:1rem;}
+.game-modal.open{display:flex;}
+.game-box{background:#1a1a2e;border-radius:24px;width:100%;max-width:520px;
+  box-shadow:0 30px 80px rgba(0,0,0,.5);overflow:hidden;position:relative;}
+.game-header{background:linear-gradient(135deg,#667eea,#764ba2);padding:1rem 1.5rem;
+  display:flex;align-items:center;justify-content:space-between;}
+.game-header h2{margin:0;font-size:1rem;font-weight:800;}
+.game-close{background:rgba(255,255,255,.15);border:none;color:#fff;width:32px;height:32px;
+  border-radius:50%;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;}
+.game-hud{display:flex;justify-content:space-between;padding:.75rem 1.25rem;
+  background:rgba(0,0,0,.3);font-size:.82rem;}
+.hud-item{text-align:center;}
+.hud-item .hv{font-size:1.1rem;font-weight:900;color:#fbbf24;}
+.hud-item .hl{font-size:.65rem;color:rgba(255,255,255,.4);text-transform:uppercase;}
+/* Snake canvas */
+#snakeCanvas{display:block;margin:0 auto;border:2px solid rgba(102,126,234,.3);
+  background:#0d0d1a;border-radius:8px;}
+/* Clicker game */
+.clicker-area{padding:1.5rem;text-align:center;}
+.click-target{width:140px;height:140px;border-radius:50%;margin:0 auto 1rem;
+  background:linear-gradient(135deg,#f093fb,#f5576c);
+  display:flex;align-items:center;justify-content:center;font-size:3.5rem;
+  cursor:pointer;transition:all .1s;box-shadow:0 8px 30px rgba(240,147,251,.4);
+  user-select:none;-webkit-user-select:none;border:none;}
+.click-target:active{transform:scale(.92);box-shadow:0 4px 16px rgba(240,147,251,.3);}
+.click-target.shake{animation:shake .15s ease;}
+@keyframes shake{0%,100%{transform:scale(.92) rotate(0)}25%{transform:scale(.92) rotate(-5deg)}75%{transform:scale(.92) rotate(5deg)}}
+.click-timer{width:100%;height:8px;background:rgba(255,255,255,.1);border-radius:10px;overflow:hidden;margin-bottom:.75rem;}
+.click-timer-fill{height:100%;background:linear-gradient(90deg,#10b981,#f59e0b,#f5576c);
+  border-radius:10px;transition:width .1s linear;}
+.click-combo{font-size:.8rem;color:#fbbf24;font-weight:700;min-height:1.2em;}
+.float-coin{position:fixed;pointer-events:none;font-size:1.1rem;font-weight:900;
+  color:#fbbf24;z-index:99999;animation:floatUp .8s ease forwards;}
+@keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-60px) scale(1.3)}}
+/* Game over */
+.game-over{padding:2rem;text-align:center;}
+.game-over h3{font-size:1.4rem;font-weight:900;margin:0 0 .5rem;}
+.game-over .go-score{font-size:2.5rem;font-weight:900;color:#fbbf24;margin:.5rem 0;}
+.game-over .go-coins{font-size:1rem;color:#10b981;margin-bottom:1.5rem;}
+.btn-play-again{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;
+  border-radius:50px;padding:.8rem 2rem;font-size:.95rem;font-weight:800;cursor:pointer;
+  transition:all .25s;box-shadow:0 6px 20px rgba(102,126,234,.4);}
+.btn-play-again:hover{transform:translateY(-2px);}
+/* Leaderboard */
+.leaderboard{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  border-radius:20px;padding:1.25rem;}
+.lb-title{font-size:.75rem;font-weight:800;color:rgba(255,255,255,.4);text-transform:uppercase;
+  letter-spacing:.08em;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;}
+.lb-row{display:flex;align-items:center;gap:.75rem;padding:.6rem .5rem;border-radius:10px;
+  transition:background .2s;}
+.lb-row:hover{background:rgba(255,255,255,.05);}
+.lb-rank{width:24px;text-align:center;font-size:.8rem;font-weight:800;color:rgba(255,255,255,.4);}
+.lb-rank.gold{color:#fbbf24;font-size:1rem;}
+.lb-rank.silver{color:#94a3b8;font-size:.95rem;}
+.lb-rank.bronze{color:#cd7c2f;font-size:.9rem;}
+.lb-name{flex:1;font-size:.85rem;font-weight:600;}
+.lb-score{font-size:.85rem;font-weight:800;color:#a5f3fc;}
+/* Coin shop */
+.shop-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-top:1rem;}
+.shop-item{background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.1);
+  border-radius:16px;padding:1.25rem;text-align:center;transition:all .25s;}
+.shop-item:hover{border-color:rgba(245,158,11,.4);transform:translateY(-2px);}
+.shop-item .si-icon{font-size:2.5rem;margin-bottom:.5rem;}
+.shop-item .si-name{font-size:.88rem;font-weight:800;margin-bottom:.25rem;}
+.shop-item .si-desc{font-size:.75rem;color:rgba(255,255,255,.45);margin-bottom:.75rem;}
+.shop-item .si-price{display:inline-flex;align-items:center;gap:.3rem;
+  background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);
+  border-radius:50px;padding:.3rem .8rem;font-size:.82rem;font-weight:800;color:#fbbf24;}
+.btn-buy{width:100%;margin-top:.75rem;padding:.6rem;border:none;border-radius:10px;
+  background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-size:.82rem;
+  font-weight:700;cursor:pointer;transition:all .2s;}
+.btn-buy:hover{opacity:.88;transform:translateY(-1px);}
+.btn-buy:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+/* Toast */
+.arc-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:99998;
+  background:rgba(20,20,50,.95);border:1.5px solid #4ade80;color:#fff;
+  padding:.75rem 1.5rem;border-radius:50px;font-size:.88rem;font-weight:700;
+  box-shadow:0 8px 30px rgba(0,0,0,.4);display:none;white-space:nowrap;
+  animation:toastPop .3s ease;}
+@keyframes toastPop{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+/* Login gate */
+.login-gate{text-align:center;padding:3rem 1rem;background:rgba(255,255,255,.05);
+  border:1.5px dashed rgba(102,126,234,.3);border-radius:20px;margin:2rem 0;}
+.login-gate i{font-size:3rem;color:#667eea;display:block;margin-bottom:1rem;}
+.login-gate h3{margin:0 0 .5rem;font-size:1.1rem;}
+.login-gate p{color:rgba(255,255,255,.5);font-size:.85rem;margin:0 0 1.5rem;}
+.btn-login-gate{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;
+  border-radius:50px;padding:.75rem 2rem;font-size:.95rem;font-weight:800;cursor:pointer;
+  box-shadow:0 6px 20px rgba(102,126,234,.4);transition:all .25s;}
+.btn-login-gate:hover{transform:translateY(-2px);}
+@media(max-width:600px){.games-grid{grid-template-columns:1fr;}.coin-bar{gap:1rem;padding:.75rem 1rem;}}
+</style>
+</head>
+<body>
+<header>
+  <nav>
+    <a href="index.html" class="logo">
+      <span class="logo-icon">💻</span>
+      <span class="logo-text">Clitus<span class="logo-accent">PC</span></span>
+    </a>
+    <ul id="navMenu">
+      <li><a href="index.html">Trang Chủ</a></li>
+      <li><a href="tools.html">AI Tools</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+      <div class="nav-auth-slot"></div>
+      <button class="nav-hamburger" id="navHamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+</header>
+
+<div class="arc-wrap">
+  <div class="arc-hero">
+    <h1>🎮 Arcade & Coin Shop</h1>
+    <p>Chơi game kiếm coin · Điểm danh nhận thưởng · Dùng coin mở AI Tools</p>
+  </div>
+
+  <!-- Login gate (shown when not logged in) -->
+  <div id="loginGate" class="login-gate" style="display:none">
+    <i class="fas fa-gamepad"></i>
+    <h3>Đăng nhập để chơi game & kiếm coin</h3>
+    <p>Tạo tài khoản miễn phí để tham gia arcade, nhận daily reward và dùng coin mở AI Tools</p>
+    <button class="btn-login-gate" onclick="openAuthModal('login')"><i class="fas fa-sign-in-alt"></i> Đăng nhập ngay</button>
+  </div>
+
+  <div id="arcMain" style="display:none">
+    <!-- Coin bar -->
+    <div class="coin-bar">
+      <div class="coin-stat">
+        <span class="coin-icon">🪙</span>
+        <div><div class="num" id="coinBalance">0</div><div class="lbl">Coin hiện có</div></div>
+      </div>
+      <div class="coin-stat">
+        <span class="coin-icon">📈</span>
+        <div><div class="num" id="coinTotal">0</div><div class="lbl">Tổng kiếm được</div></div>
+      </div>
+      <div class="coin-stat">
+        <span class="coin-icon">🔥</span>
+        <div><div class="num" id="streakCount">1</div><div class="lbl">Streak ngày</div></div>
+      </div>
+    </div>
+
+    <!-- Daily reward -->
+    <div class="daily-card" id="dailyCard">
+      <div class="daily-icon">🎁</div>
+      <div class="daily-info">
+        <h3>Daily Reward — Điểm danh nhận coin!</h3>
+        <p id="dailyDesc">Đăng nhập mỗi ngày để nhận coin, streak càng cao thưởng càng nhiều</p>
+        <div class="streak-dots" id="streakDots"></div>
+      </div>
+      <button class="btn-claim" id="btnClaim" onclick="claimDaily()">
+        <i class="fas fa-gift"></i> Nhận <span id="claimCoins">10</span> coin
+      </button>
+    </div>
+
+    <!-- Games -->
+    <div class="games-grid">
+      <div class="game-card" onclick="openGame('snake')">
+        <div class="game-thumb game-thumb-snake">
+          🐍
+          <div class="game-badge">🪙 Max 50 coin</div>
+        </div>
+        <div class="game-info">
+          <h3>🐍 Snake Classic</h3>
+          <p>Điều khiển rắn ăn mồi, tránh va chạm. Điểm càng cao coin càng nhiều!</p>
+          <div class="game-meta">
+            <span><i class="fas fa-coins"></i> 0.05 coin/điểm</span>
+            <span><i class="fas fa-trophy"></i> <span id="snakeBest">—</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="game-card" onclick="openGame('clicker')">
+        <div class="game-thumb game-thumb-clicker">
+          💥
+          <div class="game-badge">🪙 Max 30 coin</div>
+        </div>
+        <div class="game-info">
+          <h3>💥 Coin Clicker</h3>
+          <p>Click thật nhanh trong 15 giây! Combo x2, x3 để nhân điểm!</p>
+          <div class="game-meta">
+            <span><i class="fas fa-coins"></i> 0.02 coin/click</span>
+            <span><i class="fas fa-trophy"></i> <span id="clickerBest">—</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Leaderboards -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.25rem;margin-bottom:1.5rem;">
+      <div class="leaderboard">
+        <div class="lb-title"><i class="fas fa-trophy"></i> Snake Leaderboard</div>
+        <div id="snakeLb"><div style="text-align:center;padding:1rem;color:rgba(255,255,255,.3);font-size:.82rem;">Chưa có dữ liệu</div></div>
+      </div>
+      <div class="leaderboard">
+        <div class="lb-title"><i class="fas fa-trophy"></i> Clicker Leaderboard</div>
+        <div id="clickerLb"><div style="text-align:center;padding:1rem;color:rgba(255,255,255,.3);font-size:.82rem;">Chưa có dữ liệu</div></div>
+      </div>
+    </div>
+
+    <!-- Coin Shop -->
+    <div class="leaderboard" style="margin-bottom:1.5rem;">
+      <div class="lb-title"><i class="fas fa-store"></i> Coin Shop — Dùng coin mở AI Tools</div>
+      <div class="shop-grid">
+        <div class="shop-item">
+          <div class="si-icon">🔧</div>
+          <div class="si-name">Fix Code</div>
+          <div class="si-desc">1 lượt AI Fix Code không giới hạn</div>
+          <div class="si-price">🪙 10 coin</div>
+          <button class="btn-buy" onclick="buyTool('fix',10)">Mua ngay</button>
+        </div>
+        <div class="shop-item">
+          <div class="si-icon">📚</div>
+          <div class="si-name">Giải Bài Tập</div>
+          <div class="si-desc">1 lượt AI giải bài tập</div>
+          <div class="si-price">🪙 10 coin</div>
+          <button class="btn-buy" onclick="buyTool('hw',10)">Mua ngay</button>
+        </div>
+        <div class="shop-item">
+          <div class="si-icon">🎬</div>
+          <div class="si-name">Video Script</div>
+          <div class="si-desc">1 lượt tạo kịch bản video</div>
+          <div class="si-price">🪙 10 coin</div>
+          <button class="btn-buy" onclick="buyTool('vid',10)">Mua ngay</button>
+        </div>
+        <div class="shop-item">
+          <div class="si-icon">💻</div>
+          <div class="si-name">Code Review</div>
+          <div class="si-desc">1 lượt AI review code chuyên sâu</div>
+          <div class="si-price">🪙 15 coin</div>
+          <button class="btn-buy" onclick="buyTool('cr',15)">Mua ngay</button>
+        </div>
+        <div class="shop-item">
+          <div class="si-icon">📄</div>
+          <div class="si-name">CV Generator</div>
+          <div class="si-desc">1 lượt tạo CV chuyên nghiệp</div>
+          <div class="si-price">🪙 15 coin</div>
+          <button class="btn-buy" onclick="buyTool('cv',15)">Mua ngay</button>
+        </div>
+        <div class="shop-item" style="border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.06);">
+          <div class="si-icon">👑</div>
+          <div class="si-name">VIP 1 ngày</div>
+          <div class="si-desc">Dùng không giới hạn tất cả tools trong 24h</div>
+          <div class="si-price">🪙 200 coin</div>
+          <button class="btn-buy" onclick="buyTool('vip_day',200)" style="background:linear-gradient(135deg,#f59e0b,#d97706);">Mua ngay</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Snake Modal -->
+<div class="game-modal" id="snakeModal">
+  <div class="game-box">
+    <div class="game-header">
+      <h2>🐍 Snake Classic</h2>
+      <button class="game-close" onclick="closeGame('snake')">✕</button>
+    </div>
+    <div class="game-hud">
+      <div class="hud-item"><div class="hv" id="snakeScore">0</div><div class="hl">Điểm</div></div>
+      <div class="hud-item"><div class="hv" id="snakeCoinsEst">0</div><div class="hl">Coin ước tính</div></div>
+      <div class="hud-item"><div class="hv" id="snakeHigh">0</div><div class="hl">Kỷ lục</div></div>
+    </div>
+    <div style="padding:.75rem;text-align:center;">
+      <canvas id="snakeCanvas" width="400" height="320"></canvas>
+      <div style="margin-top:.5rem;font-size:.75rem;color:rgba(255,255,255,.35);">
+        ← → ↑ ↓ hoặc WASD · Mobile: vuốt màn hình
+      </div>
+    </div>
+    <div class="game-over" id="snakeOver" style="display:none">
+      <div style="font-size:2.5rem;">💀</div>
+      <h3>Game Over!</h3>
+      <div class="go-score" id="snakeFinalScore">0</div>
+      <div class="go-coins" id="snakeFinalCoins">+0 coin</div>
+      <button class="btn-play-again" onclick="startSnake()"><i class="fas fa-redo"></i> Chơi lại</button>
+    </div>
+  </div>
+</div>
+
+<!-- Clicker Modal -->
+<div class="game-modal" id="clickerModal">
+  <div class="game-box">
+    <div class="game-header">
+      <h2>💥 Coin Clicker</h2>
+      <button class="game-close" onclick="closeGame('clicker')">✕</button>
+    </div>
+    <div class="game-hud">
+      <div class="hud-item"><div class="hv" id="clickScore">0</div><div class="hl">Clicks</div></div>
+      <div class="hud-item"><div class="hv" id="clickTime">15</div><div class="hl">Giây còn</div></div>
+      <div class="hud-item"><div class="hv" id="clickCoinsEst">0</div><div class="hl">Coin ước tính</div></div>
+    </div>
+    <div class="clicker-area">
+      <div class="click-timer"><div class="click-timer-fill" id="clickTimerFill" style="width:100%"></div></div>
+      <div class="click-combo" id="clickCombo"></div>
+      <button class="click-target" id="clickTarget" onclick="handleClick(event)">🪙</button>
+      <div style="font-size:.78rem;color:rgba(255,255,255,.35);margin-top:.5rem;">Click thật nhanh!</div>
+    </div>
+    <div class="game-over" id="clickerOver" style="display:none">
+      <div style="font-size:2.5rem;">🎉</div>
+      <h3>Hết giờ!</h3>
+      <div class="go-score" id="clickFinalScore">0</div>
+      <div class="go-coins" id="clickFinalCoins">+0 coin</div>
+      <button class="btn-play-again" onclick="startClicker()"><i class="fas fa-redo"></i> Chơi lại</button>
+    </div>
+  </div>
+</div>
+
+<div class="arc-toast" id="arcToast"></div>
+
+<script>
+const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3001/api' : '/api';
+let _coins = 0, _streak = 1, _dailyClaimed = false;
+
+// ===== TOAST =====
+function arcToast(msg, color) {
+  const t = document.getElementById('arcToast');
+  t.textContent = msg;
+  t.style.borderColor = color || '#4ade80';
+  t.style.display = 'block';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.style.display = 'none'; }, 3000);
+}
+
+function floatCoin(x, y, text) {
+  const el = document.createElement('div');
+  el.className = 'float-coin';
+  el.textContent = text || '+1🪙';
+  el.style.left = x + 'px';
+  el.style.top = y + 'px';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 900);
+}
+
+// ===== COIN BALANCE =====
+async function loadCoins() {
+  try {
+    const token = localStorage.getItem('user_token');
+    const r = await fetch(API_BASE + '/coins/balance', { headers: { 'Authorization': 'Bearer ' + token } });
+    const d = await r.json();
+    _coins = d.coins || 0;
+    document.getElementById('coinBalance').textContent = _coins;
+    document.getElementById('coinTotal').textContent = d.totalEarned || 0;
+  } catch(e) {}
+}
+
+// ===== DAILY REWARD =====
+async function loadDailyStatus() {
+  try {
+    const token = localStorage.getItem('user_token');
+    const r = await fetch(API_BASE + '/daily-reward/status', { headers: { 'Authorization': 'Bearer ' + token } });
+    const d = await r.json();
+    _streak = d.streak || 1;
+    _dailyClaimed = d.claimed;
+    document.getElementById('streakCount').textContent = _streak;
+    document.getElementById('claimCoins').textContent = d.coinsToEarn;
+    document.getElementById('dailyDesc').textContent = _dailyClaimed
+      ? `✅ Đã nhận hôm nay! Streak: ${_streak} ngày liên tiếp`
+      : `Nhận ${d.coinsToEarn} coin hôm nay · Streak: ${_streak} ngày`;
+    const btn = document.getElementById('btnClaim');
+    btn.disabled = _dailyClaimed;
+    btn.innerHTML = _dailyClaimed ? '✅ Đã nhận hôm nay' : `<i class="fas fa-gift"></i> Nhận ${d.coinsToEarn} coin`;
+    // Streak dots (7 ngày)
+    const dots = document.getElementById('streakDots');
+    const labels = ['10','15','20','25','30','40','50'];
+    dots.innerHTML = labels.map((c, i) => {
+      const day = i + 1;
+      let cls = 'streak-dot';
+      if (day < _streak) cls += ' done';
+      else if (day === _streak && !_dailyClaimed) cls += ' today';
+      else if (day <= _streak && _dailyClaimed) cls += ' done';
+      return `<div class="${cls}" title="Ngày ${day}: +${c}🪙">${day}</div>`;
+    }).join('');
+  } catch(e) {}
+}
+
+async function claimDaily() {
+  const token = localStorage.getItem('user_token');
+  const btn = document.getElementById('btnClaim');
+  btn.disabled = true;
+  try {
+    const r = await fetch(API_BASE + '/daily-reward/claim', {
+      method: 'POST', headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const d = await r.json();
+    if (!r.ok) { arcToast('⚠️ ' + d.error, '#f59e0b'); btn.disabled = false; return; }
+    _coins = d.coins;
+    document.getElementById('coinBalance').textContent = _coins;
+    arcToast(`🎁 Nhận ${d.coinsEarned} coin! Streak ${d.streak} ngày 🔥`, '#fbbf24');
+    loadDailyStatus();
+  } catch(e) { arcToast('❌ Lỗi kết nối', '#f5576c'); btn.disabled = false; }
+}
+
+// ===== LEADERBOARD =====
+async function loadLeaderboards() {
+  const rankIcons = ['🥇','🥈','🥉'];
+  const rankCls = ['gold','silver','bronze'];
+  for (const game of ['snake','clicker']) {
+    try {
+      const r = await fetch(API_BASE + '/game/leaderboard/' + game);
+      const rows = await r.json();
+      const el = document.getElementById(game + 'Lb');
+      if (!rows.length) { el.innerHTML = '<div style="text-align:center;padding:1rem;color:rgba(255,255,255,.3);font-size:.82rem;">Chưa có dữ liệu</div>'; continue; }
+      el.innerHTML = rows.map((row, i) => `
+        <div class="lb-row">
+          <div class="lb-rank ${rankCls[i]||''}">${rankIcons[i] || (i+1)}</div>
+          <div class="lb-name">${row.username}</div>
+          <div class="lb-score">${row.score.toLocaleString()}</div>
+        </div>`).join('');
+    } catch(e) {}
+  }
+}
+
+// ===== COIN SHOP =====
+async function buyTool(tool, cost) {
+  if (_coins < cost) { arcToast(`❌ Không đủ coin! Cần ${cost}🪙, bạn có ${_coins}🪙`, '#f5576c'); return; }
+  const token = localStorage.getItem('user_token');
+  try {
+    const r = await fetch(API_BASE + '/coins/spend', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ amount: cost, tool })
+    });
+    const d = await r.json();
+    if (!r.ok) { arcToast('❌ ' + d.error, '#f5576c'); return; }
+    _coins = d.coins;
+    document.getElementById('coinBalance').textContent = _coins;
+    // Lưu extra lượt vào localStorage
+    const extras = JSON.parse(localStorage.getItem('coin_extras') || '{}');
+    extras[tool] = (extras[tool] || 0) + 1;
+    localStorage.setItem('coin_extras', JSON.stringify(extras));
+    const names = { fix:'Fix Code', hw:'Giải Bài Tập', vid:'Video Script', cr:'Code Review', cv:'CV Generator', vip_day:'VIP 1 ngày' };
+    arcToast(`✅ Mua ${names[tool]||tool} thành công! Còn ${_coins}🪙`, '#4ade80');
+    if (tool === 'vip_day') arcToast('👑 VIP 1 ngày đã kích hoạt! Vào AI Tools để dùng', '#fbbf24');
+  } catch(e) { arcToast('❌ Lỗi kết nối', '#f5576c'); }
+}
+
+// ===== SUBMIT SCORE =====
+async function submitScore(game, score) {
+  const token = localStorage.getItem('user_token');
+  try {
+    const r = await fetch(API_BASE + '/game/score', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ game, score })
+    });
+    const d = await r.json();
+    if (d.coinsEarned > 0) {
+      _coins = d.coins;
+      document.getElementById('coinBalance').textContent = _coins;
+    }
+    loadLeaderboards();
+    return d.coinsEarned || 0;
+  } catch(e) { return 0; }
+}
+
+// ===== OPEN/CLOSE GAME =====
+function openGame(game) {
+  document.getElementById(game + 'Modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  if (game === 'snake') startSnake();
+  else if (game === 'clicker') startClicker();
+}
+function closeGame(game) {
+  document.getElementById(game + 'Modal').classList.remove('open');
+  document.body.style.overflow = '';
+  if (game === 'snake') stopSnake();
+  else if (game === 'clicker') stopClicker();
+}
+
+// ===== SNAKE GAME =====
+let snakeInterval = null, snakeRunning = false;
+let snake, dir, food, snakeScore, snakeHigh = 0;
+const CELL = 20, COLS = 20, ROWS = 16;
+
+function startSnake() {
+  document.getElementById('snakeOver').style.display = 'none';
+  snake = [{x:10,y:8},{x:9,y:8},{x:8,y:8}];
+  dir = {x:1,y:0};
+  snakeScore = 0;
+  placeFood();
+  document.getElementById('snakeScore').textContent = 0;
+  document.getElementById('snakeCoinsEst').textContent = 0;
+  document.getElementById('snakeHigh').textContent = snakeHigh;
+  snakeRunning = true;
+  clearInterval(snakeInterval);
+  snakeInterval = setInterval(snakeTick, 130);
+  drawSnake();
+}
+
+function stopSnake() { clearInterval(snakeInterval); snakeRunning = false; }
+
+function placeFood() {
+  do { food = {x:Math.floor(Math.random()*COLS), y:Math.floor(Math.random()*ROWS)}; }
+  while (snake.some(s => s.x===food.x && s.y===food.y));
+}
+
+function snakeTick() {
+  const head = {x: snake[0].x + dir.x, y: snake[0].y + dir.y};
+  if (head.x<0||head.x>=COLS||head.y<0||head.y>=ROWS||snake.some(s=>s.x===head.x&&s.y===head.y)) {
+    endSnake(); return;
+  }
+  snake.unshift(head);
+  if (head.x===food.x && head.y===food.y) {
+    snakeScore += 10;
+    document.getElementById('snakeScore').textContent = snakeScore;
+    document.getElementById('snakeCoinsEst').textContent = Math.min(50, Math.floor(snakeScore * 0.05));
+    placeFood();
+  } else { snake.pop(); }
+  drawSnake();
+}
+
+function drawSnake() {
+  const canvas = document.getElementById('snakeCanvas');
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#0d0d1a';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  // Grid dots
+  ctx.fillStyle = 'rgba(255,255,255,.03)';
+  for(let x=0;x<COLS;x++) for(let y=0;y<ROWS;y++) ctx.fillRect(x*CELL+9,y*CELL+9,2,2);
+  // Food
+  ctx.font = CELL + 'px serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('🍎', food.x*CELL+CELL/2, food.y*CELL+CELL/2);
+  // Snake
+  snake.forEach((s,i) => {
+    const grad = ctx.createLinearGradient(s.x*CELL,s.y*CELL,(s.x+1)*CELL,(s.y+1)*CELL);
+    grad.addColorStop(0, i===0?'#38ef7d':'#11998e');
+    grad.addColorStop(1, i===0?'#11998e':'#0a6e5e');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.roundRect(s.x*CELL+1,s.y*CELL+1,CELL-2,CELL-2,i===0?6:4);
+    ctx.fill();
+    if (i===0) { ctx.font='12px serif'; ctx.fillText('👀',s.x*CELL+CELL/2,s.y*CELL+CELL/2); }
+  });
+}
+
+async function endSnake() {
+  clearInterval(snakeInterval); snakeRunning = false;
+  if (snakeScore > snakeHigh) snakeHigh = snakeScore;
+  document.getElementById('snakeHigh').textContent = snakeHigh;
+  document.getElementById('snakeBest').textContent = snakeHigh;
+  const coins = await submitScore('snake', snakeScore);
+  document.getElementById('snakeFinalScore').textContent = snakeScore + ' điểm';
+  document.getElementById('snakeFinalCoins').textContent = coins > 0 ? `+${coins} coin nhận được! 🪙` : 'Chơi tiếp để kiếm coin!';
+  document.getElementById('snakeOver').style.display = 'block';
+}
+
+// Snake controls
+document.addEventListener('keydown', e => {
+  if (!snakeRunning) return;
+  const map = { ArrowUp:{x:0,y:-1}, ArrowDown:{x:0,y:1}, ArrowLeft:{x:-1,y:0}, ArrowRight:{x:1,y:0},
+                w:{x:0,y:-1}, s:{x:0,y:1}, a:{x:-1,y:0}, d:{x:1,y:0} };
+  const nd = map[e.key];
+  if (nd && !(nd.x===-dir.x && nd.y===-dir.y)) { dir = nd; e.preventDefault(); }
+});
+// Touch swipe for snake
+let touchStart = null;
+document.getElementById('snakeCanvas').addEventListener('touchstart', e => { touchStart = e.touches[0]; }, {passive:true});
+document.getElementById('snakeCanvas').addEventListener('touchend', e => {
+  if (!touchStart || !snakeRunning) return;
+  const dx = e.changedTouches[0].clientX - touchStart.clientX;
+  const dy = e.changedTouches[0].clientY - touchStart.clientY;
+  if (Math.abs(dx) > Math.abs(dy)) dir = dx>0 ? {x:1,y:0} : {x:-1,y:0};
+  else dir = dy>0 ? {x:0,y:1} : {x:0,y:-1};
+}, {passive:true});
+
+// ===== CLICKER GAME =====
+let clickScore = 0, clickTimer = null, clickTimeLeft = 15, clickRunning = false;
+let lastClickTime = 0, comboCount = 0, clickHigh = 0;
+
+function startClicker() {
+  document.getElementById('clickerOver').style.display = 'none';
+  document.getElementById('clickTarget').style.display = 'flex';
+  clickScore = 0; clickTimeLeft = 15; comboCount = 0; clickRunning = true;
+  document.getElementById('clickScore').textContent = 0;
+  document.getElementById('clickTime').textContent = 15;
+  document.getElementById('clickCoinsEst').textContent = 0;
+  document.getElementById('clickCombo').textContent = '';
+  document.getElementById('clickTimerFill').style.width = '100%';
+  clearInterval(clickTimer);
+  clickTimer = setInterval(() => {
+    clickTimeLeft--;
+    document.getElementById('clickTime').textContent = clickTimeLeft;
+    document.getElementById('clickTimerFill').style.width = (clickTimeLeft/15*100) + '%';
+    if (clickTimeLeft <= 0) endClicker();
+  }, 1000);
+}
+
+function stopClicker() { clearInterval(clickTimer); clickRunning = false; }
+
+function handleClick(e) {
+  if (!clickRunning) return;
+  const now = Date.now();
+  const gap = now - lastClickTime;
+  lastClickTime = now;
+  // Combo
+  if (gap < 300) { comboCount = Math.min(comboCount + 1, 10); }
+  else { comboCount = Math.max(0, comboCount - 1); }
+  const multiplier = comboCount >= 8 ? 3 : comboCount >= 4 ? 2 : 1;
+  clickScore += multiplier;
+  document.getElementById('clickScore').textContent = clickScore;
+  document.getElementById('clickCoinsEst').textContent = Math.min(30, Math.floor(clickScore * 0.02));
+  if (multiplier > 1) {
+    document.getElementById('clickCombo').textContent = `🔥 COMBO x${multiplier}!`;
+  } else {
+    document.getElementById('clickCombo').textContent = comboCount >= 3 ? `⚡ Combo ${comboCount}` : '';
+  }
+  // Float coin
+  floatCoin(e.clientX - 15, e.clientY - 20, multiplier > 1 ? `+${multiplier}🪙` : '+1🪙');
+  // Shake
+  const btn = document.getElementById('clickTarget');
+  btn.classList.remove('shake');
+  void btn.offsetWidth;
+  btn.classList.add('shake');
+}
+
+async function endClicker() {
+  clearInterval(clickTimer); clickRunning = false;
+  document.getElementById('clickTarget').style.display = 'none';
+  if (clickScore > clickHigh) clickHigh = clickScore;
+  document.getElementById('clickerBest').textContent = clickHigh;
+  const coins = await submitScore('clicker', clickScore);
+  document.getElementById('clickFinalScore').textContent = clickScore + ' clicks';
+  document.getElementById('clickFinalCoins').textContent = coins > 0 ? `+${coins} coin nhận được! 🪙` : 'Chơi tiếp để kiếm coin!';
+  document.getElementById('clickerOver').style.display = 'block';
+}
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', async () => {
+  const token = localStorage.getItem('user_token');
+  if (!token) {
+    document.getElementById('loginGate').style.display = 'block';
+    return;
+  }
+  // Verify
+  try {
+    const r = await fetch(API_BASE + '/auth/me', { headers: { 'Authorization': 'Bearer ' + token } });
+    if (!r.ok) { document.getElementById('loginGate').style.display = 'block'; return; }
+  } catch(e) { document.getElementById('loginGate').style.display = 'block'; return; }
+
+  document.getElementById('arcMain').style.display = 'block';
+  await Promise.all([loadCoins(), loadDailyStatus(), loadLeaderboards()]);
+});
+</script>
+</body>
+</html>

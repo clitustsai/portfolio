@@ -200,7 +200,17 @@ async function runCodeReview() {
   var resultBox = document.getElementById('cr-result');
   errBox.classList.remove('show'); resultBox.classList.remove('show');
   if (!code) { errBox.textContent = '⚠️ Vui lòng dán code vào ô bên trên.'; errBox.classList.add('show'); return; }
-  if (!window._isVip && getUsage('cr') >= 3) { showUpsellModal('AI Code Review'); return; }
+  if (!window._isVip && getUsage('cr') >= 3) {
+    // Check coin extras
+    const extras = JSON.parse(localStorage.getItem('coin_extras') || '{}');
+    if (extras.cr > 0) {
+      extras.cr--;
+      localStorage.setItem('coin_extras', JSON.stringify(extras));
+      // continue (don't return)
+    } else {
+      showUpsellModal('AI Code Review'); return;
+    }
+  }
   btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang phân tích...';
   try {
     var res = await fetch(API_BASE + '/tools/code-review', {
@@ -268,7 +278,15 @@ async function runCVGen() {
   var resultBox = document.getElementById('cv-result');
   errBox.classList.remove('show'); resultBox.classList.remove('show');
   if (!name) { errBox.textContent = '⚠️ Vui lòng nhập họ tên.'; errBox.classList.add('show'); return; }
-  if (!window._isVip && getUsage('cv') >= 3) { showUpsellModal('AI CV Generator'); return; }
+  if (!window._isVip && getUsage('cv') >= 3) {
+    const extras = JSON.parse(localStorage.getItem('coin_extras') || '{}');
+    if (extras.cv > 0) {
+      extras.cv--;
+      localStorage.setItem('coin_extras', JSON.stringify(extras));
+    } else {
+      showUpsellModal('AI CV Generator'); return;
+    }
+  }
   btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tạo CV...';
   try {
     var res = await fetch(API_BASE + '/tools/cv-generate', {

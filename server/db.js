@@ -134,6 +134,36 @@ async function getDb() {
             activated_at DATETIME,
             created_at DATETIME DEFAULT (datetime('now'))
         );
+        CREATE TABLE IF NOT EXISTS user_coins (
+            user_id INTEGER PRIMARY KEY,
+            coins INTEGER NOT NULL DEFAULT 0,
+            total_earned INTEGER NOT NULL DEFAULT 0,
+            updated_at DATETIME DEFAULT (datetime('now'))
+        );
+        CREATE TABLE IF NOT EXISTS coin_transactions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            amount INTEGER NOT NULL,
+            type TEXT NOT NULL,
+            note TEXT DEFAULT '',
+            created_at DATETIME DEFAULT (datetime('now'))
+        );
+        CREATE TABLE IF NOT EXISTS daily_rewards (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            streak INTEGER NOT NULL DEFAULT 1,
+            coins_earned INTEGER NOT NULL DEFAULT 10,
+            claimed_date TEXT NOT NULL,
+            UNIQUE(user_id, claimed_date)
+        );
+        CREATE TABLE IF NOT EXISTS game_scores (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            game TEXT NOT NULL,
+            score INTEGER NOT NULL DEFAULT 0,
+            coins_earned INTEGER NOT NULL DEFAULT 0,
+            played_at DATETIME DEFAULT (datetime('now'))
+        );
     `);
     save();
     return db;
