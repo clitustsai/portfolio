@@ -223,7 +223,7 @@ html[data-theme="dark"] .pricing-feature { color:#bbb; }
   <div class="vip-banner">
     <div style="font-size:2rem">👑</div>
     <div class="vip-banner-text">
-      <h4>Nâng cấp VIP — 99.000 VNĐ/tháng</h4>
+      <h4>Nâng cấp VIP — 2.500.000 VNĐ/tháng</h4>
       <p>Dùng không giới hạn tất cả AI tools + ưu tiên xử lý + hỗ trợ 1-1</p>
     </div>
     <a href="payment.html" class="btn-vip">Nâng Cấp Ngay</a>
@@ -462,36 +462,110 @@ function updateUsageUI() {
 }
 document.addEventListener('DOMContentLoaded', updateUsageUI);
 
-// ===== UPSELL MODAL =====
+// ===== UPSELL / REGISTER MODAL =====
 function showUpsellModal(toolName) {
   const existing = document.getElementById('upsell-modal');
   if (existing) existing.remove();
   const modal = document.createElement('div');
   modal.id = 'upsell-modal';
-  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;overflow-y:auto;';
   modal.innerHTML = `
-    <div style="background:#fff;border-radius:24px;padding:2.5rem 2rem;max-width:420px;width:100%;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.3);position:relative;">
-      <button onclick="document.getElementById('upsell-modal').remove()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.4rem;cursor:pointer;color:#999;">✕</button>
-      <div style="font-size:3rem;margin-bottom:1rem;">🔒</div>
-      <h2 style="font-size:1.4rem;font-weight:900;color:#1a1a2e;margin:0 0 .5rem;">Hết lượt miễn phí!</h2>
-      <p style="color:#888;font-size:.9rem;margin:0 0 1.5rem;">Bạn đã dùng hết 3 lượt <strong>${toolName}</strong> hôm nay.<br>Nâng cấp VIP để dùng <strong>không giới hạn</strong>.</p>
-      <div style="background:linear-gradient(135deg,rgba(102,126,234,.06),rgba(118,75,162,.06));border-radius:16px;padding:1.25rem;margin-bottom:1.5rem;">
-        <div style="font-size:2rem;font-weight:900;color:#667eea;">99.000 <span style="font-size:1rem;font-weight:500;color:#999;">VNĐ/tháng</span></div>
-        <div style="font-size:.82rem;color:#888;margin-top:.25rem;">Không giới hạn tất cả AI tools</div>
-        <ul style="list-style:none;padding:0;margin:.75rem 0 0;text-align:left;display:flex;flex-direction:column;gap:.4rem;">
-          <li style="font-size:.85rem;color:#555;">✅ Code Review không giới hạn</li>
-          <li style="font-size:.85rem;color:#555;">✅ CV Generator không giới hạn</li>
-          <li style="font-size:.85rem;color:#555;">✅ Hỗ trợ 1-1 qua Zalo</li>
-          <li style="font-size:.85rem;color:#555;">✅ Tất cả tools tương lai</li>
-        </ul>
+    <div style="background:#fff;border-radius:24px;width:100%;max-width:440px;box-shadow:0 30px 80px rgba(0,0,0,.35);position:relative;overflow:hidden;margin:auto;" id="upsell-box">
+      <!-- Header gradient -->
+      <div style="background:linear-gradient(135deg,#667eea,#764ba2);padding:1.75rem 2rem 1.5rem;text-align:center;position:relative;">
+        <button onclick="document.getElementById('upsell-modal').remove()" style="position:absolute;top:.85rem;right:.85rem;background:rgba(255,255,255,.15);border:none;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;">✕</button>
+        <div style="font-size:2.5rem;margin-bottom:.5rem;">🔒</div>
+        <h2 style="color:#fff;font-size:1.2rem;font-weight:900;margin:0 0 .25rem;">Hết lượt miễn phí!</h2>
+        <p style="color:rgba(255,255,255,.8);font-size:.82rem;margin:0;">Đã dùng hết 3 lượt <strong>${toolName}</strong> hôm nay</p>
       </div>
-      <a href="payment.html" style="display:block;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:1rem;border-radius:50px;font-size:1rem;font-weight:800;text-decoration:none;box-shadow:0 8px 24px rgba(102,126,234,.4);transition:all .2s;" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
-        👑 Nâng Cấp VIP Ngay
-      </a>
-      <p style="font-size:.78rem;color:#bbb;margin:.75rem 0 0;">Hoặc quay lại vào ngày mai để dùng tiếp miễn phí</p>
+
+      <!-- Step 1: Form + QR -->
+      <div id="upsell-step1" style="padding:1.5rem 1.75rem;">
+        <div style="background:linear-gradient(135deg,rgba(102,126,234,.06),rgba(118,75,162,.06));border-radius:14px;padding:1rem 1.25rem;margin-bottom:1.25rem;text-align:center;">
+          <div style="font-size:1.6rem;font-weight:900;color:#667eea;">99.000 <span style="font-size:.9rem;font-weight:500;color:#999;">VNĐ/tháng</span></div>
+          <div style="font-size:.78rem;color:#888;margin-top:.2rem;">Không giới hạn tất cả AI tools</div>
+        </div>
+
+        <!-- Form -->
+        <div style="display:flex;flex-direction:column;gap:.75rem;margin-bottom:1.25rem;">
+          <input id="us-name" type="text" placeholder="Họ tên của bạn *" style="padding:.75rem 1rem;border:1.5px solid #e0e4ff;border-radius:12px;font-size:.9rem;font-family:inherit;outline:none;width:100%;box-sizing:border-box;" onfocus="this.style.borderColor='#667eea'" onblur="this.style.borderColor='#e0e4ff'">
+          <input id="us-email" type="email" placeholder="Email của bạn *" style="padding:.75rem 1rem;border:1.5px solid #e0e4ff;border-radius:12px;font-size:.9rem;font-family:inherit;outline:none;width:100%;box-sizing:border-box;" onfocus="this.style.borderColor='#667eea'" onblur="this.style.borderColor='#e0e4ff'">
+        </div>
+
+        <!-- Bank info -->
+        <div style="background:#f8f9ff;border-radius:14px;padding:1rem;margin-bottom:1rem;">
+          <div style="font-size:.72rem;font-weight:800;color:#999;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.65rem;">Chuyển khoản ACB</div>
+          <div style="display:flex;flex-direction:column;gap:.4rem;font-size:.83rem;">
+            <div style="display:flex;justify-content:space-between;"><span style="color:#888;">Ngân hàng</span><span style="font-weight:700;color:#1a1a2e;">ACB</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;"><span style="color:#888;">Số TK</span><span style="font-weight:700;color:#1a1a2e;display:flex;align-items:center;gap:.4rem;">26996867 <button onclick="navigator.clipboard.writeText('26996867')" style="background:none;border:none;color:#667eea;cursor:pointer;font-size:.72rem;font-weight:700;padding:.1rem .35rem;border-radius:5px;background:rgba(102,126,234,.1);">copy</button></span></div>
+            <div style="display:flex;justify-content:space-between;"><span style="color:#888;">Chủ TK</span><span style="font-weight:700;color:#1a1a2e;">THAI TUAN KIET</span></div>
+            <div style="display:flex;justify-content:space-between;"><span style="color:#888;">Số tiền</span><span style="font-weight:800;color:#667eea;">99.000 VNĐ</span></div>
+            <div style="display:flex;justify-content:space-between;"><span style="color:#888;">Nội dung</span><span style="font-weight:700;color:#1a1a2e;font-size:.78rem;">VIP [email của bạn]</span></div>
+          </div>
+        </div>
+
+        <!-- QR -->
+        <img src="img/qr-acb.jpg" alt="QR ACB" style="width:120px;height:120px;border-radius:12px;display:block;margin:0 auto .85rem;border:2px solid #e0e4ff;">
+
+        <input id="us-ref" type="text" placeholder="Nội dung chuyển khoản (tuỳ chọn)" style="padding:.65rem 1rem;border:1.5px solid #e0e4ff;border-radius:12px;font-size:.83rem;font-family:inherit;outline:none;width:100%;box-sizing:border-box;margin-bottom:1rem;" onfocus="this.style.borderColor='#667eea'" onblur="this.style.borderColor='#e0e4ff'">
+
+        <div id="us-err" style="display:none;background:#fff5f5;border:1.5px solid #fecaca;border-radius:10px;padding:.65rem 1rem;color:#dc2626;font-size:.82rem;margin-bottom:.75rem;"></div>
+
+        <button id="us-btn" onclick="submitUpsell()" style="width:100%;padding:.9rem;border:none;border-radius:50px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:.95rem;font-weight:800;cursor:pointer;box-shadow:0 6px 20px rgba(102,126,234,.4);display:flex;align-items:center;justify-content:center;gap:.5rem;transition:all .2s;">
+          <i class="fas fa-crown"></i> Xác nhận đã chuyển khoản
+        </button>
+        <p style="font-size:.73rem;color:#bbb;text-align:center;margin:.65rem 0 0;">Admin kích hoạt trong 1-2 giờ · <a href="https://zalo.me/0906857331" target="_blank" style="color:#667eea;font-weight:700;">Zalo nhanh hơn</a></p>
+      </div>
+
+      <!-- Step 2: Success -->
+      <div id="upsell-step2" style="display:none;padding:2rem 1.75rem;text-align:center;">
+        <div style="font-size:3rem;margin-bottom:.75rem;">🎉</div>
+        <h3 style="font-size:1.15rem;font-weight:900;color:#1a1a2e;margin:0 0 .5rem;">Đăng ký thành công!</h3>
+        <p style="font-size:.88rem;color:#888;line-height:1.65;margin:0 0 1.5rem;">Chúng tôi đã nhận yêu cầu của bạn.<br>Gói VIP sẽ được kích hoạt trong <strong>1-2 giờ</strong>.<br>Sau khi kích hoạt, nhập email VIP vào ô "Email VIP" để dùng không giới hạn.</p>
+        <button onclick="window.open('https://zalo.me/0906857331','_blank')" style="padding:.75rem 1.5rem;border:none;border-radius:50px;background:linear-gradient(135deg,#0068ff,#00c6ff);color:#fff;font-weight:700;cursor:pointer;font-size:.9rem;margin-bottom:.75rem;width:100%;">
+          <i class="fas fa-comment-dots"></i> Nhắn Zalo để kích hoạt nhanh hơn
+        </button>
+        <button onclick="document.getElementById('upsell-modal').remove()" style="padding:.65rem 1.5rem;border:1.5px solid #e0e4ff;border-radius:50px;background:none;color:#667eea;font-weight:700;cursor:pointer;font-size:.85rem;width:100%;">
+          Đóng
+        </button>
+      </div>
     </div>`;
   document.body.appendChild(modal);
   modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+}
+
+async function submitUpsell() {
+  const name = document.getElementById('us-name').value.trim();
+  const email = document.getElementById('us-email').value.trim();
+  const ref = document.getElementById('us-ref').value.trim();
+  const errEl = document.getElementById('us-err');
+  const btn = document.getElementById('us-btn');
+
+  errEl.style.display = 'none';
+  if (!name) { errEl.textContent = '⚠️ Vui lòng nhập họ tên.'; errEl.style.display = 'block'; return; }
+  if (!email || !email.includes('@')) { errEl.textContent = '⚠️ Vui lòng nhập email hợp lệ.'; errEl.style.display = 'block'; return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
+
+  try {
+    const API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+      ? 'http://localhost:3001/api' : `${location.origin}/api`;
+    const r = await fetch(`${API_BASE}/subscription/register`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, transferRef: ref })
+    });
+    const d = await r.json();
+    if (!r.ok && r.status !== 409) throw new Error(d.error || 'Lỗi server');
+    // Success
+    document.getElementById('upsell-step1').style.display = 'none';
+    document.getElementById('upsell-step2').style.display = 'block';
+  } catch(e) {
+    errEl.textContent = '❌ ' + e.message;
+    errEl.style.display = 'block';
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-crown"></i> Xác nhận đã chuyển khoản';
+  }
 }
 
 // ===== CODE REVIEW =====
