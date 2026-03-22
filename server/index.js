@@ -13,7 +13,14 @@ app.use(cors({ origin: '*' }));
 app.use(express.json());
 // Serve frontend static files from project root
 const frontendPath = path.join(__dirname, '..');
-app.use(express.static(frontendPath));
+// Cache headers for static assets
+app.use(express.static(frontendPath, {
+    setHeaders: (res, filePath) => {
+        if (filePath.match(/\.(css|js|woff2?|ttf|eot|svg|png|jpg|jpeg|gif|ico|webp)$/)) {
+            res.setHeader('Cache-Control', 'public, max-age=86400'); // 1 day
+        }
+    }
+}));
 console.log('Serving static files from:', frontendPath);
 
 // Setup VAPID

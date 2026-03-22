@@ -56,8 +56,11 @@
     <meta name="apple-mobile-web-app-title" content="Clitus PC">
     <link rel="apple-touch-icon" href="img/icon-192.png">
     <title>Clitus PC - Full Stack Developer | React, Node.js, Vue.js</title>
+    <!-- Cloudflare CDN preconnect -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.css">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="styles-new.css">
     <link rel="stylesheet" href="modern.css">
@@ -506,7 +509,10 @@
 
     <header>
         <nav>
-            <div class="logo">✦ Clitus PC</div>
+            <a href="#home" class="logo">
+                <span class="logo-icon">💻</span>
+                <span class="logo-text">Clitus<span class="logo-accent">PC</span></span>
+            </a>
             <ul id="navMenu">
                 <li><a href="#home" data-i18n="nav.home">Trang Chủ</a></li>
                 <li><a href="#about" data-i18n="nav.about">Về Tôi</a></li>
@@ -519,7 +525,7 @@
                     <a href="#" class="nav-dropdown-toggle">Công Cụ <i class="fas fa-chevron-down nav-chevron"></i></a>
                     <ul class="nav-dropdown-menu">
                         <li><a href="tools.html"><span class="dd-icon">🤖</span> AI Tools</a></li>
-                        <li><a href="roadmap.html"><span class="dd-icon">🗺️</span> Roadmap</a></li>
+                        <li><a href="roadmap.html"><span class="dd-icon">�️</span> Roadmap</a></li>
                         <li><a href="proposal.html"><span class="dd-icon">💼</span> Proposal</a></li>
                         <li><a href="invoice.html"><span class="dd-icon">🧾</span> Invoice</a></li>
                         <li><a href="payment.html"><span class="dd-icon">💳</span> Dịch Vụ & VIP</a></li>
@@ -962,7 +968,7 @@
     </div>
 
     <!-- Floating Action Buttons -->
-    <div id="fabGroup">
+    <div id="fabGroup" style="position:fixed;bottom:24px;right:20px;z-index:9990;display:flex;flex-direction:column;align-items:flex-end;gap:0.6rem;">
       <div id="fabMenu" style="display:none;flex-direction:column;gap:0.5rem;align-items:flex-end;margin-bottom:0.25rem;">
         <a href="payment.html" style="display:flex;align-items:center;gap:0.6rem;text-decoration:none;">
           <span style="background:#fff;color:#1a1a2e;font-size:0.8rem;font-weight:700;padding:0.35rem 0.85rem;border-radius:50px;box-shadow:0 2px 10px rgba(0,0,0,0.15);white-space:nowrap;">💼 Thuê tôi ngay</span>
@@ -1221,9 +1227,9 @@
     </div>
 
 
-    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
     <script src="i18n.js"></script>
     <script src="api.js"></script>
     <script src="auth.js"></script>
