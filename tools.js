@@ -313,47 +313,8 @@ function copyCV() {
 
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', function() {
-  // Dark mode
-  var htmlEl = document.documentElement;
-  var themeToggle = document.getElementById('themeToggle');
-  if (localStorage.getItem('theme') === 'dark') {
-    htmlEl.setAttribute('data-theme', 'dark');
-    if (themeToggle) themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-  }
-  if (themeToggle) {
-    themeToggle.addEventListener('click', function() {
-      var isDark = htmlEl.getAttribute('data-theme') === 'dark';
-      htmlEl.setAttribute('data-theme', isDark ? 'light' : 'dark');
-      localStorage.setItem('theme', isDark ? 'light' : 'dark');
-      themeToggle.innerHTML = isDark ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
-    });
-  }
-
-  // Hamburger
-  var hamburger = document.getElementById('navHamburger');
-  var navUl = document.querySelector('nav ul');
-  if (hamburger && navUl) {
-    hamburger.addEventListener('click', function(e) {
-      e.stopPropagation();
-      var o = hamburger.classList.toggle('open');
-      navUl.classList.toggle('open', o);
-      document.body.style.overflow = o ? 'hidden' : '';
-    });
-    document.addEventListener('click', function(e) {
-      if (navUl.classList.contains('open') && !navUl.contains(e.target) && e.target !== hamburger) {
-        hamburger.classList.remove('open'); navUl.classList.remove('open'); document.body.style.overflow = '';
-      }
-    });
-  }
-  document.querySelectorAll('.nav-dropdown').forEach(function(dd) {
-    dd.querySelector('.nav-dropdown-toggle').addEventListener('click', function(e) {
-      if (window.innerWidth <= 768) { e.preventDefault(); dd.classList.toggle('open'); }
-    });
-    document.addEventListener('click', function(e) { if (!dd.contains(e.target)) dd.classList.remove('open'); });
-  });
-
-  // AUTH GATE — auth.js đã handle updateNavAuth() qua DOMContentLoaded của nó
-  // Chỉ cần check VIP và usage nếu đã đăng nhập
+  // AUTH GATE — nav.js xử lý theme/hamburger/dropdown
+  // auth.js xử lý updateNavAuth()
   if (isLoggedIn()) {
     var user = getUser();
     checkVipStatus(user.email);

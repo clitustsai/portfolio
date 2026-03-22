@@ -117,13 +117,27 @@
 <body>
   <header>
     <nav>
-      <div class="logo"><a href="index.html" style="color:inherit;text-decoration:none">Portfolio</a></div>
-      <ul>
-        <li><a href="index.html#home">Trang Chủ</a></li>
-        <li><a href="roadmap.html">🗺️ Roadmap</a></li>
+      <div class="logo">✦ Clitus PC</div>
+      <ul id="navMenu">
+        <li><a href="index.html">Trang Chủ</a></li>
+        <li><a href="index.html#about">Về Tôi</a></li>
         <li><a href="blog.html">Blog</a></li>
+        <li class="nav-dropdown">
+          <a href="#" class="nav-dropdown-toggle">Công Cụ <i class="fas fa-chevron-down nav-chevron"></i></a>
+          <ul class="nav-dropdown-menu">
+            <li><a href="tools.html"><span class="dd-icon">🤖</span> AI Tools</a></li>
+            <li><a href="roadmap.html"><span class="dd-icon">🗺️</span> Roadmap</a></li>
+            <li><a href="proposal.html" class="active"><span class="dd-icon">💼</span> Proposal</a></li>
+            <li><a href="invoice.html"><span class="dd-icon">🧾</span> Invoice</a></li>
+            <li><a href="payment.html"><span class="dd-icon">💳</span> Dịch Vụ & VIP</a></li>
+          </ul>
+        </li>
       </ul>
-      <div class="nav-auth-slot"></div>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+        <div class="nav-auth-slot"></div>
+        <button class="nav-hamburger" id="navHamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+      </div>
     </nav>
   </header>
 
@@ -215,6 +229,7 @@
 
   <script src="api.js"></script>
   <script src="auth.js"></script>
+  <script src="nav.js"></script>
   <script>
   async function generateProposal() {
     const clientName = document.getElementById('pClientName').value.trim() || 'Quý Khách';

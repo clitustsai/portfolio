@@ -257,13 +257,27 @@
 <body>
 <header>
   <nav>
-    <div class="logo"><a href="index.html" style="color:inherit;text-decoration:none">Portfolio</a></div>
-    <ul>
+    <div class="logo">✦ Clitus PC</div>
+    <ul id="navMenu">
       <li><a href="index.html">Trang Chủ</a></li>
-      <li><a href="proposal.html">💼 Proposal</a></li>
+      <li><a href="index.html#about">Về Tôi</a></li>
       <li><a href="blog.html">Blog</a></li>
+      <li class="nav-dropdown">
+        <a href="#" class="nav-dropdown-toggle">Công Cụ <i class="fas fa-chevron-down nav-chevron"></i></a>
+        <ul class="nav-dropdown-menu">
+          <li><a href="tools.html"><span class="dd-icon">🤖</span> AI Tools</a></li>
+          <li><a href="roadmap.html"><span class="dd-icon">🗺️</span> Roadmap</a></li>
+          <li><a href="proposal.html"><span class="dd-icon">💼</span> Proposal</a></li>
+          <li><a href="invoice.html"><span class="dd-icon">🧾</span> Invoice</a></li>
+          <li><a href="payment.html" class="active"><span class="dd-icon">💳</span> Dịch Vụ & VIP</a></li>
+        </ul>
+      </li>
     </ul>
-    <div class="nav-auth-slot"></div>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+      <div class="nav-auth-slot"></div>
+      <button class="nav-hamburger" id="navHamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
   </nav>
 </header>
 
@@ -374,7 +388,7 @@
   <!-- VIP MEMBERSHIP -->
   <div id="vip" class="section-head">
     <div class="eyebrow">👑 Membership</div>
-    <h2>Gói VIP — 1.500.000 VNĐ/tháng</h2>
+    <h2>Gói VIP — 99.000 VNĐ/tháng</h2>
     <p>Truy cập toàn bộ source code, tải không giới hạn, nội dung độc quyền</p>
   </div>
 
@@ -385,7 +399,7 @@
       <div class="vip-crown">👑</div>
       <div class="vip-badge-label">VIP MEMBER</div>
       <div class="vip-price-wrap">
-        <span class="vip-price">2.500.000</span>
+        <span class="vip-price">99.000</span>
         <span class="vip-unit">VNĐ / tháng</span>
       </div>
       <ul class="vip-perks">
@@ -481,7 +495,7 @@
     <button class="modal-close" onclick="closeVipModal()"><i class="fas fa-times"></i></button>
     <div class="modal-icon" style="background:linear-gradient(135deg,#f59e0b,#d97706);">👑</div>
     <div class="modal-title">Đăng Ký Gói VIP</div>
-    <div class="modal-price">2.500.000 VNĐ/tháng</div>
+    <div class="modal-price">99.000 VNĐ/tháng</div>
 
     <!-- Step 1: Form -->
     <div id="vipStep1">
@@ -495,7 +509,7 @@
           <div class="bank-row"><span class="k">Ngân hàng</span><span class="v">ACB</span></div>
           <div class="bank-row"><span class="k">Số TK</span><span class="v">26996867 <button class="copy-btn" onclick="cp('26996867')"><i class="fas fa-copy"></i></button></span></div>
           <div class="bank-row"><span class="k">Chủ TK</span><span class="v">THAI TUAN KIET</span></div>
-          <div class="bank-row"><span class="k">Số tiền</span><span class="v" style="color:#667eea;font-weight:800;">2.500.000 VNĐ</span></div>
+          <div class="bank-row"><span class="k">Số tiền</span><span class="v" style="color:#667eea;font-weight:800;">99.000 VNĐ</span></div>
           <div class="bank-row"><span class="k">Nội dung</span><span class="v" style="font-size:0.78rem;">VIP [email của bạn]</span></div>
         </div>
       </div>
@@ -614,6 +628,7 @@ async function checkVipStatus() {
 </script>
 <script src="api.js"></script>
 <script src="auth.js"></script>
+<script src="nav.js"></script>
 <script>
 // Particles
 (function(){
