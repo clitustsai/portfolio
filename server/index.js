@@ -15,9 +15,13 @@ app.use(express.json());
 const frontendPath = path.join(__dirname, '..');
 // Cache headers for static assets
 app.use(express.static(frontendPath, {
+    extensions: ['html'],
     setHeaders: (res, filePath) => {
         if (filePath.match(/\.(css|js|woff2?|ttf|eot|svg|png|jpg|jpeg|gif|ico|webp)$/)) {
             res.setHeader('Cache-Control', 'public, max-age=86400'); // 1 day
+        }
+        if (filePath.endsWith('.html')) {
+            res.setHeader('Cache-Control', 'no-cache');
         }
     }
 }));
@@ -1145,8 +1149,13 @@ app.get('/api/game/leaderboard/:game', (req, res) => {
     res.json(rows);
 });
 
-// Serve index.html cho tất cả các route không phải API
+// Serve index.html chỉ cho các route không phải file tĩnh và không phải API
 app.get('*', (req, res) => {
+    const reqPath = req.path;
+    // Nếu có extension (html, css, js, png...) thì 404 thay vì redirect
+    if (reqPath.includes('.')) {
+        return res.status(404).send('Not found');
+    }
     res.sendFile(path.join(__dirname, '..', 'index.html'));
 });
 
