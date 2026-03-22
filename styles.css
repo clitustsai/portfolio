@@ -420,8 +420,7 @@
         .chat-widget {
             position: fixed;
             bottom: 160px;
-            right: 20px;
-            width: 350px;
+            right: 20px;            width: 350px;
             height: 500px;
             background: white;
             border-radius: 10px;
@@ -549,7 +548,6 @@
             transition: transform 0.3s;
             z-index: 9989;
         }
-
         .chat-toggle:hover {
             transform: scale(1.1);
         }
@@ -1163,9 +1161,9 @@
     .btn { font-size: 0.9rem; padding: 0.85rem 1.25rem; }
     .submit-btn { font-size: 0.95rem; padding: 0.9rem; }
     .chat-widget { height: 75vh; bottom: 160px; }
-    .chat-toggle { width: 50px; height: 50px; font-size: 1.2rem; bottom: 90px; }
+    .chat-toggle { width: 50px; height: 50px; font-size: 1.2rem; bottom: 90px; right: 20px; }
     .social-links a { width: 38px; height: 38px; font-size: 1rem; }
-    .back-to-top { right: 72px; width: 44px; height: 44px; font-size: 1rem; }
+    .back-to-top { right: 20px; bottom: 160px; width: 44px; height: 44px; font-size: 1rem; }
     .project-image { height: 140px; }
     .about-card, .skill-item { padding: 1.1rem 1.25rem; }
 }

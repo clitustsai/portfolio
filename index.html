@@ -1816,7 +1816,7 @@
         }
         </script>
     <!-- Floating Action Buttons -->
-    <div id="fabGroup" style="position:fixed;bottom:2rem;right:1.5rem;z-index:9990;display:flex;flex-direction:column;align-items:flex-end;gap:0.6rem;">
+    <div id="fabGroup" style="position:fixed;bottom:1.5rem;right:1.5rem;z-index:9990;display:flex;flex-direction:column;align-items:flex-end;gap:0.6rem;">
       <div id="fabMenu" style="display:none;flex-direction:column;gap:0.5rem;align-items:flex-end;margin-bottom:0.25rem;">
         <a href="payment.html" style="display:flex;align-items:center;gap:0.6rem;text-decoration:none;">
           <span style="background:#fff;color:#1a1a2e;font-size:0.8rem;font-weight:700;padding:0.35rem 0.85rem;border-radius:50px;box-shadow:0 2px 10px rgba(0,0,0,0.15);white-space:nowrap;">💼 Thuê tôi ngay</span>
@@ -1988,21 +1988,6 @@
 (function() {
   if (!window.speechSynthesis) return;
 
-  function speak(text) {
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = 'vi-VN';
-    utter.rate = 0.95;
-    utter.pitch = 1.05;
-    utter.volume = 0.9;
-
-    // Thử giọng tiếng Việt, fallback sang giọng mặc định
-    const voices = window.speechSynthesis.getVoices();
-    const viVoice = voices.find(v => v.lang.startsWith('vi')) || voices.find(v => v.lang.startsWith('en'));
-    if (viVoice) utter.voice = viVoice;
-
-    window.speechSynthesis.speak(utter);
-  }
-
   function getGreeting() {
     const h = new Date().getHours();
     if (h >= 5 && h < 12) return 'Chào buổi sáng!';
@@ -2010,20 +1995,50 @@
     return 'Chào buổi tối!';
   }
 
-  function doWelcome() {
-    // Chỉ chào 1 lần mỗi phiên
-    if (sessionStorage.getItem('welcomed')) return;
-    sessionStorage.setItem('welcomed', '1');
-
-    const greeting = getGreeting();
-    speak(`${greeting} Chào mừng bạn đến với portfolio của Clitus PC. Chúc bạn có trải nghiệm tuyệt vời!`);
+  function speak(text) {
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = 'vi-VN';
+    utter.rate = 0.92;
+    utter.pitch = 1.05;
+    utter.volume = 1;
+    const voices = window.speechSynthesis.getVoices();
+    const viVoice = voices.find(v => v.lang && v.lang.startsWith('vi'))
+                 || voices.find(v => v.lang && v.lang.startsWith('en'));
+    if (viVoice) utter.voice = viVoice;
+    window.speechSynthesis.speak(utter);
   }
 
-  // Voices load async trên một số trình duyệt
-  if (window.speechSynthesis.getVoices().length > 0) {
-    setTimeout(doWelcome, 800);
-  } else {
-    window.speechSynthesis.onvoiceschanged = () => setTimeout(doWelcome, 800);
+  function doWelcome() {
+    if (sessionStorage.getItem('welcomed')) return;
+    sessionStorage.setItem('welcomed', '1');
+    speak(getGreeting() + ' Chào mừng bạn đến với portfolio của Clitus PC. Chúc bạn có trải nghiệm tuyệt vời!');
+  }
+
+  function trySpeak() {
+    if (window.speechSynthesis.getVoices().length > 0) {
+      doWelcome();
+    } else {
+      window.speechSynthesis.onvoiceschanged = doWelcome;
+    }
+  }
+
+  // Desktop: chạy sau 1s
+  // Mobile: cần user gesture trước — lắng nghe touch/click đầu tiên
+  if (!sessionStorage.getItem('welcomed')) {
+    const onFirstInteraction = function() {
+      document.removeEventListener('touchstart', onFirstInteraction);
+      document.removeEventListener('click', onFirstInteraction);
+      trySpeak();
+    };
+    // Thử chạy ngay (desktop), nếu bị block thì chờ gesture (mobile)
+    setTimeout(() => {
+      if (!sessionStorage.getItem('welcomed')) {
+        try { trySpeak(); } catch(e) {}
+      }
+    }, 1000);
+    document.addEventListener('touchstart', onFirstInteraction, { once: true });
+    document.addEventListener('click', onFirstInteraction, { once: true });
   }
 })();
 </script>
