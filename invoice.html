@@ -145,6 +145,21 @@
 <script src="api.js"></script>
 <script src="auth.js"></script>
 <script>
+// ===== ADMIN GATE =====
+(function() {
+  const ADMIN_KEY = 'inv_admin_ok';
+  const ADMIN_PASS = 'admin2026';
+  if (sessionStorage.getItem(ADMIN_KEY) !== '1') {
+    const pw = prompt('🔐 Nhập mật khẩu để truy cập trang hóa đơn:');
+    if (pw !== ADMIN_PASS) {
+      document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;flex-direction:column;gap:1rem;"><div style="font-size:3rem;">🔒</div><div style="font-size:1.2rem;color:#666;">Không có quyền truy cập</div><a href="index.html" style="color:#667eea;">← Về trang chủ</a></div>';
+      return;
+    }
+    sessionStorage.setItem(ADMIN_KEY, '1');
+  }
+})();
+</script>
+<script>
 let items = [{ name:'', qty:1, price:0 }];
 let invCounter = 1000 + Math.floor(Math.random()*9000);
 
