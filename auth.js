@@ -122,12 +122,12 @@ function initAuthModal() {
             <button type="submit" class="auth-submit-btn" id="loginBtn">
                 <i class="fas fa-sign-in-alt"></i> Đăng Nhập
             </button>
-            <p class="auth-switch">Chưa có tài khoản? <a onclick="switchAuthTab('register')">Đăng ký ngay</a></p>
+            <p class="auth-switch" style="margin-bottom:.4rem">Chưa có tài khoản? <a onclick="switchAuthTab('register')">Đăng ký ngay</a></p>
+            <p class="auth-switch" style="margin-top:0"><a onclick="switchAuthTab('forgot')" style="color:#999;font-size:.78rem">Quên mật khẩu?</a></p>
         </form>
 
         <!-- Register form -->
-        <form id="registerForm" class="auth-form" style="display:none" onsubmit="handleRegister(event)">
-            <div class="auth-logo">✨</div>
+        <form id="registerForm" class="auth-form" style="display:none" onsubmit="handleRegister(event)">            <div class="auth-logo">✨</div>
             <h3>Tạo tài khoản mới</h3>
             <p class="auth-sub">Tham gia cộng đồng để bình luận</p>
 
@@ -162,6 +162,23 @@ function initAuthModal() {
                 <i class="fas fa-user-plus"></i> Đăng Ký
             </button>
             <p class="auth-switch">Đã có tài khoản? <a onclick="switchAuthTab('login')">Đăng nhập</a></p>
+        </form>
+
+        <!-- Forgot password form -->
+        <form id="forgotForm" class="auth-form" style="display:none" onsubmit="handleForgotPassword(event)">
+            <div class="auth-logo">📧</div>
+            <h3>Quên mật khẩu?</h3>
+            <p class="auth-sub">Nhập email — chúng tôi gửi link đặt lại ngay</p>
+            <div class="auth-field">
+                <i class="fas fa-envelope"></i>
+                <input type="email" id="forgotEmail" placeholder="Email của bạn" required autocomplete="email">
+            </div>
+            <p class="auth-error" id="forgotError"></p>
+            <div id="forgotSuccess" style="display:none;background:#f0fdf4;border:1.5px solid #86efac;border-radius:12px;padding:.85rem 1rem;font-size:.85rem;color:#166534;text-align:center;margin-bottom:.75rem;"></div>
+            <button type="submit" class="auth-submit-btn" id="forgotBtn" style="background:linear-gradient(135deg,#10b981,#059669);">
+                <i class="fas fa-paper-plane"></i> Gửi link đặt lại
+            </button>
+            <p class="auth-switch"><a onclick="switchAuthTab('login')">← Quay lại đăng nhập</a></p>
         </form>
     </div>`;
 
@@ -309,12 +326,14 @@ function closeAuthModal() {
 }
 
 function switchAuthTab(tab) {
-    document.getElementById('loginForm').style.display  = tab === 'login'    ? 'block' : 'none';
+    document.getElementById('loginForm').style.display    = tab === 'login'    ? 'block' : 'none';
     document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
+    document.getElementById('forgotForm').style.display   = tab === 'forgot'   ? 'block' : 'none';
     document.getElementById('tabLogin').classList.toggle('active',    tab === 'login');
     document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
-    document.getElementById('loginError').textContent = '';
+    document.getElementById('loginError').textContent    = '';
     document.getElementById('registerError').textContent = '';
+    if (document.getElementById('forgotError')) document.getElementById('forgotError').textContent = '';
 }
 
 async function handleLogin(e) {
@@ -369,8 +388,33 @@ async function handleRegister(e) {
     }
 }
 
-async function handleLogout() {
-    await apiLogout();
+async function handleForgotPassword(e) {
+    e.preventDefault();
+    const btn = document.getElementById('forgotBtn');
+    const errEl = document.getElementById('forgotError');
+    const successEl = document.getElementById('forgotSuccess');
+    errEl.textContent = ''; successEl.style.display = 'none';
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
+    try {
+        const email = document.getElementById('forgotEmail').value.trim();
+        const r = await fetch(`${API_BASE}/auth/forgot-password`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+        });
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.error || 'Lỗi gửi email');
+        successEl.innerHTML = '✅ Đã gửi! Kiểm tra hộp thư <strong>' + email + '</strong><br><span style="font-size:.78rem;color:#666">Link có hiệu lực 15 phút. Kiểm tra cả thư mục Spam.</span>';
+        successEl.style.display = 'block';
+        btn.style.display = 'none';
+    } catch(err) {
+        errEl.textContent = err.message;
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Gửi link đặt lại';
+    }
+}
+
+async function handleLogout() {    await apiLogout();
     updateNavAuth();
     updateCommentForms();
     if (typeof showToast === 'function') showToast('👋 Đã đăng xuất', 'info', 2000);

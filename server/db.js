@@ -164,6 +164,14 @@ async function getDb() {
             coins_earned INTEGER NOT NULL DEFAULT 0,
             played_at DATETIME DEFAULT (datetime('now'))
         );
+        CREATE TABLE IF NOT EXISTS password_resets (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            token TEXT UNIQUE NOT NULL,
+            expires_at DATETIME NOT NULL,
+            used INTEGER DEFAULT 0,
+            created_at DATETIME DEFAULT (datetime('now'))
+        );
         CREATE TABLE IF NOT EXISTS chat_messages (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER,
@@ -196,6 +204,7 @@ async function getDb() {
     try { db.exec(`ALTER TABLE chat_messages ADD COLUMN msg_type TEXT DEFAULT 'text'`); } catch(e) {}
     try { db.exec(`ALTER TABLE chat_messages ADD COLUMN pinned INTEGER DEFAULT 0`); } catch(e) {}
     try { db.exec(`ALTER TABLE chat_messages ADD COLUMN sticker TEXT DEFAULT ''`); } catch(e) {}
+    try { db.exec(`CREATE TABLE IF NOT EXISTS password_resets (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, token TEXT UNIQUE NOT NULL, expires_at DATETIME NOT NULL, used INTEGER DEFAULT 0, created_at DATETIME DEFAULT (datetime('now')))`); } catch(e) {}
 
     save();
     return db;

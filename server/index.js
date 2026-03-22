@@ -470,6 +470,106 @@ app.post('/api/auth/logout', (req, res) => {
     res.json({ ok: true });
 });
 
+// ========== PASSWORD RESET ==========
+const resetLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 3, message: { error: 'Quá nhiều yêu cầu. Thử lại sau 15 phút.' } });
+
+app.post('/api/auth/forgot-password', resetLimiter, async (req, res) => {
+    const { email } = req.body;
+    if (!email?.trim()) return res.status(400).json({ error: 'Vui lòng nhập email' });
+
+    const user = get('SELECT id, username, email FROM users WHERE email=?', [email.trim().toLowerCase()]);
+    // Luôn trả 200 để tránh email enumeration
+    if (!user) return res.json({ ok: true, message: 'Nếu email tồn tại, bạn sẽ nhận được link reset.' });
+
+    // Xóa token cũ chưa dùng
+    run('DELETE FROM password_resets WHERE user_id=? AND used=0', [user.id]);
+
+    // Tạo token ngẫu nhiên
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString(); // 15 phút
+    run('INSERT INTO password_resets (user_id, token, expires_at) VALUES (?,?,?)', [user.id, token, expiresAt]);
+
+    const appUrl = process.env.APP_URL || 'https://portfolio-utbu.onrender.com';
+    const resetUrl = `${appUrl}/reset-password.html?token=${token}`;
+
+    // Gửi email qua Resend
+    try {
+        const { Resend } = require('resend');
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        await resend.emails.send({
+            from: 'Clitus PC <onboarding@resend.dev>',
+            to: user.email,
+            subject: '🔐 Đặt lại mật khẩu — Clitus PC',
+            html: `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f5f5ff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+  <div style="max-width:480px;margin:40px auto;background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 8px 32px rgba(102,126,234,.15);">
+    <div style="background:linear-gradient(135deg,#667eea,#764ba2);padding:2rem;text-align:center;">
+      <div style="font-size:2.5rem;margin-bottom:.5rem;">🔐</div>
+      <h1 style="color:#fff;margin:0;font-size:1.4rem;font-weight:800;">Đặt lại mật khẩu</h1>
+    </div>
+    <div style="padding:2rem;">
+      <p style="color:#444;font-size:.95rem;margin:0 0 1rem;">Xin chào <strong>${user.username}</strong>,</p>
+      <p style="color:#666;font-size:.88rem;line-height:1.6;margin:0 0 1.5rem;">
+        Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn.<br>
+        Nhấn nút bên dưới để tạo mật khẩu mới. Link có hiệu lực trong <strong>15 phút</strong>.
+      </p>
+      <div style="text-align:center;margin:1.5rem 0;">
+        <a href="${resetUrl}" style="display:inline-block;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;text-decoration:none;padding:.85rem 2rem;border-radius:12px;font-weight:800;font-size:.95rem;box-shadow:0 4px 14px rgba(102,126,234,.4);">
+          Đặt lại mật khẩu →
+        </a>
+      </div>
+      <p style="color:#999;font-size:.78rem;text-align:center;margin:1rem 0 0;">
+        Nếu bạn không yêu cầu, hãy bỏ qua email này.<br>
+        Link sẽ hết hạn lúc ${new Date(expiresAt).toLocaleTimeString('vi-VN')}.
+      </p>
+      <hr style="border:none;border-top:1px solid #f0f0f8;margin:1.5rem 0;">
+      <p style="color:#bbb;font-size:.72rem;text-align:center;margin:0;">
+        © Clitus PC Portfolio · <a href="${appUrl}" style="color:#667eea;">portfolio-utbu.onrender.com</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>`
+        });
+    } catch(err) {
+        console.error('Reset email error:', err.message);
+        // Vẫn trả ok để không lộ lỗi
+    }
+
+    res.json({ ok: true, message: 'Nếu email tồn tại, bạn sẽ nhận được link reset.' });
+});
+
+// Verify token (GET — kiểm tra trước khi hiện form)
+app.get('/api/auth/reset-password/verify', (req, res) => {
+    const { token } = req.query;
+    if (!token) return res.status(400).json({ error: 'Thiếu token' });
+    const row = get("SELECT * FROM password_resets WHERE token=? AND used=0 AND expires_at > datetime('now')", [token]);
+    if (!row) return res.status(400).json({ error: 'Link không hợp lệ hoặc đã hết hạn' });
+    res.json({ ok: true, valid: true });
+});
+
+// Reset password (POST)
+app.post('/api/auth/reset-password', (req, res) => {
+    const { token, password } = req.body;
+    if (!token || !password) return res.status(400).json({ error: 'Thiếu thông tin' });
+    if (password.length < 6) return res.status(400).json({ error: 'Mật khẩu tối thiểu 6 ký tự' });
+
+    const row = get("SELECT * FROM password_resets WHERE token=? AND used=0 AND expires_at > datetime('now')", [token]);
+    if (!row) return res.status(400).json({ error: 'Link không hợp lệ hoặc đã hết hạn' });
+
+    // Cập nhật password
+    run('UPDATE users SET password_hash=? WHERE id=?', [hashPassword(password), row.user_id]);
+    // Đánh dấu token đã dùng
+    run('UPDATE password_resets SET used=1 WHERE id=?', [row.id]);
+
+    const user = get('SELECT id,username,email,avatar,role FROM users WHERE id=?', [row.user_id]);
+    const jwtToken = signJWT({ id: user.id, email: user.email, role: user.role });
+    res.json({ ok: true, message: 'Đặt lại mật khẩu thành công!', user, token: jwtToken });
+});
+
 // ========== USER DASHBOARD ==========
 app.get('/api/user/dashboard', requireUser, (req, res) => {
     const user = get('SELECT id,username,email,avatar,role,created_at FROM users WHERE id=?', [req.userId]);
