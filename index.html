@@ -963,6 +963,7 @@
                     <button class="admin-tab" data-tab="comments"><i class="fas fa-comments"></i> Bình Luận</button>
                     <button class="admin-tab" data-tab="blog"><i class="fas fa-pen-nib"></i> Blog</button>
                     <button class="admin-tab" data-tab="analytics"><i class="fas fa-chart-bar"></i> Thống Kê</button>
+                    <button class="admin-tab" data-tab="subscriptions"><i class="fas fa-crown"></i> VIP</button>
                 </div>
                 <div class="admin-tab-content active" id="tab-projects">
                     <div class="admin-section-header"><h3>Quản Lý Dự Án</h3></div>
@@ -1035,7 +1036,14 @@
         </div>
     </div>
 
-    <!-- Project Edit Sub-Modal -->
+                <!-- VIP Subscriptions Tab -->
+                <div class="admin-tab-content" id="tab-subscriptions" style="display:none">
+                    <div class="admin-section-header">
+                        <h3>👑 Quản Lý VIP Members</h3>
+                        <button class="admin-btn-primary" onclick="loadAdminSubs()" style="margin-left:auto"><i class="fas fa-sync"></i> Làm mới</button>
+                    </div>
+                    <div id="adminSubsList" style="margin-top:1rem;"></div>
+                </div>
     <div id="projectEditModal" class="admin-sub-modal" style="display:none">
         <div class="admin-sub-modal-content">
             <h3 id="projectEditTitle">Chỉnh Sửa Dự Án</h3>

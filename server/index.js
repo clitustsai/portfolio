@@ -661,6 +661,89 @@ app.get('/api/invoice/admin/list', requireAdmin, (req, res) => {
     res.json(all('SELECT * FROM invoices ORDER BY created_at DESC'));
 });
 
+// ========== SUBSCRIPTION ==========
+
+// Đăng ký gói VIP — user tự submit, chờ admin duyệt
+app.post('/api/subscription/register', (req, res) => {
+    const { name, email, transferRef } = req.body;
+    if (!name?.trim() || !email?.trim()) return res.status(400).json({ error: 'Thiếu thông tin' });
+    // Kiểm tra đã có sub active chưa
+    const existing = get("SELECT * FROM subscriptions WHERE email=? AND status='active' AND expires_at > datetime('now')", [email.trim()]);
+    if (existing) return res.status(409).json({ error: 'Email này đã có gói VIP đang hoạt động', subscription: existing });
+    run('INSERT INTO subscriptions (email, name, plan, price, status, transfer_ref) VALUES (?,?,?,?,?,?)', [
+        email.trim().slice(0,100), name.trim().slice(0,100), 'vip', 99000, 'pending', (transferRef||'').trim().slice(0,100)
+    ]);
+    const sub = get('SELECT * FROM subscriptions ORDER BY id DESC LIMIT 1');
+    res.status(201).json({ ok: true, message: 'Đăng ký thành công! Vui lòng chờ admin xác nhận (thường trong 1-2 giờ).', subscription: sub });
+});
+
+// Kiểm tra trạng thái sub theo email
+app.get('/api/subscription/check', (req, res) => {
+    const { email } = req.query;
+    if (!email) return res.status(400).json({ error: 'Thiếu email' });
+    const sub = get("SELECT id,email,name,plan,status,expires_at,activated_at,created_at FROM subscriptions WHERE email=? ORDER BY id DESC LIMIT 1", [email.trim()]);
+    if (!sub) return res.json({ hasSubscription: false });
+    const isActive = sub.status === 'active' && sub.expires_at && new Date(sub.expires_at) > new Date();
+    res.json({ hasSubscription: isActive, subscription: sub });
+});
+
+// Admin: lấy danh sách subscriptions
+app.get('/api/subscription/admin/list', requireAdmin, (req, res) => {
+    res.json(all('SELECT * FROM subscriptions ORDER BY created_at DESC'));
+});
+
+// Admin: duyệt subscription (kích hoạt 30 ngày)
+app.post('/api/subscription/admin/activate/:id', requireAdmin, (req, res) => {
+    const id = parseInt(req.params.id);
+    const sub = get('SELECT * FROM subscriptions WHERE id=?', [id]);
+    if (!sub) return res.status(404).json({ error: 'Không tìm thấy' });
+    run("UPDATE subscriptions SET status='active', activated_at=datetime('now'), expires_at=datetime('now','+30 days') WHERE id=?", [id]);
+    const updated = get('SELECT * FROM subscriptions WHERE id=?', [id]);
+    // Gửi email thông báo nếu có Resend
+    if (process.env.RESEND_API_KEY) {
+        try {
+            const resend = getResend();
+            resend.emails.send({
+                from: 'Clitus PC <onboarding@resend.dev>',
+                to: [sub.email],
+                subject: '🎉 Gói VIP của bạn đã được kích hoạt!',
+                html: `<div style="font-family:sans-serif;max-width:500px;margin:0 auto;padding:40px 20px;background:#f4f6ff;">
+                  <div style="background:linear-gradient(135deg,#667eea,#764ba2);border-radius:20px;padding:40px;text-align:center;color:#fff;">
+                    <div style="font-size:3rem;margin-bottom:1rem;">👑</div>
+                    <h1 style="margin:0 0 0.5rem;font-size:1.5rem;">Chào mừng VIP Member!</h1>
+                    <p style="opacity:0.85;margin:0;">Gói VIP của bạn đã được kích hoạt thành công</p>
+                  </div>
+                  <div style="background:#fff;border-radius:16px;padding:24px;margin-top:16px;">
+                    <p>Xin chào <strong>${sub.name}</strong>,</p>
+                    <p>Gói VIP <strong>99.000 VNĐ/tháng</strong> của bạn đã được kích hoạt. Bạn có thể:</p>
+                    <ul style="line-height:2;">
+                      <li>✅ Xem toàn bộ source code các dự án</li>
+                      <li>✅ Tải source code không giới hạn</li>
+                      <li>✅ Truy cập nội dung VIP độc quyền</li>
+                    </ul>
+                    <p style="color:#667eea;font-weight:700;">Hiệu lực: 30 ngày kể từ hôm nay</p>
+                    <a href="https://portfolio-utbu.onrender.com/payment.html" style="display:inline-block;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:12px 28px;border-radius:50px;text-decoration:none;font-weight:700;margin-top:8px;">Truy cập ngay →</a>
+                  </div>
+                </div>`
+            });
+        } catch(e) { console.error('Email error:', e.message); }
+    }
+    res.json({ ok: true, subscription: updated });
+});
+
+// Admin: từ chối subscription
+app.post('/api/subscription/admin/reject/:id', requireAdmin, (req, res) => {
+    const id = parseInt(req.params.id);
+    run("UPDATE subscriptions SET status='rejected' WHERE id=?", [id]);
+    res.json({ ok: true });
+});
+
+// Admin: xóa subscription
+app.delete('/api/subscription/admin/:id', requireAdmin, (req, res) => {
+    run('DELETE FROM subscriptions WHERE id=?', [parseInt(req.params.id)]);
+    res.json({ ok: true });
+});
+
 // Serve index.html cho tất cả các route không phải API
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'index.html'));

@@ -105,6 +105,19 @@ async function getDb() {
             note TEXT DEFAULT '',
             created_at DATETIME DEFAULT (datetime('now'))
         );
+        CREATE TABLE IF NOT EXISTS subscriptions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER,
+            email TEXT NOT NULL,
+            name TEXT NOT NULL,
+            plan TEXT NOT NULL DEFAULT 'vip',
+            price INTEGER NOT NULL DEFAULT 99000,
+            status TEXT NOT NULL DEFAULT 'pending',
+            transfer_ref TEXT DEFAULT '',
+            expires_at DATETIME,
+            activated_at DATETIME,
+            created_at DATETIME DEFAULT (datetime('now'))
+        );
     `);
     save();
     return db;

@@ -691,6 +691,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (tabName === 'blog') {
                 if (typeof loadAdminBlog === 'function') loadAdminBlog();
             }
+            if (tabName === 'subscriptions') {
+                loadAdminSubs();
+            }
         });
     });
 
@@ -894,3 +897,69 @@ function togglePreview() {
 }
 
 
+
+// ========== VIP SUBSCRIPTION ADMIN ==========
+const SUB_API = (location.hostname==='localhost'||location.hostname==='127.0.0.1')
+    ? 'http://localhost:3001/api/subscription'
+    : `${location.origin}/api/subscription`;
+
+async function loadAdminSubs() {
+    const token = sessionStorage.getItem('admin_token') || '';
+    const el = document.getElementById('adminSubsList');
+    if (!el) return;
+    el.innerHTML = '<div style="text-align:center;padding:2rem;color:#888"><i class="fas fa-spinner fa-spin"></i> Đang tải...</div>';
+    try {
+        const r = await fetch(`${SUB_API}/admin/list`, { headers: { 'x-admin-token': token } });
+        const subs = await r.json();
+        if (!subs.length) { el.innerHTML = '<div style="text-align:center;padding:2rem;color:#aaa">Chưa có đăng ký VIP nào</div>'; return; }
+        el.innerHTML = `
+        <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
+          <thead><tr style="background:rgba(102,126,234,0.08);">
+            <th style="padding:0.75rem 1rem;text-align:left;font-weight:700;color:#667eea;">Tên</th>
+            <th style="padding:0.75rem 1rem;text-align:left;font-weight:700;color:#667eea;">Email</th>
+            <th style="padding:0.75rem 1rem;text-align:center;font-weight:700;color:#667eea;">Trạng thái</th>
+            <th style="padding:0.75rem 1rem;text-align:center;font-weight:700;color:#667eea;">Hết hạn</th>
+            <th style="padding:0.75rem 1rem;text-align:center;font-weight:700;color:#667eea;">Ngày đăng ký</th>
+            <th style="padding:0.75rem 1rem;text-align:center;font-weight:700;color:#667eea;">Hành động</th>
+          </tr></thead>
+          <tbody>${subs.map(s => {
+            const statusColor = s.status==='active' ? '#10b981' : s.status==='pending' ? '#f59e0b' : '#ef4444';
+            const statusLabel = s.status==='active' ? '✅ Active' : s.status==='pending' ? '⏳ Chờ duyệt' : '❌ Từ chối';
+            const exp = s.expires_at ? new Date(s.expires_at).toLocaleDateString('vi-VN') : '—';
+            const created = new Date(s.created_at).toLocaleDateString('vi-VN');
+            return `<tr style="border-bottom:1px solid rgba(0,0,0,0.06);">
+              <td style="padding:0.75rem 1rem;font-weight:600;">${s.name}</td>
+              <td style="padding:0.75rem 1rem;color:#667eea;">${s.email}</td>
+              <td style="padding:0.75rem 1rem;text-align:center;"><span style="background:${statusColor}20;color:${statusColor};padding:0.25rem 0.75rem;border-radius:50px;font-size:0.78rem;font-weight:700;">${statusLabel}</span></td>
+              <td style="padding:0.75rem 1rem;text-align:center;font-size:0.82rem;">${exp}</td>
+              <td style="padding:0.75rem 1rem;text-align:center;font-size:0.82rem;">${created}</td>
+              <td style="padding:0.75rem 1rem;text-align:center;">
+                ${s.status!=='active' ? `<button onclick="activateSub(${s.id})" style="padding:0.35rem 0.8rem;border:none;border-radius:8px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-size:0.78rem;font-weight:700;cursor:pointer;margin-right:0.35rem;"><i class="fas fa-check"></i> Duyệt</button>` : ''}
+                <button onclick="deleteSub(${s.id})" style="padding:0.35rem 0.8rem;border:none;border-radius:8px;background:rgba(239,68,68,0.1);color:#ef4444;font-size:0.78rem;font-weight:700;cursor:pointer;"><i class="fas fa-trash"></i></button>
+              </td>
+            </tr>`;
+          }).join('')}</tbody>
+        </table></div>`;
+    } catch(e) {
+        el.innerHTML = '<div style="color:red;padding:1rem">Lỗi tải dữ liệu</div>';
+    }
+}
+
+async function activateSub(id) {
+    const token = sessionStorage.getItem('admin_token') || '';
+    try {
+        const r = await fetch(`${SUB_API}/admin/activate/${id}`, { method:'POST', headers:{'x-admin-token':token} });
+        if (r.ok) { if (typeof showToast==='function') showToast('✅ Đã kích hoạt VIP!','success',3000); loadAdminSubs(); }
+    } catch(e) { if (typeof showToast==='function') showToast('❌ Lỗi','error',2000); }
+}
+
+async function deleteSub(id) {
+    if (!confirm('Xóa subscription này?')) return;
+    const token = sessionStorage.getItem('admin_token') || '';
+    try {
+        await fetch(`${SUB_API}/admin/${id}`, { method:'DELETE', headers:{'x-admin-token':token} });
+        if (typeof showToast==='function') showToast('🗑️ Đã xóa','info',2000);
+        loadAdminSubs();
+    } catch(e) {}
+}

@@ -173,6 +173,86 @@
   .qr-full-name{font-size:1rem;font-weight:800;color:#fff;}
   .qr-full-sub{font-size:0.82rem;color:rgba(255,255,255,0.5);margin-top:0.3rem;}
   .qr-full-hint{font-size:0.75rem;color:rgba(255,255,255,0.35);margin-top:1rem;}
+  /* ── VIP SECTION ── */
+  .vip-wrap{display:grid;grid-template-columns:1fr 1.2fr;gap:2rem;align-items:start;}
+  @media(max-width:768px){.vip-wrap{grid-template-columns:1fr;}}
+
+  .vip-card{
+    background:linear-gradient(135deg,#0f0c29,#302b63,#1a1a3e);
+    border-radius:28px;padding:2.5rem 2rem;text-align:center;
+    position:relative;overflow:hidden;
+    border:1px solid rgba(245,158,11,0.3);
+    box-shadow:0 20px 60px rgba(102,126,234,0.25);
+  }
+  .vip-glow{
+    position:absolute;top:-50%;left:-50%;width:200%;height:200%;
+    background:radial-gradient(circle at 50% 30%,rgba(245,158,11,0.15),transparent 60%);
+    pointer-events:none;
+    animation:vipPulse 3s ease-in-out infinite;
+  }
+  @keyframes vipPulse{0%,100%{opacity:0.6}50%{opacity:1}}
+  .vip-crown{font-size:3rem;margin-bottom:0.5rem;position:relative;animation:crownFloat 3s ease-in-out infinite;}
+  @keyframes crownFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  .vip-badge-label{
+    display:inline-block;background:linear-gradient(135deg,#f59e0b,#d97706);
+    color:#fff;font-size:0.7rem;font-weight:900;letter-spacing:0.15em;
+    padding:0.3rem 1rem;border-radius:50px;margin-bottom:1.25rem;
+    text-transform:uppercase;position:relative;
+  }
+  .vip-price-wrap{margin-bottom:1.5rem;position:relative;}
+  .vip-price{
+    font-size:2.5rem;font-weight:900;
+    background:linear-gradient(135deg,#f59e0b,#fbbf24,#f59e0b);
+    background-size:200% auto;
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+    animation:goldShift 3s linear infinite;
+  }
+  @keyframes goldShift{0%{background-position:0% center}100%{background-position:200% center}}
+  .vip-unit{font-size:0.85rem;color:rgba(255,255,255,0.5);display:block;margin-top:0.2rem;}
+  .vip-perks{list-style:none;text-align:left;margin-bottom:1.75rem;position:relative;}
+  .vip-perks li{
+    display:flex;align-items:center;gap:0.75rem;
+    padding:0.6rem 0;border-bottom:1px solid rgba(255,255,255,0.07);
+    font-size:0.88rem;color:rgba(255,255,255,0.85);
+  }
+  .vip-perks li:last-child{border:none;}
+  .perk-icon{font-size:1rem;flex-shrink:0;}
+  .vip-btn{
+    width:100%;padding:1rem;border:none;border-radius:16px;cursor:pointer;
+    background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;
+    font-size:1rem;font-weight:800;display:flex;align-items:center;justify-content:center;gap:0.6rem;
+    box-shadow:0 8px 28px rgba(245,158,11,0.45);transition:all 0.25s;
+    position:relative;overflow:hidden;
+  }
+  .vip-btn::before{content:'';position:absolute;inset:0;background:rgba(255,255,255,0.15);transform:translateX(-100%);transition:transform 0.5s ease;}
+  .vip-btn:hover::before{transform:translateX(100%);}
+  .vip-btn:hover{transform:translateY(-3px);box-shadow:0 14px 40px rgba(245,158,11,0.55);}
+  .vip-note{font-size:0.75rem;color:rgba(255,255,255,0.4);margin-top:0.75rem;position:relative;}
+
+  /* Compare table */
+  .vip-compare{background:var(--card);border-radius:24px;padding:1.75rem;border:1px solid var(--border);box-shadow:0 4px 24px rgba(0,0,0,0.06);}
+  .compare-title{font-size:0.85rem;font-weight:800;color:var(--sub);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:1rem;}
+  .compare-table{width:100%;border-collapse:collapse;font-size:0.85rem;}
+  .compare-table th{padding:0.65rem 0.85rem;text-align:center;font-size:0.75rem;font-weight:800;color:var(--sub);text-transform:uppercase;letter-spacing:0.06em;border-bottom:2px solid var(--border);}
+  .compare-table th:first-child{text-align:left;}
+  .compare-table td{padding:0.6rem 0.85rem;text-align:center;border-bottom:1px solid var(--border);color:var(--sub);}
+  .compare-table td:first-child{text-align:left;color:var(--text);font-weight:500;}
+  .compare-table tr:last-child td{border:none;}
+  .compare-table .vip-col{background:rgba(245,158,11,0.06);font-weight:700;color:#d97706;}
+  .compare-table th.vip-col{color:#d97706;background:rgba(245,158,11,0.08);}
+
+  /* Check status */
+  .check-status-box{background:var(--bg);border-radius:16px;padding:1.25rem;margin-top:1.25rem;}
+  .check-status-title{font-size:0.82rem;font-weight:700;color:var(--sub);margin-bottom:0.75rem;display:flex;align-items:center;gap:0.4rem;}
+  .check-status-row{display:flex;gap:0.5rem;}
+  .check-status-row input{flex:1;padding:0.65rem 0.9rem;border:1.5px solid var(--border);border-radius:10px;background:var(--card);color:var(--text);font-size:0.85rem;outline:none;font-family:inherit;}
+  .check-status-row input:focus{border-color:#667eea;}
+  .check-status-row button{padding:0.65rem 1rem;border:none;border-radius:10px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:0.82rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:all 0.2s;}
+  .check-status-row button:hover{opacity:0.88;transform:translateY(-1px);}
+  #checkResult{margin-top:0.75rem;font-size:0.83rem;}
+  .status-active{background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:10px;padding:0.65rem 0.9rem;color:#059669;font-weight:700;}
+  .status-pending{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:10px;padding:0.65rem 0.9rem;color:#d97706;font-weight:700;}
+  .status-none{background:rgba(102,126,234,0.08);border:1px solid rgba(102,126,234,0.2);border-radius:10px;padding:0.65rem 0.9rem;color:#667eea;}
   </style>
 </head>
 <body>
@@ -292,6 +372,73 @@
 
   <div class="divider"></div>
 
+  <!-- VIP MEMBERSHIP -->
+  <div id="vip" class="section-head">
+    <div class="eyebrow">👑 Membership</div>
+    <h2>Gói VIP — 1.000.000 VNĐ/tháng</h2>
+    <p>Truy cập toàn bộ source code, tải không giới hạn, nội dung độc quyền</p>
+  </div>
+
+  <div class="vip-wrap">
+    <!-- VIP Card -->
+    <div class="vip-card">
+      <div class="vip-glow"></div>
+      <div class="vip-crown">👑</div>
+      <div class="vip-badge-label">VIP MEMBER</div>
+      <div class="vip-price-wrap">
+        <span class="vip-price">1.000.000</span>
+        <span class="vip-unit">VNĐ / tháng</span>
+      </div>
+      <ul class="vip-perks">
+        <li><span class="perk-icon">✅</span> Xem toàn bộ source code dự án</li>
+        <li><span class="perk-icon">✅</span> Tải source code không giới hạn</li>
+        <li><span class="perk-icon">✅</span> Nội dung blog VIP độc quyền</li>
+        <li><span class="perk-icon">✅</span> Hỗ trợ ưu tiên qua Zalo</li>
+        <li><span class="perk-icon">✅</span> Cập nhật code mới hàng tháng</li>
+        <li><span class="perk-icon">✅</span> Tham gia nhóm dev riêng</li>
+      </ul>
+      <button class="vip-btn" onclick="openVipModal()">
+        <i class="fas fa-crown"></i> Đăng Ký VIP Ngay
+      </button>
+      <div class="vip-note">Kích hoạt trong 1-2 giờ sau khi thanh toán</div>
+    </div>
+
+    <!-- Compare table -->
+    <div class="vip-compare">
+      <div class="compare-title">So sánh gói</div>
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>Tính năng</th>
+            <th>Free</th>
+            <th class="vip-col">VIP 👑</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Xem portfolio</td><td>✅</td><td class="vip-col">✅</td></tr>
+          <tr><td>Đọc blog</td><td>✅</td><td class="vip-col">✅</td></tr>
+          <tr><td>AI Chat</td><td>✅</td><td class="vip-col">✅</td></tr>
+          <tr><td>Xem source code</td><td>❌</td><td class="vip-col">✅</td></tr>
+          <tr><td>Tải source code</td><td>❌</td><td class="vip-col">✅</td></tr>
+          <tr><td>Blog VIP</td><td>❌</td><td class="vip-col">✅</td></tr>
+          <tr><td>Hỗ trợ Zalo</td><td>❌</td><td class="vip-col">✅</td></tr>
+          <tr><td>Nhóm dev riêng</td><td>❌</td><td class="vip-col">✅</td></tr>
+        </tbody>
+      </table>
+      <!-- Check status -->
+      <div class="check-status-box">
+        <div class="check-status-title"><i class="fas fa-search"></i> Kiểm tra trạng thái VIP</div>
+        <div class="check-status-row">
+          <input type="email" id="checkEmail" placeholder="Nhập email của bạn...">
+          <button onclick="checkVipStatus()"><i class="fas fa-check"></i> Kiểm tra</button>
+        </div>
+        <div id="checkResult"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
   <!-- DONATE -->
   <div id="donate" class="donate-wrap">
     <h2>☕ Ủng Hộ / Donate</h2>
@@ -327,6 +474,51 @@
 
 </div>
 </main>
+
+<!-- VIP Modal -->
+<div class="modal-wrap" id="vipModal">
+  <div class="modal-bg" onclick="closeVipModal()"></div>
+  <div class="modal-box" style="max-width:460px;">
+    <button class="modal-close" onclick="closeVipModal()"><i class="fas fa-times"></i></button>
+    <div class="modal-icon" style="background:linear-gradient(135deg,#f59e0b,#d97706);">👑</div>
+    <div class="modal-title">Đăng Ký Gói VIP</div>
+    <div class="modal-price">99.000 VNĐ/tháng</div>
+
+    <!-- Step 1: Form -->
+    <div id="vipStep1">
+      <div style="margin-bottom:1rem;">
+        <input type="text" id="vipName" placeholder="Họ tên của bạn *" style="width:100%;padding:0.75rem 1rem;border:1.5px solid var(--border);border-radius:12px;background:var(--bg);color:var(--text);font-size:0.9rem;outline:none;margin-bottom:0.6rem;font-family:inherit;">
+        <input type="email" id="vipEmail" placeholder="Email của bạn *" style="width:100%;padding:0.75rem 1rem;border:1.5px solid var(--border);border-radius:12px;background:var(--bg);color:var(--text);font-size:0.9rem;outline:none;font-family:inherit;">
+      </div>
+      <div style="background:var(--bg);border-radius:14px;padding:1rem;margin-bottom:1rem;">
+        <div style="font-size:0.78rem;font-weight:700;color:var(--sub);margin-bottom:0.75rem;text-transform:uppercase;letter-spacing:0.05em;">Chuyển khoản ACB</div>
+        <div class="bank-table" style="margin:0;">
+          <div class="bank-row"><span class="k">Ngân hàng</span><span class="v">ACB</span></div>
+          <div class="bank-row"><span class="k">Số TK</span><span class="v">26996867 <button class="copy-btn" onclick="cp('26996867')"><i class="fas fa-copy"></i></button></span></div>
+          <div class="bank-row"><span class="k">Chủ TK</span><span class="v">THAI TUAN KIET</span></div>
+          <div class="bank-row"><span class="k">Số tiền</span><span class="v" style="color:#667eea;font-weight:800;">99.000 VNĐ</span></div>
+          <div class="bank-row"><span class="k">Nội dung</span><span class="v" style="font-size:0.78rem;">VIP [email của bạn]</span></div>
+        </div>
+      </div>
+      <img src="img/qr-acb.jpg" alt="QR ACB" style="width:140px;height:140px;border-radius:12px;display:block;margin:0 auto 1rem;border:2px solid var(--border);">
+      <input type="text" id="vipRef" placeholder="Nội dung chuyển khoản (tuỳ chọn)" style="width:100%;padding:0.75rem 1rem;border:1.5px solid var(--border);border-radius:12px;background:var(--bg);color:var(--text);font-size:0.88rem;outline:none;margin-bottom:1rem;font-family:inherit;">
+      <button onclick="submitVip()" style="width:100%;padding:0.9rem;border:none;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-size:0.95rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.5rem;box-shadow:0 6px 20px rgba(245,158,11,0.4);transition:all 0.2s;" id="vipSubmitBtn">
+        <i class="fas fa-crown"></i> Xác nhận đã chuyển khoản
+      </button>
+      <div style="font-size:0.75rem;color:var(--sub);text-align:center;margin-top:0.75rem;">Sau khi xác nhận, admin sẽ kích hoạt trong 1-2 giờ</div>
+    </div>
+
+    <!-- Step 2: Success -->
+    <div id="vipStep2" style="display:none;text-align:center;padding:1rem 0;">
+      <div style="font-size:3rem;margin-bottom:0.75rem;">🎉</div>
+      <div style="font-size:1.1rem;font-weight:800;color:var(--text);margin-bottom:0.5rem;">Đăng ký thành công!</div>
+      <div style="font-size:0.88rem;color:var(--sub);line-height:1.6;margin-bottom:1.25rem;">Chúng tôi đã nhận được yêu cầu của bạn.<br>Gói VIP sẽ được kích hoạt trong <strong>1-2 giờ</strong>.</div>
+      <button onclick="window.open('https://zalo.me/0906857331','_blank')" style="padding:0.75rem 1.5rem;border:none;border-radius:50px;background:linear-gradient(135deg,#0068ff,#00c6ff);color:#fff;font-weight:700;cursor:pointer;font-size:0.9rem;">
+        <i class="fas fa-comment-dots"></i> Nhắn Zalo để nhanh hơn
+      </button>
+    </div>
+  </div>
+</div>
 
 <!-- Payment Modal -->
 <div class="modal-wrap" id="payModal">
@@ -418,6 +610,65 @@ function closePayModal() {
 function cp(t) {
   navigator.clipboard.writeText(t);
   if(typeof showToast==='function') showToast('✅ Đã copy!','success',1500);
+}
+
+// ===== VIP =====
+const API_BASE = (location.hostname==='localhost'||location.hostname==='127.0.0.1')
+  ? 'http://localhost:3001/api' : `${location.origin}/api`;
+
+function openVipModal() {
+  document.getElementById('vipModal').style.display='flex';
+  document.getElementById('vipStep1').style.display='block';
+  document.getElementById('vipStep2').style.display='none';
+  document.body.style.overflow='hidden';
+}
+function closeVipModal() {
+  document.getElementById('vipModal').style.display='none';
+  document.body.style.overflow='';
+}
+
+async function submitVip() {
+  const name = document.getElementById('vipName').value.trim();
+  const email = document.getElementById('vipEmail').value.trim();
+  const ref = document.getElementById('vipRef').value.trim();
+  if(!name||!email) { alert('Vui lòng nhập họ tên và email!'); return; }
+  const btn = document.getElementById('vipSubmitBtn');
+  btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
+  try {
+    const r = await fetch(`${API_BASE}/subscription/register`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ name, email, transferRef: ref })
+    });
+    const d = await r.json();
+    if(!r.ok && r.status!==409) throw new Error(d.error);
+    document.getElementById('vipStep1').style.display='none';
+    document.getElementById('vipStep2').style.display='block';
+  } catch(e) {
+    alert('Lỗi: '+e.message);
+    btn.disabled=false;
+    btn.innerHTML='<i class="fas fa-crown"></i> Xác nhận đã chuyển khoản';
+  }
+}
+
+async function checkVipStatus() {
+  const email = document.getElementById('checkEmail').value.trim();
+  if(!email) return;
+  const res = document.getElementById('checkResult');
+  res.innerHTML='<span style="color:var(--sub)">Đang kiểm tra...</span>';
+  try {
+    const r = await fetch(`${API_BASE}/subscription/check?email=${encodeURIComponent(email)}`);
+    const d = await r.json();
+    if(d.hasSubscription) {
+      const exp = new Date(d.subscription.expires_at).toLocaleDateString('vi-VN');
+      res.innerHTML=`<div class="status-active">✅ VIP đang hoạt động — hết hạn ${exp}</div>`;
+    } else if(d.subscription?.status==='pending') {
+      res.innerHTML=`<div class="status-pending">⏳ Đang chờ xác nhận thanh toán</div>`;
+    } else {
+      res.innerHTML=`<div class="status-none">Chưa có gói VIP. <a href="#vip" onclick="openVipModal()" style="color:#667eea;font-weight:700;">Đăng ký ngay →</a></div>`;
+    }
+  } catch(e) {
+    res.innerHTML='<span style="color:red">Lỗi kết nối</span>';
+  }
 }
 </script>
 </body>
