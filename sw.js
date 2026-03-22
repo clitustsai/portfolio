@@ -1,5 +1,5 @@
 // ========== SERVICE WORKER - PWA ==========
-const CACHE_NAME = 'clituspc-v16';
+const CACHE_NAME = 'clituspc-v17';
 const OFFLINE_URL = '/offline.html';
 
 // Files cần cache để offline
@@ -50,15 +50,9 @@ self.addEventListener('fetch', event => {
   // Bỏ qua chrome-extension và non-http
   if (!event.request.url.startsWith('http')) return;
 
-  // API calls: Network First, fallback offline message
+  // API calls: luôn đi thẳng ra network, KHÔNG cache, KHÔNG intercept
   if (url.pathname.startsWith('/api/')) {
-    event.respondWith(
-      fetch(event.request).catch(() =>
-        new Response(JSON.stringify({ error: 'Offline - không có kết nối mạng' }), {
-          headers: { 'Content-Type': 'application/json' }
-        })
-      )
-    );
+    // Không làm gì — để browser tự xử lý, tránh SW block khi Render cold start
     return;
   }
 
