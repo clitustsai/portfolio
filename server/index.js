@@ -374,6 +374,122 @@ app.post('/api/auth/logout', requireUser, (req, res) => {
     res.json({ ok: true });
 });
 
+// ========== OAUTH — GOOGLE ==========
+app.get('/api/auth/google', (req, res) => {
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+    if (!clientId) return res.status(503).json({ error: 'Google OAuth chưa được cấu hình' });
+    const appUrl = process.env.APP_URL || `${req.protocol}://${req.get('host')}`;
+    const redirect = encodeURIComponent(`${appUrl}/api/auth/google/callback`);
+    const state = genToken().slice(0, 16);
+    const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirect}&response_type=code&scope=openid%20email%20profile&state=${state}&prompt=select_account`;
+    res.redirect(url);
+});
+
+app.get('/api/auth/google/callback', async (req, res) => {
+    const { code } = req.query;
+    const appUrl = process.env.APP_URL || `${req.protocol}://${req.get('host')}`;
+    if (!code) return res.redirect(`${appUrl}/?auth_error=no_code`);
+    try {
+        // Exchange code for token
+        const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+                code, client_id: process.env.GOOGLE_CLIENT_ID,
+                client_secret: process.env.GOOGLE_CLIENT_SECRET,
+                redirect_uri: `${appUrl}/api/auth/google/callback`,
+                grant_type: 'authorization_code'
+            })
+        });
+        const tokenData = await tokenRes.json();
+        if (!tokenData.access_token) throw new Error('No access token');
+
+        // Get user info
+        const userRes = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+            headers: { Authorization: `Bearer ${tokenData.access_token}` }
+        });
+        const profile = await userRes.json();
+
+        const user = upsertOAuthUser({
+            provider: 'google', providerId: profile.id,
+            username: profile.name || profile.email.split('@')[0],
+            email: profile.email, avatar: profile.picture || ''
+        });
+        const token = genToken();
+        run("INSERT INTO user_sessions (token, user_id, expires_at) VALUES (?,?,datetime('now','+30 days'))", [token, user.id]);
+        res.redirect(`${appUrl}/?auth_token=${token}&auth_user=${encodeURIComponent(JSON.stringify({ id:user.id, username:user.username, email:user.email, avatar:user.avatar }))}`);
+    } catch (err) {
+        console.error('Google OAuth error:', err.message);
+        res.redirect(`${appUrl}/?auth_error=${encodeURIComponent(err.message)}`);
+    }
+});
+
+// ========== OAUTH — FACEBOOK ==========
+app.get('/api/auth/facebook', (req, res) => {
+    const appId = process.env.FACEBOOK_APP_ID;
+    if (!appId) return res.status(503).json({ error: 'Facebook OAuth chưa được cấu hình' });
+    const appUrl = process.env.APP_URL || `${req.protocol}://${req.get('host')}`;
+    const redirect = encodeURIComponent(`${appUrl}/api/auth/facebook/callback`);
+    const state = genToken().slice(0, 16);
+    const url = `https://www.facebook.com/v19.0/dialog/oauth?client_id=${appId}&redirect_uri=${redirect}&state=${state}&scope=email,public_profile`;
+    res.redirect(url);
+});
+
+app.get('/api/auth/facebook/callback', async (req, res) => {
+    const { code } = req.query;
+    const appUrl = process.env.APP_URL || `${req.protocol}://${req.get('host')}`;
+    if (!code) return res.redirect(`${appUrl}/?auth_error=no_code`);
+    try {
+        const redirectUri = encodeURIComponent(`${appUrl}/api/auth/facebook/callback`);
+        // Exchange code for token
+        const tokenRes = await fetch(`https://graph.facebook.com/v19.0/oauth/access_token?client_id=${process.env.FACEBOOK_APP_ID}&redirect_uri=${redirectUri}&client_secret=${process.env.FACEBOOK_APP_SECRET}&code=${code}`);
+        const tokenData = await tokenRes.json();
+        if (!tokenData.access_token) throw new Error('No access token');
+
+        // Get user info
+        const userRes = await fetch(`https://graph.facebook.com/me?fields=id,name,email,picture.width(200)&access_token=${tokenData.access_token}`);
+        const profile = await userRes.json();
+
+        const user = upsertOAuthUser({
+            provider: 'facebook', providerId: profile.id,
+            username: profile.name || `fb_${profile.id}`,
+            email: profile.email || `fb_${profile.id}@facebook.com`,
+            avatar: profile.picture?.data?.url || ''
+        });
+        const token = genToken();
+        run("INSERT INTO user_sessions (token, user_id, expires_at) VALUES (?,?,datetime('now','+30 days'))", [token, user.id]);
+        res.redirect(`${appUrl}/?auth_token=${token}&auth_user=${encodeURIComponent(JSON.stringify({ id:user.id, username:user.username, email:user.email, avatar:user.avatar }))}`);
+    } catch (err) {
+        console.error('Facebook OAuth error:', err.message);
+        res.redirect(`${appUrl}/?auth_error=${encodeURIComponent(err.message)}`);
+    }
+});
+
+function upsertOAuthUser({ provider, providerId, username, email, avatar }) {
+    // Tìm user theo oauth_provider + oauth_id
+    let user = get('SELECT * FROM users WHERE oauth_provider=? AND oauth_id=?', [provider, providerId]);
+    if (!user) {
+        // Tìm theo email (nếu đã đăng ký thủ công trước đó)
+        user = get('SELECT * FROM users WHERE email=?', [email]);
+        if (user) {
+            // Link OAuth vào account cũ
+            run('UPDATE users SET oauth_provider=?, oauth_id=?, avatar=? WHERE id=?', [provider, providerId, avatar, user.id]);
+        } else {
+            // Tạo user mới
+            let finalUsername = username.slice(0, 50);
+            const dup = get('SELECT id FROM users WHERE username=?', [finalUsername]);
+            if (dup) finalUsername = `${finalUsername}_${providerId.slice(-4)}`;
+            run('INSERT INTO users (username, email, password_hash, oauth_provider, oauth_id, avatar) VALUES (?,?,?,?,?,?)',
+                [finalUsername, email.slice(0,100), '', provider, providerId, avatar]);
+            user = get('SELECT * FROM users ORDER BY id DESC LIMIT 1');
+        }
+    } else {
+        // Cập nhật avatar mới nhất
+        run('UPDATE users SET avatar=? WHERE id=?', [avatar, user.id]);
+    }
+    return get('SELECT id,username,email,avatar,created_at FROM users WHERE id=?', [user.id]);
+}
+
 // Override comment endpoints để yêu cầu đăng nhập
 app.post('/api/comments/auth', requireUser, (req, res) => {
     const { text, rating } = req.body;

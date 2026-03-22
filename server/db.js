@@ -84,6 +84,8 @@ async function getDb() {
             email TEXT UNIQUE NOT NULL,
             password_hash TEXT NOT NULL,
             avatar TEXT DEFAULT '',
+            oauth_provider TEXT DEFAULT '',
+            oauth_id TEXT DEFAULT '',
             created_at DATETIME DEFAULT (datetime('now'))
         );
         CREATE TABLE IF NOT EXISTS user_sessions (
