@@ -490,9 +490,6 @@
             setTimeout(() => {
                 loader.style.display = 'none';
                 cancelAnimationFrame(animId);
-                // Trigger hero entrance animations
-                if (typeof triggerHeroEntrance === 'function') triggerHeroEntrance();
-                else document.getElementById('home') && document.getElementById('home').classList.add('ready');
             }, 650);
         }
 
@@ -543,80 +540,25 @@
 
     <!-- Hero Section -->
     <section class="hero" id="home">
-        <!-- Canvas particles -->
-        <canvas id="heroCanvas"></canvas>
-
-        <!-- Mesh gradient blobs -->
-        <div class="hero-blob hero-blob-1"></div>
-        <div class="hero-blob hero-blob-2"></div>
-        <div class="hero-blob hero-blob-3"></div>
-
-        <!-- Left: Content -->
-        <div class="hero-left">
-            <div class="hero-status">
-                <span class="hero-status-dot"></span>
-                <span>Available for work</span>
-            </div>
-
-            <h1 class="hero-title">
-                <span class="ht-greeting">Xin Chào! 👋</span>
-                <span class="ht-name">Tôi là <strong class="hero-name-text">Clitus PC</strong></span>
-                <span class="ht-role">Full Stack <span class="hero-role-text">Developer</span></span>
-            </h1>
-
-            <p class="hero-desc" data-i18n="hero.desc">Lập trình viên Full Stack tại TP.HCM — chuyên xây dựng web app hiện đại với React, Node.js, Vue.js và Python. 10+ năm kinh nghiệm, tập trung vào hiệu suất và trải nghiệm người dùng.</p>
-
-            <div class="hero-stack">
-                <span>React</span><span>Node.js</span><span>Vue.js</span><span>Python</span><span>TypeScript</span>
-            </div>
-
-            <div class="hero-cta">
-                <a href="#about" class="hcta-primary" data-i18n="hero.btn1">
-                    <i class="fas fa-user"></i> Về Tôi
+        <div class="hero-content">
+            <h1 data-i18n="hero.title"><span class="hero-name-gradient"></span>Xin Chào! 👋</span></h1>
+            <p data-i18n="hero.desc">Chào mừng bạn đến với trang cá nhân của tôi. Tôi là một lập trình viên chuyên về phát triển ứng dụng web và hệ thống. Tôi tập trung vào việc xây dựng các giải pháp công nghệ ổn định, hiệu quả và có khả năng mở rộng, đáp ứng nhu cầu thực tế của doanh nghiệp và người dùng.</p>
+            <div class="hero-buttons">
+                <a href="#about" class="btn btn-primary" data-i18n="hero.btn1">Tìm Hiểu Thêm</a>
+                <a href="#contact" class="btn btn-secondary" data-i18n="hero.btn2">Liên Hệ Với Tôi</a>
+                <a href="./files/CV-Clitus-PC.pdf" class="btn btn-tertiary" target="_blank" download>
+                    <i class="fas fa-download"></i> <span data-i18n="hero.btn3">Tải CV</span>
                 </a>
-                <a href="#contact" class="hcta-secondary" data-i18n="hero.btn2">
-                    <i class="fas fa-paper-plane"></i> Liên Hệ
-                </a>
-                <a href="./files/CV-Clitus-PC.pdf" class="hcta-ghost" target="_blank" download>
-                    <i class="fas fa-download"></i> CV
-                </a>
-                <button class="hcta-ghost" onclick="openQRModal()">
-                    <i class="fas fa-qrcode"></i> QR
+                <button class="btn btn-qr" onclick="openQRModal()">
+                    <i class="fas fa-qrcode"></i> QR Profile
                 </button>
-            </div>
-
-            <!-- Stats row -->
-            <div class="hero-stats">
-                <div class="hstat"><span class="hstat-num">10+</span><span class="hstat-label">Năm KN</span></div>
-                <div class="hstat-div"></div>
-                <div class="hstat"><span class="hstat-num">50+</span><span class="hstat-label">Dự Án</span></div>
-                <div class="hstat-div"></div>
-                <div class="hstat"><span class="hstat-num">30+</span><span class="hstat-label">Khách Hàng</span></div>
-            </div>
-        </div>
-
-        <!-- Right: Avatar -->
-        <div class="hero-right">
-            <div class="hero-avatar-wrap">
-                <div class="hav-ring hav-ring-1"></div>
-                <div class="hav-ring hav-ring-2"></div>
-                <div class="hav-orbit">
-                    <div class="hav-orbit-dot hav-orbit-dot-1"><i class="fab fa-react"></i></div>
-                    <div class="hav-orbit-dot hav-orbit-dot-2"><i class="fab fa-node-js"></i></div>
-                    <div class="hav-orbit-dot hav-orbit-dot-3"><i class="fab fa-python"></i></div>
-                    <div class="hav-orbit-dot hav-orbit-dot-4"><i class="fab fa-vuejs"></i></div>
-                </div>
-                <div class="hav-img-wrap">
-                    <img src="./img/z7643593902682_1d1e5b7671cc398923d350f14dd68934.jpg" alt="Clitus PC" class="hav-img">
-                    <div class="hav-glow"></div>
-                </div>
             </div>
         </div>
 
         <!-- QR Modal -->
-        <div id="qrModal" style="display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;padding:1rem;">
+        <div id="qrModal" style="display:none;position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;padding:1rem;">
             <div onclick="closeQRModal()" style="position:absolute;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);"></div>
-            <div style="position:relative;z-index:1;background:#fff;border-radius:24px;padding:2rem;text-align:center;max-width:320px;width:100%;box-shadow:0 24px 80px rgba(0,0,0,0.3);">
+            <div style="position:relative;z-index:1;background:#fff;border-radius:24px;padding:2rem;text-align:center;max-width:320px;width:100%;box-shadow:0 24px 80px rgba(0,0,0,0.3);animation:authSlideIn 0.3s ease;">
                 <button onclick="closeQRModal()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.4rem;cursor:pointer;color:#999;">×</button>
                 <div style="font-size:2rem;margin-bottom:0.5rem;">📱</div>
                 <h3 style="margin:0 0 0.25rem;color:#1a1a2e;font-size:1.1rem;">Scan để xem Portfolio</h3>
@@ -628,12 +570,9 @@
                 </button>
             </div>
         </div>
-
-        <!-- Scroll indicator -->
-        <a href="#about" class="hero-scroll-hint">
-            <span>Cuộn xuống</span>
-            <i class="fas fa-chevron-down"></i>
-        </a>
+        <div class="hero-image">
+            <img src="./img/z7643593902682_1d1e5b7671cc398923d350f14dd68934.jpg" alt="Profile Avatar" class="profile-image">
+        </div>
     </section>
 
     <!-- About Section -->
@@ -2127,87 +2066,5 @@
   }
 })();
 </script>
-
-<script>
-// ===== HERO CANVAS PARTICLES =====
-(function() {
-  const canvas = document.getElementById('heroCanvas');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  let W, H, particles = [], mouse = { x: -9999, y: -9999 };
-  const COUNT = window.innerWidth < 768 ? 35 : 80;
-  const MAX_DIST = 120;
-
-  function resize() {
-    const hero = document.getElementById('home');
-    W = canvas.width = hero ? hero.offsetWidth : window.innerWidth;
-    H = canvas.height = hero ? hero.offsetHeight : window.innerHeight;
-  }
-  function Particle() {
-    this.x = Math.random() * (W||800);
-    this.y = Math.random() * (H||600);
-    this.vx = (Math.random()-0.5)*0.5;
-    this.vy = (Math.random()-0.5)*0.5;
-    this.r  = Math.random()*2+0.8;
-    this.a  = Math.random()*0.4+0.15;
-    this.update = function() {
-      this.x += this.vx; this.y += this.vy;
-      if (this.x<0||this.x>W) this.vx*=-1;
-      if (this.y<0||this.y>H) this.vy*=-1;
-      const dx=this.x-mouse.x, dy=this.y-mouse.y, d=Math.hypot(dx,dy);
-      if (d<90) { this.x+=dx/d*1.2; this.y+=dy/d*1.2; }
-    };
-    this.draw = function() {
-      ctx.beginPath(); ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
-      ctx.fillStyle=`rgba(200,214,255,${this.a})`; ctx.fill();
-    };
-  }
-  function init() { resize(); particles=[]; for(let i=0;i<COUNT;i++) particles.push(new Particle()); }
-  function loop() {
-    ctx.clearRect(0,0,W,H);
-    for(let i=0;i<particles.length;i++) {
-      particles[i].update(); particles[i].draw();
-      for(let j=i+1;j<particles.length;j++) {
-        const dx=particles[i].x-particles[j].x, dy=particles[i].y-particles[j].y, d=Math.hypot(dx,dy);
-        if(d<MAX_DIST) {
-          ctx.beginPath(); ctx.moveTo(particles[i].x,particles[i].y); ctx.lineTo(particles[j].x,particles[j].y);
-          ctx.strokeStyle=`rgba(180,200,255,${0.15*(1-d/MAX_DIST)})`; ctx.lineWidth=0.7; ctx.stroke();
-        }
-      }
-    }
-    requestAnimationFrame(loop);
-  }
-  window.addEventListener('resize', init);
-  const hero = document.getElementById('home');
-  if (hero) {
-    hero.addEventListener('mousemove', e => { const r=hero.getBoundingClientRect(); mouse.x=e.clientX-r.left; mouse.y=e.clientY-r.top; });
-    hero.addEventListener('mouseleave', () => { mouse.x=-9999; mouse.y=-9999; });
-  }
-  init(); loop();
-})();
-
-// ===== HERO ROLE CYCLE =====
-(function() {
-  const el = document.querySelector('.hero-role-text');
-  if (!el) return;
-  const roles = ['Developer', 'Designer', 'Problem Solver', 'Freelancer'];
-  let idx = 0;
-  function next() {
-    el.style.opacity = '0'; el.style.transform = 'translateY(8px)';
-    setTimeout(() => {
-      el.textContent = roles[idx++ % roles.length];
-      el.style.opacity = '1'; el.style.transform = 'translateY(0)';
-    }, 300);
-  }
-  setTimeout(() => { next(); setInterval(next, 2800); }, 2000);
-})();
-
-// ===== HERO ENTRANCE (trigger sau loader) =====
-function triggerHeroEntrance() {
-  const hero = document.getElementById('home');
-  if (hero) hero.classList.add('ready');
-}
-</script>
-
 </body>
 </html>
