@@ -373,20 +373,310 @@ async function handleLogout() {
     if (typeof showToast === 'function') showToast('👋 Đã đăng xuất', 'info', 2000);
 }
 
-// ========== NAV AUTH BUTTON ==========
+// ========== NAV AUTH BUTTON — VIP DROPDOWN ==========
+function _buildAvatar(user, size) {
+    size = size || 32;
+    if (user.avatar) {
+        return '<img src="' + user.avatar + '" style="width:' + size + 'px;height:' + size + 'px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.4);" onerror="this.style.display=\'none\';this.nextSibling.style.display=\'flex\'">' +
+               '<span style="display:none;width:' + size + 'px;height:' + size + 'px;border-radius:50%;background:rgba(255,255,255,0.25);align-items:center;justify-content:center;font-size:' + Math.round(size*0.45) + 'px;font-weight:800;">' + user.username[0].toUpperCase() + '</span>';
+    }
+    return '<span style="width:' + size + 'px;height:' + size + 'px;border-radius:50%;background:rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;font-size:' + Math.round(size*0.45) + 'px;font-weight:800;">' + user.username[0].toUpperCase() + '</span>';
+}
+
 function updateNavAuth() {
     const user = getUser();
-    // Tìm tất cả nav auth containers
     document.querySelectorAll('.nav-auth-slot').forEach(slot => {
         if (user) {
-            slot.innerHTML = `
-                <button class="nav-user-btn" onclick="handleLogout()">
-                    <div class="nav-user-avatar">${user.username[0].toUpperCase()}</div>
-                    ${user.username}
-                    <i class="fas fa-sign-out-alt" style="font-size:0.75rem;opacity:0.8"></i>
-                </button>`;
+            const vipBadge = window._navVipStatus ? '<span style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-size:0.6rem;font-weight:800;padding:1px 6px;border-radius:50px;margin-left:2px;">VIP</span>' : '';
+            slot.innerHTML =
+                '<div class="nav-user-wrap" style="position:relative;">' +
+                  '<button class="nav-user-btn" id="navUserBtn" onclick="toggleUserDropdown(event)">' +
+                    _buildAvatar(user, 28) +
+                    '<span style="max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + user.username + '</span>' +
+                    vipBadge +
+                    '<i class="fas fa-chevron-down" style="font-size:0.65rem;opacity:0.7;transition:transform 0.2s;" id="navChevron"></i>' +
+                  '</button>' +
+                  '<div class="nav-user-dropdown" id="navUserDropdown">' +
+                    '<div class="nud-header">' +
+                      '<div class="nud-avatar-wrap" onclick="openProfileModal()" title="Đổi ảnh đại diện">' +
+                        _buildAvatar(user, 52) +
+                        '<div class="nud-avatar-edit"><i class="fas fa-camera"></i></div>' +
+                      '</div>' +
+                      '<div class="nud-info">' +
+                        '<div class="nud-name">' + user.username + '</div>' +
+                        '<div class="nud-email">' + (user.email || '') + '</div>' +
+                        (window._navVipStatus ? '<div class="nud-vip-badge">👑 VIP Member</div>' : '<div class="nud-free-badge">🆓 Free Plan</div>') +
+                      '</div>' +
+                    '</div>' +
+                    '<div class="nud-divider"></div>' +
+                    '<button class="nud-item" onclick="openProfileModal()"><i class="fas fa-user-edit"></i> Chỉnh sửa hồ sơ</button>' +
+                    '<a class="nud-item" href="tools.html"><i class="fas fa-robot"></i> AI Tools</a>' +
+                    '<a class="nud-item" href="payment.html"><i class="fas fa-crown"></i> ' + (window._navVipStatus ? 'Quản lý VIP' : 'Nâng cấp VIP') + '</a>' +
+                    '<div class="nud-divider"></div>' +
+                    '<button class="nud-item nud-logout" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Đăng xuất</button>' +
+                  '</div>' +
+                '</div>';
+            // Check VIP status async
+            _checkNavVip(user.email);
         } else {
-            slot.innerHTML = `<button class="nav-login-btn" onclick="openAuthModal('login')"><i class="fas fa-user"></i> Đăng nhập</button>`;
+            slot.innerHTML =
+                '<button class="nav-login-btn" onclick="openAuthModal(\'login\')">' +
+                  '<i class="fas fa-user"></i> Đăng nhập' +
+                '</button>';
+        }
+    });
+    _injectNavDropdownCSS();
+}
+
+async function _checkNavVip(email) {
+    try {
+        const r = await fetch(API_BASE + '/subscription/check?email=' + encodeURIComponent(email));
+        const d = await r.json();
+        window._navVipStatus = d.hasSubscription;
+        if (d.hasSubscription) updateNavAuth(); // re-render with VIP badge
+    } catch(e) {}
+}
+
+function toggleUserDropdown(e) {
+    e.stopPropagation();
+    const dd = document.getElementById('navUserDropdown');
+    const chevron = document.getElementById('navChevron');
+    if (!dd) return;
+    const isOpen = dd.classList.toggle('open');
+    if (chevron) chevron.style.transform = isOpen ? 'rotate(180deg)' : '';
+    if (isOpen) {
+        setTimeout(() => document.addEventListener('click', _closeDropdownOutside, { once: true }), 0);
+    }
+}
+function _closeDropdownOutside(e) {
+    const dd = document.getElementById('navUserDropdown');
+    const btn = document.getElementById('navUserBtn');
+    if (dd && !dd.contains(e.target) && e.target !== btn) {
+        dd.classList.remove('open');
+        const chevron = document.getElementById('navChevron');
+        if (chevron) chevron.style.transform = '';
+    }
+}
+
+function _injectNavDropdownCSS() {
+    if (document.getElementById('_navDropCSS')) return;
+    const s = document.createElement('style');
+    s.id = '_navDropCSS';
+    s.textContent = `
+    .nav-user-btn {
+        display:flex;align-items:center;gap:0.45rem;
+        background:linear-gradient(135deg,#667eea,#764ba2);
+        color:#fff;border:none;border-radius:50px;padding:0.35rem 0.85rem 0.35rem 0.4rem;
+        cursor:pointer;font-size:0.82rem;font-weight:700;transition:all 0.25s;
+        white-space:nowrap;flex-shrink:0;
+        box-shadow:0 4px 14px rgba(102,126,234,0.35);
+    }
+    .nav-user-btn:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(102,126,234,0.5); }
+    .nav-login-btn {
+        background:none;border:1.5px solid #667eea;color:#667eea;
+        border-radius:50px;padding:0.38rem 0.9rem;cursor:pointer;
+        font-size:0.82rem;font-weight:700;transition:all 0.2s;flex-shrink:0;white-space:nowrap;
+    }
+    .nav-login-btn:hover { background:#667eea;color:#fff;transform:translateY(-2px); }
+    .nav-user-wrap { position:relative; }
+    .nav-user-dropdown {
+        position:absolute;top:calc(100% + 10px);right:0;
+        background:#fff;border-radius:18px;min-width:240px;
+        box-shadow:0 20px 60px rgba(0,0,0,0.18),0 0 0 1px rgba(102,126,234,0.1);
+        padding:0.5rem;z-index:9999;
+        opacity:0;transform:translateY(-8px) scale(0.97);pointer-events:none;
+        transition:all 0.22s cubic-bezier(0.4,0,0.2,1);
+    }
+    html[data-theme="dark"] .nav-user-dropdown { background:#1e1e3a;box-shadow:0 20px 60px rgba(0,0,0,0.5),0 0 0 1px rgba(102,126,234,0.2); }
+    .nav-user-dropdown.open { opacity:1;transform:translateY(0) scale(1);pointer-events:all; }
+    .nud-header { display:flex;align-items:center;gap:0.85rem;padding:0.85rem 0.75rem 0.75rem; }
+    .nud-avatar-wrap { position:relative;cursor:pointer;flex-shrink:0; }
+    .nud-avatar-edit {
+        position:absolute;bottom:-2px;right:-2px;
+        width:20px;height:20px;border-radius:50%;
+        background:linear-gradient(135deg,#667eea,#764ba2);
+        display:flex;align-items:center;justify-content:center;
+        color:#fff;font-size:0.6rem;border:2px solid #fff;
+        transition:transform 0.2s;
+    }
+    .nud-avatar-wrap:hover .nud-avatar-edit { transform:scale(1.2); }
+    html[data-theme="dark"] .nud-avatar-edit { border-color:#1e1e3a; }
+    .nud-info { flex:1;min-width:0; }
+    .nud-name { font-size:0.92rem;font-weight:800;color:#1a1a2e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+    html[data-theme="dark"] .nud-name { color:#e8e8ff; }
+    .nud-email { font-size:0.72rem;color:#999;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px; }
+    .nud-vip-badge { display:inline-block;margin-top:4px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-size:0.65rem;font-weight:800;padding:2px 8px;border-radius:50px; }
+    .nud-free-badge { display:inline-block;margin-top:4px;background:#f0f0ff;color:#667eea;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:50px; }
+    html[data-theme="dark"] .nud-free-badge { background:#252545; }
+    .nud-divider { height:1px;background:#f0f0f8;margin:0.3rem 0; }
+    html[data-theme="dark"] .nud-divider { background:#2a2a4a; }
+    .nud-item {
+        display:flex;align-items:center;gap:0.65rem;width:100%;padding:0.65rem 0.85rem;
+        border:none;background:none;border-radius:12px;cursor:pointer;
+        font-size:0.88rem;font-weight:600;color:#444;text-decoration:none;
+        transition:all 0.18s;text-align:left;
+    }
+    html[data-theme="dark"] .nud-item { color:#c0c0e0; }
+    .nud-item:hover { background:linear-gradient(135deg,rgba(102,126,234,0.1),rgba(118,75,162,0.08));color:#667eea;transform:translateX(3px); }
+    html[data-theme="dark"] .nud-item:hover { background:rgba(102,126,234,0.15); }
+    .nud-item i { width:16px;text-align:center;color:#667eea;font-size:0.85rem; }
+    .nud-logout { color:#f5576c !important; }
+    .nud-logout i { color:#f5576c !important; }
+    .nud-logout:hover { background:rgba(245,87,108,0.08) !important;color:#f5576c !important; }
+
+    /* Comment locked state */
+    .comment-locked {
+        text-align:center;padding:2rem 1rem;
+        background:linear-gradient(135deg,rgba(102,126,234,0.06),rgba(118,75,162,0.06));
+        border-radius:16px;border:1.5px dashed rgba(102,126,234,0.25);margin-bottom:1.5rem;
+    }
+    .comment-locked i { font-size:2rem;color:#667eea;display:block;margin-bottom:0.75rem; }
+    .comment-locked p { color:#666;font-size:0.9rem;margin:0 0 1rem; }
+    html[data-theme="dark"] .comment-locked p { color:#9090b0; }
+    .comment-locked-btns { display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap; }
+    .btn-login-comment {
+        background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;
+        border:none;border-radius:50px;padding:0.6rem 1.5rem;
+        cursor:pointer;font-size:0.88rem;font-weight:700;transition:all 0.2s;
+    }
+    .btn-login-comment:hover { opacity:0.88;transform:translateY(-2px); }
+    .btn-register-comment {
+        background:none;border:1.5px solid #667eea;color:#667eea;
+        border-radius:50px;padding:0.6rem 1.5rem;
+        cursor:pointer;font-size:0.88rem;font-weight:700;transition:all 0.2s;
+    }
+    .btn-register-comment:hover { background:#667eea;color:#fff; }
+    `;
+    document.head.appendChild(s);
+}
+
+// ========== PROFILE MODAL ==========
+function openProfileModal() {
+    // Close dropdown
+    const dd = document.getElementById('navUserDropdown');
+    if (dd) dd.classList.remove('open');
+
+    if (document.getElementById('profileModal')) {
+        document.getElementById('profileModal').style.display = 'flex';
+        return;
+    }
+    const user = getUser();
+    if (!user) return;
+
+    const modal = document.createElement('div');
+    modal.id = 'profileModal';
+    modal.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:1rem;background:rgba(0,0,0,0.55);backdrop-filter:blur(6px);';
+
+    const avatarPreview = user.avatar
+        ? '<img id="pmAvatarImg" src="' + user.avatar + '" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid #667eea;" onerror="this.style.display=\'none\';document.getElementById(\'pmAvatarInitial\').style.display=\'flex\'">' +
+          '<div id="pmAvatarInitial" style="display:none;width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);align-items:center;justify-content:center;font-size:2rem;font-weight:900;color:#fff;">' + user.username[0].toUpperCase() + '</div>'
+        : '<div id="pmAvatarInitial" style="display:flex;width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);align-items:center;justify-content:center;font-size:2rem;font-weight:900;color:#fff;">' + user.username[0].toUpperCase() + '</div>' +
+          '<img id="pmAvatarImg" src="" style="display:none;width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid #667eea;">';
+
+    modal.innerHTML =
+        '<div style="background:#fff;border-radius:24px;width:100%;max-width:380px;box-shadow:0 24px 80px rgba(0,0,0,0.25);overflow:hidden;animation:authSlideIn 0.3s ease;">' +
+          '<div style="background:linear-gradient(135deg,#667eea,#764ba2);padding:1.75rem 2rem;text-align:center;position:relative;">' +
+            '<button onclick="closeProfileModal()" style="position:absolute;top:0.85rem;right:0.85rem;background:rgba(255,255,255,0.15);border:none;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:1rem;">✕</button>' +
+            '<div style="position:relative;display:inline-block;cursor:pointer;" onclick="triggerAvatarInput()">' +
+              '<div id="pmAvatarWrap" style="display:flex;align-items:center;justify-content:center;">' + avatarPreview + '</div>' +
+              '<div style="position:absolute;bottom:0;right:0;width:24px;height:24px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.2);">' +
+                '<i class="fas fa-camera" style="font-size:0.65rem;color:#667eea;"></i>' +
+              '</div>' +
+            '</div>' +
+            '<input type="file" id="pmAvatarFile" accept="image/*" style="display:none;" onchange="handleAvatarFile(event)">' +
+            '<div style="color:#fff;font-size:0.75rem;margin-top:0.5rem;opacity:0.8;">Nhấn để đổi ảnh</div>' +
+          '</div>' +
+          '<div style="padding:1.5rem 1.75rem;">' +
+            '<div style="margin-bottom:1rem;">' +
+              '<label style="display:block;font-size:0.78rem;font-weight:700;color:#667eea;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.4rem;">Biệt danh</label>' +
+              '<div style="display:flex;align-items:center;gap:0.6rem;border:1.5px solid #e0e4ff;border-radius:12px;padding:0.7rem 1rem;background:#f8f9ff;transition:all 0.2s;" onfocusin="this.style.borderColor=\'#667eea\';this.style.boxShadow=\'0 0 0 3px rgba(102,126,234,0.12)\'" onfocusout="this.style.borderColor=\'#e0e4ff\';this.style.boxShadow=\'none\'">' +
+                '<i class="fas fa-user-tag" style="color:#667eea;font-size:0.85rem;"></i>' +
+                '<input id="pmNickname" type="text" value="' + user.username + '" maxlength="50" style="border:none;background:none;outline:none;flex:1;font-size:0.95rem;color:#333;" placeholder="Nhập biệt danh...">' +
+              '</div>' +
+            '</div>' +
+            '<div style="margin-bottom:1.25rem;">' +
+              '<label style="display:block;font-size:0.78rem;font-weight:700;color:#667eea;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.4rem;">URL ảnh đại diện</label>' +
+              '<div style="display:flex;align-items:center;gap:0.6rem;border:1.5px solid #e0e4ff;border-radius:12px;padding:0.7rem 1rem;background:#f8f9ff;transition:all 0.2s;" onfocusin="this.style.borderColor=\'#667eea\';this.style.boxShadow=\'0 0 0 3px rgba(102,126,234,0.12)\'" onfocusout="this.style.borderColor=\'#e0e4ff\';this.style.boxShadow=\'none\'">' +
+                '<i class="fas fa-image" style="color:#667eea;font-size:0.85rem;"></i>' +
+                '<input id="pmAvatarUrl" type="url" value="' + (user.avatar || '') + '" style="border:none;background:none;outline:none;flex:1;font-size:0.88rem;color:#333;" placeholder="https://..." oninput="previewAvatarUrl(this.value)">' +
+              '</div>' +
+            '</div>' +
+            '<div id="pmErr" style="display:none;color:#f5576c;font-size:0.82rem;text-align:center;margin-bottom:0.75rem;background:#fff5f5;border-radius:8px;padding:0.5rem;"></div>' +
+            '<button id="pmSaveBtn" onclick="saveProfile()" style="width:100%;padding:0.9rem;border:none;border-radius:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:1rem;font-weight:700;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 14px rgba(102,126,234,0.35);display:flex;align-items:center;justify-content:center;gap:0.5rem;">' +
+              '<i class="fas fa-save"></i> Lưu thay đổi' +
+            '</button>' +
+          '</div>' +
+        '</div>';
+
+    document.body.appendChild(modal);
+    modal.addEventListener('click', function(e) { if (e.target === modal) closeProfileModal(); });
+}
+
+function closeProfileModal() {
+    const m = document.getElementById('profileModal');
+    if (m) m.remove();
+}
+
+function triggerAvatarInput() {
+    const f = document.getElementById('pmAvatarFile');
+    if (f) f.click();
+}
+
+function handleAvatarFile(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+        previewAvatarUrl(ev.target.result);
+        const urlInput = document.getElementById('pmAvatarUrl');
+        if (urlInput) urlInput.value = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+function previewAvatarUrl(url) {
+    const img = document.getElementById('pmAvatarImg');
+    const initial = document.getElementById('pmAvatarInitial');
+    if (!img) return;
+    if (url) {
+        img.src = url;
+        img.style.display = 'block';
+        if (initial) initial.style.display = 'none';
+    } else {
+        img.style.display = 'none';
+        if (initial) initial.style.display = 'flex';
+    }
+}
+
+async function saveProfile() {
+    const nickname = (document.getElementById('pmNickname').value || '').trim();
+    const avatar = (document.getElementById('pmAvatarUrl').value || '').trim();
+    const errEl = document.getElementById('pmErr');
+    const btn = document.getElementById('pmSaveBtn');
+    errEl.style.display = 'none';
+    if (!nickname) { errEl.textContent = '⚠️ Biệt danh không được để trống'; errEl.style.display = 'block'; return; }
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang lưu...';
+    try {
+        const token = getToken();
+        const r = await fetch(API_BASE + '/auth/profile', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'x-user-token': token },
+            body: JSON.stringify({ nickname, avatar })
+        });
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.error || 'Lỗi cập nhật');
+        saveSession(d.user, token);
+        closeProfileModal();
+        updateNavAuth();
+        if (typeof showToast === 'function') showToast('✓ Đã cập nhật hồ sơ!', 'success', 3000);
+    } catch(e) {
+        errEl.textContent = '❌ ' + e.message; errEl.style.display = 'block';
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-save"></i> Lưu thay đổi';
+    }
+}
         }
     });
 }

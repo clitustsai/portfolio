@@ -844,6 +844,26 @@ app.post('/api/tools/cv-generate', async (req, res) => {
     }
 });
 
+// ========== USER PROFILE UPDATE ==========
+app.put('/api/auth/profile', requireUser, (req, res) => {
+    const { nickname, avatar } = req.body;
+    const updates = [];
+    const params = [];
+    if (nickname !== undefined) {
+        const n = nickname.trim().slice(0, 50);
+        if (!n) return res.status(400).json({ error: 'Biệt danh không được để trống' });
+        updates.push('username=?'); params.push(n);
+    }
+    if (avatar !== undefined) {
+        updates.push('avatar=?'); params.push(avatar.trim().slice(0, 500));
+    }
+    if (!updates.length) return res.status(400).json({ error: 'Không có gì để cập nhật' });
+    params.push(req.userId);
+    run(`UPDATE users SET ${updates.join(',')} WHERE id=?`, params);
+    const user = get('SELECT id,username,email,avatar,created_at FROM users WHERE id=?', [req.userId]);
+    res.json({ ok: true, user });
+});
+
 // Serve index.html cho tất cả các route không phải API
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'index.html'));

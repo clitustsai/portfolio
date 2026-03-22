@@ -588,3 +588,191 @@ footer {
   .hero-image img { animation: none !important; }
   .about-card:hover, .skill-item:hover, .project-card:hover { transform: none !important; }
 }
+
+/* ============================================================
+   VIP ANIMATIONS & HOVER EFFECTS — Auto-run on all pages
+   ============================================================ */
+
+/* ===== SCROLL REVEAL — tự động chạy khi vào viewport ===== */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.65s cubic-bezier(0.4,0,0.2,1), transform 0.65s cubic-bezier(0.4,0,0.2,1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-left { opacity:0; transform:translateX(-40px); transition:opacity 0.65s ease,transform 0.65s ease; }
+.reveal-left.visible { opacity:1; transform:translateX(0); }
+.reveal-right { opacity:0; transform:translateX(40px); transition:opacity 0.65s ease,transform 0.65s ease; }
+.reveal-right.visible { opacity:1; transform:translateX(0); }
+.reveal-scale { opacity:0; transform:scale(0.88); transition:opacity 0.55s ease,transform 0.55s ease; }
+.reveal-scale.visible { opacity:1; transform:scale(1); }
+
+/* Stagger delays */
+.reveal-d1 { transition-delay:0.1s !important; }
+.reveal-d2 { transition-delay:0.2s !important; }
+.reveal-d3 { transition-delay:0.3s !important; }
+.reveal-d4 { transition-delay:0.4s !important; }
+.reveal-d5 { transition-delay:0.5s !important; }
+
+/* ===== VIP CARD HOVER — 3D tilt + glow ===== */
+.project-card, .about-card, .cert-card, .tool-card, .pricing-card, .blog-card {
+  transition: transform 0.35s cubic-bezier(0.4,0,0.2,1),
+              box-shadow 0.35s cubic-bezier(0.4,0,0.2,1) !important;
+  will-change: transform;
+}
+.project-card:hover {
+  transform: translateY(-12px) scale(1.015) !important;
+  box-shadow: 0 24px 60px rgba(102,126,234,0.28), 0 0 0 1px rgba(102,126,234,0.12) !important;
+}
+.about-card:hover {
+  transform: translateY(-8px) scale(1.01) !important;
+  box-shadow: 0 16px 48px rgba(102,126,234,0.22) !important;
+}
+.cert-card:hover {
+  transform: translateY(-8px) rotate(0.5deg) !important;
+  box-shadow: 0 16px 40px rgba(102,126,234,0.25) !important;
+}
+.blog-card:hover {
+  transform: translateY(-10px) !important;
+  box-shadow: 0 20px 50px rgba(102,126,234,0.22) !important;
+}
+
+/* ===== BUTTON HOVER VIP ===== */
+button:not(.nav-hamburger):not(.theme-toggle):not(.lang-toggle):not(.auth-close-btn):not(.nud-item),
+.btn, .btn-submit, .btn-vip, .btn-action, .btn-pricing {
+  transition: all 0.25s cubic-bezier(0.4,0,0.2,1) !important;
+}
+.btn-submit:hover:not(:disabled),
+.btn-vip:hover,
+.btn-action:hover {
+  transform: translateY(-3px) !important;
+  filter: brightness(1.08);
+}
+
+/* ===== SHIMMER LOADING EFFECT ===== */
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.shimmer-text {
+  background: linear-gradient(90deg, var(--g1) 0%, var(--g3) 50%, var(--g2) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 3s linear infinite;
+}
+
+/* ===== PULSE GLOW on CTA buttons ===== */
+@keyframes pulseGlowBtn {
+  0%,100% { box-shadow: 0 4px 14px rgba(102,126,234,0.35); }
+  50% { box-shadow: 0 8px 28px rgba(102,126,234,0.6), 0 0 0 6px rgba(102,126,234,0.1); }
+}
+.btn-cta-pulse {
+  animation: pulseGlowBtn 2.5s ease-in-out infinite;
+}
+
+/* ===== FLOATING PARTICLES background (subtle) ===== */
+@keyframes floatParticle {
+  0%,100% { transform: translateY(0) rotate(0deg); opacity:0.4; }
+  33% { transform: translateY(-20px) rotate(120deg); opacity:0.7; }
+  66% { transform: translateY(-10px) rotate(240deg); opacity:0.5; }
+}
+
+/* ===== NAV LINK HOVER — magnetic underline ===== */
+nav ul li a {
+  position: relative;
+  overflow: hidden;
+}
+nav ul li a::before {
+  content: '';
+  position: absolute;
+  bottom: -2px; left: 50%; right: 50%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--g1), var(--g2));
+  border-radius: 2px;
+  transition: left 0.3s ease, right 0.3s ease;
+}
+nav ul li a:hover::before { left: 0; right: 0; }
+
+/* ===== SKILL BARS — animated on scroll ===== */
+.skill-progress-bar {
+  width: 0 !important;
+  transition: width 1.2s cubic-bezier(0.4,0,0.2,1) !important;
+}
+.skill-progress-bar.animated {
+  width: var(--target-width, 80%) !important;
+}
+
+/* ===== COUNTER ANIMATION ===== */
+.count-up { display: inline-block; }
+
+/* ===== TOOLTIP VIP ===== */
+[data-tooltip] {
+  position: relative;
+}
+[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) scale(0.9);
+  background: rgba(26,26,46,0.95);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: all 0.2s ease;
+  z-index: 9999;
+  backdrop-filter: blur(8px);
+}
+[data-tooltip]:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
+
+/* ===== RIPPLE EFFECT on click ===== */
+.ripple-host { position: relative; overflow: hidden; }
+@keyframes rippleAnim {
+  to { transform: scale(4); opacity: 0; }
+}
+.ripple-circle {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.35);
+  transform: scale(0);
+  animation: rippleAnim 0.6s linear;
+  pointer-events: none;
+}
+
+/* ===== GRADIENT BORDER CARDS ===== */
+.grad-border {
+  border: 2px solid transparent !important;
+  background-clip: padding-box;
+  position: relative;
+}
+.grad-border::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, var(--g1), var(--g2), var(--g3));
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.grad-border:hover::before { opacity: 1; }
+
+/* ===== DARK MODE ENHANCEMENTS ===== */
+html[data-theme="dark"] .project-card:hover,
+html[data-theme="dark"] .about-card:hover,
+html[data-theme="dark"] .cert-card:hover {
+  box-shadow: 0 24px 60px rgba(102,126,234,0.4), 0 0 0 1px rgba(102,126,234,0.2) !important;
+}
