@@ -4,83 +4,114 @@
     padding: 3rem 2rem;
     margin-top: 3rem;
 }
-html[data-theme="dark"] .testimonials { background: var(--bg-primary); }
 
-.testimonials-content { max-width: 1200px; margin: 0 auto; }
+.testimonials-content {
+    max-width: 1200px;
+    margin: 0 auto;
+}
 
 .testimonials h2 {
-    font-size: 2rem; margin-bottom: 1rem;
-    color: #667eea; text-align: center;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #667eea;
+    text-align: center;
 }
-html[data-theme="dark"] .testimonials h2 { color: var(--accent-color); }
 
 .testimonials-subtitle {
-    text-align: center; color: #666;
-    margin-bottom: 1.5rem; font-size: 1rem;
+    text-align: center;
+    color: #666;
+    margin-bottom: 2rem;
+    font-size: 1.05rem;
 }
 
 .testimonials-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
 }
-@media (max-width: 1024px) { .testimonials-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 640px)  { .testimonials-grid { grid-template-columns: 1fr; } }
 
 .testimonial-card {
-    background: #f8f9ff;
-    padding: 1.5rem;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(102,126,234,.08);
-    border: 1px solid rgba(102,126,234,.1);
+    background: #f8f9fa;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s, box-shadow 0.3s;
     opacity: 0;
     animation: fadeInUp 0.6s ease forwards;
-    display: flex;
-    flex-direction: column;
-    gap: .75rem;
 }
+
 .testimonial-card:nth-child(1) { animation-delay: 0.1s; }
 .testimonial-card:nth-child(2) { animation-delay: 0.2s; }
 .testimonial-card:nth-child(3) { animation-delay: 0.3s; }
-.testimonial-card:nth-child(4) { animation-delay: 0.4s; }
-.testimonial-card:nth-child(5) { animation-delay: 0.5s; }
-.testimonial-card:nth-child(6) { animation-delay: 0.6s; }
+
 .testimonial-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 12px 32px rgba(102,126,234,.15);
-}
-html[data-theme="dark"] .testimonial-card {
-    background: var(--bg-secondary);
-    border-color: rgba(102,126,234,.2);
+    transform: translateY(-10px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
 .testimonial-header {
-    display: flex; gap: .85rem;
-    align-items: flex-start;
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    align-items: center;
 }
+
 .testimonial-avatar {
-    font-size: 2.5rem; color: #667eea;
-    flex-shrink: 0;
+    font-size: 2.5rem;
+    color: #667eea;
 }
+
 .testimonial-info h4 {
-    color: #1a1a2e; margin: 0 0 .15rem;
-    font-size: 1rem; font-weight: 800;
+    color: #333;
+    margin-bottom: 0.2rem;
+    font-size: 1.1rem;
 }
-html[data-theme="dark"] .testimonial-info h4 { color: #e8e8ff; }
-.testimonial-info p { color: #888; font-size: .8rem; margin: 0; }
+
+.testimonial-info p {
+    color: #666;
+    font-size: 0.9rem;
+}
 
 .stars {
-    color: #f59e0b; font-size: .9rem;
-    letter-spacing: .15rem;
+    color: #ffc107;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    letter-spacing: 0.2rem;
 }
 
 .testimonial-text {
-    color: #555; font-size: .88rem;
-    line-height: 1.65; font-style: italic;
+    color: #555;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    font-style: italic;
     border-left: 3px solid #667eea;
-    padding-left: .85rem;
-    flex: 1;
-    margin: 0;
+    padding-left: 1rem;
 }
-html[data-theme="dark"] .testimonial-text { color: var(--text-secondary); border-left-color: var(--accent-color); }
+
+/* Dark mode for testimonials */
+html[data-theme="dark"] .testimonials {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"] .testimonials h2 {
+    color: var(--accent-color);
+}
+
+html[data-theme="dark"] .testimonial-card {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"] .testimonial-avatar {
+    color: var(--accent-color);
+}
+
+html[data-theme="dark"] .testimonial-info h4 {
+    color: var(--accent-color);
+}
+
+html[data-theme="dark"] .testimonial-text {
+    color: var(--text-secondary);
+    border-left-color: var(--accent-color);
+}

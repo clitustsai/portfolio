@@ -49,6 +49,8 @@
     </script>
 
     <meta name="theme-color" content="#667eea">
+    <!-- Preload LCP image -->
+    <link rel="preload" as="image" href="img/z7643399499088_fbf2b939d27d107fda73c5053dbb4dd0.webp" fetchpriority="high">
     <!-- PWA -->
     <link rel="manifest" href="/manifest.json">
     <meta name="mobile-web-app-capable" content="yes">
@@ -58,21 +60,41 @@
     <link rel="apple-touch-icon" href="img/icon-192.png">
     <title>Clitus PC - Full Stack Developer | React, Node.js, Vue.js</title>
     <!-- Cloudflare CDN preconnect -->
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <!-- Critical CSS: Font Awesome (async load) -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+    <!-- AOS async -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.css"></noscript>
+    <!-- Local CSS: critical first, rest deferred -->
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="styles-new.css">
     <link rel="stylesheet" href="modern.css">
-  <link rel="stylesheet" href="responsive.css">
-    <link rel="stylesheet" href="testimonials.css">
-    <link rel="stylesheet" href="interactions.css">
-    <link rel="stylesheet" href="admin.css">
-    <link rel="stylesheet" href="vip-effects.css">
-    <link rel="stylesheet" href="mobile-ux.css">
-    <link rel="stylesheet" href="modal-ui.css">
-    <link rel="stylesheet" href="mobile-fix.css">
+    <link rel="stylesheet" href="features.css?v=2">
+    <link rel="stylesheet" href="fab-layout.css?v=2">
+    <!-- Non-critical CSS: load async -->
+    <link rel="preload" href="styles-new.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="responsive.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="testimonials.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="interactions.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="admin.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="vip-effects.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="mobile-ux.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="modal-ui.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="mobile-fix.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+      <link rel="stylesheet" href="styles-new.css">
+      <link rel="stylesheet" href="responsive.css">
+      <link rel="stylesheet" href="testimonials.css">
+      <link rel="stylesheet" href="interactions.css">
+      <link rel="stylesheet" href="admin.css">
+      <link rel="stylesheet" href="vip-effects.css">
+      <link rel="stylesheet" href="mobile-ux.css">
+      <link rel="stylesheet" href="modal-ui.css">
+      <link rel="stylesheet" href="mobile-fix.css">
+    </noscript>
     <style>
     /* ============================================
        LOADING SCREEN — Ultra Pro
@@ -2243,14 +2265,14 @@
     init3D('.testimonial-card', 6);
 })();
 </script>
-<script src="dist/live-activity.js"></script>
-<script src="dist/recommend.js"></script>
-<script src="dist/chat.js"></script>
-<script src="dist/push-notify.js"></script>
-<script src="dist/mobile-nav.js"></script>
-<script src="dist/bug-report.js"></script>
+<script src="dist/live-activity.js" defer></script>
+<script src="dist/recommend.js" defer></script>
+<script src="dist/chat.js" defer></script>
+<script src="dist/push-notify.js" defer></script>
+<script src="dist/mobile-nav.js" defer></script>
+<script src="dist/bug-report.js" defer></script>
 <link rel="stylesheet" href="ads.css">
-<script src="ads.js"></script>
+<script src="ads.js" defer></script>
 <script>
   window.addEventListener('load', function() {
     if (typeof loadAdSlot === 'function') {
@@ -2259,8 +2281,10 @@
     }
   });
 </script>
-<link rel="stylesheet" href="features.css">
-<link rel="stylesheet" href="fab-layout.css">
+<script src="retention.js" defer></script>
+<script src="features.js?v=2" defer></script>
+<script src="features2.js?v=2" defer></script>
+<script src="features3.js?v=2" defer></script>
 <style>
 /* ── EXIT INTENT ── */
 #exit-intent-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:99998;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
@@ -2277,9 +2301,23 @@
 #exit-stay{width:100%;padding:.75rem;border:none;border-radius:50px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s}
 #exit-stay:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(102,126,234,.4)}
 </style>
+#exit-intent-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:99998;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+#exit-intent-overlay.open{display:flex;animation:fadeInOverlay .3s ease}
+@keyframes fadeInOverlay{from{opacity:0}to{opacity:1}}
+#exit-intent-box{background:linear-gradient(135deg,#1a1a2e,#302b63);border:1px solid rgba(255,255,255,.15);border-radius:24px;padding:2rem 1.75rem;max-width:380px;width:90%;text-align:center;position:relative;animation:popIn .35s cubic-bezier(.34,1.56,.64,1)}
+@keyframes popIn{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+#exit-intent-box h3{font-size:1.4rem;font-weight:900;color:#fff;margin:.5rem 0 .5rem}
+#exit-intent-box p{color:rgba(255,255,255,.6);font-size:.9rem;margin:0 0 1.25rem}
+#exit-close{position:absolute;top:.75rem;right:1rem;background:none;border:none;color:rgba(255,255,255,.4);font-size:1.5rem;cursor:pointer;line-height:1}
+#exit-links{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.25rem}
+#exit-links a{display:block;padding:.65rem 1rem;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#fff;text-decoration:none;font-size:.88rem;font-weight:600;transition:all .2s}
+#exit-links a:hover{background:rgba(102,126,234,.25);border-color:rgba(102,126,234,.5)}
+#exit-stay{width:100%;padding:.75rem;border:none;border-radius:50px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s}
+#exit-stay:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(102,126,234,.4)}
+</style>
 <script src="retention.js"></script>
-<script src="features.js"></script>
-<script src="features2.js"></script>
-<script src="features3.js"></script>
+<script src="features.js?v=2"></script>
+<script src="features2.js?v=2"></script>
+<script src="features3.js?v=2"></script>
 </body>
 </html>
