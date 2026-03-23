@@ -67,6 +67,8 @@
   <div id="postLoading" class="post-loading"><i class="fas fa-spinner fa-spin"></i></div>
 
   <article id="postContainer" class="post-container" style="display:none">
+    <!-- Ad: Top VIP -->
+    <div id="ad-top-vip" style="margin-bottom:16px"></div>
     <div class="post-header">
       <a href="blog.html" class="back-btn"><i class="fas fa-arrow-left"></i> Quay lại Blog</a>
       <div id="postTags" class="post-tags"></div>
@@ -87,6 +89,8 @@
           <div id="tocList"></div>
         </div>
         <div id="postContent" class="post-content markdown-body"></div>
+        <!-- Ad: Banner Mid Article -->
+        <div id="ad-banner-mid" style="margin:24px 0"></div>
 
         <!-- Like / Share -->
         <div class="post-actions">
@@ -118,6 +122,8 @@
           <h3><i class="fas fa-newspaper"></i> Bài Liên Quan</h3>
           <div id="relatedPosts"></div>
         </div>
+        <!-- Ad: Pinned Post -->
+        <div id="ad-pinned-post"></div>
         <div class="sidebar-card author-card">
           <img src="img/z7643593902682_1d1e5b7671cc398923d350f14dd68934.jpg" alt="Clitus PC" class="author-avatar">
           <h4>Clitus PC</h4>
@@ -467,5 +473,12 @@ Hooks giúp code React trở nên **ngắn gọn**, **dễ test** và **dễ tá
 <script src="dist/push-notify.js"></script>
 <script src="dist/mobile-nav.js"></script>
 <script src="dist/bug-report.js"></script>
+<link rel="stylesheet" href="ads.css">
+<script src="ads.js"></script>
+<script>
+  loadAdSlot('top_vip', 'ad-top-vip');
+  loadAdSlot('pinned_post', 'ad-pinned-post');
+  loadAdSlot('banner_mid_article', 'ad-banner-mid');
+</script>
 </body>
 </html>

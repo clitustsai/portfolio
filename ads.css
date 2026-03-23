@@ -1,0 +1,196 @@
+/* ===== AD MARKETPLACE STYLES ===== */
+
+/* --- Ad Card (generic) --- */
+.ad-card {
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,.08);
+  transition: transform .2s, box-shadow .2s;
+  display: flex;
+  flex-direction: column;
+}
+.ad-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 24px rgba(0,0,0,.12);
+}
+
+/* --- VIP Card --- */
+.ad-card.vip {
+  border: 2px solid #f59e0b;
+  position: relative;
+}
+.ad-vip-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #fff;
+  font-size: .72rem;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 50px;
+  letter-spacing: .05em;
+  z-index: 1;
+}
+
+/* --- Ad Image --- */
+.ad-img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  display: block;
+}
+
+/* --- Ad Body --- */
+.ad-body {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+.ad-platform {
+  font-size: .72rem;
+  color: #888;
+  font-weight: 600;
+}
+.ad-name {
+  font-size: .95rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.ad-desc {
+  font-size: .8rem;
+  color: #666;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.ad-price {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #667eea;
+}
+.ad-cta {
+  margin-top: auto;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  font-size: .82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity .2s;
+  align-self: flex-start;
+}
+.ad-cta:hover { opacity: .85; }
+
+/* --- Top VIP Slot --- */
+.ad-slot-top-vip {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  padding: 16px 0;
+}
+
+/* --- Pinned Post Slot --- */
+.ad-slot-pinned {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+  padding: 12px 0;
+}
+
+/* --- Banner --- */
+.ad-slot-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ad-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  border: 1px solid #f0f0f8;
+  transition: box-shadow .2s;
+}
+.ad-banner:hover { box-shadow: 0 4px 16px rgba(0,0,0,.1); }
+.ad-banner-img {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+.ad-banner-body {
+  flex: 1;
+  min-width: 0;
+}
+.ad-banner-body .ad-name {
+  font-size: .88rem;
+  -webkit-line-clamp: 1;
+}
+.ad-cta-sm {
+  padding: 7px 14px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  font-size: .78rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: opacity .2s;
+}
+.ad-cta-sm:hover { opacity: .85; }
+
+/* --- Sidebar Banner (vertical) --- */
+#ad-banner-sidebar .ad-slot-banner {
+  flex-direction: column;
+}
+#ad-banner-sidebar .ad-banner {
+  flex-direction: column;
+  text-align: center;
+}
+#ad-banner-sidebar .ad-banner-img {
+  width: 100%;
+  height: 120px;
+}
+
+/* --- Responsive --- */
+@media (max-width: 600px) {
+  .ad-slot-top-vip {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .ad-img { height: 120px; }
+  .ad-banner { flex-wrap: wrap; }
+  .ad-banner-img { width: 48px; height: 48px; }
+}
+
+/* --- Ad label (sponsored) --- */
+.ad-slot-top-vip::before,
+.ad-slot-banner::before,
+.ad-slot-pinned::before {
+  content: 'Quảng cáo';
+  display: block;
+  font-size: .7rem;
+  color: #bbb;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-bottom: 4px;
+}

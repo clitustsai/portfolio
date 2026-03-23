@@ -220,6 +220,58 @@ async function getDb() {
             created_at DATETIME DEFAULT (datetime('now'))
         );
         INSERT OR IGNORE INTO chat_ads (id, text, url) VALUES (1, '👑 Nâng VIP 99k/tháng — Dùng không giới hạn AI Tools + Chat VIP riêng!', '/payment.html');
+        CREATE TABLE IF NOT EXISTS ads (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            product_name TEXT NOT NULL,
+            link TEXT NOT NULL,
+            image_url TEXT DEFAULT '',
+            price INTEGER NOT NULL DEFAULT 0,
+            description TEXT DEFAULT '',
+            platform TEXT NOT NULL DEFAULT 'shopee',
+            slot TEXT NOT NULL DEFAULT 'banner_sidebar',
+            status TEXT NOT NULL DEFAULT 'pending',
+            boost_score INTEGER NOT NULL DEFAULT 0,
+            boost_expires_at DATETIME DEFAULT NULL,
+            display_days INTEGER NOT NULL DEFAULT 7,
+            activated_at DATETIME DEFAULT NULL,
+            expires_at DATETIME DEFAULT NULL,
+            rejection_reason TEXT DEFAULT '',
+            created_at DATETIME DEFAULT (datetime('now'))
+        );
+        CREATE TABLE IF NOT EXISTS ad_transactions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ad_id INTEGER NOT NULL,
+            user_id INTEGER NOT NULL,
+            plan TEXT NOT NULL DEFAULT 'standard',
+            amount INTEGER NOT NULL,
+            currency TEXT NOT NULL DEFAULT 'VND',
+            payment_method TEXT NOT NULL,
+            payment_id TEXT DEFAULT '',
+            status TEXT NOT NULL DEFAULT 'pending',
+            created_at DATETIME DEFAULT (datetime('now'))
+        );
+        CREATE TABLE IF NOT EXISTS ad_clicks (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ad_id INTEGER NOT NULL,
+            referrer_page TEXT DEFAULT '',
+            ip_hash TEXT DEFAULT '',
+            created_at DATETIME DEFAULT (datetime('now'))
+        );
+        CREATE TABLE IF NOT EXISTS ad_impressions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ad_id INTEGER NOT NULL,
+            session_id TEXT DEFAULT '',
+            created_at DATETIME DEFAULT (datetime('now'))
+        );
+        CREATE TABLE IF NOT EXISTS webhook_logs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            provider TEXT NOT NULL,
+            event_type TEXT NOT NULL,
+            payload TEXT NOT NULL,
+            status TEXT NOT NULL DEFAULT 'received',
+            created_at DATETIME DEFAULT (datetime('now'))
+        );
     `);
     // Migrate: thêm cột mới nếu chưa có (cho DB cũ)
     try { db.exec(`ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'free'`); } catch(e) {}

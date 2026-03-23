@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quảng Cáo — Clitus PC</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="ads.css">
+<style>
+  body { background: #f4f6ff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; }
+  .ads-container { max-width: 1100px; margin: 0 auto; padding: 24px 16px 80px; }
+  .ads-header { background: linear-gradient(135deg,#667eea,#764ba2); border-radius: 20px; padding: 32px; color: #fff; margin-bottom: 24px; }
+  .ads-header h1 { margin: 0 0 8px; font-size: 1.8rem; }
+  .ads-header p { margin: 0; opacity: .85; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+  .tab-btn { padding: 10px 20px; border: none; border-radius: 50px; cursor: pointer; font-weight: 600; font-size: .9rem; background: #fff; color: #667eea; box-shadow: 0 2px 8px rgba(0,0,0,.08); transition: all .2s; }
+  .tab-btn.active { background: linear-gradient(135deg,#667eea,#764ba2); color: #fff; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  .card { background: #fff; border-radius: 16px; padding: 24px; box-shadow: 0 2px 12px rgba(0,0,0,.06); margin-bottom: 20px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media(max-width:600px){ .form-grid { grid-template-columns: 1fr; } }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group.full { grid-column: 1/-1; }
+  label { font-size: .85rem; font-weight: 600; color: #555; }
+  input, select, textarea { padding: 10px 14px; border: 1.5px solid #e0e0f0; border-radius: 10px; font-size: .95rem; outline: none; transition: border .2s; font-family: inherit; }
+  input:focus, select:focus, textarea:focus { border-color: #667eea; }
+  textarea { resize: vertical; min-height: 80px; }
+  .btn { padding: 11px 24px; border: none; border-radius: 50px; cursor: pointer; font-weight: 700; font-size: .9rem; transition: all .2s; }
+  .btn-primary { background: linear-gradient(135deg,#667eea,#764ba2); color: #fff; }
+  .btn-secondary { background: #f0f0ff; color: #667eea; }
+  .btn-sm { padding: 6px 14px; font-size: .8rem; }
+  .btn-danger { background: #fee2e2; color: #dc2626; }
+  .btn:hover { opacity: .9; transform: translateY(-1px); }
+  .ai-btn { display: flex; align-items: center; gap: 6px; }
+  .plan-cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 16px; }
+  @media(max-width:600px){ .plan-cards { grid-template-columns: 1fr; } }
+  .plan-card { border: 2px solid #e0e0f0; border-radius: 12px; padding: 16px; cursor: pointer; transition: all .2s; text-align: center; }
+  .plan-card.selected { border-color: #667eea; background: #f0f0ff; }
+  .plan-card h3 { margin: 0 0 4px; font-size: 1rem; }
+  .plan-card .price { font-size: 1.3rem; font-weight: 800; color: #667eea; }
+  .plan-card .desc { font-size: .78rem; color: #888; margin-top: 4px; }
+  table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+  th { text-align: left; padding: 10px 12px; background: #f8f9ff; color: #888; font-size: .78rem; text-transform: uppercase; letter-spacing: .05em; }
+  td { padding: 12px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 50px; font-size: .75rem; font-weight: 700; }
+  .badge-pending { background: #fef3c7; color: #d97706; }
+  .badge-paid { background: #dbeafe; color: #2563eb; }
+  .badge-active { background: #d1fae5; color: #059669; }
+  .badge-expired { background: #f3f4f6; color: #6b7280; }
+  .badge-rejected { background: #fee2e2; color: #dc2626; }
+  .badge-hidden { background: #f3f4f6; color: #9ca3af; }
+  .empty-state { text-align: center; padding: 48px 24px; color: #aaa; }
+  .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
+  .alert { padding: 12px 16px; border-radius: 10px; margin-bottom: 16px; font-size: .9rem; }
+  .alert-success { background: #d1fae5; color: #059669; }
+  .alert-error { background: #fee2e2; color: #dc2626; }
+  .login-wall { text-align: center; padding: 60px 24px; }
+  .login-wall h2 { color: #667eea; }
+  #chart-container { position: relative; height: 200px; }
+  .stats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 20px; }
+  @media(max-width:500px){ .stats-grid { grid-template-columns: 1fr 1fr; } }
+  .stat-box { background: #f8f9ff; border-radius: 12px; padding: 16px; text-align: center; }
+  .stat-box .val { font-size: 1.6rem; font-weight: 800; color: #667eea; }
+  .stat-box .lbl { font-size: .78rem; color: #888; margin-top: 4px; }
+  .rejection-note { font-size: .78rem; color: #dc2626; margin-top: 4px; }
+  .img-preview { width: 48px; height: 48px; object-fit: cover; border-radius: 8px; }
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<div class="ads-container">
+  <div class="ads-header">
+    <h1>📢 Ad Marketplace</h1>
+    <p>Đặt quảng cáo sản phẩm Shopee, TikTok Shop, Affiliate — tiếp cận hàng nghìn người dùng</p>
+  </div>
+
+  <div id="login-wall" class="login-wall card" style="display:none">
+    <div style="font-size:3rem">🔐</div>
+    <h2>Đăng nhập để tiếp tục</h2>
+    <p style="color:#888">Bạn cần đăng nhập để đăng và quản lý quảng cáo</p>
+    <a href="/" class="btn btn-primary">Đăng nhập ngay</a>
+  </div>
+
+  <div id="ads-app" style="display:none">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('create')">➕ Đăng quảng cáo</button>
+      <button class="tab-btn" onclick="switchTab('my-ads')">📋 Quảng cáo của tôi</button>
+      <button class="tab-btn" onclick="switchTab('payments')">💳 Lịch sử thanh toán</button>
+    </div>
+
+    <!-- TAB: TẠO AD -->
+    <div id="tab-create" class="tab-content active">
+      <div class="card">
+        <h2 style="margin:0 0 20px;font-size:1.2rem">Thông tin sản phẩm</h2>
+        <div id="create-alert"></div>
+        <form id="create-ad-form">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Tên sản phẩm *</label>
+              <input type="text" id="ad-name" placeholder="VD: Áo thun nam basic" maxlength="200" required>
+            </div>
+            <div class="form-group">
+              <label>Nền tảng</label>
+              <select id="ad-platform">
+                <option value="shopee">🛒 Shopee</option>
+                <option value="tiktok">🎵 TikTok Shop</option>
+                <option value="affiliate">🔗 Affiliate</option>
+              </select>
+            </div>
+            <div class="form-group full">
+              <label>Link sản phẩm *</label>
+              <input type="url" id="ad-link" placeholder="https://shopee.vn/..." required>
+            </div>
+            <div class="form-group full">
+              <label>Ảnh sản phẩm (HTTPS)</label>
+              <input type="url" id="ad-image" placeholder="https://...">
+            </div>
+            <div class="form-group">
+              <label>Giá sản phẩm (VND)</label>
+              <input type="number" id="ad-price" placeholder="0" min="0">
+            </div>
+            <div class="form-group">
+              <label>Vị trí hiển thị</label>
+              <select id="ad-slot">
+                <option value="banner_sidebar">Banner Sidebar</option>
+                <option value="banner_header">Banner Header</option>
+                <option value="banner_mid_article">Banner Giữa Bài</option>
+                <option value="top_vip">⭐ Top VIP</option>
+                <option value="pinned_post">📌 Ghim Bài Viết</option>
+              </select>
+            </div>
+            <div class="form-group full">
+              <label>Mô tả sản phẩm</label>
+              <div style="display:flex;gap:8px;align-items:flex-start">
+                <textarea id="ad-desc" placeholder="Mô tả ngắn về sản phẩm..." maxlength="1000" style="flex:1"></textarea>
+                <button type="button" class="btn btn-secondary btn-sm ai-btn" id="ai-desc-btn" onclick="generateAiDesc()" style="white-space:nowrap;margin-top:2px">🤖 AI viết</button>
+              </div>
+            </div>
+          </div>
+
+          <h3 style="margin:24px 0 12px;font-size:1rem">Chọn gói quảng cáo</h3>
+          <div class="plan-cards">
+            <div class="plan-card selected" data-plan="standard" onclick="selectPlan(this)">
+              <h3>Standard</h3>
+              <div class="price">50.000₫</div>
+              <div class="desc">7 ngày · Banner Sidebar</div>
+            </div>
+            <div class="plan-card" data-plan="premium" onclick="selectPlan(this)">
+              <h3>Premium</h3>
+              <div class="price">150.000₫</div>
+              <div class="desc">30 ngày · Header + Sidebar</div>
+            </div>
+            <div class="plan-card" data-plan="vip_boost" onclick="selectPlan(this)">
+              <h3>⭐ VIP Boost</h3>
+              <div class="price">300.000₫</div>
+              <div class="desc">7 ngày · Top VIP · Ưu tiên cao nhất</div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Đăng quảng cáo →</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- TAB: MY ADS -->
+    <div id="tab-my-ads" class="tab-content">
+      <div id="my-ads-alert"></div>
+      <div id="my-ads-list"></div>
+    </div>
+
+    <!-- TAB: PAYMENTS -->
+    <div id="tab-payments" class="tab-content">
+      <div class="card">
+        <h2 style="margin:0 0 16px;font-size:1.1rem">Lịch sử thanh toán</h2>
+        <div id="payments-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Chart modal -->
+<div id="chart-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:20px;padding:24px;width:90%;max-width:600px;max-height:80vh;overflow:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <h3 id="chart-title" style="margin:0">Thống kê</h3>
+      <button onclick="closeChart()" style="background:none;border:none;font-size:1.5rem;cursor:pointer">×</button>
+    </div>
+    <canvas id="stats-chart" height="200"></canvas>
+  </div>
+</div>
+
+<script src="api.js"></script>
+<script src="ads.js"></script>
+<script>
+const API = window.API_BASE || '';
+let currentUser = null;
+let selectedPlan = 'standard';
+let myAds = [];
+let pendingAdId = null;
+
+function getToken() { return localStorage.getItem('auth_token'); }
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', ['create','my-ads','payments'][i] === tab));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  if (tab === 'my-ads') loadMyAds();
+  if (tab === 'payments') loadPayments();
+}
+
+function selectPlan(el) {
+  document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedPlan = el.dataset.plan;
+}
+
+function showAlert(containerId, msg, type='error') {
+  const el = document.getElementById(containerId);
+  el.innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
+  setTimeout(() => el.innerHTML = '', 4000);
+}
+
+async function generateAiDesc() {
+  const name = document.getElementById('ad-name').value.trim();
+  const platform = document.getElementById('ad-platform').value;
+  if (!name) return showAlert('create-alert', 'Nhập tên sản phẩm trước');
+  if (!pendingAdId) return showAlert('create-alert', 'Lưu quảng cáo trước để dùng AI');
+  const btn = document.getElementById('ai-desc-btn');
+  btn.textContent = '⏳ Đang viết...'; btn.disabled = true;
+  try {
+    const r = await fetch(`${API}/api/ads/${pendingAdId}/ai-description`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` }
+    });
+    const d = await r.json();
+    if (d.description) document.getElementById('ad-desc').value = d.description;
+    else showAlert('create-alert', d.error || 'Lỗi AI');
+  } catch(e) { showAlert('create-alert', 'Lỗi kết nối'); }
+  btn.textContent = '🤖 AI viết'; btn.disabled = false;
+}
+
+document.getElementById('create-ad-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const body = {
+    product_name: document.getElementById('ad-name').value,
+    link: document.getElementById('ad-link').value,
+    image_url: document.getElementById('ad-image').value,
+    price: parseInt(document.getElementById('ad-price').value) || 0,
+    description: document.getElementById('ad-desc').value,
+    platform: document.getElementById('ad-platform').value,
+    slot: document.getElementById('ad-slot').value
+  };
+  try {
+    const r = await fetch(`${API}/api/ads`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
+      body: JSON.stringify(body)
+    });
+    const d = await r.json();
+    if (!r.ok) return showAlert('create-alert', d.error || 'Lỗi tạo quảng cáo');
+    pendingAdId = d.id;
+    showAlert('create-alert', '✅ Đã tạo quảng cáo! Chọn thanh toán để kích hoạt.', 'success');
+    // Redirect to payment
+    setTimeout(() => payAd(d.id, selectedPlan), 1500);
+  } catch(e) { showAlert('create-alert', 'Lỗi kết nối'); }
+});
+
+async function payAd(adId, plan) {
+  const method = confirm('Thanh toán qua Stripe (OK) hay PayPal (Cancel)?') ? 'stripe' : 'paypal';
+  try {
+    const r = await fetch(`${API}/api/ads/${adId}/pay/${method}`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
+      body: JSON.stringify({ plan })
+    });
+    const d = await r.json();
+    if (!r.ok) return alert(d.error || 'Lỗi thanh toán');
+    const url = d.url || d.approvalUrl;
+    if (url) window.location.href = url;
+  } catch(e) { alert('Lỗi kết nối'); }
+}
+
+async function loadMyAds() {
+  const container = document.getElementById('my-ads-list');
+  container.innerHTML = '<div style="text-align:center;padding:24px;color:#aaa">Đang tải...</div>';
+  try {
+    const r = await fetch(`${API}/api/ads/my`, { headers: { 'Authorization': `Bearer ${getToken()}` } });
+    const ads = await r.json();
+    myAds = ads;
+    if (!ads.length) {
+      container.innerHTML = '<div class="card empty-state"><div class="icon">📭</div><p>Chưa có quảng cáo nào</p></div>';
+      return;
+    }
+    container.innerHTML = `<div class="card" style="overflow-x:auto">
+      <table>
+        <thead><tr>
+          <th>Sản phẩm</th><th>Trạng thái</th><th>Slot</th>
+          <th>Clicks</th><th>Impressions</th><th>CTR</th><th>Còn lại</th><th></th>
+        </tr></thead>
+        <tbody>${ads.map(ad => `
+          <tr>
+            <td>
+              ${ad.image_url ? `<img src="${ad.image_url}" class="img-preview" onerror="this.style.display='none'">` : ''}
+              <div style="font-weight:600;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${ad.product_name}</div>
+              ${ad.status === 'rejected' ? `<div class="rejection-note">❌ ${ad.rejection_reason || 'Bị từ chối'}</div>` : ''}
+            </td>
+            <td><span class="badge badge-${ad.status}">${statusLabel(ad.status)}</span></td>
+            <td style="font-size:.8rem">${slotLabel(ad.slot)}</td>
+            <td>${ad.click_count}</td>
+            <td>${ad.impression_count}</td>
+            <td>${(ad.ctr * 100).toFixed(2)}%</td>
+            <td>${ad.days_remaining !== null ? ad.days_remaining + ' ngày' : '—'}</td>
+            <td>
+              ${ad.status === 'pending' || ad.status === 'paid' ? '' : ''}
+              <button class="btn btn-secondary btn-sm" onclick="showStats(${ad.id})">📊</button>
+              ${ad.status === 'pending' ? `<button class="btn btn-primary btn-sm" onclick="payAd(${ad.id},'standard')">💳 Thanh toán</button>` : ''}
+            </td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+  } catch(e) { container.innerHTML = '<div class="card"><p style="color:red">Lỗi tải dữ liệu</p></div>'; }
+}
+
+async function loadPayments() {
+  const container = document.getElementById('payments-list');
+  container.innerHTML = '<div style="text-align:center;padding:24px;color:#aaa">Đang tải...</div>';
+  try {
+    const r = await fetch(`${API}/api/ads/my`, { headers: { 'Authorization': `Bearer ${getToken()}` } });
+    const ads = await r.json();
+    // Fetch transactions via stats (simplified — show from ads data)
+    if (!ads.length) { container.innerHTML = '<div class="empty-state"><div class="icon">💳</div><p>Chưa có giao dịch</p></div>'; return; }
+    container.innerHTML = `<table>
+      <thead><tr><th>Sản phẩm</th><th>Trạng thái</th><th>Ngày tạo</th></tr></thead>
+      <tbody>${ads.map(ad => `<tr>
+        <td>${ad.product_name}</td>
+        <td><span class="badge badge-${ad.status}">${statusLabel(ad.status)}</span></td>
+        <td style="font-size:.82rem;color:#888">${new Date(ad.created_at).toLocaleDateString('vi-VN')}</td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+  } catch(e) { container.innerHTML = '<p style="color:red">Lỗi tải dữ liệu</p>'; }
+}
+
+async function showStats(adId) {
+  try {
+    const r = await fetch(`${API}/api/ads/${adId}/stats`, { headers: { 'Authorization': `Bearer ${getToken()}` } });
+    const d = await r.json();
+    const ad = myAds.find(a => a.id === adId);
+    document.getElementById('chart-title').textContent = ad?.product_name || 'Thống kê';
+    const modal = document.getElementById('chart-modal');
+    modal.style.display = 'flex';
+    const canvas = document.getElementById('stats-chart');
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Simple bar chart
+    const data = [d.click_count, d.impression_count];
+    const labels = ['Clicks', 'Impressions'];
+    const max = Math.max(...data, 1);
+    const W = canvas.width = canvas.offsetWidth || 500;
+    const H = canvas.height = 200;
+    const barW = W / 4;
+    ctx.fillStyle = '#f8f9ff';
+    ctx.fillRect(0, 0, W, H);
+    data.forEach((val, i) => {
+      const x = (i + 0.5) * W / 2 - barW / 2;
+      const h = (val / max) * (H - 40);
+      ctx.fillStyle = i === 0 ? '#667eea' : '#764ba2';
+      ctx.beginPath();
+      ctx.roundRect(x, H - h - 30, barW, h, 6);
+      ctx.fill();
+      ctx.fillStyle = '#333';
+      ctx.font = 'bold 14px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(val, x + barW / 2, H - h - 36);
+      ctx.fillStyle = '#888';
+      ctx.font = '12px sans-serif';
+      ctx.fillText(labels[i], x + barW / 2, H - 10);
+    });
+    ctx.fillStyle = '#888';
+    ctx.font = '12px sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(`CTR: ${(d.ctr * 100).toFixed(2)}%`, 10, 20);
+  } catch(e) { alert('Lỗi tải stats'); }
+}
+
+function closeChart() { document.getElementById('chart-modal').style.display = 'none'; }
+
+function statusLabel(s) {
+  return { pending:'Chờ duyệt', paid:'Đã thanh toán', active:'Đang chạy', expired:'Hết hạn', rejected:'Bị từ chối', hidden:'Đã ẩn' }[s] || s;
+}
+function slotLabel(s) {
+  return { top_vip:'⭐ Top VIP', pinned_post:'📌 Ghim bài', banner_header:'🔝 Header', banner_sidebar:'📌 Sidebar', banner_mid_article:'📄 Giữa bài' }[s] || s;
+}
+
+// Check payment result
+const urlParams = new URLSearchParams(location.search);
+if (urlParams.get('payment') === 'success') {
+  setTimeout(() => { showAlert('my-ads-alert', '✅ Thanh toán thành công! Quảng cáo đang chờ admin duyệt.', 'success'); switchTab('my-ads'); }, 500);
+}
+
+// Init
+(async () => {
+  const token = getToken();
+  if (!token) { document.getElementById('login-wall').style.display = 'block'; return; }
+  try {
+    const r = await fetch(`${API}/api/auth/me`, { headers: { 'Authorization': `Bearer ${token}` } });
+    if (!r.ok) throw new Error();
+    currentUser = await r.json();
+    document.getElementById('ads-app').style.display = 'block';
+  } catch(e) {
+    document.getElementById('login-wall').style.display = 'block';
+  }
+})();
+</script>
+</body>
+</html>

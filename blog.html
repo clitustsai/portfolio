@@ -113,6 +113,8 @@
           <h3><i class="fas fa-chart-bar"></i> Thống Kê</h3>
           <div id="blogStats" class="blog-stats-mini"></div>
         </div>
+        <!-- Ad: Banner Sidebar -->
+        <div id="ad-banner-sidebar"></div>
       </aside>
 
       <!-- Main content -->
@@ -335,5 +337,11 @@
 <script src="dist/push-notify.js"></script>
 <script src="dist/mobile-nav.js"></script>
 <script src="dist/bug-report.js"></script>
+<link rel="stylesheet" href="ads.css">
+<script src="ads.js"></script>
+<script>
+  loadAdSlot('banner_sidebar', 'ad-banner-sidebar');
+  loadAdSlot('banner_mid_article', 'ad-banner-mid');
+</script>
 </body>
 </html>

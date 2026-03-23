@@ -1883,6 +1883,380 @@ app.post('/api/auth/phone/reset-password', async (req, res) => {
 
 // Migrate login: nếu password_hash là SHA256 (64 hex) → tự động migrate sang bcrypt
 
+// ========== AD MARKETPLACE ==========
+const adLimiter = rateLimit({ windowMs: 60 * 1000, max: 30, message: { error: 'Quá nhiều request.' } });
+const crypto2 = require('crypto');
+
+const VALID_PLATFORMS = ['shopee', 'tiktok', 'affiliate'];
+const VALID_SLOTS = ['top_vip', 'pinned_post', 'banner_header', 'banner_sidebar', 'banner_mid_article'];
+const PLAN_CONFIG = {
+    standard:  { amount: 50000,  display_days: 7,  boost_score: 0 },
+    premium:   { amount: 150000, display_days: 30, boost_score: 0 },
+    vip_boost: { amount: 300000, display_days: 7,  boost_score: 100 }
+};
+
+function stripHtml(str) {
+    return (str || '').replace(/<[^>]*>/g, '').trim();
+}
+
+function isValidUrl(str) {
+    try {
+        const u = new URL(str);
+        return u.protocol === 'http:' || u.protocol === 'https:';
+    } catch { return false; }
+}
+
+// POST /api/ads — tạo ad mới
+app.post('/api/ads', adLimiter, requireUser, (req, res) => {
+    const { product_name, link, image_url, price, description, platform, slot } = req.body;
+    if (!product_name?.trim()) return res.status(400).json({ error: 'Thiếu tên sản phẩm' });
+    if (!link?.trim() || !isValidUrl(link)) return res.status(400).json({ error: 'Link không hợp lệ (phải là http/https)' });
+    if (image_url && image_url.trim() && !image_url.trim().startsWith('https://')) return res.status(400).json({ error: 'image_url phải là HTTPS' });
+    if (price !== undefined && (isNaN(parseInt(price)) || parseInt(price) < 0)) return res.status(400).json({ error: 'Giá không hợp lệ' });
+    if (platform && !VALID_PLATFORMS.includes(platform)) return res.status(400).json({ error: 'Platform không hợp lệ' });
+    if (slot && !VALID_SLOTS.includes(slot)) return res.status(400).json({ error: 'Slot không hợp lệ' });
+
+    const activeCount = get('SELECT COUNT(*) as c FROM ads WHERE user_id=? AND status NOT IN (?,?,?)', [req.userId, 'expired', 'rejected', 'hidden']);
+    if ((activeCount?.c || 0) >= 20) return res.status(429).json({ error: 'Đã đạt giới hạn 20 quảng cáo' });
+
+    const cleanName = stripHtml(product_name).slice(0, 200);
+    const cleanDesc = stripHtml(description || '').slice(0, 1000);
+
+    run('INSERT INTO ads (user_id, product_name, link, image_url, price, description, platform, slot, status) VALUES (?,?,?,?,?,?,?,?,?)', [
+        req.userId, cleanName, link.trim(), (image_url || '').trim(),
+        parseInt(price) || 0, cleanDesc,
+        platform || 'shopee', slot || 'banner_sidebar', 'pending'
+    ]);
+    const ad = get('SELECT * FROM ads ORDER BY id DESC LIMIT 1');
+    res.status(201).json(ad);
+});
+
+// GET /api/ads/my — danh sách ads của user
+app.get('/api/ads/my', adLimiter, requireUser, (req, res) => {
+    const ads = all('SELECT * FROM ads WHERE user_id=? ORDER BY created_at DESC', [req.userId]);
+    const result = ads.map(ad => {
+        const clicks = get('SELECT COUNT(*) as c FROM ad_clicks WHERE ad_id=?', [ad.id]);
+        const imps = get('SELECT COUNT(*) as c FROM ad_impressions WHERE ad_id=?', [ad.id]);
+        const clickCount = clicks?.c || 0;
+        const impCount = imps?.c || 0;
+        const ctr = impCount > 0 ? parseFloat((clickCount / impCount).toFixed(4)) : 0;
+        let daysRemaining = null;
+        if (ad.expires_at) {
+            daysRemaining = Math.max(0, Math.ceil((new Date(ad.expires_at) - Date.now()) / 86400000));
+        }
+        return { ...ad, click_count: clickCount, impression_count: impCount, ctr, days_remaining: daysRemaining };
+    });
+    res.json(result);
+});
+
+// GET /api/ads/slots/:slot — public, lấy ads active theo slot
+app.get('/api/ads/slots/:slot', (req, res) => {
+    const { slot } = req.params;
+    if (!VALID_SLOTS.includes(slot)) return res.status(400).json({ error: 'Slot không hợp lệ' });
+    const ads = all(
+        "SELECT id,product_name,link,image_url,price,description,platform,slot,boost_score FROM ads WHERE status='active' AND slot=? AND (expires_at IS NULL OR expires_at > datetime('now')) ORDER BY boost_score DESC, activated_at ASC LIMIT 5",
+        [slot]
+    );
+    res.json(ads);
+});
+
+// GET /api/ads/:id/stats — stats cho owner hoặc admin
+app.get('/api/ads/:id/stats', adLimiter, requireUser, (req, res) => {
+    const id = parseInt(req.params.id);
+    const ad = get('SELECT * FROM ads WHERE id=?', [id]);
+    if (!ad) return res.status(404).json({ error: 'Không tìm thấy quảng cáo' });
+    const isAdmin = req.headers['x-admin-token'] === process.env.ADMIN_PASSWORD;
+    if (ad.user_id !== req.userId && !isAdmin) return res.status(403).json({ error: 'Không có quyền' });
+    const clicks = get('SELECT COUNT(*) as c FROM ad_clicks WHERE ad_id=?', [id]);
+    const imps = get('SELECT COUNT(*) as c FROM ad_impressions WHERE ad_id=?', [id]);
+    const clickCount = clicks?.c || 0;
+    const impCount = imps?.c || 0;
+    const ctr = impCount > 0 ? parseFloat((clickCount / impCount).toFixed(4)) : 0;
+    res.json({ click_count: clickCount, impression_count: impCount, ctr });
+});
+
+// POST /api/ads/:id/ai-description — AI viết mô tả
+app.post('/api/ads/:id/ai-description', adLimiter, requireUser, async (req, res) => {
+    const id = parseInt(req.params.id);
+    const ad = get('SELECT * FROM ads WHERE id=? AND user_id=?', [id, req.userId]);
+    if (!ad) return res.status(404).json({ error: 'Không tìm thấy quảng cáo' });
+
+    const today = new Date().toISOString().slice(0, 10);
+    const usage = get('SELECT count FROM user_usage WHERE user_id=? AND tool=? AND date=?', [req.userId, 'ad_ai_description', today]);
+    if ((usage?.count || 0) >= 10) return res.status(429).json({ error: 'Đã dùng hết 10 lượt AI hôm nay' });
+
+    const platformMap = { shopee: 'Shopee', tiktok: 'TikTok Shop', affiliate: 'Affiliate' };
+    const platformName = platformMap[ad.platform] || ad.platform;
+
+    const fallback = `${ad.product_name} — sản phẩm chất lượng cao trên ${platformName}. Mua ngay để nhận ưu đãi tốt nhất!`;
+
+    try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 2000);
+        const apiKey = process.env.OPENROUTER_API_KEY;
+        if (!apiKey) return res.json({ description: fallback });
+
+        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+            method: 'POST',
+            signal: controller.signal,
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}`, 'HTTP-Referer': 'https://portfolio-utbu.onrender.com', 'X-Title': 'Ad Marketplace' },
+            body: JSON.stringify({
+                model: 'mistralai/mistral-7b-instruct',
+                messages: [
+                    { role: 'system', content: 'Bạn là copywriter chuyên viết mô tả sản phẩm quảng cáo tiếng Việt. Viết ngắn gọn, hấp dẫn, 50-150 từ.' },
+                    { role: 'user', content: `Viết mô tả quảng cáo cho sản phẩm "${ad.product_name}" bán trên ${platformName}.` }
+                ],
+                max_tokens: 300, temperature: 0.8
+            })
+        });
+        clearTimeout(timeout);
+        const data = await response.json();
+        const description = data?.choices?.[0]?.message?.content || fallback;
+
+        // Tăng usage
+        if (usage) run('UPDATE user_usage SET count=count+1 WHERE user_id=? AND tool=? AND date=?', [req.userId, 'ad_ai_description', today]);
+        else run('INSERT INTO user_usage (user_id, tool, date, count) VALUES (?,?,?,1)', [req.userId, 'ad_ai_description', today]);
+
+        res.json({ description });
+    } catch (err) {
+        res.json({ description: fallback });
+    }
+});
+
+// ========== AD PAYMENT ==========
+// POST /api/ads/:id/pay/stripe
+app.post('/api/ads/:id/pay/stripe', adLimiter, requireUser, async (req, res) => {
+    const id = parseInt(req.params.id);
+    const ad = get('SELECT * FROM ads WHERE id=? AND user_id=?', [id, req.userId]);
+    if (!ad) return res.status(404).json({ error: 'Không tìm thấy quảng cáo' });
+    const { plan } = req.body;
+    const planCfg = PLAN_CONFIG[plan];
+    if (!planCfg) return res.status(400).json({ error: 'Plan không hợp lệ' });
+
+    const stripeKey = process.env.STRIPE_SECRET_KEY;
+    if (!stripeKey) return res.status(503).json({ error: 'Stripe chưa được cấu hình' });
+
+    try {
+        const stripe = require('stripe')(stripeKey);
+        const appUrl = process.env.APP_URL || 'https://portfolio-utbu.onrender.com';
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            line_items: [{ price_data: { currency: 'vnd', product_data: { name: `Quảng cáo: ${ad.product_name} (${plan})` }, unit_amount: planCfg.amount }, quantity: 1 }],
+            mode: 'payment',
+            success_url: `${appUrl}/ads.html?payment=success&ad_id=${id}`,
+            cancel_url: `${appUrl}/ads.html?payment=cancel`,
+            metadata: { ad_id: String(id), plan, user_id: String(req.userId) }
+        });
+        run('INSERT INTO ad_transactions (ad_id, user_id, plan, amount, payment_method, payment_id, status) VALUES (?,?,?,?,?,?,?)',
+            [id, req.userId, plan, planCfg.amount, 'stripe', session.id, 'pending']);
+        res.json({ url: session.url });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// POST /api/ads/:id/pay/paypal
+app.post('/api/ads/:id/pay/paypal', adLimiter, requireUser, async (req, res) => {
+    const id = parseInt(req.params.id);
+    const ad = get('SELECT * FROM ads WHERE id=? AND user_id=?', [id, req.userId]);
+    if (!ad) return res.status(404).json({ error: 'Không tìm thấy quảng cáo' });
+    const { plan } = req.body;
+    const planCfg = PLAN_CONFIG[plan];
+    if (!planCfg) return res.status(400).json({ error: 'Plan không hợp lệ' });
+
+    const clientId = process.env.PAYPAL_CLIENT_ID;
+    const clientSecret = process.env.PAYPAL_CLIENT_SECRET;
+    if (!clientId || !clientSecret) return res.status(503).json({ error: 'PayPal chưa được cấu hình' });
+
+    try {
+        const appUrl = process.env.APP_URL || 'https://portfolio-utbu.onrender.com';
+        const base = process.env.PAYPAL_BASE_URL || 'https://api-m.sandbox.paypal.com';
+
+        // Get access token
+        const authRes = await fetch(`${base}/v1/oauth2/token`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Authorization': `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString('base64')}` },
+            body: 'grant_type=client_credentials'
+        });
+        const authData = await authRes.json();
+        const accessToken = authData.access_token;
+
+        // Create order (amount in USD approx, or use VND if supported)
+        const amountUsd = (planCfg.amount / 25000).toFixed(2);
+        const orderRes = await fetch(`${base}/v2/checkout/orders`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
+            body: JSON.stringify({
+                intent: 'CAPTURE',
+                purchase_units: [{ amount: { currency_code: 'USD', value: amountUsd }, description: `Ad: ${ad.product_name} (${plan})`, custom_id: `${id}_${req.userId}_${plan}` }],
+                application_context: { return_url: `${appUrl}/ads.html?payment=success&ad_id=${id}`, cancel_url: `${appUrl}/ads.html?payment=cancel` }
+            })
+        });
+        const orderData = await orderRes.json();
+        const approvalUrl = orderData.links?.find(l => l.rel === 'approve')?.href;
+        if (!approvalUrl) throw new Error('Không lấy được approval URL');
+
+        run('INSERT INTO ad_transactions (ad_id, user_id, plan, amount, payment_method, payment_id, status) VALUES (?,?,?,?,?,?,?)',
+            [id, req.userId, plan, planCfg.amount, 'paypal', orderData.id, 'pending']);
+        res.json({ approvalUrl });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// POST /api/webhooks/stripe
+app.post('/api/webhooks/stripe', express.raw({ type: 'application/json' }), (req, res) => {
+    const sig = req.headers['stripe-signature'];
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    let event;
+    try {
+        const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+        event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
+    } catch (err) {
+        run('INSERT INTO webhook_logs (provider, event_type, payload, status) VALUES (?,?,?,?)',
+            ['stripe', 'signature_error', JSON.stringify({ error: err.message }), 'failed']);
+        return res.status(400).json({ error: err.message });
+    }
+    run('INSERT INTO webhook_logs (provider, event_type, payload, status) VALUES (?,?,?,?)',
+        ['stripe', event.type, JSON.stringify(event), 'received']);
+
+    if (event.type === 'checkout.session.completed') {
+        const session = event.data.object;
+        const adId = parseInt(session.metadata?.ad_id);
+        const plan = session.metadata?.plan;
+        const planCfg = PLAN_CONFIG[plan];
+        if (adId && planCfg) {
+            run("UPDATE ad_transactions SET status='paid' WHERE payment_id=?", [session.id]);
+            run("UPDATE ads SET status='paid', display_days=?, boost_score=? WHERE id=?",
+                [planCfg.display_days, planCfg.boost_score, adId]);
+            run("UPDATE webhook_logs SET status='processed' WHERE provider='stripe' AND event_type='checkout.session.completed' AND payload LIKE ?",
+                [`%${session.id}%`]);
+        }
+    }
+    res.json({ received: true });
+});
+
+// POST /api/webhooks/paypal
+app.post('/api/webhooks/paypal', (req, res) => {
+    const event = req.body;
+    run('INSERT INTO webhook_logs (provider, event_type, payload, status) VALUES (?,?,?,?)',
+        ['paypal', event.event_type || 'unknown', JSON.stringify(event), 'received']);
+
+    if (event.event_type === 'PAYMENT.CAPTURE.COMPLETED') {
+        const customId = event.resource?.custom_id || '';
+        const parts = customId.split('_');
+        const adId = parseInt(parts[0]);
+        const plan = parts[2];
+        const planCfg = PLAN_CONFIG[plan];
+        const orderId = event.resource?.supplementary_data?.related_ids?.order_id || '';
+        if (adId && planCfg) {
+            run("UPDATE ad_transactions SET status='paid' WHERE payment_id=?", [orderId]);
+            run("UPDATE ads SET status='paid', display_days=?, boost_score=? WHERE id=?",
+                [planCfg.display_days, planCfg.boost_score, adId]);
+            run("UPDATE webhook_logs SET status='processed' WHERE provider='paypal' AND event_type='PAYMENT.CAPTURE.COMPLETED' ORDER BY id DESC LIMIT 1");
+        }
+    }
+    res.json({ received: true });
+});
+
+// ========== AD ADMIN ==========
+// GET /api/admin/ads
+app.get('/api/admin/ads', requireAdmin, (req, res) => {
+    const { status } = req.query;
+    let sql = 'SELECT ads.*, users.username, users.email as user_email FROM ads LEFT JOIN users ON ads.user_id=users.id';
+    const params = [];
+    if (status) { sql += ' WHERE ads.status=?'; params.push(status); }
+    sql += ' ORDER BY ads.created_at DESC';
+    res.json(all(sql, params));
+});
+
+// PATCH /api/admin/ads/:id
+app.patch('/api/admin/ads/:id', requireAdmin, (req, res) => {
+    const id = parseInt(req.params.id);
+    const ad = get('SELECT * FROM ads WHERE id=?', [id]);
+    if (!ad) return res.status(404).json({ error: 'Không tìm thấy' });
+    const { action, rejection_reason, product_name, description, image_url } = req.body;
+
+    if (action === 'approve') {
+        run("UPDATE ads SET status='active', activated_at=datetime('now'), expires_at=datetime('now','+'||display_days||' days') WHERE id=?", [id]);
+    } else if (action === 'reject') {
+        run("UPDATE ads SET status='rejected', rejection_reason=? WHERE id=?", [(rejection_reason || '').slice(0, 500), id]);
+    } else if (action === 'hide') {
+        run("UPDATE ads SET status='hidden' WHERE id=?", [id]);
+    } else if (action === 'unhide') {
+        run("UPDATE ads SET status='active' WHERE id=?", [id]);
+    } else if (action === 'edit') {
+        if (product_name) run('UPDATE ads SET product_name=? WHERE id=?', [stripHtml(product_name).slice(0, 200), id]);
+        if (description !== undefined) run('UPDATE ads SET description=? WHERE id=?', [stripHtml(description).slice(0, 1000), id]);
+        if (image_url !== undefined) run('UPDATE ads SET image_url=? WHERE id=?', [(image_url || '').trim(), id]);
+    } else {
+        return res.status(400).json({ error: 'Action không hợp lệ' });
+    }
+    res.json({ ok: true, ad: get('SELECT * FROM ads WHERE id=?', [id]) });
+});
+
+// DELETE /api/admin/ads/:id
+app.delete('/api/admin/ads/:id', requireAdmin, (req, res) => {
+    const id = parseInt(req.params.id);
+    run('DELETE FROM ads WHERE id=?', [id]);
+    res.json({ ok: true });
+});
+
+// GET /api/admin/ads/revenue
+app.get('/api/admin/ads/revenue', requireAdmin, (req, res) => {
+    const { from, to, page = 1, limit = 20 } = req.query;
+    const today = new Date().toISOString().slice(0, 10);
+    const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10);
+    const monthAgo = new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10);
+
+    const totalAll = get("SELECT SUM(amount) as t FROM ad_transactions WHERE status='paid'");
+    const totalToday = get("SELECT SUM(amount) as t FROM ad_transactions WHERE status='paid' AND DATE(created_at)=?", [today]);
+    const totalWeek = get("SELECT SUM(amount) as t FROM ad_transactions WHERE status='paid' AND DATE(created_at)>=?", [weekAgo]);
+    const totalMonth = get("SELECT SUM(amount) as t FROM ad_transactions WHERE status='paid' AND DATE(created_at)>=?", [monthAgo]);
+
+    let txSql = "SELECT ad_transactions.*, ads.product_name, users.username FROM ad_transactions LEFT JOIN ads ON ad_transactions.ad_id=ads.id LEFT JOIN users ON ad_transactions.user_id=users.id WHERE ad_transactions.status='paid'";
+    const txParams = [];
+    if (from) { txSql += ' AND DATE(ad_transactions.created_at)>=?'; txParams.push(from); }
+    if (to) { txSql += ' AND DATE(ad_transactions.created_at)<=?'; txParams.push(to); }
+    txSql += ' ORDER BY ad_transactions.created_at DESC LIMIT ? OFFSET ?';
+    txParams.push(parseInt(limit), (parseInt(page) - 1) * parseInt(limit));
+
+    const transactions = all(txSql, txParams);
+    const adsByStatus = all("SELECT status, COUNT(*) as count FROM ads GROUP BY status");
+    const topAdvertisers = all("SELECT users.username, users.email, SUM(ad_transactions.amount) as total_spend FROM ad_transactions LEFT JOIN users ON ad_transactions.user_id=users.id WHERE ad_transactions.status='paid' GROUP BY ad_transactions.user_id ORDER BY total_spend DESC LIMIT 10");
+
+    res.json({
+        revenue: { today: totalToday?.t || 0, week: totalWeek?.t || 0, month: totalMonth?.t || 0, all_time: totalAll?.t || 0 },
+        transactions, adsByStatus, topAdvertisers
+    });
+});
+
+// ========== AD TRACKER + SCHEDULER ==========
+// POST /api/ads/track/click/:id
+app.post('/api/ads/track/click/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+    const referrer = (req.body?.referrer_page || req.headers['referer'] || '').slice(0, 500);
+    const ip = req.headers['x-forwarded-for']?.split(',')[0] || req.socket?.remoteAddress || '';
+    const ipHash = crypto2.createHash('sha256').update(ip).digest('hex');
+    run('INSERT INTO ad_clicks (ad_id, referrer_page, ip_hash) VALUES (?,?,?)', [id, referrer, ipHash]);
+    res.json({ ok: true });
+});
+
+// POST /api/ads/track/impression/:id
+app.post('/api/ads/track/impression/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+    const sessionId = (req.body?.session_id || '').slice(0, 64);
+    if (!sessionId) return res.json({ ok: true, skipped: true });
+
+    // Dedup 30 phút
+    const cutoff = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+    const existing = get("SELECT id FROM ad_impressions WHERE ad_id=? AND session_id=? AND created_at > ?", [id, sessionId, cutoff]);
+    if (existing) return res.json({ ok: true, skipped: true });
+
+    run('INSERT INTO ad_impressions (ad_id, session_id) VALUES (?,?)', [id, sessionId]);
+    res.json({ ok: true });
+});
+
 // Serve index.html chỉ cho các route không phải file tĩnh và không phải API
 app.get('*', (req, res) => {
     const reqPath = req.path;
@@ -1895,6 +2269,13 @@ app.get('*', (req, res) => {
 
 // Khởi động: init DB trước rồi mới listen
 getDb().then(() => {
+    // ===== AD SCHEDULER: chạy mỗi giờ =====
+    setInterval(() => {
+        try {
+            run("UPDATE ads SET status='expired' WHERE status='active' AND expires_at IS NOT NULL AND expires_at < datetime('now')");
+            run("UPDATE ads SET boost_score=0 WHERE boost_score > 0 AND boost_expires_at IS NOT NULL AND boost_expires_at < datetime('now')");
+        } catch(e) { console.error('Ad scheduler error:', e.message); }
+    }, 3600 * 1000);
     app.listen(PORT, () => {
         console.log(`✅ Backend chạy tại http://localhost:${PORT}`);
         console.log(`🤖 AI Chat: ${process.env.OPENROUTER_API_KEY ? 'OpenRouter đã kết nối' : 'Fallback mode'}`);

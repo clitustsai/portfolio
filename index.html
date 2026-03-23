@@ -633,6 +633,8 @@
 
     <!-- About Section -->
     <section class="about" id="about">
+        <!-- Ad: Banner Header -->
+        <div id="ad-banner-header" style="max-width:900px;margin:0 auto 24px;padding:0 16px"></div>
         <div class="about-content">
             <h2 data-i18n="about.title">Về Tôi</h2>
             <p style="text-align:center;margin-bottom:2rem;color:#666;" data-i18n="about.desc">
@@ -966,6 +968,8 @@
 
     <!-- Contact Section -->
     <section class="contact-section" id="contact">
+        <!-- Ad: Banner Sidebar (hiển thị như banner ngang trên mobile) -->
+        <div id="ad-banner-sidebar" style="max-width:900px;margin:0 auto 24px;padding:0 16px"></div>
         <div class="contact-content">
             <h2 data-i18n="contact.title">📧 Liên Hệ Với Tôi</h2>
             <p data-i18n="contact.subtitle">Hãy để lại tin nhắn của bạn. Tôi sẽ phản hồi sớm nhất có thể!</p>
@@ -2198,5 +2202,11 @@
 <script src="dist/push-notify.js"></script>
 <script src="dist/mobile-nav.js"></script>
 <script src="dist/bug-report.js"></script>
+<link rel="stylesheet" href="ads.css">
+<script src="ads.js"></script>
+<script>
+  loadAdSlot('banner_header', 'ad-banner-header');
+  loadAdSlot('banner_sidebar', 'ad-banner-sidebar');
+</script>
 </body>
 </html>
