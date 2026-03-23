@@ -1,13 +1,14 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tạo Hóa Đơn - Clitus PC</title>
+  <title>T?o H�a �on - Clitus PC</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="mobile-responsive.css">
   <link rel="stylesheet" href="mobile-ux.css">
+  <link rel="stylesheet" href="mobile-fix.css">
   <link rel="stylesheet" href="styles-new.css">
   <link rel="stylesheet" href="modern.css">
   <link rel="stylesheet" href="responsive.css">
@@ -82,13 +83,13 @@
 <header>
   <nav>
     <a href="index.html" class="logo">
-      <span class="logo-icon">💻</span>
+      <span class="logo-icon">??</span>
       <span class="logo-text">Clitus<span class="logo-accent">PC</span></span>
     </a>
     <ul>
-      <li><a href="payment.html">💳 Thanh Toán</a></li>
-      <li><a href="proposal.html">💼 Proposal</a></li>
-      <li><a href="index.html">Trang Chủ</a></li>
+      <li><a href="payment.html">?? Thanh To�n</a></li>
+      <li><a href="proposal.html">?? Proposal</a></li>
+      <li><a href="index.html">Trang Ch?</a></li>
     </ul>
     <div class="nav-auth-slot"></div>
   </nav>
@@ -96,36 +97,36 @@
 
 <main class="inv-page">
   <div class="page-title">
-    <div style="font-size:2.5rem;margin-bottom:0.5rem;">🧾</div>
-    <h1>Tạo Hóa Đơn Tự Động</h1>
-    <p>Tạo PDF hóa đơn chuyên nghiệp và gửi email tự động cho khách hàng</p>
+    <div style="font-size:2.5rem;margin-bottom:0.5rem;">??</div>
+    <h1>T?o H�a �on T? �?ng</h1>
+    <p>T?o PDF h�a don chuy�n nghi?p v� g?i email t? d?ng cho kh�ch h�ng</p>
   </div>
 
   <div class="inv-wrap">
     <!-- FORM -->
     <div>
       <div class="inv-form-card" style="margin-bottom:1.5rem;">
-        <h3><i class="fas fa-user" style="color:var(--g1)"></i> Thông tin khách hàng</h3>
+        <h3><i class="fas fa-user" style="color:var(--g1)"></i> Th�ng tin kh�ch h�ng</h3>
         <div class="fg2">
-          <div class="fg"><label>Tên khách hàng *</label><input type="text" id="cName" placeholder="Nguyễn Văn A" oninput="updatePreview()"></div>
+          <div class="fg"><label>T�n kh�ch h�ng *</label><input type="text" id="cName" placeholder="Nguy?n Van A" oninput="updatePreview()"></div>
           <div class="fg"><label>Email *</label><input type="email" id="cEmail" placeholder="email@example.com" oninput="updatePreview()"></div>
         </div>
-        <div class="fg"><label>Số điện thoại</label><input type="text" id="cPhone" placeholder="+84 xxx xxx xxx" oninput="updatePreview()"></div>
-        <div class="fg"><label>Ghi chú</label><input type="text" id="cNote" placeholder="VD: Thanh toán 50% đợt 1..." oninput="updatePreview()"></div>
+        <div class="fg"><label>S? di?n tho?i</label><input type="text" id="cPhone" placeholder="+84 xxx xxx xxx" oninput="updatePreview()"></div>
+        <div class="fg"><label>Ghi ch�</label><input type="text" id="cNote" placeholder="VD: Thanh to�n 50% d?t 1..." oninput="updatePreview()"></div>
       </div>
 
       <div class="inv-form-card">
-        <h3><i class="fas fa-list" style="color:var(--g1)"></i> Dịch vụ / Sản phẩm</h3>
+        <h3><i class="fas fa-list" style="color:var(--g1)"></i> D?ch v? / S?n ph?m</h3>
         <div style="display:grid;grid-template-columns:1fr 60px 120px 36px;gap:0.5rem;margin-bottom:0.5rem;">
-          <div style="font-size:0.7rem;color:var(--sub);font-weight:700;text-transform:uppercase;padding:0 0.75rem;">Tên dịch vụ</div>
+          <div style="font-size:0.7rem;color:var(--sub);font-weight:700;text-transform:uppercase;padding:0 0.75rem;">T�n d?ch v?</div>
           <div style="font-size:0.7rem;color:var(--sub);font-weight:700;text-transform:uppercase;text-align:center;">SL</div>
-          <div style="font-size:0.7rem;color:var(--sub);font-weight:700;text-transform:uppercase;text-align:right;padding:0 0.75rem;">Đơn giá (VNĐ)</div>
+          <div style="font-size:0.7rem;color:var(--sub);font-weight:700;text-transform:uppercase;text-align:right;padding:0 0.75rem;">�on gi� (VN�)</div>
           <div></div>
         </div>
         <div id="itemsContainer"></div>
-        <button class="add-item-btn" onclick="addItem()"><i class="fas fa-plus"></i> Thêm dòng</button>
+        <button class="add-item-btn" onclick="addItem()"><i class="fas fa-plus"></i> Th�m d�ng</button>
         <button class="gen-btn" id="genBtn" onclick="generateInvoice()">
-          <i class="fas fa-paper-plane"></i> Tạo & Gửi Email Hóa Đơn
+          <i class="fas fa-paper-plane"></i> T?o & G?i Email H�a �on
         </button>
       </div>
     </div>
@@ -133,7 +134,7 @@
     <!-- PREVIEW -->
     <div class="inv-preview">
       <div class="preview-header">
-        <h3><i class="fas fa-eye"></i> Xem trước hóa đơn</h3>
+        <h3><i class="fas fa-eye"></i> Xem tru?c h�a don</h3>
         <div class="preview-actions">
           <button class="pact" onclick="printInvoice()"><i class="fas fa-print"></i> In PDF</button>
         </div>
@@ -142,7 +143,7 @@
         <div id="invDoc">
           <div style="text-align:center;padding:2rem;color:var(--sub);">
             <i class="fas fa-file-invoice" style="font-size:3rem;opacity:0.3;display:block;margin-bottom:0.75rem;"></i>
-            Điền thông tin để xem trước hóa đơn
+            �i?n th�ng tin d? xem tru?c h�a don
           </div>
         </div>
       </div>
@@ -158,9 +159,9 @@
   const ADMIN_KEY = 'inv_admin_ok';
   const ADMIN_PASS = 'admin2026';
   if (sessionStorage.getItem(ADMIN_KEY) !== '1') {
-    const pw = prompt('🔐 Nhập mật khẩu để truy cập trang hóa đơn:');
+    const pw = prompt('?? Nh?p m?t kh?u d? truy c?p trang h�a don:');
     if (pw !== ADMIN_PASS) {
-      document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;flex-direction:column;gap:1rem;"><div style="font-size:3rem;">🔒</div><div style="font-size:1.2rem;color:#666;">Không có quyền truy cập</div><a href="index.html" style="color:#667eea;">← Về trang chủ</a></div>';
+      document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;flex-direction:column;gap:1rem;"><div style="font-size:3rem;">??</div><div style="font-size:1.2rem;color:#666;">Kh�ng c� quy?n truy c?p</div><a href="index.html" style="color:#667eea;">? V? trang ch?</a></div>';
       return;
     }
     sessionStorage.setItem(ADMIN_KEY, '1');
@@ -185,7 +186,7 @@ function removeItem(i) {
 function renderItems() {
   document.getElementById('itemsContainer').innerHTML = items.map((it,i)=>`
     <div class="item-row">
-      <input type="text" placeholder="Tên dịch vụ..." value="${it.name}" oninput="items[${i}].name=this.value;updatePreview()">
+      <input type="text" placeholder="T�n d?ch v?..." value="${it.name}" oninput="items[${i}].name=this.value;updatePreview()">
       <input type="number" min="1" value="${it.qty}" oninput="items[${i}].qty=parseInt(this.value)||1;updatePreview()" style="text-align:center;">
       <input type="number" min="0" value="${it.price||''}" placeholder="0" oninput="items[${i}].price=parseInt(this.value)||0;updatePreview()" style="text-align:right;">
       <button class="del-item" onclick="removeItem(${i})"><i class="fas fa-times"></i></button>
@@ -193,8 +194,8 @@ function renderItems() {
 }
 
 function updatePreview() {
-  const name = document.getElementById('cName').value||'Khách hàng';
-  const email = document.getElementById('cEmail').value||'—';
+  const name = document.getElementById('cName').value||'Kh�ch h�ng';
+  const email = document.getElementById('cEmail').value||'�';
   const phone = document.getElementById('cPhone').value;
   const note = document.getElementById('cNote').value;
   const today = new Date().toLocaleDateString('vi-VN');
@@ -207,43 +208,43 @@ function updatePreview() {
       <td style="padding:7px 10px;border-bottom:1px solid var(--border);text-align:center;">${it.qty}</td>
       <td style="padding:7px 10px;border-bottom:1px solid var(--border);text-align:right;">${Number(it.price).toLocaleString('vi-VN')}</td>
       <td style="padding:7px 10px;border-bottom:1px solid var(--border);text-align:right;font-weight:700;">${Number(it.qty*it.price).toLocaleString('vi-VN')}</td>
-    </tr>`).join('') || '<tr><td colspan="4" style="padding:12px;text-align:center;color:var(--sub);">Chưa có dịch vụ</td></tr>';
+    </tr>`).join('') || '<tr><td colspan="4" style="padding:12px;text-align:center;color:var(--sub);">Chua c� d?ch v?</td></tr>';
 
   document.getElementById('invDoc').innerHTML = `
     <div class="doc-top">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-        <div><div class="doc-brand">Clitus PC</div><div class="doc-sub">Full Stack Developer · TP.HCM</div></div>
+        <div><div class="doc-brand">Clitus PC</div><div class="doc-sub">Full Stack Developer � TP.HCM</div></div>
         <div style="text-align:right;font-size:0.7rem;opacity:0.75;">${today}</div>
       </div>
-      <div class="doc-inv-badge">HÓA ĐƠN THANH TOÁN</div>
+      <div class="doc-inv-badge">H�A �ON THANH TO�N</div>
     </div>
     <div class="doc-meta">
-      <div class="doc-meta-box"><div class="lbl">Số HĐ</div><div class="val" style="color:var(--g1)">${invId}</div></div>
-      <div class="doc-meta-box"><div class="lbl">Khách hàng</div><div class="val">${name}</div><div style="font-size:0.72rem;color:var(--sub);margin-top:2px;">${email}</div></div>
+      <div class="doc-meta-box"><div class="lbl">S? H�</div><div class="val" style="color:var(--g1)">${invId}</div></div>
+      <div class="doc-meta-box"><div class="lbl">Kh�ch h�ng</div><div class="val">${name}</div><div style="font-size:0.72rem;color:var(--sub);margin-top:2px;">${email}</div></div>
     </div>
     <table class="doc-table">
-      <thead><tr><th>Dịch vụ</th><th style="text-align:center;">SL</th><th style="text-align:right;">Đơn giá</th><th style="text-align:right;">Thành tiền</th></tr></thead>
+      <thead><tr><th>D?ch v?</th><th style="text-align:center;">SL</th><th style="text-align:right;">�on gi�</th><th style="text-align:right;">Th�nh ti?n</th></tr></thead>
       <tbody>${rows}</tbody>
     </table>
     <div class="doc-total-box">
-      <div class="doc-total-row"><span>Tạm tính</span><span>${Number(total).toLocaleString('vi-VN')} VNĐ</span></div>
-      <div class="doc-total-row"><span>Thuế (0%)</span><span>0 VNĐ</span></div>
-      <div class="doc-total-final"><span>Tổng cộng</span><span>${Number(total).toLocaleString('vi-VN')} VNĐ</span></div>
+      <div class="doc-total-row"><span>T?m t�nh</span><span>${Number(total).toLocaleString('vi-VN')} VN�</span></div>
+      <div class="doc-total-row"><span>Thu? (0%)</span><span>0 VN�</span></div>
+      <div class="doc-total-final"><span>T?ng c?ng</span><span>${Number(total).toLocaleString('vi-VN')} VN�</span></div>
     </div>
     ${note?`<div style="background:var(--bg);border-radius:10px;padding:10px 14px;font-size:0.78rem;color:var(--sub);margin-bottom:1rem;">${note}</div>`:''}
-    <div style="text-align:center;"><div class="doc-paid"><span>✓</span> ĐÃ THANH TOÁN</div></div>`;
+    <div style="text-align:center;"><div class="doc-paid"><span>?</span> �� THANH TO�N</div></div>`;
 }
 
 async function generateInvoice() {
   const name = document.getElementById('cName').value.trim();
   const email = document.getElementById('cEmail').value.trim();
-  if(!name||!email) { alert('Vui lòng nhập tên và email khách hàng!'); return; }
+  if(!name||!email) { alert('Vui l�ng nh?p t�n v� email kh�ch h�ng!'); return; }
   const validItems = items.filter(i=>i.name&&i.price>0);
-  if(!validItems.length) { alert('Vui lòng thêm ít nhất 1 dịch vụ!'); return; }
+  if(!validItems.length) { alert('Vui l�ng th�m �t nh?t 1 d?ch v?!'); return; }
 
   const btn = document.getElementById('genBtn');
   btn.disabled=true;
-  btn.innerHTML='<div class="loading-dots"><span></span><span></span><span></span></div> Đang tạo & gửi email...';
+  btn.innerHTML='<div class="loading-dots"><span></span><span></span><span></span></div> �ang t?o & g?i email...';
 
   try {
     const apiUrl = (location.hostname==='localhost'||location.hostname==='127.0.0.1')
@@ -259,32 +260,32 @@ async function generateInvoice() {
     });
     const data = await res.json();
     console.log('Invoice response:', data);
-    if(!res.ok) throw new Error(data.error||'Lỗi server');
-    if(!data.invoiceId) throw new Error('Không nhận được mã hóa đơn: '+JSON.stringify(data));
+    if(!res.ok) throw new Error(data.error||'L?i server');
+    if(!data.invoiceId) throw new Error('Kh�ng nh?n du?c m� h�a don: '+JSON.stringify(data));
     showSuccess(data);
   } catch(e) {
-    alert('Lỗi: '+e.message);
+    alert('L?i: '+e.message);
   } finally {
     btn.disabled=false;
-    btn.innerHTML='<i class="fas fa-paper-plane"></i> Tạo & Gửi Email Hóa Đơn';
+    btn.innerHTML='<i class="fas fa-paper-plane"></i> T?o & G?i Email H�a �on';
   }
 }
 
 function showSuccess(data) {
   document.querySelector('.inv-form-card:last-child').innerHTML = `
     <div class="success-card">
-      <div class="success-icon">✓</div>
-      <h3 style="font-size:1.2rem;font-weight:900;color:var(--text);margin-bottom:0.5rem;">Hóa đơn đã tạo!</h3>
+      <div class="success-icon">?</div>
+      <h3 style="font-size:1.2rem;font-weight:900;color:var(--text);margin-bottom:0.5rem;">H�a don d� t?o!</h3>
       <div style="font-size:1rem;font-weight:800;color:var(--g1);margin-bottom:0.5rem;">${data.invoiceId}</div>
       <p style="color:var(--sub);font-size:0.88rem;margin-bottom:1.5rem;">
-        ${data.emailSent ? '📧 Email đã gửi thành công đến khách hàng' : '⚠️ Hóa đơn đã tạo (email chưa cấu hình)'}
+        ${data.emailSent ? '?? Email d� g?i th�nh c�ng d?n kh�ch h�ng' : '?? H�a don d� t?o (email chua c?u h�nh)'}
       </p>
       <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
         <button onclick="printInvoice()" style="padding:0.65rem 1.4rem;border:none;border-radius:12px;background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;font-weight:700;cursor:pointer;font-size:0.88rem;">
-          <i class="fas fa-file-pdf"></i> Tải PDF
+          <i class="fas fa-file-pdf"></i> T?i PDF
         </button>
         <button onclick="location.reload()" style="padding:0.65rem 1.4rem;border:2px solid var(--border);border-radius:12px;background:none;color:var(--text);font-weight:700;cursor:pointer;font-size:0.88rem;">
-          <i class="fas fa-plus"></i> Tạo mới
+          <i class="fas fa-plus"></i> T?o m?i
         </button>
       </div>
     </div>`;

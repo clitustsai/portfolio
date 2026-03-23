@@ -1,14 +1,15 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Arcade — Clitus PC</title>
-<meta name="description" content="Chơi game kiếm coin, dùng coin mở AI Tools miễn phí!">
+<title>Arcade � Clitus PC</title>
+<meta name="description" content="Choi game ki?m coin, d�ng coin m? AI Tools mi?n ph�!">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="mobile-responsive.css">
 <link rel="stylesheet" href="mobile-ux.css">
+  <link rel="stylesheet" href="mobile-fix.css">
 <link rel="stylesheet" href="modern.css">
   <link rel="stylesheet" href="responsive.css">
 <script src="dist/api.js" defer></script>
@@ -201,11 +202,11 @@ body{background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);min-height:100vh
 <header>
   <nav>
     <a href="index.html" class="logo">
-      <span class="logo-icon">💻</span>
+      <span class="logo-icon">??</span>
       <span class="logo-text">Clitus<span class="logo-accent">PC</span></span>
     </a>
     <ul id="navMenu">
-      <li><a href="index.html">Trang Chủ</a></li>
+      <li><a href="index.html">Trang Ch?</a></li>
       <li><a href="tools.html">AI Tools</a></li>
       <li><a href="dashboard.html">Dashboard</a></li>
     </ul>
@@ -219,42 +220,42 @@ body{background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);min-height:100vh
 
 <div class="arc-wrap">
   <div class="arc-hero">
-    <h1>🎮 Arcade & Coin Shop</h1>
-    <p>Chơi game kiếm coin · Điểm danh nhận thưởng · Dùng coin mở AI Tools</p>
+    <h1>?? Arcade & Coin Shop</h1>
+    <p>Choi game ki?m coin � �i?m danh nh?n thu?ng � D�ng coin m? AI Tools</p>
   </div>
 
   <!-- Login gate (shown when not logged in) -->
   <div id="loginGate" class="login-gate" style="display:none">
     <i class="fas fa-gamepad"></i>
-    <h3>Đăng nhập để chơi game & kiếm coin</h3>
-    <p>Tạo tài khoản miễn phí để tham gia arcade, nhận daily reward và dùng coin mở AI Tools</p>
-    <button class="btn-login-gate" onclick="openAuthModal('login')"><i class="fas fa-sign-in-alt"></i> Đăng nhập ngay</button>
+    <h3>�ang nh?p d? choi game & ki?m coin</h3>
+    <p>T?o t�i kho?n mi?n ph� d? tham gia arcade, nh?n daily reward v� d�ng coin m? AI Tools</p>
+    <button class="btn-login-gate" onclick="openAuthModal('login')"><i class="fas fa-sign-in-alt"></i> �ang nh?p ngay</button>
   </div>
 
   <div id="arcMain" style="display:none">
     <!-- Coin bar -->
     <div class="coin-bar">
       <div class="coin-stat">
-        <span class="coin-icon">🪙</span>
-        <div><div class="num" id="coinBalance">0</div><div class="lbl">Coin hiện có</div></div>
+        <span class="coin-icon">??</span>
+        <div><div class="num" id="coinBalance">0</div><div class="lbl">Coin hi?n c�</div></div>
       </div>
       <div class="coin-stat">
-        <span class="coin-icon">📈</span>
-        <div><div class="num" id="coinTotal">0</div><div class="lbl">Tổng kiếm được</div></div>
+        <span class="coin-icon">??</span>
+        <div><div class="num" id="coinTotal">0</div><div class="lbl">T?ng ki?m du?c</div></div>
       </div>
       <div class="coin-stat">
-        <span class="coin-icon">🔥</span>
-        <div><div class="num" id="streakCount">1</div><div class="lbl">Streak ngày</div></div>
+        <span class="coin-icon">??</span>
+        <div><div class="num" id="streakCount">1</div><div class="lbl">Streak ng�y</div></div>
       </div>
     </div>
 
     <!-- Spin Wheel (thay daily reward) -->
     <div class="daily-card" id="dailyCard" style="flex-direction:column;align-items:stretch;gap:0;padding:0;overflow:hidden;">
       <div style="padding:1rem 1.5rem .75rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
-        <div class="daily-icon">🎡</div>
+        <div class="daily-icon">??</div>
         <div class="daily-info" style="flex:1;">
-          <h3>Spin Wheel — Quay thưởng coin mỗi ngày!</h3>
-          <p id="spinDesc">Quay vòng quay may mắn để nhận coin. Mỗi ngày 1 lần!</p>
+          <h3>Spin Wheel � Quay thu?ng coin m?i ng�y!</h3>
+          <p id="spinDesc">Quay v�ng quay may m?n d? nh?n coin. M?i ng�y 1 l?n!</p>
         </div>
         <button class="btn-claim" id="btnSpin" onclick="openSpinModal()">
           <i class="fas fa-sync-alt"></i> Quay ngay!
@@ -267,29 +268,29 @@ body{background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);min-height:100vh
     <div class="games-grid">
       <div class="game-card" onclick="openGame('snake')">
         <div class="game-thumb game-thumb-snake">
-          🐍
-          <div class="game-badge">🪙 Max 50 coin</div>
+          ??
+          <div class="game-badge">?? Max 50 coin</div>
         </div>
         <div class="game-info">
-          <h3>🐍 Snake Classic</h3>
-          <p>Điều khiển rắn ăn mồi, tránh va chạm. Điểm càng cao coin càng nhiều!</p>
+          <h3>?? Snake Classic</h3>
+          <p>�i?u khi?n r?n an m?i, tr�nh va ch?m. �i?m c�ng cao coin c�ng nhi?u!</p>
           <div class="game-meta">
-            <span><i class="fas fa-coins"></i> 0.05 coin/điểm</span>
-            <span><i class="fas fa-trophy"></i> <span id="snakeBest">—</span></span>
+            <span><i class="fas fa-coins"></i> 0.05 coin/di?m</span>
+            <span><i class="fas fa-trophy"></i> <span id="snakeBest">�</span></span>
           </div>
         </div>
       </div>
       <div class="game-card" onclick="openGame('clicker')">
         <div class="game-thumb game-thumb-clicker">
-          💥
-          <div class="game-badge">🪙 Max 30 coin</div>
+          ??
+          <div class="game-badge">?? Max 30 coin</div>
         </div>
         <div class="game-info">
-          <h3>💥 Coin Clicker</h3>
-          <p>Click thật nhanh trong 15 giây! Combo x2, x3 để nhân điểm!</p>
+          <h3>?? Coin Clicker</h3>
+          <p>Click th?t nhanh trong 15 gi�y! Combo x2, x3 d? nh�n di?m!</p>
           <div class="game-meta">
             <span><i class="fas fa-coins"></i> 0.02 coin/click</span>
-            <span><i class="fas fa-trophy"></i> <span id="clickerBest">—</span></span>
+            <span><i class="fas fa-trophy"></i> <span id="clickerBest">�</span></span>
           </div>
         </div>
       </div>
@@ -299,58 +300,58 @@ body{background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);min-height:100vh
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.25rem;margin-bottom:1.5rem;">
       <div class="leaderboard">
         <div class="lb-title"><i class="fas fa-trophy"></i> Snake Leaderboard</div>
-        <div id="snakeLb"><div style="text-align:center;padding:1rem;color:rgba(255,255,255,.3);font-size:.82rem;">Chưa có dữ liệu</div></div>
+        <div id="snakeLb"><div style="text-align:center;padding:1rem;color:rgba(255,255,255,.3);font-size:.82rem;">Chua c� d? li?u</div></div>
       </div>
       <div class="leaderboard">
         <div class="lb-title"><i class="fas fa-trophy"></i> Clicker Leaderboard</div>
-        <div id="clickerLb"><div style="text-align:center;padding:1rem;color:rgba(255,255,255,.3);font-size:.82rem;">Chưa có dữ liệu</div></div>
+        <div id="clickerLb"><div style="text-align:center;padding:1rem;color:rgba(255,255,255,.3);font-size:.82rem;">Chua c� d? li?u</div></div>
       </div>
     </div>
 
     <!-- Coin Shop -->
     <div class="leaderboard" style="margin-bottom:1.5rem;">
-      <div class="lb-title"><i class="fas fa-store"></i> Coin Shop — Dùng coin mở AI Tools</div>
+      <div class="lb-title"><i class="fas fa-store"></i> Coin Shop � D�ng coin m? AI Tools</div>
       <div class="shop-grid">
         <div class="shop-item">
-          <div class="si-icon">🔧</div>
+          <div class="si-icon">??</div>
           <div class="si-name">Fix Code</div>
-          <div class="si-desc">1 lượt AI Fix Code không giới hạn</div>
-          <div class="si-price">🪙 10 coin</div>
+          <div class="si-desc">1 lu?t AI Fix Code kh�ng gi?i h?n</div>
+          <div class="si-price">?? 10 coin</div>
           <button class="btn-buy" onclick="buyTool('fix',10)">Mua ngay</button>
         </div>
         <div class="shop-item">
-          <div class="si-icon">📚</div>
-          <div class="si-name">Giải Bài Tập</div>
-          <div class="si-desc">1 lượt AI giải bài tập</div>
-          <div class="si-price">🪙 10 coin</div>
+          <div class="si-icon">??</div>
+          <div class="si-name">Gi?i B�i T?p</div>
+          <div class="si-desc">1 lu?t AI gi?i b�i t?p</div>
+          <div class="si-price">?? 10 coin</div>
           <button class="btn-buy" onclick="buyTool('hw',10)">Mua ngay</button>
         </div>
         <div class="shop-item">
-          <div class="si-icon">🎬</div>
+          <div class="si-icon">??</div>
           <div class="si-name">Video Script</div>
-          <div class="si-desc">1 lượt tạo kịch bản video</div>
-          <div class="si-price">🪙 10 coin</div>
+          <div class="si-desc">1 lu?t t?o k?ch b?n video</div>
+          <div class="si-price">?? 10 coin</div>
           <button class="btn-buy" onclick="buyTool('vid',10)">Mua ngay</button>
         </div>
         <div class="shop-item">
-          <div class="si-icon">💻</div>
+          <div class="si-icon">??</div>
           <div class="si-name">Code Review</div>
-          <div class="si-desc">1 lượt AI review code chuyên sâu</div>
-          <div class="si-price">🪙 15 coin</div>
+          <div class="si-desc">1 lu?t AI review code chuy�n s�u</div>
+          <div class="si-price">?? 15 coin</div>
           <button class="btn-buy" onclick="buyTool('cr',15)">Mua ngay</button>
         </div>
         <div class="shop-item">
-          <div class="si-icon">📄</div>
+          <div class="si-icon">??</div>
           <div class="si-name">CV Generator</div>
-          <div class="si-desc">1 lượt tạo CV chuyên nghiệp</div>
-          <div class="si-price">🪙 15 coin</div>
+          <div class="si-desc">1 lu?t t?o CV chuy�n nghi?p</div>
+          <div class="si-price">?? 15 coin</div>
           <button class="btn-buy" onclick="buyTool('cv',15)">Mua ngay</button>
         </div>
         <div class="shop-item" style="border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.06);">
-          <div class="si-icon">👑</div>
-          <div class="si-name">VIP 1 ngày</div>
-          <div class="si-desc">Dùng không giới hạn tất cả tools trong 24h</div>
-          <div class="si-price">🪙 200 coin</div>
+          <div class="si-icon">??</div>
+          <div class="si-name">VIP 1 ng�y</div>
+          <div class="si-desc">D�ng kh�ng gi?i h?n t?t c? tools trong 24h</div>
+          <div class="si-price">?? 200 coin</div>
           <button class="btn-buy" onclick="buyTool('vip_day',200)" style="background:linear-gradient(135deg,#f59e0b,#d97706);">Mua ngay</button>
         </div>
       </div>
@@ -361,11 +362,11 @@ body{background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);min-height:100vh
 <!-- Spin Wheel Modal -->
 <div class="spin-modal" id="spinModal">
   <div class="spin-box">
-    <button class="spin-close" onclick="closeSpinModal()">✕</button>
-    <div class="spin-title">🎡 Vòng Quay May Mắn</div>
-    <div class="spin-sub">Mỗi ngày 1 lần · Quay để nhận coin!</div>
+    <button class="spin-close" onclick="closeSpinModal()">?</button>
+    <div class="spin-title">?? V�ng Quay May M?n</div>
+    <div class="spin-sub">M?i ng�y 1 l?n � Quay d? nh?n coin!</div>
     <div class="spin-canvas-wrap">
-      <div class="spin-pointer">▼</div>
+      <div class="spin-pointer">?</div>
       <canvas id="spinCanvas" width="300" height="300"></canvas>
     </div>
     <div class="spin-result" id="spinResult"></div>
@@ -380,26 +381,26 @@ body{background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);min-height:100vh
 <div class="game-modal" id="snakeModal">
   <div class="game-box">
     <div class="game-header">
-      <h2>🐍 Snake Classic</h2>
-      <button class="game-close" onclick="closeGame('snake')">✕</button>
+      <h2>?? Snake Classic</h2>
+      <button class="game-close" onclick="closeGame('snake')">?</button>
     </div>
     <div class="game-hud">
-      <div class="hud-item"><div class="hv" id="snakeScore">0</div><div class="hl">Điểm</div></div>
-      <div class="hud-item"><div class="hv" id="snakeCoinsEst">0</div><div class="hl">Coin ước tính</div></div>
-      <div class="hud-item"><div class="hv" id="snakeHigh">0</div><div class="hl">Kỷ lục</div></div>
+      <div class="hud-item"><div class="hv" id="snakeScore">0</div><div class="hl">�i?m</div></div>
+      <div class="hud-item"><div class="hv" id="snakeCoinsEst">0</div><div class="hl">Coin u?c t�nh</div></div>
+      <div class="hud-item"><div class="hv" id="snakeHigh">0</div><div class="hl">K? l?c</div></div>
     </div>
     <div style="padding:.75rem;text-align:center;">
       <canvas id="snakeCanvas" width="400" height="320"></canvas>
       <div style="margin-top:.5rem;font-size:.75rem;color:rgba(255,255,255,.35);">
-        ← → ↑ ↓ hoặc WASD · Mobile: vuốt màn hình
+        ? ? ? ? ho?c WASD � Mobile: vu?t m�n h�nh
       </div>
     </div>
     <div class="game-over" id="snakeOver" style="display:none">
-      <div style="font-size:2.5rem;">💀</div>
+      <div style="font-size:2.5rem;">??</div>
       <h3>Game Over!</h3>
       <div class="go-score" id="snakeFinalScore">0</div>
       <div class="go-coins" id="snakeFinalCoins">+0 coin</div>
-      <button class="btn-play-again" onclick="startSnake()"><i class="fas fa-redo"></i> Chơi lại</button>
+      <button class="btn-play-again" onclick="startSnake()"><i class="fas fa-redo"></i> Choi l?i</button>
     </div>
   </div>
 </div>
@@ -408,26 +409,26 @@ body{background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);min-height:100vh
 <div class="game-modal" id="clickerModal">
   <div class="game-box">
     <div class="game-header">
-      <h2>💥 Coin Clicker</h2>
-      <button class="game-close" onclick="closeGame('clicker')">✕</button>
+      <h2>?? Coin Clicker</h2>
+      <button class="game-close" onclick="closeGame('clicker')">?</button>
     </div>
     <div class="game-hud">
       <div class="hud-item"><div class="hv" id="clickScore">0</div><div class="hl">Clicks</div></div>
-      <div class="hud-item"><div class="hv" id="clickTime">15</div><div class="hl">Giây còn</div></div>
-      <div class="hud-item"><div class="hv" id="clickCoinsEst">0</div><div class="hl">Coin ước tính</div></div>
+      <div class="hud-item"><div class="hv" id="clickTime">15</div><div class="hl">Gi�y c�n</div></div>
+      <div class="hud-item"><div class="hv" id="clickCoinsEst">0</div><div class="hl">Coin u?c t�nh</div></div>
     </div>
     <div class="clicker-area">
       <div class="click-timer"><div class="click-timer-fill" id="clickTimerFill" style="width:100%"></div></div>
       <div class="click-combo" id="clickCombo"></div>
-      <button class="click-target" id="clickTarget" onclick="handleClick(event)">🪙</button>
-      <div style="font-size:.78rem;color:rgba(255,255,255,.35);margin-top:.5rem;">Click thật nhanh!</div>
+      <button class="click-target" id="clickTarget" onclick="handleClick(event)">??</button>
+      <div style="font-size:.78rem;color:rgba(255,255,255,.35);margin-top:.5rem;">Click th?t nhanh!</div>
     </div>
     <div class="game-over" id="clickerOver" style="display:none">
-      <div style="font-size:2.5rem;">🎉</div>
-      <h3>Hết giờ!</h3>
+      <div style="font-size:2.5rem;">??</div>
+      <h3>H?t gi?!</h3>
       <div class="go-score" id="clickFinalScore">0</div>
       <div class="go-coins" id="clickFinalCoins">+0 coin</div>
-      <button class="btn-play-again" onclick="startClicker()"><i class="fas fa-redo"></i> Chơi lại</button>
+      <button class="btn-play-again" onclick="startClicker()"><i class="fas fa-redo"></i> Choi l?i</button>
     </div>
   </div>
 </div>
@@ -451,7 +452,7 @@ function arcToast(msg, color) {
 function floatCoin(x, y, text) {
   const el = document.createElement('div');
   el.className = 'float-coin';
-  el.textContent = text || '+1🪙';
+  el.textContent = text || '+1??';
   el.style.left = x + 'px';
   el.style.top = y + 'px';
   document.body.appendChild(el);
@@ -473,7 +474,7 @@ async function loadCoins() {
 // ===== SPIN WHEEL =====
 const SPIN_PRIZES = [10, 20, 5, 50, 15, 30, 5, 100];
 const SPIN_COLORS = ['#667eea','#f59e0b','#10b981','#f5576c','#764ba2','#06b6d4','#84cc16','#f093fb'];
-const SPIN_LABELS = ['10🪙','20🪙','5🪙','50🪙','15🪙','30🪙','5🪙','100🪙'];
+const SPIN_LABELS = ['10??','20??','5??','50??','15??','30??','5??','100??'];
 let _spinSpun = false, _spinning = false;
 
 function drawWheel(rotation) {
@@ -513,7 +514,7 @@ function drawWheel(rotation) {
   ctx.strokeStyle = 'rgba(102,126,234,.5)'; ctx.lineWidth = 3; ctx.stroke();
   ctx.fillStyle = '#667eea'; ctx.font = 'bold 16px sans-serif';
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText('🎡', cx, cy);
+  ctx.fillText('??', cx, cy);
 }
 
 function openSpinModal() {
@@ -533,13 +534,13 @@ function updateSpinUI() {
   const countdown = document.getElementById('spinCountdown');
   if (_spinSpun) {
     btn.disabled = true;
-    btn.innerHTML = '✅ Đã quay hôm nay';
-    // Countdown đến 00:00
+    btn.innerHTML = '? �� quay h�m nay';
+    // Countdown d?n 00:00
     const now = new Date();
     const tomorrow = new Date(now); tomorrow.setHours(24,0,0,0);
     const diff = tomorrow - now;
     const h = Math.floor(diff/3600000), m = Math.floor((diff%3600000)/60000);
-    countdown.textContent = `⏰ Quay lại sau: ${h}h ${m}m`;
+    countdown.textContent = `? Quay l?i sau: ${h}h ${m}m`;
   } else {
     btn.disabled = false;
     btn.innerHTML = '<i class="fas fa-sync-alt"></i> QUAY NGAY!';
@@ -558,18 +559,18 @@ async function loadSpinStatus() {
     if (btn) {
       btn.disabled = _spinSpun;
       btn.innerHTML = _spinSpun
-        ? '✅ Đã quay hôm nay'
+        ? '? �� quay h�m nay'
         : '<i class="fas fa-sync-alt"></i> Quay ngay!';
     }
     const desc = document.getElementById('spinDesc');
     if (desc) desc.textContent = _spinSpun
-      ? `✅ Đã quay hôm nay! Nhận được ${d.coinsEarned}🪙 · Quay lại vào ngày mai`
-      : 'Quay vòng quay may mắn để nhận coin. Mỗi ngày 1 lần!';
-    // Streak dots (dùng lại cho spin history — hiện 7 ngày gần nhất)
+      ? `? �� quay h�m nay! Nh?n du?c ${d.coinsEarned}?? � Quay l?i v�o ng�y mai`
+      : 'Quay v�ng quay may m?n d? nh?n coin. M?i ng�y 1 l?n!';
+    // Streak dots (d�ng l?i cho spin history � hi?n 7 ng�y g?n nh?t)
     const dots = document.getElementById('streakDots');
     if (dots) {
       const labels = ['10','20','5','50','15','30','5','100'];
-      dots.innerHTML = labels.map((c, i) => `<div class="streak-dot" title="${c}🪙 ô ${i+1}">${i+1}</div>`).join('');
+      dots.innerHTML = labels.map((c, i) => `<div class="streak-dot" title="${c}?? � ${i+1}">${i+1}</div>`).join('');
     }
   } catch(e) {}
 }
@@ -578,7 +579,7 @@ async function doSpin() {
   if (_spinning || _spinSpun) return;
   _spinning = true;
   const btn = document.getElementById('btnSpinGo');
-  btn.disabled = true; btn.innerHTML = '⏳ Đang quay...';
+  btn.disabled = true; btn.innerHTML = '? �ang quay...';
   document.getElementById('spinResult').textContent = '';
 
   try {
@@ -587,14 +588,14 @@ async function doSpin() {
       method: 'POST', headers: { 'Authorization': 'Bearer ' + token }
     });
     const d = await r.json();
-    if (!r.ok) { arcToast('⚠️ ' + d.error, '#f59e0b'); btn.disabled = false; btn.innerHTML = '<i class="fas fa-sync-alt"></i> QUAY NGAY!'; _spinning = false; return; }
+    if (!r.ok) { arcToast('?? ' + d.error, '#f59e0b'); btn.disabled = false; btn.innerHTML = '<i class="fas fa-sync-alt"></i> QUAY NGAY!'; _spinning = false; return; }
 
     // Animate wheel to land on prizeIndex
     const prizeIndex = d.prizeIndex;
     const arc = (2 * Math.PI) / SPIN_PRIZES.length;
-    // Pointer ở trên (top = -π/2), tính góc để ô prizeIndex nằm dưới pointer
+    // Pointer ? tr�n (top = -p/2), t�nh g�c d? � prizeIndex n?m du?i pointer
     const targetAngle = -(prizeIndex * arc + arc / 2) - Math.PI / 2;
-    const spins = 5 * 2 * Math.PI; // 5 vòng
+    const spins = 5 * 2 * Math.PI; // 5 v�ng
     const finalAngle = spins + targetAngle;
     const duration = 4000;
     const start = performance.now();
@@ -613,15 +614,15 @@ async function doSpin() {
         _spinSpun = true; _spinning = false;
         _coins = d.totalCoins;
         document.getElementById('coinBalance').textContent = _coins;
-        document.getElementById('spinResult').textContent = `🎉 Bạn nhận được ${d.coins} coin!`;
+        document.getElementById('spinResult').textContent = `?? B?n nh?n du?c ${d.coins} coin!`;
         updateSpinUI();
         loadSpinStatus();
         if (d.coins >= 50) spawnConfetti();
-        arcToast(`🎡 Quay được ${d.coins}🪙 coin!`, '#fbbf24');
+        arcToast(`?? Quay du?c ${d.coins}?? coin!`, '#fbbf24');
       }
     }
     requestAnimationFrame(animate);
-  } catch(e) { arcToast('❌ Lỗi kết nối', '#f5576c'); btn.disabled = false; btn.innerHTML = '<i class="fas fa-sync-alt"></i> QUAY NGAY!'; _spinning = false; }
+  } catch(e) { arcToast('? L?i k?t n?i', '#f5576c'); btn.disabled = false; btn.innerHTML = '<i class="fas fa-sync-alt"></i> QUAY NGAY!'; _spinning = false; }
 }
 
 function spawnConfetti() {
@@ -635,19 +636,19 @@ function spawnConfetti() {
   }
 }
 
-// ===== DAILY REWARD (legacy — kept for streak dots compat) =====
+// ===== DAILY REWARD (legacy � kept for streak dots compat) =====
 async function loadDailyStatus() { await loadSpinStatus(); }
 
 // ===== LEADERBOARD =====
 async function loadLeaderboards() {
-  const rankIcons = ['🥇','🥈','🥉'];
+  const rankIcons = ['??','??','??'];
   const rankCls = ['gold','silver','bronze'];
   for (const game of ['snake','clicker']) {
     try {
       const r = await fetch(API_BASE + '/game/leaderboard/' + game);
       const rows = await r.json();
       const el = document.getElementById(game + 'Lb');
-      if (!rows.length) { el.innerHTML = '<div style="text-align:center;padding:1rem;color:rgba(255,255,255,.3);font-size:.82rem;">Chưa có dữ liệu</div>'; continue; }
+      if (!rows.length) { el.innerHTML = '<div style="text-align:center;padding:1rem;color:rgba(255,255,255,.3);font-size:.82rem;">Chua c� d? li?u</div>'; continue; }
       el.innerHTML = rows.map((row, i) => `
         <div class="lb-row">
           <div class="lb-rank ${rankCls[i]||''}">${rankIcons[i] || (i+1)}</div>
@@ -660,7 +661,7 @@ async function loadLeaderboards() {
 
 // ===== COIN SHOP =====
 async function buyTool(tool, cost) {
-  if (_coins < cost) { arcToast(`❌ Không đủ coin! Cần ${cost}🪙, bạn có ${_coins}🪙`, '#f5576c'); return; }
+  if (_coins < cost) { arcToast(`? Kh�ng d? coin! C?n ${cost}??, b?n c� ${_coins}??`, '#f5576c'); return; }
   const token = localStorage.getItem('user_token');
   try {
     const r = await fetch(API_BASE + '/coins/spend', {
@@ -669,17 +670,17 @@ async function buyTool(tool, cost) {
       body: JSON.stringify({ amount: cost, tool })
     });
     const d = await r.json();
-    if (!r.ok) { arcToast('❌ ' + d.error, '#f5576c'); return; }
+    if (!r.ok) { arcToast('? ' + d.error, '#f5576c'); return; }
     _coins = d.coins;
     document.getElementById('coinBalance').textContent = _coins;
-    // Lưu extra lượt vào localStorage
+    // Luu extra lu?t v�o localStorage
     const extras = JSON.parse(localStorage.getItem('coin_extras') || '{}');
     extras[tool] = (extras[tool] || 0) + 1;
     localStorage.setItem('coin_extras', JSON.stringify(extras));
-    const names = { fix:'Fix Code', hw:'Giải Bài Tập', vid:'Video Script', cr:'Code Review', cv:'CV Generator', vip_day:'VIP 1 ngày' };
-    arcToast(`✅ Mua ${names[tool]||tool} thành công! Còn ${_coins}🪙`, '#4ade80');
-    if (tool === 'vip_day') arcToast('👑 VIP 1 ngày đã kích hoạt! Vào AI Tools để dùng', '#fbbf24');
-  } catch(e) { arcToast('❌ Lỗi kết nối', '#f5576c'); }
+    const names = { fix:'Fix Code', hw:'Gi?i B�i T?p', vid:'Video Script', cr:'Code Review', cv:'CV Generator', vip_day:'VIP 1 ng�y' };
+    arcToast(`? Mua ${names[tool]||tool} th�nh c�ng! C�n ${_coins}??`, '#4ade80');
+    if (tool === 'vip_day') arcToast('?? VIP 1 ng�y d� k�ch ho?t! V�o AI Tools d? d�ng', '#fbbf24');
+  } catch(e) { arcToast('? L?i k?t n?i', '#f5576c'); }
 }
 
 // ===== SUBMIT SCORE =====
@@ -769,7 +770,7 @@ function drawSnake() {
   ctx.font = CELL + 'px serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('🍎', food.x*CELL+CELL/2, food.y*CELL+CELL/2);
+  ctx.fillText('??', food.x*CELL+CELL/2, food.y*CELL+CELL/2);
   // Snake
   snake.forEach((s,i) => {
     const grad = ctx.createLinearGradient(s.x*CELL,s.y*CELL,(s.x+1)*CELL,(s.y+1)*CELL);
@@ -779,7 +780,7 @@ function drawSnake() {
     ctx.beginPath();
     ctx.roundRect(s.x*CELL+1,s.y*CELL+1,CELL-2,CELL-2,i===0?6:4);
     ctx.fill();
-    if (i===0) { ctx.font='12px serif'; ctx.fillText('👀',s.x*CELL+CELL/2,s.y*CELL+CELL/2); }
+    if (i===0) { ctx.font='12px serif'; ctx.fillText('??',s.x*CELL+CELL/2,s.y*CELL+CELL/2); }
   });
 }
 
@@ -789,8 +790,8 @@ async function endSnake() {
   document.getElementById('snakeHigh').textContent = snakeHigh;
   document.getElementById('snakeBest').textContent = snakeHigh;
   const coins = await submitScore('snake', snakeScore);
-  document.getElementById('snakeFinalScore').textContent = snakeScore + ' điểm';
-  document.getElementById('snakeFinalCoins').textContent = coins > 0 ? `+${coins} coin nhận được! 🪙` : 'Chơi tiếp để kiếm coin!';
+  document.getElementById('snakeFinalScore').textContent = snakeScore + ' di?m';
+  document.getElementById('snakeFinalCoins').textContent = coins > 0 ? `+${coins} coin nh?n du?c! ??` : 'Choi ti?p d? ki?m coin!';
   document.getElementById('snakeOver').style.display = 'block';
 }
 
@@ -850,12 +851,12 @@ function handleClick(e) {
   document.getElementById('clickScore').textContent = clickScore;
   document.getElementById('clickCoinsEst').textContent = Math.min(30, Math.floor(clickScore * 0.02));
   if (multiplier > 1) {
-    document.getElementById('clickCombo').textContent = `🔥 COMBO x${multiplier}!`;
+    document.getElementById('clickCombo').textContent = `?? COMBO x${multiplier}!`;
   } else {
-    document.getElementById('clickCombo').textContent = comboCount >= 3 ? `⚡ Combo ${comboCount}` : '';
+    document.getElementById('clickCombo').textContent = comboCount >= 3 ? `? Combo ${comboCount}` : '';
   }
   // Float coin
-  floatCoin(e.clientX - 15, e.clientY - 20, multiplier > 1 ? `+${multiplier}🪙` : '+1🪙');
+  floatCoin(e.clientX - 15, e.clientY - 20, multiplier > 1 ? `+${multiplier}??` : '+1??');
   // Shake
   const btn = document.getElementById('clickTarget');
   btn.classList.remove('shake');
@@ -870,7 +871,7 @@ async function endClicker() {
   document.getElementById('clickerBest').textContent = clickHigh;
   const coins = await submitScore('clicker', clickScore);
   document.getElementById('clickFinalScore').textContent = clickScore + ' clicks';
-  document.getElementById('clickFinalCoins').textContent = coins > 0 ? `+${coins} coin nhận được! 🪙` : 'Chơi tiếp để kiếm coin!';
+  document.getElementById('clickFinalCoins').textContent = coins > 0 ? `+${coins} coin nh?n du?c! ??` : 'Choi ti?p d? ki?m coin!';
   document.getElementById('clickerOver').style.display = 'block';
 }
 

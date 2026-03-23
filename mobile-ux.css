@@ -3,23 +3,9 @@
    ============================================================ */
 
 /* ===== BOTTOM NAVIGATION BAR (mobile only) ===== */
+/* Ẩn trên desktop — chỉ hiện trong media query bên dưới */
 #mobile-bottom-nav {
-  display: none !important;
-  position: fixed !important;
-  bottom: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  z-index: 999999 !important;
-  background: rgba(255,255,255,0.95) !important;
-  backdrop-filter: blur(20px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-  border-top: 1px solid rgba(102,126,234,0.12) !important;
-  box-shadow: 0 -4px 24px rgba(0,0,0,0.08) !important;
-  padding: 0 0 env(safe-area-inset-bottom, 0) !important;
-  width: 100% !important;
-  height: 56px !important;
-  pointer-events: auto !important;
-  touch-action: manipulation !important;
+  display: none;
 }
 html[data-theme="dark"] #mobile-bottom-nav {
   background: rgba(15,15,30,0.95) !important;
@@ -60,11 +46,13 @@ html[data-theme="dark"] #mobile-bottom-nav {
 .mbn-inner {
   display: flex;
   align-items: stretch;
+  justify-content: space-around;
   height: 56px;
+  padding: 0 8px;
 }
 
 .mbn-item {
-  flex: 1;
+  flex: 0 1 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -72,35 +60,64 @@ html[data-theme="dark"] #mobile-bottom-nav {
   gap: 3px;
   text-decoration: none;
   color: #6b7280;
-  font-size: 0.66rem;
+  font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.03em;
-  transition: color 0.2s ease, transform 0.25s ease;
+  transition: color 0.2s ease, transform 0.25s ease, background 0.2s ease;
   -webkit-tap-highlight-color: transparent;
   position: relative;
-  padding: 8px 6px;
+  padding: 8px 10px;
   min-height: 52px;
+  min-width: 60px;
   border-radius: 14px;
-  margin: 4px 4px 0;
   background: rgba(255,255,255,.05);
   backdrop-filter: blur(6px);
 }
+.mbn-item:nth-child(1) {
+  order: -2;
+  flex: 1;
+  min-width: 70px;
+  background: rgba(102,126,234,.12);
+  color: #4f46e5;
+}
+.mbn-item:nth-child(2) {
+  order: -1;
+  flex: 0.9;
+}
+.mbn-item:nth-child(3) {
+  order: 0;
+  flex: 0.95;
+}
+.mbn-item:nth-child(4) {
+  order: 1;
+  flex: 0.9;
+}
+.mbn-item:nth-child(5) {
+  order: 2;
+  flex: 0.9;
+}
 .mbn-item:hover {
   color: #4f46e5;
-  transform: translateY(-1px);
+  transform: translateY(-2px) scale(1.05);
   background: rgba(102,126,234,.12);
 }
 .mbn-item i {
-  font-size: 1.2rem;
-  transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1), color 0.2s ease;
+  font-size: 1.25rem;
+  transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), color 0.2s ease;
 }
 .mbn-item.active {
-  color: #311b92;
+  color: #4f46e5;
   background: rgba(102,126,234,.18);
   box-shadow: 0 6px 20px rgba(102,126,234,.18);
+  font-weight: 800;
 }
 .mbn-item.active i {
-  transform: translateY(-2px) scale(1.18);
+  transform: translateY(-3px) scale(1.25);
+  color: #667eea;
+}
+.mbn-item:nth-child(1).active {
+  box-shadow: 0 8px 28px rgba(102,126,234,.25);
+  transform: scale(1.08);
 }
 .mbn-item.active::before {
   content: '';
@@ -115,8 +132,25 @@ html[data-theme="dark"] .mbn-item.active { color: #a78bfa; }
 
 /* ===== SHOW BOTTOM NAV ON MOBILE ===== */
 @media (max-width: 768px) {
-  #mobile-bottom-nav { 
-    display: block !important; 
+  #mobile-bottom-nav {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 999999 !important;
+    background: rgba(255,255,255,0.95) !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+    border-top: 1px solid rgba(102,126,234,0.12) !important;
+    box-shadow: 0 -4px 24px rgba(0,0,0,0.08) !important;
+    padding: 0 0 env(safe-area-inset-bottom, 0) !important;
+    width: 100% !important;
+    height: 56px !important;
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
   }
 
   /* Push content up so bottom nav doesn't overlap */
@@ -140,6 +174,34 @@ html[data-theme="dark"] .mbn-item.active { color: #a78bfa; }
   }
   body {
     padding-top: env(safe-area-inset-top, 0);
+  }
+}
+
+/* ===== HIDE SUGGESTION PANELS ON MOBILE ===== */
+@media (max-width: 768px) {
+  /* Hide any suggestion/tooltip panels */
+  [id*="goi"],
+  [id*="suggest"],
+  [id*="tooltip"],
+  .suggestion-panel,
+  .tooltip-panel {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+  
+  /* Recommendation panel hide completely */
+  #rec-panel {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: translateX(100%) !important;
+  }
+  #rec-panel.open {
+    display: none !important;
+    visibility: hidden !important;
   }
 }
 

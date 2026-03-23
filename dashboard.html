@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
@@ -6,13 +6,14 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#667eea"><title>Dashboard — Clitus PC</title>
+<meta name="theme-color" content="#667eea"><title>Dashboard � Clitus PC</title>
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="mobile-responsive.css">
 <link rel="stylesheet" href="mobile-ux.css">
+  <link rel="stylesheet" href="mobile-fix.css">
 <link rel="stylesheet" href="modern.css">
 <link rel="stylesheet" href="responsive.css">
 <script src="dist/api.js" defer></script>
@@ -108,22 +109,22 @@ body{background:linear-gradient(135deg,#0f0c29,#55545e,#24243e);min-height:100vh
 <header>
   <nav>
     <a href="index.html" class="logo">
-      <span class="logo-icon">💻</span>
+      <span class="logo-icon">??</span>
       <span class="logo-text">Clitus<span class="logo-accent">PC</span></span>
     </a>
     <ul id="navMenu">
-      <li><a href="index.html">Trang Chủ</a></li>
+      <li><a href="index.html">Trang Ch?</a></li>
       <li><a href="blog.html">Blog</a></li>
       <li class="nav-dropdown">
-        <a href="#" class="nav-dropdown-toggle">Công Cụ <i class="fas fa-chevron-down nav-chevron"></i></a>
+        <a href="#" class="nav-dropdown-toggle">C�ng C? <i class="fas fa-chevron-down nav-chevron"></i></a>
         <ul class="nav-dropdown-menu">
-          <li><a href="tools.html"><span class="dd-icon">🤖</span> AI Tools</a></li>
-          <li><a href="arcade.html"><span class="dd-icon">🎮</span> Arcade & Coins</a></li>
-          <li><a href="services.html"><span class="dd-icon">🛍️</span> Dịch Vụ</a></li>
-          <li><a href="roadmap.html"><span class="dd-icon">🗺️</span> Roadmap</a></li>
-          <li><a href="proposal.html"><span class="dd-icon">💼</span> Proposal</a></li>
-          <li><a href="invoice.html"><span class="dd-icon">🧾</span> Invoice</a></li>
-          <li><a href="payment.html"><span class="dd-icon">💳</span> Dịch Vụ & VIP</a></li>
+          <li><a href="tools.html"><span class="dd-icon">??</span> AI Tools</a></li>
+          <li><a href="arcade.html"><span class="dd-icon">??</span> Arcade & Coins</a></li>
+          <li><a href="services.html"><span class="dd-icon">???</span> D?ch V?</a></li>
+          <li><a href="roadmap.html"><span class="dd-icon">???</span> Roadmap</a></li>
+          <li><a href="proposal.html"><span class="dd-icon">??</span> Proposal</a></li>
+          <li><a href="invoice.html"><span class="dd-icon">??</span> Invoice</a></li>
+          <li><a href="payment.html"><span class="dd-icon">??</span> D?ch V? & VIP</a></li>
         </ul>
       </li>
     </ul>
@@ -137,119 +138,119 @@ body{background:linear-gradient(135deg,#0f0c29,#55545e,#24243e);min-height:100vh
 
 <div id="dbLoading" class="db-loading">
   <i class="fas fa-spinner"></i>
-  Đang tải dashboard...
+  �ang t?i dashboard...
 </div>
 
 <div id="dbMain" class="db-wrap" style="display:none">
   <div class="db-hero">
-    <div class="db-avatar" id="dbAvatar">👤</div>
-    <h1 id="dbName">Xin chào!</h1>
+    <div class="db-avatar" id="dbAvatar">??</div>
+    <h1 id="dbName">Xin ch�o!</h1>
     <p id="dbEmail"></p>
   </div>
 
   <!-- Stats row -->
   <div class="stat-row-grid" style="margin-bottom:1rem;grid-template-columns:repeat(4,1fr);">
-    <div class="stat-box"><div class="num" id="statAiTotal">0</div><div class="lbl">Tổng AI dùng</div></div>
-    <div class="stat-box"><div class="num" id="statAiToday">0</div><div class="lbl">Hôm nay</div></div>
-    <div class="stat-box"><div class="num" id="statDaysLeft">—</div><div class="lbl">Ngày VIP còn</div></div>
+    <div class="stat-box"><div class="num" id="statAiTotal">0</div><div class="lbl">T?ng AI d�ng</div></div>
+    <div class="stat-box"><div class="num" id="statAiToday">0</div><div class="lbl">H�m nay</div></div>
+    <div class="stat-box"><div class="num" id="statDaysLeft">�</div><div class="lbl">Ng�y VIP c�n</div></div>
     <div class="stat-box" style="cursor:pointer;" onclick="window.location='arcade.html'">
       <div class="num" id="statCoins" style="color:#fbbf24;">0</div>
-      <div class="lbl">🪙 Coin</div>
+      <div class="lbl">?? Coin</div>
     </div>
   </div>
 
   <!-- Daily reward mini -->
   <div id="dailyMini" style="background:linear-gradient(135deg,rgba(245,158,11,.12),rgba(251,191,36,.06));border:1.5px solid rgba(245,158,11,.25);border-radius:16px;padding:1rem 1.25rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
-    <span style="font-size:1.8rem;">🎁</span>
+    <span style="font-size:1.8rem;">??</span>
     <div style="flex:1;min-width:140px;">
       <div style="font-size:.85rem;font-weight:800;" id="dailyMiniTitle">Daily Reward</div>
-      <div style="font-size:.75rem;color:rgba(255,255,255,.5);" id="dailyMiniDesc">Nhận coin mỗi ngày</div>
+      <div style="font-size:.75rem;color:rgba(255,255,255,.5);" id="dailyMiniDesc">Nh?n coin m?i ng�y</div>
     </div>
     <a href="arcade.html" id="btnDailyMini" style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;border-radius:50px;padding:.55rem 1.1rem;font-size:.82rem;font-weight:800;cursor:pointer;text-decoration:none;white-space:nowrap;">
-      🎮 Arcade
+      ?? Arcade
     </a>
   </div>
 
   <!-- Referral card -->
   <div id="referralCard" style="background:linear-gradient(135deg,rgba(16,185,129,.1),rgba(6,182,212,.06));border:1.5px solid rgba(16,185,129,.25);border-radius:16px;padding:1rem 1.25rem;margin-bottom:1.25rem;">
     <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem;flex-wrap:wrap;">
-      <span style="font-size:1.8rem;">🎁</span>
+      <span style="font-size:1.8rem;">??</span>
       <div style="flex:1;">
-        <div style="font-size:.85rem;font-weight:800;">Mời bạn bè — Cả 2 nhận 50🪙</div>
-        <div style="font-size:.75rem;color:rgba(255,255,255,.5);">Chia sẻ link referral, bạn đăng ký → cả 2 nhận 50 coin!</div>
+        <div style="font-size:.85rem;font-weight:800;">M?i b?n b� � C? 2 nh?n 50??</div>
+        <div style="font-size:.75rem;color:rgba(255,255,255,.5);">Chia s? link referral, b?n dang k� ? c? 2 nh?n 50 coin!</div>
       </div>
-      <div style="font-size:.78rem;color:rgba(255,255,255,.4);">Đã mời: <span id="refCount" style="color:#10b981;font-weight:800;">0</span> người</div>
+      <div style="font-size:.78rem;color:rgba(255,255,255,.4);">�� m?i: <span id="refCount" style="color:#10b981;font-weight:800;">0</span> ngu?i</div>
     </div>
     <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;">
-      <input id="refLinkInput" readonly style="flex:1;min-width:180px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:.5rem .75rem;color:#fff;font-size:.78rem;outline:none;" value="Đang tải...">
+      <input id="refLinkInput" readonly style="flex:1;min-width:180px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:.5rem .75rem;color:#fff;font-size:.78rem;outline:none;" value="�ang t?i...">
       <button onclick="copyRefLink()" style="background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;border-radius:10px;padding:.5rem 1rem;font-size:.8rem;font-weight:800;cursor:pointer;white-space:nowrap;">
         <i class="fas fa-copy"></i> Copy
       </button>
     </div>
-    <div id="refStats" style="margin-top:.6rem;font-size:.75rem;color:rgba(255,255,255,.4);">Tổng coin từ referral: <span id="refTotalCoins" style="color:#fbbf24;font-weight:800;">0</span>🪙</div>
+    <div id="refStats" style="margin-top:.6rem;font-size:.75rem;color:rgba(255,255,255,.4);">T?ng coin t? referral: <span id="refTotalCoins" style="color:#fbbf24;font-weight:800;">0</span>??</div>
   </div>
 
   <div class="db-grid">
-    <!-- Gói hiện tại -->
+    <!-- G�i hi?n t?i -->
     <div class="db-card">
-      <div class="db-card-title"><i class="fas fa-crown"></i> Gói Hiện Tại</div>
-      <div id="planBadge" class="plan-badge plan-free">🆓 Free</div>
-      <div class="plan-expires" id="planExpires">3 lượt/ngày · Mỗi tool</div>
+      <div class="db-card-title"><i class="fas fa-crown"></i> G�i Hi?n T?i</div>
+      <div id="planBadge" class="plan-badge plan-free">?? Free</div>
+      <div class="plan-expires" id="planExpires">3 lu?t/ng�y � M?i tool</div>
       <div style="display:flex;flex-direction:column;gap:.6rem;">
         <a href="payment.html#vip" class="btn-db btn-db-gold" id="btnUpgrade">
-          <i class="fas fa-crown"></i> Nâng cấp VIP — 99k/tháng
+          <i class="fas fa-crown"></i> N�ng c?p VIP � 99k/th�ng
         </a>
         <a href="payment.html#vip" class="btn-db btn-db-outline" id="btnRenew" style="display:none">
-          <i class="fas fa-redo"></i> Gia hạn VIP
+          <i class="fas fa-redo"></i> Gia h?n VIP
         </a>
       </div>
       <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.08);">
-        <div style="font-size:.75rem;color:rgba(255,255,255,.4);margin-bottom:.5rem;">VIP bao gồm:</div>
+        <div style="font-size:.75rem;color:rgba(255,255,255,.4);margin-bottom:.5rem;">VIP bao g?m:</div>
         <div style="display:flex;flex-direction:column;gap:.3rem;font-size:.8rem;color:rgba(255,255,255,.65);">
-          <span>✅ Không giới hạn AI Tools</span>
-          <span>✅ AI Giải bài tập, Fix code, Video script</span>
-          <span>✅ Code Review + CV Generator</span>
-          <span>✅ Ưu tiên hỗ trợ qua Zalo</span>
+          <span>? Kh�ng gi?i h?n AI Tools</span>
+          <span>? AI Gi?i b�i t?p, Fix code, Video script</span>
+          <span>? Code Review + CV Generator</span>
+          <span>? Uu ti�n h? tr? qua Zalo</span>
         </div>
       </div>
     </div>
 
-    <!-- Lượt dùng hôm nay -->
+    <!-- Lu?t d�ng h�m nay -->
     <div class="db-card">
-      <div class="db-card-title"><i class="fas fa-chart-bar"></i> Lượt Dùng Hôm Nay</div>
+      <div class="db-card-title"><i class="fas fa-chart-bar"></i> Lu?t D�ng H�m Nay</div>
       <div id="usageBars">
         <div class="usage-item">
-          <div class="usage-label"><span>📚 Giải Bài Tập</span><span id="u-hw">0/3</span></div>
+          <div class="usage-label"><span>?? Gi?i B�i T?p</span><span id="u-hw">0/3</span></div>
           <div class="usage-track"><div class="usage-fill" id="uf-hw" style="width:0%"></div></div>
         </div>
         <div class="usage-item">
-          <div class="usage-label"><span>🔧 Fix Code</span><span id="u-fix">0/3</span></div>
+          <div class="usage-label"><span>?? Fix Code</span><span id="u-fix">0/3</span></div>
           <div class="usage-track"><div class="usage-fill" id="uf-fix" style="width:0%"></div></div>
         </div>
         <div class="usage-item">
-          <div class="usage-label"><span>🎬 Video Script</span><span id="u-vid">0/3</span></div>
+          <div class="usage-label"><span>?? Video Script</span><span id="u-vid">0/3</span></div>
           <div class="usage-track"><div class="usage-fill" id="uf-vid" style="width:0%"></div></div>
         </div>
         <div class="usage-item">
-          <div class="usage-label"><span>💻 Code Review</span><span id="u-cr">0/3</span></div>
+          <div class="usage-label"><span>?? Code Review</span><span id="u-cr">0/3</span></div>
           <div class="usage-track"><div class="usage-fill" id="uf-cr" style="width:0%"></div></div>
         </div>
         <div class="usage-item">
-          <div class="usage-label"><span>📄 CV Generator</span><span id="u-cv">0/3</span></div>
+          <div class="usage-label"><span>?? CV Generator</span><span id="u-cv">0/3</span></div>
           <div class="usage-track"><div class="usage-fill" id="uf-cv" style="width:0%"></div></div>
         </div>
       </div>
       <div style="margin-top:.75rem;font-size:.75rem;color:rgba(255,255,255,.35);text-align:center;" id="usageNote">
-        Reset lúc 00:00 mỗi ngày
+        Reset l�c 00:00 m?i ng�y
       </div>
     </div>
 
     <!-- Profile -->
     <div class="db-card">
-      <div class="db-card-title"><i class="fas fa-user-edit"></i> Hồ Sơ</div>
+      <div class="db-card-title"><i class="fas fa-user-edit"></i> H? So</div>
       <div class="profile-field">
-        <label>Tên hiển thị</label>
-        <input type="text" id="editName" placeholder="Tên của bạn">
+        <label>T�n hi?n th?</label>
+        <input type="text" id="editName" placeholder="T�n c?a b?n">
       </div>
       <div class="profile-field">
         <label>Avatar URL</label>
@@ -257,34 +258,34 @@ body{background:linear-gradient(135deg,#0f0c29,#55545e,#24243e);min-height:100vh
       </div>
       <div style="display:flex;gap:.6rem;margin-top:.25rem;">
         <button class="btn-db btn-db-primary" onclick="saveProfile()" style="flex:1;justify-content:center;">
-          <i class="fas fa-save"></i> Lưu
+          <i class="fas fa-save"></i> Luu
         </button>
         <button class="btn-db btn-db-outline" onclick="confirmLogout()" style="justify-content:center;">
-          <i class="fas fa-sign-out-alt"></i> Đăng xuất
+          <i class="fas fa-sign-out-alt"></i> �ang xu?t
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Lịch sử AI -->
+  <!-- L?ch s? AI -->
   <div class="db-card" style="margin-top:0">
     <div class="db-card-title" style="margin-bottom:1.25rem;">
-      <i class="fas fa-history"></i> Lịch Sử Sử Dụng AI
-      <span style="margin-left:auto;font-size:.7rem;color:rgba(255,255,255,.3);font-weight:400;text-transform:none;letter-spacing:0;">Lưu trên thiết bị này</span>
+      <i class="fas fa-history"></i> L?ch S? S? D?ng AI
+      <span style="margin-left:auto;font-size:.7rem;color:rgba(255,255,255,.3);font-weight:400;text-transform:none;letter-spacing:0;">Luu tr�n thi?t b? n�y</span>
     </div>
     <div class="history-list" id="historyList">
-      <div class="history-empty"><i class="fas fa-robot" style="display:block;font-size:2rem;margin-bottom:.5rem;opacity:.3;"></i>Chưa có lịch sử</div>
+      <div class="history-empty"><i class="fas fa-robot" style="display:block;font-size:2rem;margin-bottom:.5rem;opacity:.3;"></i>Chua c� l?ch s?</div>
     </div>
     <button onclick="clearHistory()" style="margin-top:1rem;background:none;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.4);padding:.45rem 1rem;border-radius:8px;cursor:pointer;font-size:.75rem;transition:all .2s;" onmouseover="this.style.borderColor='rgba(248,113,113,.5)';this.style.color='#f87171'" onmouseout="this.style.borderColor='rgba(255,255,255,.15)';this.style.color='rgba(255,255,255,.4)'">
-      <i class="fas fa-trash"></i> Xóa lịch sử
+      <i class="fas fa-trash"></i> X�a l?ch s?
     </button>
   </div>
 
   <!-- Quick links -->
   <div style="display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1.5rem;justify-content:center;">
     <a href="tools.html" class="btn-db btn-db-primary"><i class="fas fa-robot"></i> AI Tools</a>
-    <a href="arcade.html" class="btn-db btn-db-gold"><i class="fas fa-gamepad"></i> Arcade 🎮</a>
-    <a href="services.html" class="btn-db btn-db-outline"><i class="fas fa-store"></i> Dịch Vụ</a>
+    <a href="arcade.html" class="btn-db btn-db-gold"><i class="fas fa-gamepad"></i> Arcade ??</a>
+    <a href="services.html" class="btn-db btn-db-outline"><i class="fas fa-store"></i> D?ch V?</a>
     <a href="blog.html" class="btn-db btn-db-outline"><i class="fas fa-blog"></i> Blog</a>
     <a href="payment.html" class="btn-db btn-db-gold"><i class="fas fa-crown"></i> VIP</a>
   </div>
@@ -305,7 +306,7 @@ function toast(msg, color) {
 }
 
 // ===== USAGE LABELS =====
-const USAGE_LABELS = { hw:'📚 Giải Bài Tập', fix:'🔧 Fix Code', vid:'🎬 Video Script', cr:'💻 Code Review', cv:'📄 CV Generator' };
+const USAGE_LABELS = { hw:'?? Gi?i B�i T?p', fix:'?? Fix Code', vid:'?? Video Script', cr:'?? Code Review', cv:'?? CV Generator' };
 
 function renderUsage(usage, isVip) {
   const keys = ['hw','fix','vid','cr','cv'];
@@ -314,53 +315,53 @@ function renderUsage(usage, isVip) {
     const pct = isVip ? 30 : Math.min(100, (used / 3) * 100);
     const el = document.getElementById('u-' + k);
     const bar = document.getElementById('uf-' + k);
-    if (el) el.textContent = isVip ? used + '/∞' : used + '/3';
+    if (el) el.textContent = isVip ? used + '/8' : used + '/3';
     if (bar) {
       bar.style.width = pct + '%';
       bar.classList.toggle('full', !isVip && used >= 3);
     }
   });
   const note = document.getElementById('usageNote');
-  if (note) note.textContent = isVip ? '👑 VIP — Không giới hạn lượt dùng' : 'Reset lúc 00:00 mỗi ngày';
+  if (note) note.textContent = isVip ? '?? VIP � Kh�ng gi?i h?n lu?t d�ng' : 'Reset l�c 00:00 m?i ng�y';
 }
 
 // ===== HISTORY =====
 function renderHistory(history) {
   const list = document.getElementById('historyList');
   if (!history || !history.length) {
-    list.innerHTML = '<div class="history-empty"><i class="fas fa-robot" style="display:block;font-size:2rem;margin-bottom:.5rem;opacity:.3;"></i>Chưa có lịch sử</div>';
+    list.innerHTML = '<div class="history-empty"><i class="fas fa-robot" style="display:block;font-size:2rem;margin-bottom:.5rem;opacity:.3;"></i>Chua c� l?ch s?</div>';
     return;
   }
-  const icons = { hw:'📚', fix:'🔧', vid:'🎬', cr:'💻', cv:'📄', chat:'💬' };
+  const icons = { hw:'??', fix:'??', vid:'??', cr:'??', cv:'??', chat:'??' };
   const colors = { hw:'linear-gradient(135deg,#667eea,#764ba2)', fix:'linear-gradient(135deg,#11998e,#38ef7d)', vid:'linear-gradient(135deg,#f093fb,#f5576c)', cr:'linear-gradient(135deg,#4facfe,#00f2fe)', cv:'linear-gradient(135deg,#fa709a,#fee140)', chat:'linear-gradient(135deg,#a18cd1,#fbc2eb)' };
   list.innerHTML = history.map(h => `
     <div class="history-item">
-      <div class="history-icon" style="background:${colors[h.tool]||colors.chat}">${icons[h.tool]||'🤖'}</div>
+      <div class="history-icon" style="background:${colors[h.tool]||colors.chat}">${icons[h.tool]||'??'}</div>
       <div class="history-content">
         <div class="history-tool">${USAGE_LABELS[h.tool] || h.tool}</div>
-        <div class="history-text">${h.input || '—'}</div>
+        <div class="history-text">${h.input || '�'}</div>
         <div class="history-time">${timeAgo(h.created_at)}</div>
       </div>
     </div>`).join('');
 }
 
 async function clearHistory() {
-  if (!confirm('Xóa toàn bộ lịch sử AI?')) return;
+  if (!confirm('X�a to�n b? l?ch s? AI?')) return;
   const token = localStorage.getItem('user_token');
   await fetch(API_BASE + '/user/ai-history', { method:'DELETE', headers:{'Authorization':'Bearer '+token} }).catch(()=>{});
   localStorage.removeItem('ai_history');
   renderHistory([]);
-  toast('🗑️ Đã xóa lịch sử', '#f87171');
+  toast('??? �� x�a l?ch s?', '#f87171');
 }
 
 function timeAgo(ts) {
   const d = ts ? new Date(ts) : null;
   if (!d) return '';
   const s = (Date.now() - d.getTime()) / 1000;
-  if (s < 60) return 'Vừa xong';
-  if (s < 3600) return Math.floor(s/60) + ' phút trước';
-  if (s < 86400) return Math.floor(s/3600) + ' giờ trước';
-  return Math.floor(s/86400) + ' ngày trước';
+  if (s < 60) return 'V?a xong';
+  if (s < 3600) return Math.floor(s/60) + ' ph�t tru?c';
+  if (s < 86400) return Math.floor(s/3600) + ' gi? tru?c';
+  return Math.floor(s/86400) + ' ng�y tru?c';
 }
 
 // ===== PLAN =====
@@ -374,17 +375,17 @@ function renderPlan(isVip, subscription, daysLeft) {
   if (isVip && subscription?.expires_at) {
     const exp = new Date(subscription.expires_at);
     badge.className = 'plan-badge plan-vip';
-    badge.textContent = '👑 VIP';
-    expires.innerHTML = 'Hết hạn: <span>' + exp.toLocaleDateString('vi-VN') + '</span>';
+    badge.textContent = '?? VIP';
+    expires.innerHTML = 'H?t h?n: <span>' + exp.toLocaleDateString('vi-VN') + '</span>';
     expires.className = 'plan-expires' + (daysLeft <= 5 ? ' expired' : '');
     daysLeftEl.textContent = daysLeft;
     btnUp.style.display = 'none';
     btnRenew.style.display = 'flex';
   } else {
-    daysLeftEl.textContent = '—';
+    daysLeftEl.textContent = '�';
     badge.className = 'plan-badge plan-free';
-    badge.textContent = '🆓 Free';
-    expires.textContent = '3 lượt/ngày · Mỗi tool';
+    badge.textContent = '?? Free';
+    expires.textContent = '3 lu?t/ng�y � M?i tool';
     btnUp.style.display = 'flex';
     btnRenew.style.display = 'none';
   }
@@ -394,7 +395,7 @@ function renderPlan(isVip, subscription, daysLeft) {
 async function saveProfile() {
   const name = document.getElementById('editName').value.trim();
   const avatar = document.getElementById('editAvatar').value.trim();
-  if (!name) { toast('⚠️ Tên không được để trống', '#f87171'); return; }
+  if (!name) { toast('?? T�n kh�ng du?c d? tr?ng', '#f87171'); return; }
   try {
     const token = localStorage.getItem('user_token');
     const r = await fetch(API_BASE + '/auth/profile', {
@@ -403,7 +404,7 @@ async function saveProfile() {
       body: JSON.stringify({ nickname: name, avatar })
     });
     const d = await r.json();
-    if (!r.ok) { toast('❌ ' + d.error, '#f87171'); return; }
+    if (!r.ok) { toast('? ' + d.error, '#f87171'); return; }
     // Update localStorage
     const stored = JSON.parse(localStorage.getItem('user_info') || '{}');
     stored.username = d.user.username;
@@ -411,13 +412,13 @@ async function saveProfile() {
     localStorage.setItem('user_info', JSON.stringify(stored));
     document.getElementById('dbName').textContent = d.user.username;
     if (d.user.avatar) document.getElementById('dbAvatar').innerHTML = `<img src="${d.user.avatar}" style="width:72px;height:72px;border-radius:50%;object-fit:cover;">`;
-    toast('✅ Đã lưu hồ sơ!');
-  } catch(e) { toast('❌ Lỗi kết nối', '#f87171'); }
+    toast('? �� luu h? so!');
+  } catch(e) { toast('? L?i k?t n?i', '#f87171'); }
 }
 
 // ===== LOGOUT =====
 function confirmLogout() {
-  if (!confirm('Đăng xuất khỏi tài khoản?')) return;
+  if (!confirm('�ang xu?t kh?i t�i kho?n?')) return;
   const token = localStorage.getItem('user_token');
   fetch(API_BASE + '/auth/logout', { method:'POST', headers:{'Authorization':'Bearer '+token} }).catch(()=>{});
   localStorage.removeItem('user_token');
@@ -446,7 +447,7 @@ function copyRefLink() {
   navigator.clipboard.writeText(input.value).then(() => {
     const btn = event.target.closest('button');
     const orig = btn.innerHTML;
-    btn.innerHTML = '✅ Đã copy!';
+    btn.innerHTML = '? �� copy!';
     setTimeout(() => { btn.innerHTML = orig; }, 2000);
   }).catch(() => {
     input.select(); document.execCommand('copy');
@@ -487,12 +488,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Daily reward mini
     if (!data.dailyClaimed) {
-      document.getElementById('dailyMiniTitle').textContent = '� Spin Wheel chờ bạn!';
-      document.getElementById('dailyMiniDesc').textContent = 'Vào Arcade quay vòng quay nhận coin hôm nay';
-      document.getElementById('btnDailyMini').textContent = '� Quay ngay';
+      document.getElementById('dailyMiniTitle').textContent = '? Spin Wheel ch? b?n!';
+      document.getElementById('dailyMiniDesc').textContent = 'V�o Arcade quay v�ng quay nh?n coin h�m nay';
+      document.getElementById('btnDailyMini').textContent = '? Quay ngay';
     } else {
-      document.getElementById('dailyMiniTitle').textContent = '✅ Đã quay spin wheel hôm nay';
-      document.getElementById('dailyMiniDesc').textContent = `Coin hiện có: ${data.coins || 0}🪙 · Chơi game kiếm thêm`;
+      document.getElementById('dailyMiniTitle').textContent = '? �� quay spin wheel h�m nay';
+      document.getElementById('dailyMiniDesc').textContent = `Coin hi?n c�: ${data.coins || 0}?? � Choi game ki?m th�m`;
     }
 
     // Plan
@@ -509,11 +510,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       renderHistory(localHist.slice().reverse().map(h => ({ tool:h.tool, input:h.input, created_at: new Date(h.time).toISOString() })));
     }
 
-    // VIP badge nếu role là admin
+    // VIP badge n?u role l� admin
     if (user.role === 'admin') {
       const badge = document.getElementById('planBadge');
       badge.className = 'plan-badge plan-vip';
-      badge.textContent = '⚡ Admin';
+      badge.textContent = '? Admin';
     }
 
     // Load referral
