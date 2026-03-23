@@ -29,8 +29,7 @@
 }
 
 *{
-    box-sizing:
-    border-box;
+    box-sizing: border-box;
 }
 
 body{
@@ -331,10 +330,10 @@ tr:last-child td{border-bottom:none;}
     </div>
     <p style="font-size:.8rem;color:rgba(255,255,255,.45);margin:0 0 1rem">Chọn phương thức thanh toán:</p>
     <div style="display:flex;gap:.75rem">
-      <button class="btn-ads btn-primary-ads" style="flex:1;justify-content:center;background:linear-gradient(135deg,#e31837,#c0392b)" onclick="confirmPay('acb')">
+      <button class="btn-ads btn-primary-ads" style="flex:1;justify-content:center;background:linear-gradient(135deg,#e31837,#c0392b)" onclick="confirmPay('acb', this)">
         <i class="fas fa-university"></i> ACB Bank
       </button>
-      <button class="btn-ads btn-primary-ads" style="flex:1;justify-content:center;background:linear-gradient(135deg,#0068ff,#00c6ff)" onclick="confirmPay('zalopay')">
+      <button class="btn-ads btn-primary-ads" style="flex:1;justify-content:center;background:linear-gradient(135deg,#0068ff,#00c6ff)" onclick="confirmPay('zalopay', this)">
         <i class="fas fa-wallet"></i> ZaloPay
       </button>
     </div>
@@ -353,7 +352,7 @@ tr:last-child td{border-bottom:none;}
 <script src="ads.js"></script>
 <script>
 const ADS_API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-  ? 'http://localhost:3001' : '';
+  ? 'http://localhost:3001' : window.location.origin;
 
 let selectedPlan = 'standard';
 let myAds = [];
@@ -391,6 +390,10 @@ function switchTab(tab) {
   document.getElementById('tab-' + tab).classList.add('active');
   if (tab === 'my-ads') loadMyAds();
   if (tab === 'payments') loadPayments();
+}
+
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 async function aiFillForm() {
@@ -441,8 +444,7 @@ function closePaymentModal() {
   document.getElementById('payment-modal').classList.remove('open');
 }
 
-async function confirmPay(method) {
-  const btn = event.target.closest('button');
+async function confirmPay(method, btn) {
   const origHtml = btn.innerHTML;
   btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
 
@@ -564,11 +566,13 @@ document.getElementById('create-ad-form').addEventListener('submit', async (e) =
 
 
 async function loadMyAds() {
+  const token = getToken();
   const container = document.getElementById('my-ads-list');
+  if (!token) { container.innerHTML = '<div class="g-card"><p style="color:#f87171">Vui lòng đăng nhập</p></div>'; return; }
   container.innerHTML = '<div class="ads-loading"><i class="fas fa-spinner"></i>Đang tải...</div>';
   try {
     const r = await fetch(`${ADS_API}/api/ads/my`, {
-      headers: { 'Authorization': `Bearer ${getToken()}` }
+      headers: { 'Authorization': `Bearer ${token}` }
     });
     const ads = await r.json();
     myAds = ads;
@@ -586,8 +590,8 @@ async function loadMyAds() {
           <div style="display:flex;align-items:center;gap:.6rem">
             ${ad.image_url ? `<img src="${ad.image_url}" class="ad-thumb" onerror="this.style.display='none'">` : '<div style="width:44px;height:44px;border-radius:8px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:1.2rem">📦</div>'}
             <div>
-              <div style="font-weight:700;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${ad.product_name}</div>
-              ${ad.status === 'rejected' ? `<div class="rejection-note"><i class="fas fa-times-circle"></i> ${ad.rejection_reason || 'Bị từ chối'}</div>` : ''}
+              <div style="font-weight:700;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(ad.product_name)}</div>
+              ${ad.status === 'rejected' ? `<div class="rejection-note"><i class="fas fa-times-circle"></i> ${escHtml(ad.rejection_reason || 'Bị từ chối')}</div>` : ''}
             </div>
           </div>
         </td>
