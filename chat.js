@@ -49,12 +49,12 @@ const css = `
   background:#fff;border-radius:20px;
   box-shadow:0 24px 64px rgba(0,0,0,.18),0 0 0 1px rgba(102,126,234,.1);
   display:flex;flex-direction:column;overflow:hidden;
-  transform:scale(.85) translateY(20px);opacity:0;pointer-events:none;
-  transition:transform .3s cubic-bezier(0.4,0,0.2,1),opacity .3s;
+  transform:scale(.85) translateY(20px);opacity:0;pointer-events:none;visibility:hidden;
+  transition:transform .3s cubic-bezier(0.4,0,0.2,1),opacity .3s,visibility .3s;
   transform-origin:bottom right;
 }
 html[data-theme="dark"] #cw-box{background:#1a1a2e;box-shadow:0 24px 64px rgba(0,0,0,.5),0 0 0 1px rgba(102,126,234,.2);}
-#cw-box.open{transform:scale(1) translateY(0);opacity:1;pointer-events:all;}
+#cw-box.open{transform:scale(1) translateY(0);opacity:1;pointer-events:all;visibility:visible;}
 #cw-head{background:linear-gradient(135deg,#667eea,#764ba2);padding:.75rem 1rem;display:flex;align-items:center;gap:.6rem;flex-shrink:0;}
 #cw-head-title{color:#fff;font-weight:800;font-size:.9rem;flex:1;}
 #cw-online{color:rgba(255,255,255,.8);font-size:.72rem;}

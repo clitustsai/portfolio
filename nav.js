@@ -47,12 +47,23 @@
         var open = hamburger.classList.toggle('open');
         navUl.classList.toggle('open', open);
         document.body.style.overflow = open ? 'hidden' : '';
+        // Ẩn/hiện floating elements khi menu mở/đóng
+        var floats = ['rec-toggle', 'rec-panel', 'cw-fab', '_bugBtn', 'pn-bell', 'fabGroup'];
+        floats.forEach(function(id) {
+          var el = document.getElementById(id);
+          if (el) el.style.visibility = open ? 'hidden' : '';
+        });
       });
       document.addEventListener('click', function(e) {
         if (navUl.classList.contains('open') && !navUl.contains(e.target) && e.target !== hamburger) {
           hamburger.classList.remove('open');
           navUl.classList.remove('open');
           document.body.style.overflow = '';
+          var floats = ['rec-toggle', 'rec-panel', 'cw-fab', '_bugBtn', 'pn-bell', 'fabGroup'];
+          floats.forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.style.visibility = '';
+          });
         }
       });
     }

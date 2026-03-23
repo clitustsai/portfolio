@@ -7,6 +7,15 @@
 *, *::before, *::after { box-sizing: border-box; }
 img, video, iframe { max-width: 100%; height: auto; }
 
+/* Ngăn scroll ngang toàn trang — chỉ trên html, không trên body để không clip fixed menu */
+html {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+body {
+  max-width: 100%;
+}
+
 /* ===== CONTAINER ===== */
 .container, .about-content, .projects-content,
 .certificates-content, .contact-content, .map-content,
@@ -96,7 +105,7 @@ img, video, iframe { max-width: 100%; height: auto; }
   .marquee-item { font-size: 0.9rem; }
 
   /* ── BACK TO TOP ── */
-  #backToTop, .back-to-top { bottom: 210px !important; right: 14px !important; width: 40px; height: 40px; font-size: 0.9rem; }
+  #backToTop, .back-to-top { bottom: 128px !important; right: 12px !important; width: 40px; height: 40px; font-size: 0.9rem; }
 
   /* ── TOAST ── */
   .toast-container { top: 70px; right: 12px; left: 12px; max-width: 100%; }

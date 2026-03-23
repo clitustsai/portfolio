@@ -24,7 +24,9 @@ style.textContent = `
   background:#fff; border-radius:20px;
   box-shadow:0 20px 60px rgba(0,0,0,.18), 0 0 0 1px rgba(102,126,234,.1);
   overflow:hidden; transform:translateX(340px); transition:transform .4s cubic-bezier(0.4,0,0.2,1);
+  pointer-events:none; visibility:hidden;
 }
+#rec-panel.open { pointer-events:auto; visibility:visible; }
 html[data-theme="dark"] #rec-panel { background:#1e1e3a; box-shadow:0 20px 60px rgba(0,0,0,.5),0 0 0 1px rgba(102,126,234,.2); }
 #rec-panel.open { transform:translateX(0); }
 #rec-header {
@@ -82,8 +84,8 @@ html[data-theme="dark"] #rec-footer { border-color:rgba(255,255,255,.06); }
   border:2px solid #fff;
 }
 @media(max-width:480px) {
-  #rec-panel { width:calc(100vw - 32px); right:16px; bottom:200px; }
-  #rec-toggle { right:16px; bottom:140px; }
+  #rec-panel { width:calc(100vw - 16px); right:8px; bottom:188px; max-height:calc(100vh - 220px); overflow-y:auto; }
+  #rec-toggle { right:12px; bottom:128px; }
 }
 `;
 document.head.appendChild(style);
@@ -242,8 +244,11 @@ function openPanel() {
   const toggle = document.getElementById('rec-toggle');
   if (panel) panel.classList.add('open');
   if (toggle) toggle.classList.add('panel-open');
-  // Click outside để đóng
-  setTimeout(() => document.addEventListener('click', outsideClick), 100);
+  // Dùng cả click và touchstart để đóng khi bấm ngoài
+  setTimeout(() => {
+    document.addEventListener('click', outsideClick);
+    document.addEventListener('touchstart', outsideClick, { passive: true });
+  }, 100);
 }
 
 function closePanel() {
@@ -252,12 +257,14 @@ function closePanel() {
   if (panel) panel.classList.remove('open');
   if (toggle) toggle.classList.remove('panel-open');
   document.removeEventListener('click', outsideClick);
+  document.removeEventListener('touchstart', outsideClick);
 }
 
 function outsideClick(e) {
   const panel = document.getElementById('rec-panel');
   const toggle = document.getElementById('rec-toggle');
-  if (panel && !panel.contains(e.target) && e.target !== toggle && !toggle?.contains(e.target)) {
+  const target = e.target || (e.touches && e.touches[0]?.target);
+  if (panel && target && !panel.contains(target) && target !== toggle && !toggle?.contains(target)) {
     closePanel();
   }
 }

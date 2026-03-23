@@ -1,0 +1,505 @@
+/* ============================================================
+   MOBILE-RESPONSIVE MASTER v2.0 
+   Mobile-First Architecture with Modern Defaults
+   ============================================================ */
+
+/* ===== MOBILE-FIRST BASE STYLES ===== */
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  overflow-x: hidden;
+  max-width: 100%;
+  -webkit-user-select: text;
+  -webkit-touch-callout: default;
+}
+
+/* ===== VIEWPORT & SAFE AREAS ===== */
+@supports (padding: max(0px)) {
+  main, section, [role="main"] {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+}
+
+@supports (padding: env(safe-area-inset-bottom)) {
+  body {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+}
+
+/* ===== TOUCH INTERACTION — 44px minimum ===== */
+button, a[href], input[type="button"], input[type="submit"],
+input[type="reset"], [role="button"], .btn, .tag,
+.blog-filter-btn, .page-btn, .chat-tab, .tool-tab {
+  min-height: 44px;
+  min-width: 44px;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+/* ===== KEYBOARD FOCUS VISIBILITY ===== */
+button:focus-visible, a:focus-visible, input:focus-visible,
+textarea:focus-visible, select:focus-visible {
+  outline: 2px solid var(--accent-color, #667eea);
+  outline-offset: 2px;
+}
+
+/* ===== RESPONSIVE TYPOGRAPHY ===== */
+h1 {
+  font-size: clamp(1.5rem, 5vw, 3rem);
+  line-height: 1.1;
+  word-spacing: -0.05em;
+}
+
+h2 {
+  font-size: clamp(1.25rem, 4vw, 2.2rem);
+  line-height: 1.15;
+}
+
+h3 {
+  font-size: clamp(1.1rem, 3vw, 1.8rem);
+  line-height: 1.2;
+}
+
+p, span, li {
+  font-size: clamp(0.875rem, 2vw, 1rem);
+  line-height: 1.6;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+/* ===== RESPONSIVE IMAGES ===== */
+img, picture, svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+img {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+/* ===== RESPONSIVE BUTTONS ===== */
+.btn, button, input[type="button"], input[type="submit"] {
+  padding: clamp(0.6rem, 2vw, 0.85rem) clamp(1rem, 3vw, 1.5rem);
+  font-size: clamp(0.875rem, 2vw, 1rem);
+  border-radius: clamp(6px, 1.5vw, 12px);
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ===== RESPONSIVE FORMS ===== */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+input[type="tel"],
+input[type="number"],
+input[type="date"],
+textarea,
+select {
+  width: 100%;
+  padding: clamp(0.6rem, 2vw, 0.85rem);
+  font-size: 16px; /* Prevents zoom to 100% on iOS */
+  border-radius: clamp(6px, 1.5vw, 10px);
+  border: 1px solid var(--border-color, #e0e0e0);
+  background: var(--bg-secondary, #f5f5f5);
+  color: var(--text-primary, #333);
+  font-family: inherit;
+  transition: all 0.2s ease;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="search"]:focus,
+input[type="tel"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--accent-color, #667eea);
+  background: var(--bg-primary, white);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+textarea {
+  min-height: 120px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+select {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg viewBox='0 0 24 24' fill='none' stroke='%23667eea' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 20px;
+  padding-right: 2.5rem;
+}
+
+/* ===== RESPONSIVE GRID LAYOUTS ===== */
+.grid { display: grid; }
+
+.grid-auto-fit {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: clamp(1rem, 3vw, 1.5rem);
+}
+
+.grid-2-col {
+  grid-template-columns: 1fr;
+}
+
+.grid-3-col {
+  grid-template-columns: 1fr;
+}
+
+.grid-4-col {
+  grid-template-columns: 1fr;
+}
+
+/* ===== RESPONSIVE SPACING ===== */
+section {
+  padding: clamp(2rem, 5vw, 4rem) clamp(1rem, 3vw, 2rem);
+}
+
+.container, [class*="-content"] {
+  max-width: 100%;
+  padding: 0 clamp(1rem, 3vw, 2rem);
+  margin: 0 auto;
+}
+
+/* ===== RESPONSIVE NAVIGATION ===== */
+header {
+  padding: clamp(0.75rem, 2vw, 1rem) clamp(1rem, 3vw, 1.5rem);
+}
+
+nav ul {
+  gap: clamp(0.5rem, 2vw, 1.5rem);
+}
+
+nav a {
+  padding: clamp(0.5rem, 1.5vw, 0.75rem) clamp(0.75rem, 2vw, 1.25rem);
+  font-size: clamp(0.8rem, 2vw, 0.95rem);
+}
+
+/* ===== CARD RESPONSIVE STYLES ===== */
+[class*="-card"],
+[class*="-item"] {
+  padding: clamp(1rem, 3vw, 1.5rem);
+  border-radius: clamp(8px, 2vw, 16px);
+  transition: all 0.3s ease;
+}
+
+[class*="-card"]:hover,
+[class*="-item"]:hover {
+  transform: translateY(-4px);
+}
+
+/* ===== FLEX RESPONSIVENESS ===== */
+.flex-col { flex-direction: column; }
+.flex-row { flex-direction: row; }
+.flex-wrap { flex-wrap: wrap; }
+.flex-center { justify-content: center; align-items: center; }
+.flex-between { justify-content: space-between; align-items: center; }
+
+/* ===== TEXT UTILITIES ===== */
+.text-center { text-align: center; }
+.text-truncate { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.text-break { word-break: break-word; }
+.text-wrap { white-space: normal; }
+
+/* ===== HIDE/SHOW UTILITIES ===== */
+.hidden { display: none !important; }
+.show { display: block !important; }
+.invisible { visibility: hidden; }
+
+/* ============================================================
+   TABLET (640px - 768px)
+   ============================================================ */
+@media (min-width: 640px) {
+  h1 { font-size: clamp(1.75rem, 4.5vw, 2.5rem); }
+  h2 { font-size: clamp(1.4rem, 3.5vw, 2rem); }
+  
+  section { padding: clamp(2.5rem, 5vw, 3.5rem) clamp(1.25rem, 3vw, 2rem); }
+  
+  .grid-2-col { grid-template-columns: repeat(2, 1fr); }
+  .grid-3-col { grid-template-columns: repeat(2, 1fr); }
+  .grid-4-col { grid-template-columns: repeat(2, 1fr); }
+
+  nav a { font-size: clamp(0.85rem, 2.5vw, 1rem); }
+}
+
+/* ============================================================
+   DESKTOP (768px - 1024px)
+   ============================================================ */
+@media (min-width: 768px) {
+  body { padding-bottom: 0; }
+  
+  h1 { font-size: clamp(2rem, 4vw, 2.8rem); }
+  
+  section { padding: 3rem 2rem; }
+  
+  .grid-2-col { grid-template-columns: repeat(2, 1fr); }
+  .grid-3-col { grid-template-columns: repeat(3, 1fr); }
+  .grid-4-col { grid-template-columns: repeat(4, 1fr); }
+
+  [class*="-card"]:hover { transform: translateY(-8px); }
+  
+  nav { padding: 1rem 1.5rem; }
+  nav a { font-size: 1rem; }
+}
+
+/* ============================================================
+   LARGE DESKTOP (1024px+)
+   ============================================================ */
+@media (min-width: 1024px) {
+  .container, [class*="-content"] {
+    max-width: 1200px;
+  }
+
+  section { padding: 4rem 2rem; }
+  
+  nav a { font-size: 1.05rem; padding: 0.75rem 1.5rem; }
+}
+
+/* ============================================================
+   LANDSCAPE MODE OPTIMIZATION
+   ============================================================ */
+@media (max-height: 600px) and (orientation: landscape) {
+  header { padding: 0.5rem 1rem; }
+  nav a { padding: 0.4rem 0.8rem; font-size: 0.85rem; }
+  section { padding: 1.5rem 1rem; }
+  h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+  .hero-model, .hero-image { max-height: 40vh; }
+}
+
+/* ============================================================
+   PRINT STYLES
+   ============================================================ */
+@media print {
+  body { background: white; color: black; }
+  a { color: #0066cc; text-decoration: underline; }
+  a[href]:after { content: " (" attr(href) ")"; }
+  img { max-width: 100%; }
+  @page { margin: 1cm; }
+  .no-print, .chat-widget, .back-to-top, header nav ul { display: none !important; }
+}
+
+/* ============================================================
+   PREFERS DARK MODE
+   ============================================================ */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2d2d2d;
+    --text-primary: #ffffff;
+    --text-secondary: #b0b0b0;
+  }
+}
+
+/* ============================================================
+   PREFERS REDUCED MOTION
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================
+   HIGH CONTRAST MODE
+   ============================================================ */
+@media (prefers-contrast: more) {
+  button, a, input { border-width: 2px; }
+  h1, h2, h3 { font-weight: 900; }
+}
+
+/* ============================================================
+   FORCED COLORS MODE (Windows High Contrast)
+   ============================================================ */
+@media (forced-colors: active) {
+  button, .btn { border: 2px solid ButtonText; }
+  a { text-decoration: underline; }
+}
+
+/* ============================================================
+   LOW QUALITY IMAGE MODE
+   ============================================================ */
+@media (prefers-reduced-data: no-preference) {
+  img { image-rendering: high-quality; }
+}
+
+/* ============================================================
+   MODERN MOBILE OPTIMIZATIONS
+   ============================================================ */
+
+/* Hardware acceleration */
+.btn, [class*="-card"], [class*="-item"], nav, header {
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+}
+
+/* Better scrolling on iOS */
+.scrollable {
+  -webkit-overflow-scrolling: touch;
+  overflow-y: auto;
+}
+
+/* Input styling for mobile */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Prevent zoom on input focus */
+@media (max-width: 768px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="number"],
+  select,
+  textarea {
+    font-size: 16px !important;
+    zoom: 1;
+  }
+}
+
+/* Better error/success states on mobile */
+.form-group {
+  margin-bottom: clamp(1rem, 2vw, 1.5rem);
+}
+
+.form-error input,
+.form-error textarea,
+.form-error select {
+  border-color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.05);
+}
+
+.form-success input,
+.form-success textarea,
+.form-success select {
+  border-color: #10b981;
+  background-color: rgba(16, 185, 129, 0.05);
+}
+
+/* ===== MODERN ANIMATIONS FOR MOBILE ===== */
+@keyframes slideInUp {
+  from { 
+    opacity: 0; 
+    transform: translate3d(0, 30px, 0);
+  }
+  to { 
+    opacity: 1; 
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { 
+    opacity: 0; 
+    transform: scale(0.95);
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .animate-in {
+    animation: slideInUp 0.4s ease-out forwards;
+  }
+  
+  .animate-fade {
+    animation: fadeIn 0.3s ease-out forwards;
+  }
+  
+  .animate-scale {
+    animation: scaleIn 0.3s ease-out forwards;
+  }
+}
+
+/* ============================================================
+   UTILITY CLASSES FOR RESPONSIVE BEHAVIOR
+   ============================================================ */
+
+/* Responsive display utilities */
+.show-mobile { display: block; }
+.hide-mobile { display: none; }
+
+@media (min-width: 768px) {
+  .show-mobile { display: none; }
+  .hide-mobile { display: block; }
+  .show-tablet { display: block !important; }
+  .hide-tablet { display: none !important; }
+}
+
+@media (min-width: 1024px) {
+  .show-desktop { display: block !important; }
+  .hide-desktop { display: none !important; }
+}
+
+/* Responsive font utilities */
+.text-mobile { font-size: clamp(0.75rem, 2vw, 0.875rem); }
+.text-base { font-size: clamp(0.875rem, 2.5vw, 1rem); }
+.text-lg { font-size: clamp(1rem, 3vw, 1.25rem); }
+.text-xl { font-size: clamp(1.25rem, 4vw, 1.5rem); }
+.text-2xl { font-size: clamp(1.5rem, 5vw, 2rem); }
+
+/* Responsive margin/padding */
+.mx-auto { margin-left: auto; margin-right: auto; }
+.my-auto { margin-top: auto; margin-bottom: auto; }
+
+/* Better accessibility for touch devices */
+@media (hover: none) and (pointer: coarse) {
+  /* Remove hover effects for touch devices */
+  button:hover, a:hover, .btn:hover {
+    transform: none;
+  }
+}
+
+/* Support for notch/punch hole displays */
+@supports (padding: max(0px)) {
+  .notch-safe {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+}

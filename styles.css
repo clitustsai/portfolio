@@ -1045,12 +1045,11 @@
         align-items: center;
         justify-content: center;
         gap: 0.5rem;
-        z-index: 1050;
+        z-index: 1000000;
         padding: 5rem 2rem 3rem;
         list-style: none;
         margin: 0;
         overflow-y: auto;
-        /* Khi ẩn: hoàn toàn không tồn tại với touch */
         pointer-events: none;
     }
     html[data-theme="dark"] nav ul {

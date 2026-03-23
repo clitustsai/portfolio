@@ -8,7 +8,7 @@ const API = window.API_BASE || (location.hostname === 'localhost' ? 'http://loca
 // ===== CSS =====
 const css = `
 #pn-banner {
-  position:fixed; bottom:0; left:0; right:0; z-index:9960;
+  position:fixed; bottom:0; left:0; right:0; z-index:9940;
   background:#fff; border-top:1px solid rgba(102,126,234,.15);
   box-shadow:0 -8px 32px rgba(0,0,0,.1);
   padding:.85rem 1.25rem; display:flex; align-items:center; gap:.85rem;

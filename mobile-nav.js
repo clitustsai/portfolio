@@ -2,74 +2,128 @@
 (function () {
   'use strict';
 
-  // Xác định trang hiện tại
-  const path = location.pathname.split('/').pop() || 'index.html';
-  const navItems = [
-    { href: 'index.html',   icon: 'fas fa-home',        label: 'Trang Chủ', match: ['index.html', ''] },
-    { href: 'blog.html',    icon: 'fas fa-blog',         label: 'Blog',      match: ['blog.html', 'blog-post.html'] },
-    { href: 'tools.html',   icon: 'fas fa-robot',        label: 'AI Tools',  match: ['tools.html'] },
-    { href: 'arcade.html',  icon: 'fas fa-gamepad',      label: 'Arcade',    match: ['arcade.html'] },
-    { href: 'services.html',icon: 'fas fa-shopping-bag', label: 'Dịch Vụ',  match: ['services.html', 'payment.html'] },
-  ];
+  console.log('[mobile-nav.js] Script iniciado');
 
-  // Inject CSS link
-  const link = document.createElement('link');
-  link.rel = 'stylesheet';
-  link.href = 'mobile-ux.css';
-  document.head.appendChild(link);
+  // Hàm khởi tạo nav
+  const initNav = () => {
+    console.log('[mobile-nav.js] Tentando inicializar nav...');
+    
+    // Check if nav already exists
+    if (document.getElementById('mobile-bottom-nav')) {
+      console.log('[mobile-nav.js] Nav já existe, pulando');
+      return;
+    }
 
-  // Build nav HTML
-  const nav = document.createElement('nav');
-  nav.id = 'mobile-bottom-nav';
-  nav.setAttribute('aria-label', 'Mobile navigation');
-  nav.innerHTML = `<div class="mbn-inner">${
-    navItems.map(item => {
-      const isActive = item.match.includes(path);
-      return `<a href="${item.href}" class="mbn-item${isActive ? ' active' : ''}" aria-label="${item.label}">
-        <i class="${item.icon}" aria-hidden="true"></i>
-        <span>${item.label}</span>
-      </a>`;
-    }).join('')
-  }</div>`;
+    // Verificar se body existe
+    if (!document.body) {
+      console.log('[mobile-nav.js] Body não existe ainda, adiando...');
+      setTimeout(initNav, 50);
+      return;
+    }
 
-  document.body.appendChild(nav);
+    // Xác định trang hiện tại
+    const path = location.pathname.split('/').pop() || 'index.html';
+    const navItems = [
+      { href: 'index.html',   icon: 'fas fa-home',        label: 'Trang Chủ', match: ['index.html', ''] },
+      { href: 'blog.html',    icon: 'fas fa-blog',         label: 'Blog',      match: ['blog.html', 'blog-post.html'] },
+      { href: 'tools.html',   icon: 'fas fa-robot',        label: 'AI Tools',  match: ['tools.html'] },
+      { href: 'arcade.html',  icon: 'fas fa-gamepad',      label: 'Arcade',    match: ['arcade.html'] },
+      { href: 'services.html',icon: 'fas fa-shopping-bag', label: 'Dịch Vụ',  match: ['services.html', 'payment.html'] },
+    ];
 
-  // ===== INJECT OVERRIDE CSS LAST (sau tất cả JS) để đảm bảo thắng =====
-  // Chỉ áp dụng trên mobile
-  if (window.innerWidth <= 768 || ('ontouchstart' in window)) {
-    const applyOverride = () => {
-      let el = document.getElementById('mbn-override');
-      if (!el) { el = document.createElement('style'); el.id = 'mbn-override'; document.body.appendChild(el); }
-      el.textContent = `
-        /* === FLOATING BUTTONS — tách biệt, không đè nhau === */
-        /* Bên PHẢI (từ dưới lên): Chat → Recommend → Back-to-top */
-        #cw-fab        { bottom: 76px  !important; right: 14px !important; }
-        #cw-box        { bottom: 140px !important; right: 8px  !important; height: calc(100vh - 160px) !important; }
-        #rec-toggle    { bottom: 140px !important; right: 14px !important; }
-        #rec-panel     { bottom: 200px !important; right: 14px !important; }
-        #backToTop, .back-to-top { bottom: 210px !important; right: 14px !important; }
+    console.log('[mobile-nav.js] Current page:', path);
 
-        /* Bên TRÁI (từ dưới lên): FOMO toast → Bell */
-        #la-toast-wrap { bottom: 76px  !important; left: 12px  !important; }
-        #pn-bell       { bottom: 148px !important; left: 12px  !important; }
+    // Build nav HTML
+    const nav = document.createElement('nav');
+    nav.id = 'mobile-bottom-nav';
+    nav.setAttribute('aria-label', 'Mobile navigation');
+    nav.innerHTML = `<div class="mbn-inner">${
+      navItems.map(item => {
+        const isActive = item.match.includes(path);
+        return `<a href="${item.href}" class="mbn-item${isActive ? ' active' : ''}" aria-label="${item.label}">
+          <i class="${item.icon}" aria-hidden="true"></i>
+          <span>${item.label}</span>
+        </a>`;
+      }).join('')
+    }</div>`;
 
-        /* Banner push notification — đẩy lên trên bottom nav */
-        #pn-banner     { bottom: 56px  !important; }
+    try {
+      document.body.appendChild(nav);
+      console.log('[mobile-nav.js] ✅ Nav element successfully appended');
+    } catch (e) {
+      console.error('[mobile-nav.js] ❌ Error appending nav:', e);
+      setTimeout(initNav, 100);
+      return;
+    }
 
-        /* Body padding cho bottom nav */
-        body { padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px)) !important; }
-      `;
-    };
-    // Chạy ngay và sau khi load xong để đảm bảo thắng mọi JS inject CSS
-    applyOverride();
-    window.addEventListener('load', applyOverride);
-    setTimeout(applyOverride, 500);
+    // Add padding for bottom nav trên mobile
+    const isMobile = window.innerWidth <= 768 || ('ontouchstart' in window);
+    console.log('[mobile-nav.js] Is mobile:', isMobile, '(width:', window.innerWidth, ')');
+    
+    if (isMobile) {
+      const applyPadding = () => {
+        let el = document.getElementById('mbn-override');
+        if (!el) { 
+          el = document.createElement('style'); 
+          el.id = 'mbn-override'; 
+          document.head.appendChild(el); 
+        }
+        el.textContent = `body { padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px)) !important; }`;
+        console.log('[mobile-nav.js] Padding applied to body');
+      };
+      applyPadding();
+      window.addEventListener('load', applyPadding);
+      window.addEventListener('resize', applyPadding);
+    }
+
+    // Haptic feedback on tap (if supported)
+    nav.querySelectorAll('.mbn-item').forEach(item => {
+      item.addEventListener('click', () => {
+        if (navigator.vibrate) {
+          navigator.vibrate(10);
+          console.log('[mobile-nav.js] Haptic feedback triggered');
+        }
+      });
+    });
+
+    console.log('[mobile-nav.js] ✅ Mobile nav fully initialized');
+    
+    // Verificar visibilidade
+    setTimeout(() => {
+      const navEl = document.getElementById('mobile-bottom-nav');
+      if (navEl) {
+        const style = window.getComputedStyle(navEl);
+        console.log('[mobile-nav.js] Nav computed display:', style.display);
+        console.log('[mobile-nav.js] Nav computed visibility:', style.visibility);
+      }
+    }, 500);
+  };
+
+  // Estratégia de inicialização múltipla para garantir sucesso
+  
+  // 1. Tentar inicializar imediatamente
+  console.log('[mobile-nav.js] Document.readyState:', document.readyState);
+  initNav();
+
+  // 2. Se falhar, tentar no DOMContentLoaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initNav);
   }
 
-  // Haptic feedback on tap (if supported)
-  nav.querySelectorAll('.mbn-item').forEach(item => {
-    item.addEventListener('click', () => {
-      if (navigator.vibrate) navigator.vibrate(10);
-    });
-  });
+  // 3. Se falhar, tentar no load
+  window.addEventListener('load', initNav);
+
+  // 4. Tentar regularmente nos primeiros segundos
+  let attempts = 0;
+  const retryInterval = setInterval(() => {
+    if (document.getElementById('mobile-bottom-nav')) {
+      clearInterval(retryInterval);
+    } else if (attempts < 10) {
+      initNav();
+      attempts++;
+    } else {
+      clearInterval(retryInterval);
+      console.error('[mobile-nav.js] ❌ Failed to initialize nav after 10 attempts');
+    }
+  }, 200);
 })();
