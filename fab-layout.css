@@ -1,0 +1,85 @@
+/* ============================================================
+   FAB LAYOUT — Sắp xếp tất cả floating buttons không chồng nhau
+   ============================================================ */
+
+/* ── RIGHT SIDE: cột nút góc phải ── */
+/* Thứ tự từ dưới lên: btt-btn → shortcut-sheet-btn → voice-btn → native-share-btn → wakelock-btn → doc-pip-btn → eyedropper-btn */
+
+#btt-btn {
+  bottom: 80px !important;
+  right: 16px !important;
+}
+
+#shortcut-sheet-btn {
+  bottom: 136px !important;
+  right: 16px !important;
+}
+
+/* mini-poll ẩn vào góc, không hiện mặc định ở bottom */
+#mini-poll {
+  bottom: 136px !important;
+  right: 70px !important;
+}
+
+/* ── RIGHT SIDE: các nút features3 gom vào FAB group ── */
+/* Ẩn hết, chỉ hiện khi expand */
+#voice-btn,
+#native-share-btn,
+#wakelock-btn,
+#doc-pip-btn,
+#eyedropper-btn {
+  display: none !important;
+}
+
+/* ── LEFT SIDE: cột nút góc trái ── */
+#live-visitors {
+  top: 70px !important;
+  right: auto !important;
+  left: 16px !important;
+}
+
+#float-clock {
+  bottom: 136px !important;
+  left: 16px !important;
+}
+
+#weather-widget {
+  bottom: 184px !important;
+  left: 16px !important;
+}
+
+#page-like-btn {
+  bottom: 80px !important;
+  left: 16px !important;
+}
+
+#feedback-fab {
+  bottom: 232px !important;
+  left: 16px !important;
+}
+
+/* ── Shortcut sheet popup ── */
+#shortcut-sheet {
+  bottom: 188px !important;
+  right: 16px !important;
+}
+
+/* ── Mobile: ẩn bớt nút trái để không che nội dung ── */
+@media (max-width: 768px) {
+  #float-clock,
+  #weather-widget,
+  #feedback-fab {
+    display: none !important;
+  }
+
+  #page-like-btn {
+    bottom: 72px !important;
+    left: 8px !important;
+  }
+
+  #live-visitors {
+    top: 60px !important;
+    left: 8px !important;
+    font-size: .68rem !important;
+  }
+}

@@ -562,6 +562,76 @@ function initResizeObserver() {
 }
 
 // ── INIT ALL ─────────────────────────────────────────────────
+function initFabGroup() {
+  // Tạo FAB group chứa các nút phụ (voice, share, wakelock, pip, eyedropper)
+  // Sau khi các nút được tạo bởi các hàm init, gom chúng vào group
+  setTimeout(() => {
+    const btnIds = ['voice-btn', 'native-share-btn', 'wakelock-btn', 'doc-pip-btn', 'eyedropper-btn'];
+    const existing = btnIds.map(id => document.getElementById(id)).filter(Boolean);
+    if (!existing.length) return;
+
+    // Tạo toggle button
+    const toggle = document.createElement('button');
+    toggle.id = 'fab-group-toggle';
+    toggle.setAttribute('aria-label', 'Công cụ');
+    toggle.style.cssText = `
+      position:fixed;bottom:192px;right:16px;z-index:9982;
+      width:44px;height:44px;border-radius:50%;
+      background:linear-gradient(135deg,#667eea,#764ba2);
+      border:none;color:#fff;font-size:1.1rem;cursor:pointer;
+      box-shadow:0 4px 16px rgba(102,126,234,.4);
+      display:flex;align-items:center;justify-content:center;
+      transition:transform .3s;
+    `;
+    toggle.innerHTML = '<i class="fas fa-plus"></i>';
+    document.body.appendChild(toggle);
+
+    // Đặt lại vị trí các nút trong group (ẩn mặc định, hiện khi expand)
+    existing.forEach((btn, i) => {
+      btn.style.cssText += `
+        position:fixed !important;
+        right:16px !important;
+        bottom:${192 + (i + 1) * 52}px !important;
+        width:44px !important;height:44px !important;
+        border-radius:50% !important;
+        display:flex !important;
+        align-items:center !important;
+        justify-content:center !important;
+        opacity:0 !important;
+        pointer-events:none !important;
+        transform:scale(0) translateY(10px) !important;
+        transition:all .25s cubic-bezier(.34,1.56,.64,1) !important;
+        transition-delay:${i * 0.04}s !important;
+        z-index:9981 !important;
+      `;
+    });
+
+    let open = false;
+    toggle.addEventListener('click', () => {
+      open = !open;
+      toggle.style.transform = open ? 'rotate(45deg)' : '';
+      existing.forEach(btn => {
+        btn.style.opacity = open ? '1' : '0';
+        btn.style.pointerEvents = open ? 'auto' : 'none';
+        btn.style.transform = open ? 'scale(1) translateY(0)' : 'scale(0) translateY(10px)';
+      });
+    });
+
+    // Đóng khi click ngoài
+    document.addEventListener('click', e => {
+      if (open && !toggle.contains(e.target) && !existing.some(b => b.contains(e.target))) {
+        open = false;
+        toggle.style.transform = '';
+        existing.forEach(btn => {
+          btn.style.opacity = '0';
+          btn.style.pointerEvents = 'none';
+          btn.style.transform = 'scale(0) translateY(10px)';
+        });
+      }
+    });
+  }, 500);
+}
+
 function init() {
   initViewTransitions();
   initHoudiniGlow();
@@ -587,6 +657,7 @@ function init() {
   initMomentumScroll();
   initContrastMode();
   initResizeObserver();
+  initFabGroup();
 }
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
