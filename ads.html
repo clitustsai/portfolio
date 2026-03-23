@@ -337,7 +337,7 @@ tr:last-child td{border-bottom:none;}
 <script src="dist/bug-report.js"></script>
 <script src="ads.js"></script>
 <script>
-const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+const ADS_API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
   ? 'http://localhost:3001' : '';
 
 let selectedPlan = 'standard';
@@ -391,7 +391,7 @@ async function confirmPay(method) {
   const origHtml = btn.innerHTML;
   btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
   try {
-    const r = await fetch(`${API_BASE}/api/ads/${payingAdId}/pay/${method}`, {
+    const r = await fetch(`${ADS_API}/api/ads/${payingAdId}/pay/${method}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
       body: JSON.stringify({ plan: payingPlan })
@@ -421,7 +421,7 @@ async function confirmPay(method) {
 
 async function deleteAd(adId) {
   try {
-    const r = await fetch(`${API_BASE}/api/ads/${adId}`, {
+    const r = await fetch(`${ADS_API}/api/ads/${adId}`, {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${getToken()}` }
     });
@@ -446,7 +446,7 @@ async function generateAiDesc() {
   const btn = document.getElementById('ai-desc-btn');
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; btn.disabled = true;
   try {
-    const r = await fetch(`${API_BASE}/api/ads/${pendingAdId}/ai-description`, {
+    const r = await fetch(`${ADS_API}/api/ads/${pendingAdId}/ai-description`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` }
     });
@@ -475,7 +475,7 @@ document.getElementById('create-ad-form').addEventListener('submit', async (e) =
     slot: document.getElementById('ad-slot').value
   };
   try {
-    const r = await fetch(`${API_BASE}/api/ads`, {
+    const r = await fetch(`${ADS_API}/api/ads`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
       body: JSON.stringify(body)
@@ -494,7 +494,7 @@ async function loadMyAds() {
   const container = document.getElementById('my-ads-list');
   container.innerHTML = '<div class="ads-loading"><i class="fas fa-spinner"></i>Đang tải...</div>';
   try {
-    const r = await fetch(`${API_BASE}/api/ads/my`, {
+    const r = await fetch(`${ADS_API}/api/ads/my`, {
       headers: { 'Authorization': `Bearer ${getToken()}` }
     });
     const ads = await r.json();
@@ -541,7 +541,7 @@ async function loadPayments() {
   const container = document.getElementById('payments-list');
   container.innerHTML = '<div class="ads-loading"><i class="fas fa-spinner"></i>Đang tải...</div>';
   try {
-    const r = await fetch(`${API_BASE}/api/ads/my`, {
+    const r = await fetch(`${ADS_API}/api/ads/my`, {
       headers: { 'Authorization': `Bearer ${getToken()}` }
     });
     const ads = await r.json();
@@ -566,7 +566,7 @@ async function loadPayments() {
 
 async function showStats(adId) {
   try {
-    const r = await fetch(`${API_BASE}/api/ads/${adId}/stats`, {
+    const r = await fetch(`${ADS_API}/api/ads/${adId}/stats`, {
       headers: { 'Authorization': `Bearer ${getToken()}` }
     });
     const d = await r.json();
@@ -651,7 +651,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Verify token ở background — nếu thực sự invalid thì mới show login wall
   try {
-    const r = await fetch(`${API_BASE}/api/auth/me`, {
+    const r = await fetch(`${ADS_API}/api/auth/me`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     if (r.status === 401 || r.status === 403) {
