@@ -1,5 +1,5 @@
 // ========== SERVICE WORKER - PWA ==========
-const CACHE_NAME = 'clituspc-v30';
+const CACHE_NAME = 'clituspc-v32';
 const OFFLINE_URL = '/offline.html';
 
 // Files cần cache để offline
@@ -36,17 +36,17 @@ self.addEventListener('activate', event => {
   );
 });
 
-// ===== FETCH: Cache First cho assets, Network First cho API =====
+// ===== FETCH: Network First cho HTML/JS/CSS, Cache First cho images =====
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
 
   // Bỏ qua chrome-extension và non-http
   if (!event.request.url.startsWith('http')) return;
 
-  // API calls + OAuth redirects: luôn bỏ qua, để browser tự xử lý
+  // API calls: luôn bypass cache
   if (url.pathname.startsWith('/api/')) return;
 
-  // Navigation: Network First, fallback offline page
+  // Navigation (HTML): Network First, fallback cache, fallback offline
   if (event.request.mode === 'navigate') {
     event.respondWith(
       fetch(event.request)
@@ -55,12 +55,28 @@ self.addEventListener('fetch', event => {
           caches.open(CACHE_NAME).then(c => c.put(event.request, clone));
           return res;
         })
-        .catch(() => caches.match('/offline.html'))
+        .catch(() => caches.match(event.request).then(c => c || caches.match('/offline.html')))
     );
     return;
   }
 
-  // Static assets: Cache First
+  // JS / CSS: Network First (luôn lấy mới nhất, fallback cache)
+  if (url.pathname.match(/\.(js|css)$/)) {
+    event.respondWith(
+      fetch(event.request)
+        .then(res => {
+          if (res && res.status === 200) {
+            const clone = res.clone();
+            caches.open(CACHE_NAME).then(c => c.put(event.request, clone));
+          }
+          return res;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // Images & fonts: Cache First (ít thay đổi)
   event.respondWith(
     caches.match(event.request).then(cached => {
       if (cached) return cached;
