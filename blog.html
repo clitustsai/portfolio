@@ -341,8 +341,12 @@
 <link rel="stylesheet" href="ads.css">
 <script src="ads.js"></script>
 <script>
-  loadAdSlot('banner_sidebar', 'ad-banner-sidebar');
-  loadAdSlot('banner_mid_article', 'ad-banner-mid');
+  window.addEventListener('load', function() {
+    if (typeof loadAdSlot === 'function') {
+      loadAdSlot('banner_sidebar', 'ad-banner-sidebar');
+      loadAdSlot('banner_mid_article', 'ad-banner-mid');
+    }
+  });
 </script>
 </body>
 </html>

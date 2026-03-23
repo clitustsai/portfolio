@@ -477,9 +477,13 @@ Hooks giúp code React trở nên **ngắn gọn**, **dễ test** và **dễ tá
 <link rel="stylesheet" href="ads.css">
 <script src="ads.js"></script>
 <script>
-  loadAdSlot('top_vip', 'ad-top-vip');
-  loadAdSlot('pinned_post', 'ad-pinned-post');
-  loadAdSlot('banner_mid_article', 'ad-banner-mid');
+  window.addEventListener('load', function() {
+    if (typeof loadAdSlot === 'function') {
+      loadAdSlot('top_vip', 'ad-top-vip');
+      loadAdSlot('pinned_post', 'ad-pinned-post');
+      loadAdSlot('banner_mid_article', 'ad-banner-mid');
+    }
+  });
 </script>
 </body>
 </html>

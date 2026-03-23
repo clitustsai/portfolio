@@ -2206,8 +2206,12 @@
 <link rel="stylesheet" href="ads.css">
 <script src="ads.js"></script>
 <script>
-  loadAdSlot('banner_header', 'ad-banner-header');
-  loadAdSlot('banner_sidebar', 'ad-banner-sidebar');
+  window.addEventListener('load', function() {
+    if (typeof loadAdSlot === 'function') {
+      loadAdSlot('banner_header', 'ad-banner-header');
+      loadAdSlot('banner_sidebar', 'ad-banner-sidebar');
+    }
+  });
 </script>
 </body>
 </html>
