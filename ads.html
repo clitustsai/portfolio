@@ -204,7 +204,10 @@ tr:last-child td{border-bottom:none;}
         <div class="form-grid">
           <div class="form-group">
             <label>Tên sản phẩm *</label>
-            <input type="text" id="ad-name" placeholder="VD: Áo thun nam basic" maxlength="200" required>
+            <div class="ai-row" style="gap:.5rem">
+              <input type="text" id="ad-name" placeholder="VD: Áo thun nam basic" maxlength="200" required style="flex:1">
+              <button type="button" class="btn-ads btn-ghost btn-sm-ads" id="ai-fill-btn" onclick="aiFillForm()" title="AI tự điền toàn bộ form">🤖 AI điền</button>
+            </div>
           </div>
           <div class="form-group">
             <label>Nền tảng</label>
@@ -288,6 +291,18 @@ tr:last-child td{border-bottom:none;}
   </div>
 </div>
 
+<!-- QR Pay modal -->
+<div id="qr-pay-modal" class="modal-overlay">
+  <div class="modal-box" style="max-width:400px;background:#1a1a2e">
+    <button class="modal-close" onclick="document.getElementById('qr-pay-modal').classList.remove('open');switchTab('my-ads')">×</button>
+    <h3 style="margin:0 0 1.25rem;font-size:1rem;font-weight:800;color:#fff">📲 Thanh toán chuyển khoản</h3>
+    <div id="qr-pay-content"></div>
+    <button class="btn-ads btn-primary-ads" style="width:100%;justify-content:center;margin-top:1rem" onclick="document.getElementById('qr-pay-modal').classList.remove('open');switchTab('my-ads')">
+      <i class="fas fa-check"></i> Đã chuyển khoản xong
+    </button>
+  </div>
+</div>
+
 <!-- Chart modal -->
 <div id="chart-modal" class="modal-overlay">
   <div class="modal-box">
@@ -316,11 +331,11 @@ tr:last-child td{border-bottom:none;}
     </div>
     <p style="font-size:.8rem;color:rgba(255,255,255,.45);margin:0 0 1rem">Chọn phương thức thanh toán:</p>
     <div style="display:flex;gap:.75rem">
-      <button class="btn-ads btn-primary-ads" style="flex:1;justify-content:center" onclick="confirmPay('stripe')">
-        <i class="fas fa-credit-card"></i> Stripe (Thẻ QT)
+      <button class="btn-ads btn-primary-ads" style="flex:1;justify-content:center;background:linear-gradient(135deg,#e31837,#c0392b)" onclick="confirmPay('acb')">
+        <i class="fas fa-university"></i> ACB Bank
       </button>
-      <button class="btn-ads btn-ghost" style="flex:1;justify-content:center;border:1.5px solid rgba(255,255,255,.2)!important" onclick="confirmPay('paypal')">
-        <i class="fab fa-paypal"></i> PayPal
+      <button class="btn-ads btn-primary-ads" style="flex:1;justify-content:center;background:linear-gradient(135deg,#0068ff,#00c6ff)" onclick="confirmPay('zalopay')">
+        <i class="fas fa-wallet"></i> ZaloPay
       </button>
     </div>
     <div id="pay-modal-alert" style="margin-top:.75rem"></div>
@@ -346,6 +361,24 @@ let pendingAdId = null;
 let payingAdId = null;
 let payingPlan = 'standard';
 
+const PLAN_PRICES = { standard: 50000, premium: 150000, vip_boost: 300000 };
+const PLAN_LABELS = { standard: 'Standard', premium: 'Premium', vip_boost: 'VIP Boost' };
+
+// ACB & ZaloPay info — thay bằng thông tin thật của bạn
+const PAYMENT_INFO = {
+  acb: {
+    bank: 'ACB',
+    account: '1234567890',
+    name: 'THAI TUAN KIET',
+    qr: 'img/qr-acb.webp'
+  },
+  zalopay: {
+    phone: '0906857331',
+    name: 'THAI TUAN KIET',
+    qr: 'img/qr-zalopay.webp'
+  }
+};
+
 function getToken() {
   return localStorage.getItem('user_token') || localStorage.getItem('auth_token');
 }
@@ -360,7 +393,29 @@ function switchTab(tab) {
   if (tab === 'payments') loadPayments();
 }
 
-function selectPlan(el) {
+async function aiFillForm() {
+  const name = document.getElementById('ad-name').value.trim();
+  if (!name) return showAlert('create-alert', 'Nhập tên sản phẩm trước rồi bấm AI điền');
+  const btn = document.getElementById('ai-fill-btn');
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; btn.disabled = true;
+  try {
+    const platform = document.getElementById('ad-platform').value;
+    const r = await fetch(`${ADS_API}/api/ads/ai-fill`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
+      body: JSON.stringify({ product_name: name, platform })
+    });
+    const d = await r.json();
+    if (!r.ok) { showAlert('create-alert', d.error || 'Lỗi AI'); btn.innerHTML = '🤖 AI điền'; btn.disabled = false; return; }
+    if (d.description) document.getElementById('ad-desc').value = d.description;
+    if (d.price_suggestion) document.getElementById('ad-price').value = d.price_suggestion;
+    if (d.slot_suggestion) document.getElementById('ad-slot').value = d.slot_suggestion;
+    showAlert('create-alert', '✅ AI đã điền form! Kiểm tra và chỉnh sửa nếu cần.', 'success');
+  } catch(e) { showAlert('create-alert', 'Lỗi kết nối'); }
+  btn.innerHTML = '🤖 AI điền'; btn.disabled = false;
+}
+
+
   document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
   el.classList.add('selected');
   selectedPlan = el.dataset.plan;
@@ -390,33 +445,51 @@ async function confirmPay(method) {
   const btn = event.target.closest('button');
   const origHtml = btn.innerHTML;
   btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+  const price = PLAN_PRICES[payingPlan] || 50000;
+  const planLabel = PLAN_LABELS[payingPlan] || payingPlan;
+  const info = PAYMENT_INFO[method];
+
+  // Ghi nhận ad đã chọn plan + method (pending)
   try {
-    const r = await fetch(`${ADS_API}/api/ads/${payingAdId}/pay/${method}`, {
+    await fetch(`${ADS_API}/api/ads/${payingAdId}/pay/${method === 'acb' ? 'manual' : 'manual'}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
-      body: JSON.stringify({ plan: payingPlan })
-    });
-    const d = await r.json();
-    if (!r.ok) {
-      document.getElementById('pay-modal-alert').innerHTML = `<div class="ads-alert ads-alert-error">${d.error || 'Lỗi thanh toán'}</div>`;
-      btn.disabled = false; btn.innerHTML = origHtml;
-      return;
-    }
-    const url = d.url || d.approvalUrl;
-    if (url) {
-      window.location.href = url;
-    } else {
-      closePaymentModal();
-      document.getElementById('create-ad-form').reset();
-      document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
-      document.querySelector('.plan-card[data-plan="standard"]').classList.add('selected');
-      selectedPlan = 'standard';
-      switchTab('my-ads');
-    }
-  } catch(e) {
-    document.getElementById('pay-modal-alert').innerHTML = `<div class="ads-alert ads-alert-error">Lỗi kết nối</div>`;
-    btn.disabled = false; btn.innerHTML = origHtml;
-  }
+      body: JSON.stringify({ plan: payingPlan, method })
+    }).catch(() => {});
+  } catch(e) {}
+
+  btn.disabled = false; btn.innerHTML = origHtml;
+  closePaymentModal();
+
+  // Hiện QR modal
+  const content = method === 'acb'
+    ? `<div style="text-align:center">
+        <div style="background:linear-gradient(135deg,#e31837,#c0392b);color:#fff;font-weight:900;font-size:1rem;padding:.5rem 1.2rem;border-radius:50px;display:inline-block;margin-bottom:1rem">🏦 ACB Bank</div>
+        <img src="${info.qr}" style="width:200px;height:200px;border-radius:16px;border:3px solid rgba(255,255,255,.15);display:block;margin:0 auto 1rem" onerror="this.style.display='none'">
+        <div style="background:rgba(255,255,255,.06);border-radius:14px;padding:1rem;text-align:left;font-size:.85rem">
+          <div style="display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.08)"><span style="color:rgba(255,255,255,.5)">Ngân hàng</span><span style="font-weight:700">ACB</span></div>
+          <div style="display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.08)"><span style="color:rgba(255,255,255,.5)">Số tài khoản</span><span style="font-weight:700">${info.account}</span></div>
+          <div style="display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.08)"><span style="color:rgba(255,255,255,.5)">Chủ tài khoản</span><span style="font-weight:700">${info.name}</span></div>
+          <div style="display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.08)"><span style="color:rgba(255,255,255,.5)">Số tiền</span><span style="font-weight:900;color:#4ade80">${price.toLocaleString('vi-VN')}₫</span></div>
+          <div style="display:flex;justify-content:space-between;padding:.4rem 0"><span style="color:rgba(255,255,255,.5)">Nội dung CK</span><span style="font-weight:700;color:#a5f3fc">AD${payingAdId} ${planLabel}</span></div>
+        </div>
+        <p style="font-size:.75rem;color:rgba(255,255,255,.4);margin-top:.85rem">Sau khi chuyển khoản, admin sẽ duyệt trong 1-2 giờ</p>
+      </div>`
+    : `<div style="text-align:center">
+        <div style="background:linear-gradient(135deg,#0068ff,#00c6ff);color:#fff;font-weight:900;font-size:1rem;padding:.5rem 1.2rem;border-radius:50px;display:inline-block;margin-bottom:1rem">💙 ZaloPay</div>
+        <img src="${info.qr}" style="width:200px;height:200px;border-radius:16px;border:3px solid rgba(255,255,255,.15);display:block;margin:0 auto 1rem" onerror="this.style.display='none'">
+        <div style="background:rgba(255,255,255,.06);border-radius:14px;padding:1rem;text-align:left;font-size:.85rem">
+          <div style="display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.08)"><span style="color:rgba(255,255,255,.5)">Số điện thoại</span><span style="font-weight:700">${info.phone}</span></div>
+          <div style="display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.08)"><span style="color:rgba(255,255,255,.5)">Tên</span><span style="font-weight:700">${info.name}</span></div>
+          <div style="display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.08)"><span style="color:rgba(255,255,255,.5)">Số tiền</span><span style="font-weight:900;color:#4ade80">${price.toLocaleString('vi-VN')}₫</span></div>
+          <div style="display:flex;justify-content:space-between;padding:.4rem 0"><span style="color:rgba(255,255,255,.5)">Nội dung</span><span style="font-weight:700;color:#a5f3fc">AD${payingAdId} ${planLabel}</span></div>
+        </div>
+        <p style="font-size:.75rem;color:rgba(255,255,255,.4);margin-top:.85rem">Sau khi thanh toán, admin sẽ duyệt trong 1-2 giờ</p>
+      </div>`;
+
+  document.getElementById('qr-pay-content').innerHTML = content;
+  document.getElementById('qr-pay-modal').classList.add('open');
 }
 
 async function deleteAd(adId) {

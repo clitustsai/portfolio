@@ -1976,6 +1976,68 @@ app.get('/api/ads/:id/stats', adLimiter, requireUser, (req, res) => {
 });
 
 // POST /api/ads/:id/ai-description — AI viết mô tả
+// POST /api/ads/ai-fill — AI điền toàn bộ form từ tên sản phẩm (không cần tạo ad trước)
+app.post('/api/ads/ai-fill', adLimiter, requireUser, async (req, res) => {
+    const { product_name, platform } = req.body;
+    if (!product_name?.trim()) return res.status(400).json({ error: 'Thiếu tên sản phẩm' });
+
+    const today = new Date().toISOString().slice(0, 10);
+    const usage = get('SELECT count FROM user_usage WHERE user_id=? AND tool=? AND date=?', [req.userId, 'ad_ai_fill', today]);
+    if ((usage?.count || 0) >= 5) return res.status(429).json({ error: 'Đã dùng hết 5 lượt AI điền form hôm nay' });
+
+    const platformMap = { shopee: 'Shopee', tiktok: 'TikTok Shop', affiliate: 'Affiliate' };
+    const platformName = platformMap[platform] || 'Shopee';
+
+    const fallback = {
+        description: `${product_name.trim()} — sản phẩm chất lượng cao trên ${platformName}. Mua ngay để nhận ưu đãi tốt nhất!`,
+        price_suggestion: 150000,
+        slot_suggestion: 'banner_sidebar'
+    };
+
+    const apiKey = process.env.OPENROUTER_API_KEY;
+    if (!apiKey) return res.json(fallback);
+
+    try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 8000);
+        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+            method: 'POST',
+            signal: controller.signal,
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}`, 'HTTP-Referer': 'https://portfolio-utbu.onrender.com', 'X-Title': 'Ad Marketplace' },
+            body: JSON.stringify({
+                model: 'mistralai/mistral-7b-instruct',
+                messages: [
+                    { role: 'system', content: `Bạn là copywriter chuyên viết quảng cáo sản phẩm tiếng Việt. Trả về JSON hợp lệ với các field sau:
+- description: mô tả sản phẩm hấp dẫn 60-120 từ
+- price_suggestion: giá sản phẩm ước tính (số nguyên VND, không có dấu phẩy)
+- slot_suggestion: một trong [banner_sidebar, banner_header, banner_mid_article, top_vip, pinned_post]
+Chỉ trả về JSON, không giải thích thêm.` },
+                    { role: 'user', content: `Sản phẩm: "${product_name.trim()}" trên ${platformName}` }
+                ],
+                max_tokens: 400, temperature: 0.75
+            })
+        });
+        clearTimeout(timeout);
+        const data = await response.json();
+        const raw = data?.choices?.[0]?.message?.content || '';
+        // Parse JSON từ response
+        const jsonMatch = raw.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+            const parsed = JSON.parse(jsonMatch[0]);
+            if (usage) run('UPDATE user_usage SET count=count+1 WHERE user_id=? AND tool=? AND date=?', [req.userId, 'ad_ai_fill', today]);
+            else run('INSERT INTO user_usage (user_id, tool, date, count) VALUES (?,?,?,1)', [req.userId, 'ad_ai_fill', today]);
+            return res.json({
+                description: parsed.description || fallback.description,
+                price_suggestion: parseInt(parsed.price_suggestion) || fallback.price_suggestion,
+                slot_suggestion: parsed.slot_suggestion || fallback.slot_suggestion
+            });
+        }
+        res.json(fallback);
+    } catch (err) {
+        res.json(fallback);
+    }
+});
+
 app.post('/api/ads/:id/ai-description', adLimiter, requireUser, async (req, res) => {
     const id = parseInt(req.params.id);
     const ad = get('SELECT * FROM ads WHERE id=? AND user_id=?', [id, req.userId]);
@@ -2102,6 +2164,20 @@ app.post('/api/ads/:id/pay/paypal', adLimiter, requireUser, async (req, res) => 
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
+});
+
+// POST /api/ads/:id/pay/manual — ACB/ZaloPay chuyển khoản thủ công
+app.post('/api/ads/:id/pay/manual', adLimiter, requireUser, (req, res) => {
+    const id = parseInt(req.params.id);
+    const ad = get('SELECT * FROM ads WHERE id=? AND user_id=?', [id, req.userId]);
+    if (!ad) return res.status(404).json({ error: 'Không tìm thấy quảng cáo' });
+    const { plan = 'standard', method = 'acb' } = req.body;
+    const planCfgs = { standard: 50000, premium: 150000, vip_boost: 300000 };
+    const amount = planCfgs[plan] || 50000;
+    // Lưu transaction pending — admin xác nhận thủ công
+    run('INSERT OR IGNORE INTO ad_transactions (ad_id, user_id, plan, amount, payment_method, payment_id, status) VALUES (?,?,?,?,?,?,?)',
+        [id, req.userId, plan, amount, method, `MANUAL_${id}_${Date.now()}`, 'pending']);
+    res.json({ ok: true, message: 'Đã ghi nhận. Admin sẽ xác nhận sau khi nhận thanh toán.' });
 });
 
 // POST /api/webhooks/stripe
