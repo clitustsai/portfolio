@@ -160,6 +160,17 @@ tr:last-child td{border-bottom:none;}
   Đang tải...
 </div>
 
+<!-- Login wall -->
+<div id="ads-login-wall" style="display:none;min-height:60vh;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:3rem 1rem">
+  <div style="font-size:3rem;margin-bottom:1rem">🔐</div>
+  <h2 style="font-size:1.4rem;font-weight:900;margin:0 0 .5rem;background:linear-gradient(135deg,#fff,#c4b5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Đăng nhập để tiếp tục</h2>
+  <p style="color:rgba(255,255,255,.55);margin:0 0 1.5rem;font-size:.9rem">Bạn cần đăng nhập để đăng và quản lý quảng cáo</p>
+  <button onclick="if(typeof openAuthModal==='function') openAuthModal('login'); else window.location.href='index.html'" class="btn-ads btn-primary-ads" style="font-size:1rem;padding:.85rem 2rem">
+    <i class="fas fa-sign-in-alt"></i> Đăng nhập ngay
+  </button>
+  <a href="index.html" style="margin-top:1rem;color:rgba(255,255,255,.4);font-size:.85rem;text-decoration:none">← Về trang chủ</a>
+</div>
+
 <!-- Main app -->
 <div id="adsMain" class="ads-wrap" style="display:none">
   <div class="ads-hero">
@@ -530,17 +541,10 @@ if (urlParams.get('payment') === 'success') {
 // Init — kiểm tra auth, redirect về index.html nếu chưa đăng nhập
 document.addEventListener('DOMContentLoaded', async () => {
   const token = getToken();
-  const isLocalDev = window.location.port === '5500' || window.location.port === '5501'
-    || window.location.port === '3000' || window.location.port === '8080';
 
   if (!token) {
-    if (isLocalDev) {
-      // Live Server dev mode — hiện trang không cần auth
-      document.getElementById('adsLoading').style.display = 'none';
-      document.getElementById('adsMain').style.display = 'block';
-      return;
-    }
-    window.location.href = 'index.html';
+    // Không redirect — hiện overlay đăng nhập ngay trên trang
+    showLoginWall();
     return;
   }
   try {
@@ -550,14 +554,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (r.status === 401 || r.status === 403) {
       localStorage.removeItem('user_token');
       localStorage.removeItem('auth_token');
-      if (!isLocalDev) { window.location.href = 'index.html'; return; }
+      showLoginWall();
+      return;
     }
   } catch(e) {
+    // Network error / backend chưa start — vẫn cho vào nếu có token
     console.warn('Auth check failed:', e.message);
   }
   document.getElementById('adsLoading').style.display = 'none';
   document.getElementById('adsMain').style.display = 'block';
 });
+
+function showLoginWall() {
+  document.getElementById('adsLoading').style.display = 'none';
+  document.getElementById('adsMain').style.display = 'none';
+  document.getElementById('ads-login-wall').style.display = 'flex';
+}
 </script>
 </body>
 </html>
