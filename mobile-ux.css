@@ -162,9 +162,7 @@ html[data-theme="dark"] .mbn-item.active { color: #a78bfa; }
   header nav ul { 
     display: none !important; 
   }
-  .nav-hamburger { 
-    display: flex !important; 
-  }
+  /* nav-hamburger ẩn trên mobile — đã có bottom nav (xem mobile-fix.css) */
 }
 
 /* ===== SAFE AREA INSETS (iPhone notch/home bar) ===== */
