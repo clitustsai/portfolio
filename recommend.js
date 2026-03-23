@@ -83,9 +83,19 @@ html[data-theme="dark"] #rec-footer { border-color:rgba(255,255,255,.06); }
   display:flex; align-items:center; justify-content:center;
   border:2px solid #fff;
 }
-@media(max-width:480px) {
-  #rec-panel { width:calc(100vw - 16px); right:8px; bottom:188px; max-height:calc(100vh - 220px); overflow-y:auto; }
-  #rec-toggle { right:12px; bottom:128px; }
+@media(max-width:768px) {
+  #rec-panel {
+    width:calc(100vw - 16px) !important;
+    right:8px !important;
+    bottom:188px !important;
+    max-height:calc(100vh - 220px) !important;
+    overflow-y:auto !important;
+    left:auto !important;
+  }
+  #rec-toggle {
+    right:12px !important;
+    bottom:128px !important;
+  }
 }
 `;
 document.head.appendChild(style);
@@ -235,8 +245,10 @@ async function render() {
   toggle.addEventListener('click', openPanel);
   document.getElementById('rec-close').addEventListener('click', closePanel);
 
-  // Auto-open sau 5 giây (chỉ lần đầu)
-  setTimeout(openPanel, 5000);
+  // Auto-open chỉ trên desktop, mobile user tự bấm toggle
+  if (window.innerWidth > 768 && !('ontouchstart' in window)) {
+    setTimeout(openPanel, 5000);
+  }
 }
 
 function openPanel() {

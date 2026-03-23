@@ -292,9 +292,9 @@ html[data-theme="dark"] .mbn-item.active::before {
 
 /* ===== FLOATING ELEMENTS — MOBILE LAYOUT FIX =====
    Layout từ dưới lên (không đè nhau):
-   Bottom nav:   z=999999, bottom 0
+   Bottom nav:   z=999999, bottom 0–56px
    Bên PHẢI:     Chat FAB (68px) | Rec toggle (128px) | Rec panel (188px) | Back-to-top (128px)
-   Bên TRÁI:     Bug btn (68px)  | Bell (120px)
+   Bên TRÁI:     Bug btn (68px)  | Bell (120px) | Music (180px)
    Push banner:  bottom 56px (trên bottom nav)
    ============================================================ */
 @media (max-width: 768px) {
@@ -355,13 +355,19 @@ html[data-theme="dark"] .mbn-item.active::before {
     left: 12px !important;
   }
 
+  /* Music player — trái, trên bell */
+  .music-player {
+    bottom: 180px !important;
+    left: 12px !important;
+  }
+
   /* Push banner — trên bottom nav */
   #pn-banner {
     bottom: 56px !important;
     bottom: calc(56px + env(safe-area-inset-bottom, 0px)) !important;
   }
 
-  /* FAB group (Thuê tôi / Thanh toán) — ẩn trên mobile, bottom nav đã đủ */
+  /* FAB group (Thuê tôi / Thanh toán) — ẩn trên mobile */
   #fabGroup {
     display: none !important;
   }

@@ -77,11 +77,14 @@
     }
 
     // Haptic feedback on tap (if supported)
+    // Nếu đang ở trang active thì scroll lên top thay vì navigate
     nav.querySelectorAll('.mbn-item').forEach(item => {
-      item.addEventListener('click', () => {
-        if (navigator.vibrate) {
-          navigator.vibrate(10);
-          console.log('[mobile-nav.js] Haptic feedback triggered');
+      item.addEventListener('click', (e) => {
+        if (navigator.vibrate) navigator.vibrate(10);
+        // Nếu đang ở trang này rồi → scroll lên top
+        if (item.classList.contains('active')) {
+          e.preventDefault();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       });
     });
