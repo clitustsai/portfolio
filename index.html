@@ -1681,29 +1681,14 @@
             const banner = document.getElementById('pwa-install-banner'); if (banner) banner.remove();
             if (outcome === 'accepted') showToast('🎉 Đang cài đặt app...', 'success', 3000);
         }
-        async function requestPushPermission() {
-            if (!('Notification' in window)) return;
-            if (Notification.permission === 'granted') return subscribeToNotifications();
-            if (Notification.permission === 'denied') return;
-            const perm = await Notification.requestPermission();
-            if (perm === 'granted') { subscribeToNotifications(); showToast('🔔 Đã bật thông báo!', 'success', 3000); }
-        }
-        async function subscribeToNotifications() {
-            if (!window._swReg) return;
-            try {
-                const existing = await window._swReg.pushManager.getSubscription(); if (existing) return;
-                const res = await fetch('/api/push/vapid-public-key'); if (!res.ok) return;
-                const { publicKey } = await res.json();
-                const sub = await window._swReg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(publicKey) });
-                await fetch('/api/push/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(sub) });
-            } catch (err) { console.warn('Push subscription failed:', err); }
-        }
+        async function requestPushPermission() { /* handled by push-notify.js */ }
+        async function subscribeToNotifications() { /* handled by push-notify.js */ }
         function urlBase64ToUint8Array(base64String) {
             const padding = '='.repeat((4 - base64String.length % 4) % 4);
             const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
             const raw = window.atob(base64); return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
         }
-        setTimeout(() => requestPushPermission(), 5000);
+        // push-notify.js handles subscription automatically
         function updateOnlineStatus() {
             const isOnline = navigator.onLine; let bar = document.getElementById('offline-bar');
             if (!isOnline) { if (!bar) { bar = document.createElement('div'); bar.id = 'offline-bar'; bar.textContent = '📡 Bạn đang offline — đang dùng dữ liệu đã cache'; document.body.prepend(bar); } }
