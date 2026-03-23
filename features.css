@@ -136,22 +136,46 @@ html[data-theme="dark"] .reaction-btn { background: rgba(30,30,60,.9); }
 
 /* ── 7. COOKIE CONSENT ── */
 #cookie-banner {
-  position: fixed; bottom: 0; left: 0; right: 0; z-index: 9985;
+  position: fixed; bottom: 24px; left: 24px; z-index: 9985;
+  width: min(360px, calc(100vw - 48px));
   background: linear-gradient(135deg,rgba(15,12,41,.97),rgba(48,43,99,.97));
-  backdrop-filter: blur(16px); border-top: 1px solid rgba(255,255,255,.1);
-  padding: 1rem 1.5rem; display: flex; align-items: center; gap: 1rem;
-  flex-wrap: wrap; transform: translateY(100%); transition: transform .4s cubic-bezier(.34,1.56,.64,1);
+  backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,.12);
+  border-radius: 20px; padding: 1.25rem 1.25rem 1rem;
+  box-shadow: 0 20px 60px rgba(0,0,0,.4);
+  transform: translateY(calc(100% + 32px)); opacity: 0;
+  transition: transform .45s cubic-bezier(.34,1.56,.64,1), opacity .3s ease;
 }
-#cookie-banner.show { transform: translateY(0); }
-#cookie-banner p { flex: 1; color: rgba(255,255,255,.75); font-size: .82rem; margin: 0; min-width: 200px; }
-#cookie-banner p a { color: #a5f3fc; text-decoration: underline; }
+#cookie-banner.show { transform: translateY(0); opacity: 1; }
 .cookie-btn {
-  padding: .5rem 1.2rem; border-radius: 50px; font-size: .82rem; font-weight: 700;
+  padding: .45rem 1rem; border-radius: 50px; font-size: .78rem; font-weight: 700;
   cursor: pointer; border: none; transition: all .2s; white-space: nowrap;
+  display: inline-flex; align-items: center;
 }
 .cookie-accept { background: linear-gradient(135deg,#667eea,#764ba2); color: #fff; }
-.cookie-decline { background: rgba(255,255,255,.1); color: rgba(255,255,255,.6); }
+.cookie-decline { background: rgba(255,255,255,.08); color: rgba(255,255,255,.55); }
+.cookie-custom  { background: rgba(102,126,234,.2); color: #a5b4fc; }
 .cookie-accept:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(102,126,234,.4); }
+.ck-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: .45rem 0; border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.ck-row:last-child { border-bottom: none; }
+.ck-label { color: #fff; font-size: .78rem; font-weight: 700; }
+.ck-desc  { color: rgba(255,255,255,.45); font-size: .68rem; margin-top: .1rem; }
+.ck-switch {
+  width: 36px; height: 20px; border-radius: 10px; background: rgba(255,255,255,.15);
+  position: relative; cursor: pointer; flex-shrink: 0; transition: background .2s;
+}
+.ck-switch span {
+  position: absolute; top: 3px; left: 3px; width: 14px; height: 14px;
+  border-radius: 50%; background: #fff; transition: transform .2s;
+}
+.ck-switch.ck-on { background: linear-gradient(135deg,#667eea,#764ba2); }
+.ck-switch.ck-on span { transform: translateX(16px); }
+.ck-switch.ck-disabled { opacity: .5; cursor: not-allowed; }
+@media (max-width: 480px) {
+  #cookie-banner { bottom: 80px; left: 12px; width: calc(100vw - 24px); }
+}
 
 /* ── 8. BACK-TO-TOP MORPHING ── */
 #btt-btn {

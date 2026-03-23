@@ -256,23 +256,75 @@ window.triggerConfetti = triggerConfetti;
 // ── 8. COOKIE CONSENT ───────────────────────────────────────
 function initCookieConsent() {
   if (localStorage.getItem('cookie_consent')) return;
+
   const banner = document.createElement('div');
   banner.id = 'cookie-banner';
   banner.innerHTML = `
-    <p>🍪 Chúng tôi dùng cookie để cải thiện trải nghiệm. <a href="#" onclick="return false">Tìm hiểu thêm</a></p>
-    <button class="cookie-btn cookie-decline" id="cookie-no">Từ chối</button>
-    <button class="cookie-btn cookie-accept" id="cookie-yes">Chấp nhận</button>`;
+    <div id="cookie-main">
+      <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.6rem">
+        <span style="font-size:1.4rem">🍪</span>
+        <strong style="color:#fff;font-size:.92rem">Chúng tôi dùng Cookie</strong>
+      </div>
+      <p style="color:rgba(255,255,255,.7);font-size:.78rem;line-height:1.5;margin:0 0 .85rem">
+        Website dùng cookie để cải thiện trải nghiệm, phân tích lưu lượng và cá nhân hóa nội dung.
+        <a href="#" id="cookie-detail-toggle" style="color:#a5f3fc;text-decoration:underline;cursor:pointer">Tùy chỉnh</a>
+      </p>
+      <div id="cookie-toggles" style="display:none;margin-bottom:.85rem;display:none">
+        <div class="ck-row">
+          <div><div class="ck-label">Thiết yếu</div><div class="ck-desc">Bắt buộc để site hoạt động</div></div>
+          <div class="ck-switch ck-on ck-disabled"><span></span></div>
+        </div>
+        <div class="ck-row">
+          <div><div class="ck-label">Phân tích</div><div class="ck-desc">Giúp chúng tôi hiểu cách bạn dùng site</div></div>
+          <div class="ck-switch ck-on" id="ck-analytics"><span></span></div>
+        </div>
+        <div class="ck-row">
+          <div><div class="ck-label">Marketing</div><div class="ck-desc">Hiển thị quảng cáo phù hợp</div></div>
+          <div class="ck-switch" id="ck-marketing"><span></span></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <button class="cookie-btn cookie-decline" id="cookie-no">Từ chối</button>
+        <button class="cookie-btn cookie-custom" id="cookie-save" style="display:none">Lưu tùy chọn</button>
+        <button class="cookie-btn cookie-accept" id="cookie-yes">Chấp nhận tất cả</button>
+      </div>
+    </div>`;
   document.body.appendChild(banner);
-  setTimeout(() => banner.classList.add('show'), 2000);
-  document.getElementById('cookie-yes').addEventListener('click', () => {
-    localStorage.setItem('cookie_consent','accepted');
-    banner.classList.remove('show');
-    setTimeout(() => banner.remove(), 500);
+  setTimeout(() => banner.classList.add('show'), 1500);
+
+  // Toggle detail
+  document.getElementById('cookie-detail-toggle').addEventListener('click', e => {
+    e.preventDefault();
+    const t = document.getElementById('cookie-toggles');
+    const save = document.getElementById('cookie-save');
+    const isHidden = t.style.display === 'none' || !t.style.display;
+    t.style.display = isHidden ? 'block' : 'none';
+    save.style.display = isHidden ? 'inline-flex' : 'none';
   });
-  document.getElementById('cookie-no').addEventListener('click', () => {
-    localStorage.setItem('cookie_consent','declined');
+
+  // Toggle switches
+  ['ck-analytics','ck-marketing'].forEach(id => {
+    document.getElementById(id)?.addEventListener('click', function() {
+      this.classList.toggle('ck-on');
+    });
+  });
+
+  function dismiss(val) {
+    localStorage.setItem('cookie_consent', val);
     banner.classList.remove('show');
     setTimeout(() => banner.remove(), 500);
+  }
+
+  document.getElementById('cookie-yes').addEventListener('click', () => dismiss('accepted'));
+  document.getElementById('cookie-no').addEventListener('click', () => dismiss('declined'));
+  document.getElementById('cookie-save').addEventListener('click', () => {
+    const prefs = {
+      analytics: document.getElementById('ck-analytics')?.classList.contains('ck-on'),
+      marketing: document.getElementById('ck-marketing')?.classList.contains('ck-on'),
+    };
+    localStorage.setItem('cookie_consent', 'custom');
+    localStorage.setItem('cookie_prefs', JSON.stringify(prefs));
+    dismiss('custom');
   });
 }
 
