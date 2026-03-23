@@ -286,7 +286,7 @@ tr:last-child td{border-bottom:none;}
 <script src="dist/bug-report.js"></script>
 <script src="ads.js"></script>
 <script>
-const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
   ? 'http://localhost:3001' : '';
 
 let selectedPlan = 'standard';
@@ -530,7 +530,16 @@ if (urlParams.get('payment') === 'success') {
 // Init — kiểm tra auth, redirect về index.html nếu chưa đăng nhập
 document.addEventListener('DOMContentLoaded', async () => {
   const token = getToken();
+  const isLocalDev = window.location.port === '5500' || window.location.port === '5501'
+    || window.location.port === '3000' || window.location.port === '8080';
+
   if (!token) {
+    if (isLocalDev) {
+      // Live Server dev mode — hiện trang không cần auth
+      document.getElementById('adsLoading').style.display = 'none';
+      document.getElementById('adsMain').style.display = 'block';
+      return;
+    }
     window.location.href = 'index.html';
     return;
   }
@@ -539,21 +548,15 @@ document.addEventListener('DOMContentLoaded', async () => {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     if (r.status === 401 || r.status === 403) {
-      // Token hết hạn hoặc không hợp lệ
       localStorage.removeItem('user_token');
       localStorage.removeItem('auth_token');
-      window.location.href = 'index.html';
-      return;
+      if (!isLocalDev) { window.location.href = 'index.html'; return; }
     }
-    // Kể cả lỗi server (5xx) hay network chậm — vẫn cho vào, không redirect
-    document.getElementById('adsLoading').style.display = 'none';
-    document.getElementById('adsMain').style.display = 'block';
   } catch(e) {
-    // Network error (Render cold start, offline...) — vẫn cho vào nếu có token
-    console.warn('Auth check failed, proceeding with cached token:', e.message);
-    document.getElementById('adsLoading').style.display = 'none';
-    document.getElementById('adsMain').style.display = 'block';
+    console.warn('Auth check failed:', e.message);
   }
+  document.getElementById('adsLoading').style.display = 'none';
+  document.getElementById('adsMain').style.display = 'block';
 });
 </script>
 </body>
