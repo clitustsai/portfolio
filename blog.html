@@ -311,6 +311,7 @@
     (function() {
       const ham = document.getElementById('blogHamburger');
       const ul = document.getElementById('blogNavUl');
+      if (!ham || !ul) return;
       function close() { ham.classList.remove('open'); ul.classList.remove('open'); document.body.style.overflow=''; }
       ham.addEventListener('click', e => { e.stopPropagation(); const o=ham.classList.toggle('open'); ul.classList.toggle('open',o); document.body.style.overflow=o?'hidden':''; });
       ul.querySelectorAll('a').forEach(a=>a.addEventListener('click',close));
