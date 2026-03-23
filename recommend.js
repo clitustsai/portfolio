@@ -40,17 +40,17 @@ html[data-theme="dark"] #rec-panel { background:#1e1e3a; box-shadow:0 20px 60px 
 #rec-close:hover { background:rgba(255,255,255,.3); }
 #rec-list { padding:.6rem; display:flex; flex-direction:column; gap:.4rem; max-height:380px; overflow-y:auto; overflow-x:hidden; }
 .rec-item {
-  display:flex; align-items:center; gap:.65rem;
+  display:flex; align-items:flex-start; gap:.65rem;
   padding:.7rem .85rem; border-radius:14px; cursor:pointer;
   transition:all .2s; text-decoration:none; border:1.5px solid transparent;
-  min-width:0; overflow:hidden;
+  min-width:0;
 }
 .rec-item:hover { background:rgba(102,126,234,.07); border-color:rgba(102,126,234,.15); transform:translateX(3px); }
 .rec-item-icon { font-size:1.4rem; flex-shrink:0; line-height:1; width:28px; text-align:center; }
 .rec-item-body { flex:1; min-width:0; overflow:hidden; }
 .rec-item-title { font-size:.84rem; font-weight:800; color:#1a1a2e; margin-bottom:.1rem; line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 html[data-theme="dark"] .rec-item-title { color:#e8e8ff; }
-.rec-item-desc { font-size:.72rem; color:#888; line-height:1.35; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.rec-item-desc { font-size:.72rem; color:#888; line-height:1.35; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
 .rec-item-badge { display:inline-block; margin-top:.25rem; font-size:.62rem; font-weight:800;
   padding:1px 7px; border-radius:50px; white-space:nowrap; }
 .rec-badge-hot { background:rgba(245,87,108,.12); color:#f5576c; }

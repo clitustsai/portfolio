@@ -725,7 +725,7 @@
         .form-group label {
             display: block;
             margin-bottom: 0.5rem;
-            color: #333;
+            color: #9f5555; 
             font-weight: 500;
         }
 
@@ -1291,7 +1291,7 @@ nav ul li a {
 .nav-dropdown-menu {
     display: none;
     position: absolute;
-    top: calc(100% + 12px);
+    top: calc(100% + 4px);
     left: 50%;
     transform: translateX(-50%);
     background: rgba(255,255,255,0.98);
@@ -1318,6 +1318,16 @@ html[data-theme="dark"] .nav-dropdown-menu {
 }
 .nav-dropdown:hover .nav-dropdown-menu,
 .nav-dropdown.open .nav-dropdown-menu { display: flex; }
+
+/* Bridge: lấp khoảng trống giữa toggle và menu để hover không bị mất */
+.nav-dropdown-menu::after {
+    content: '';
+    position: absolute;
+    top: -16px;
+    left: 0;
+    right: 0;
+    height: 16px;
+}
 
 .nav-dropdown-menu li { list-style: none; width: 100%; }
 .nav-dropdown-menu li a {
