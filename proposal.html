@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿﻿<!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
@@ -8,7 +8,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#667eea">
   <title>Proposal Generator - Clitus PC</title>
-  <meta name="description" content="AI t?o proposal freelance chuy�n nghi?p - b�o gi�, timeline, PDF">
+  <meta name="description" content="AI tạo proposal freelance chuyên nghiệp - báo giá, timeline, PDF">
   <link rel="preconnect" href="https://cdnjs.cloudflare.com">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="styles.css">
@@ -103,7 +103,7 @@
 
   .terms-list { list-style:none; padding:0; margin:0; }
   .terms-list li { padding:0.4rem 0; font-size:0.88rem; color:#444; display:flex; gap:0.5rem; }
-  .terms-list li::before { content:'?'; color:#11998e; font-weight:800; flex-shrink:0; }
+  .terms-list li::before { content:'✓'; color:#11998e; font-weight:800; flex-shrink:0; }
 
   .doc-footer { border-top:2px solid #e0e4ff; padding-top:1.5rem; margin-top:2rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; }
   .sig-box { text-align:center; }
@@ -128,23 +128,23 @@
   <header>
     <nav>
       <a href="index.html" class="logo">
-        <span class="logo-icon">??</span>
+        <span class="logo-icon">💻</span>
         <span class="logo-text">Clitus<span class="logo-accent">PC</span></span>
       </a>
       <ul id="navMenu">
-        <li><a href="index.html">Trang Ch?</a></li>
-        <li><a href="index.html#about">V? T�i</a></li>
+        <li><a href="index.html">Trang Chủ</a></li>
+        <li><a href="index.html#about">Về Tôi</a></li>
         <li><a href="blog.html">Blog</a></li>
         <li class="nav-dropdown">
-          <a href="#" class="nav-dropdown-toggle">C�ng C? <i class="fas fa-chevron-down nav-chevron"></i></a>
+          <a href="#" class="nav-dropdown-toggle">Công Cụ <i class="fas fa-chevron-down nav-chevron"></i></a>
           <ul class="nav-dropdown-menu">
-            <li><a href="tools.html"><span class="dd-icon">??</span> AI Tools</a></li>
-            <li><a href="arcade.html"><span class="dd-icon">??</span> Arcade & Coins</a></li>
-            <li><a href="services.html"><span class="dd-icon">???</span> D?ch V?</a></li>
-            <li><a href="roadmap.html"><span class="dd-icon">???</span> Roadmap</a></li>
-            <li><a href="proposal.html" class="active"><span class="dd-icon">??</span> Proposal</a></li>
-            <li><a href="invoice.html"><span class="dd-icon">??</span> Invoice</a></li>
-            <li><a href="payment.html"><span class="dd-icon">??</span> D?ch V? & VIP</a></li>
+            <li><a href="tools.html"><span class="dd-icon">🤖</span> AI Tools</a></li>
+            <li><a href="arcade.html"><span class="dd-icon">🎮</span> Arcade & Coins</a></li>
+            <li><a href="services.html"><span class="dd-icon">🛍️</span> Dịch Vụ</a></li>
+            <li><a href="roadmap.html"><span class="dd-icon">🗺️</span> Roadmap</a></li>
+            <li><a href="proposal.html" class="active"><span class="dd-icon">💼</span> Proposal</a></li>
+            <li><a href="invoice.html"><span class="dd-icon">🧾</span> Invoice</a></li>
+            <li><a href="payment.html"><span class="dd-icon">💳</span> Dịch Vụ & VIP</a></li>
           </ul>
         </li>
       </ul>
@@ -159,22 +159,22 @@
   <main class="proposal-page">
     <div class="proposal-container">
       <div class="page-header">
-        <div style="font-size:3rem;margin-bottom:0.5rem;">??</div>
+        <div style="font-size:3rem;margin-bottom:0.5rem;">💼</div>
         <h1>Auto Proposal Generator</h1>
-        <p>AI t?o proposal freelance chuy�n nghi?p trong v�i gi�y</p>
+        <p>AI tạo proposal freelance chuyên nghiệp trong vài giây</p>
       </div>
 
       <div class="form-card">
         <div class="form-grid">
           <div class="fg">
-            <label><i class="fas fa-user"></i> T�n kh�ch h�ng</label>
-            <input type="text" id="pClientName" placeholder="VD: C�ng ty ABC, Anh Minh...">
+            <label><i class="fas fa-user"></i> Tên khách hàng</label>
+            <input type="text" id="pClientName" placeholder="VD: Công ty ABC, Anh Minh...">
           </div>
           <div class="fg">
-            <label><i class="fas fa-briefcase"></i> Lo?i d? �n</label>
+            <label><i class="fas fa-briefcase"></i> Loại dự án</label>
             <select id="pType">
-              <option>Website doanh nghi?p</option>
-              <option>E-commerce / B�n h�ng</option>
+              <option>Website doanh nghiệp</option>
+              <option>E-commerce / Bán hàng</option>
               <option>Landing Page</option>
               <option>Web App / SaaS</option>
               <option>Mobile App</option>
@@ -182,60 +182,60 @@
               <option>Dashboard / Admin</option>
               <option>Blog / CMS</option>
               <option>Portfolio</option>
-              <option>Kh�c</option>
+              <option>Khác</option>
             </select>
           </div>
         </div>
         <div class="fg" style="margin-bottom:1rem;">
-          <label><i class="fas fa-align-left"></i> M� t? y�u c?u d? �n</label>
-          <textarea id="pDesc" placeholder="VD: C?n l�m website b�n h�ng online cho shop th?i trang, c� gi? h�ng, thanh to�n online, qu?n l� don h�ng, responsive mobile..."></textarea>
+          <label><i class="fas fa-align-left"></i> Mô tả yêu cầu dự án</label>
+          <textarea id="pDesc" placeholder="VD: Cần làm website bán hàng online cho shop thời trang, có giỏ hàng, thanh toán online, quản lý đơn hàng, responsive mobile..."></textarea>
         </div>
         <div class="form-grid">
           <div class="fg">
-            <label><i class="fas fa-dollar-sign"></i> Budget kh�ch h�ng (VN�)</label>
+            <label><i class="fas fa-dollar-sign"></i> Budget khách hàng (VNĐ)</label>
             <select id="pBudget">
-              <option value="5-10 tri?u">5 - 10 tri?u</option>
-              <option value="10-20 tri?u">10 - 20 tri?u</option>
-              <option value="20-50 tri?u">20 - 50 tri?u</option>
-              <option value="50-100 tri?u">50 - 100 tri?u</option>
-              <option value="100+ tri?u">100+ tri?u</option>
+              <option value="5-10 triệu">5 - 10 triệu</option>
+              <option value="10-20 triệu">10 - 20 triệu</option>
+              <option value="20-50 triệu">20 - 50 triệu</option>
+              <option value="50-100 triệu">50 - 100 triệu</option>
+              <option value="100+ triệu">100+ triệu</option>
             </select>
           </div>
           <div class="fg">
-            <label><i class="fas fa-calendar"></i> Deadline mong mu?n</label>
+            <label><i class="fas fa-calendar"></i> Deadline mong muốn</label>
             <select id="pDeadline">
-              <option>1-2 tu?n</option>
-              <option>1 th�ng</option>
-              <option>2-3 th�ng</option>
-              <option>3-6 th�ng</option>
-              <option>Linh ho?t</option>
+              <option>1-2 tuần</option>
+              <option>1 tháng</option>
+              <option>2-3 tháng</option>
+              <option>3-6 tháng</option>
+              <option>Linh hoạt</option>
             </select>
           </div>
         </div>
         <div class="form-grid">
           <div class="fg">
-            <label><i class="fas fa-code"></i> Tech stack ua th�ch</label>
-            <input type="text" id="pStack" placeholder="VD: React, Node.js, MongoDB (d? tr?ng = AI ch?n)">
+            <label><i class="fas fa-code"></i> Tech stack ưa thích</label>
+            <input type="text" id="pStack" placeholder="VD: React, Node.js, MongoDB (để trống = AI chọn)">
           </div>
           <div class="fg">
-            <label><i class="fas fa-language"></i> Ng�n ng? proposal</label>
+            <label><i class="fas fa-language"></i> Ngôn ngữ proposal</label>
             <select id="pLang">
-              <option value="vi">Ti?ng Vi?t</option>
+              <option value="vi">Tiếng Việt</option>
               <option value="en">English</option>
             </select>
           </div>
         </div>
         <button class="gen-btn" id="genBtn" onclick="generateProposal()">
-          <i class="fas fa-magic"></i> T?o Proposal v?i AI
+          <i class="fas fa-magic"></i> Tạo Proposal với AI
         </button>
       </div>
 
       <!-- Preview -->
       <div id="proposalPreview">
         <div class="preview-actions">
-          <button class="btn-act" onclick="generateProposal()"><i class="fas fa-redo"></i> T?o l?i</button>
+          <button class="btn-act" onclick="generateProposal()"><i class="fas fa-redo"></i> Tạo lại</button>
           <button class="btn-act" onclick="copyProposal()"><i class="fas fa-copy"></i> Copy text</button>
-          <button class="btn-act primary" onclick="exportPDF()"><i class="fas fa-file-pdf"></i> Xu?t PDF</button>
+          <button class="btn-act primary" onclick="exportPDF()"><i class="fas fa-file-pdf"></i> Xuất PDF</button>
         </div>
         <div id="proposalDoc"></div>
       </div>
@@ -247,7 +247,7 @@
   <script src="dist/nav.js"></script>
   <script>
   async function generateProposal() {
-    const clientName = document.getElementById('pClientName').value.trim() || 'Qu� Kh�ch';
+    const clientName = document.getElementById('pClientName').value.trim() || 'Quý Khách';
     const type = document.getElementById('pType').value;
     const desc = document.getElementById('pDesc').value.trim();
     const budget = document.getElementById('pBudget').value;
@@ -255,36 +255,36 @@
     const stack = document.getElementById('pStack').value.trim();
     const lang = document.getElementById('pLang').value;
 
-    if (!desc) { alert('Vui l�ng m� t? y�u c?u d? �n!'); return; }
+    if (!desc) { alert('Vui lòng mô tả yêu cầu dự án!'); return; }
 
     const btn = document.getElementById('genBtn');
     btn.disabled = true;
-    btn.innerHTML = `<div class="loading-dots"><span></span><span></span><span></span></div> �ang t?o proposal...`;
+    btn.innerHTML = `<div class="loading-dots"><span></span><span></span><span></span></div> Đang tạo proposal...`;
 
-    const prompt = `T?o proposal freelance chuy�n nghi?p b?ng ${lang === 'vi' ? 'ti?ng Vi?t' : 'English'}.
-Th�ng tin:
-- Kh�ch h�ng: ${clientName}
-- Lo?i d? �n: ${type}
-- Y�u c?u: ${desc}
+    const prompt = `Tạo proposal freelance chuyên nghiệp bằng ${lang === 'vi' ? 'tiếng Việt' : 'English'}.
+Thông tin:
+- Khách hàng: ${clientName}
+- Loại dự án: ${type}
+- Yêu cầu: ${desc}
 - Budget: ${budget}
 - Deadline: ${deadline}
-- Tech stack: ${stack || 'AI t? ch?n ph� h?p'}
-- Freelancer: Clitus PC (Full Stack Developer, 10+ nam kinh nghi?m, TP.HCM)
+- Tech stack: ${stack || 'AI tự chọn phù hợp'}
+- Freelancer: Clitus PC (Full Stack Developer, 10+ năm kinh nghiệm, TP.HCM)
 
-Tr? v? JSON (KH�NG markdown, ch? JSON thu?n):
+Trả về JSON (KHÔNG markdown, chỉ JSON thuần):
 {
-  "projectTitle": "T�n d? �n ng?n g?n",
-  "summary": "T�m t?t 2-3 c�u v? d? �n v� gi?i ph�p",
-  "price": { "min": 15000000, "max": 25000000, "currency": "VN�" },
+  "projectTitle": "Tên dự án ngắn gọn",
+  "summary": "Tóm tắt 2-3 câu về dự án và giải pháp",
+  "price": { "min": 15000000, "max": 25000000, "currency": "VNĐ" },
   "timeline": [
-    { "phase": "T�n giai do?n", "duration": "X ng�y", "tasks": "M� t? c�ng vi?c" }
+    { "phase": "Tên giai đoạn", "duration": "X ngày", "tasks": "Mô tả công việc" }
   ],
   "techStack": ["tech1", "tech2"],
-  "deliverables": ["H?ng m?c b�n giao 1", "H?ng m?c 2"],
-  "terms": ["�i?u kho?n 1", "�i?u kho?n 2"],
-  "whyMe": "L� do ch?n Clitus PC (2-3 c�u)"
+  "deliverables": ["Hạng mục bàn giao 1", "Hạng mục 2"],
+  "terms": ["Điều khoản 1", "Điều khoản 2"],
+  "whyMe": "Lý do chọn Clitus PC (2-3 câu)"
 }
-Timeline 3-5 giai do?n. Price ph� h?p budget ${budget}. Terms 4-5 di?u kho?n th?c t?.`;
+Timeline 3-5 giai đoạn. Price phù hợp budget ${budget}. Terms 4-5 điều khoản thực tế.`;
 
     try {
       const res = await fetch(`${API_BASE}/chat`, {
@@ -299,7 +299,7 @@ Timeline 3-5 giai do?n. Price ph� h?p budget ${budget}. Terms 4-5 di?u kho?n t
       renderProposal(getFallback(type, clientName, budget, deadline, stack), clientName, lang);
     } finally {
       btn.disabled = false;
-      btn.innerHTML = '<i class="fas fa-magic"></i> T?o Proposal v?i AI';
+      btn.innerHTML = '<i class="fas fa-magic"></i> Tạo Proposal với AI';
     }
   }
 
@@ -312,7 +312,7 @@ Timeline 3-5 giai do?n. Price ph� h?p budget ${budget}. Terms 4-5 di?u kho?n t
       <div class="timeline-row">
         <div class="tl-num">${i+1}</div>
         <div class="tl-content">
-          <div class="tl-title">${t.phase} <span class="tl-dur">� ${t.duration}</span></div>
+          <div class="tl-title">${t.phase} <span class="tl-dur">· ${t.duration}</span></div>
           <div class="tl-desc">${t.tasks}</div>
         </div>
       </div>`).join('');
@@ -329,29 +329,29 @@ Timeline 3-5 giai do?n. Price ph� h?p budget ${budget}. Terms 4-5 di?u kho?n t
       <div class="doc-header">
         <div>
           <div class="doc-brand">Clitus PC</div>
-          <div style="font-size:0.78rem;color:#666;margin-top:0.25rem;">Full Stack Developer � TP.HCM<br>infoclituspc@gmail.com � +84 906857331</div>
+          <div style="font-size:0.78rem;color:#666;margin-top:0.25rem;">Full Stack Developer · TP.HCM<br>infoclituspc@gmail.com · +84 906857331</div>
         </div>
         <div class="doc-meta">
-          <div><strong>${vi?'S? proposal':'Proposal No'}:</strong> ${propNum}</div>
-          <div><strong>${vi?'Ng�y':'Date'}:</strong> ${today}</div>
-          <div><strong>${vi?'G?i d?n':'To'}:</strong> ${clientName}</div>
+          <div><strong>${vi?'Số proposal':'Proposal No'}:</strong> ${propNum}</div>
+          <div><strong>${vi?'Ngày':'Date'}:</strong> ${today}</div>
+          <div><strong>${vi?'Gửi đến':'To'}:</strong> ${clientName}</div>
         </div>
       </div>
 
       <div class="doc-title">${d.projectTitle}</div>
-      <div class="doc-subtitle">${vi?'�? xu?t d? �n':'Project Proposal'} � ${vi?'Chu?n b? b?i':'Prepared by'} Clitus PC</div>
+      <div class="doc-subtitle">${vi?'Đề xuất dự án':'Project Proposal'} · ${vi?'Chuẩn bị bởi':'Prepared by'} Clitus PC</div>
 
       <div class="doc-section" style="margin-top:1.5rem;">
-        <h3>${vi?'T?ng quan':'Overview'}</h3>
+        <h3>${vi?'Tổng quan':'Overview'}</h3>
         <p style="color:#444;font-size:0.93rem;">${d.summary}</p>
       </div>
 
       <div class="doc-section">
-        <h3>${vi?'B�o gi�':'Pricing'}</h3>
+        <h3>${vi?'Báo giá':'Pricing'}</h3>
         <div class="price-box">
-          <div class="price-item"><div class="label">${vi?'T?i thi?u':'Minimum'}</div><div class="value">${minFmt} ${d.price?.currency||'VN�'}</div></div>
-          <div class="price-item"><div class="label">${vi?'�? xu?t':'Recommended'}</div><div class="value total">${midFmt} ${d.price?.currency||'VN�'}</div></div>
-          <div class="price-item"><div class="label">${vi?'T?i da':'Maximum'}</div><div class="value">${maxFmt} ${d.price?.currency||'VN�'}</div></div>
+          <div class="price-item"><div class="label">${vi?'Tối thiểu':'Minimum'}</div><div class="value">${minFmt} ${d.price?.currency||'VNĐ'}</div></div>
+          <div class="price-item"><div class="label">${vi?'Đề xuất':'Recommended'}</div><div class="value total">${midFmt} ${d.price?.currency||'VNĐ'}</div></div>
+          <div class="price-item"><div class="label">${vi?'Tối đa':'Maximum'}</div><div class="value">${maxFmt} ${d.price?.currency||'VNĐ'}</div></div>
         </div>
       </div>
 
@@ -361,28 +361,28 @@ Timeline 3-5 giai do?n. Price ph� h?p budget ${budget}. Terms 4-5 di?u kho?n t
       </div>
 
       <div class="doc-section">
-        <h3>${vi?'C�ng ngh? s? d?ng':'Tech Stack'}</h3>
+        <h3>${vi?'Công nghệ sử dụng':'Tech Stack'}</h3>
         <div class="tech-tags">${techHTML}</div>
       </div>
 
       <div class="doc-section">
-        <h3>${vi?'H?ng m?c b�n giao':'Deliverables'}</h3>
+        <h3>${vi?'Hạng mục bàn giao':'Deliverables'}</h3>
         <ul class="terms-list">${delivHTML}</ul>
       </div>
 
       <div class="doc-section">
-        <h3>${vi?'�i?u kho?n':'Terms'}</h3>
+        <h3>${vi?'Điều khoản':'Terms'}</h3>
         <ul class="terms-list">${termsHTML}</ul>
       </div>
 
       <div class="doc-section">
-        <h3>${vi?'T?i sao ch?n t�i':'Why Choose Me'}</h3>
+        <h3>${vi?'Tại sao chọn tôi':'Why Choose Me'}</h3>
         <p style="color:#444;font-size:0.93rem;">${d.whyMe}</p>
       </div>
 
       <div class="doc-footer">
-        <div class="sig-box"><div class="sig-line"></div><div class="sig-label">${vi?'Ch? k� kh�ch h�ng':'Client Signature'}</div></div>
-        <div style="text-align:center;font-size:0.82rem;color:#999;">${vi?'Proposal c� hi?u l?c 30 ng�y':'Valid for 30 days'}</div>
+        <div class="sig-box"><div class="sig-line"></div><div class="sig-label">${vi?'Chữ ký khách hàng':'Client Signature'}</div></div>
+        <div style="text-align:center;font-size:0.82rem;color:#999;">${vi?'Proposal có hiệu lực 30 ngày':'Valid for 30 days'}</div>
         <div class="sig-box"><div class="sig-line"></div><div class="sig-label">Clitus PC</div></div>
       </div>`;
 
@@ -392,26 +392,26 @@ Timeline 3-5 giai do?n. Price ph� h?p budget ${budget}. Terms 4-5 di?u kho?n t
 
   function getFallback(type, client, budget, deadline, stack) {
     return {
-      projectTitle: `D? �n ${type} cho ${client}`,
-      summary: `Clitus PC d? xu?t gi?i ph�p ${type} chuy�n nghi?p, hi?n d?i v� t?i uu hi?u su?t. D? �n s? du?c ph�t tri?n theo quy tr�nh Agile, d?m b?o b�n giao d�ng h?n v� ch?t lu?ng cao.`,
-      price: { min: 15000000, max: 30000000, currency: 'VN�' },
+      projectTitle: `Dự án ${type} cho ${client}`,
+      summary: `Clitus PC đề xuất giải pháp ${type} chuyên nghiệp, hiện đại và tối ưu hiệu suất. Dự án sẽ được phát triển theo quy trình Agile, đảm bảo bàn giao đúng hạn và chất lượng cao.`,
+      price: { min: 15000000, max: 30000000, currency: 'VNĐ' },
       timeline: [
-        { phase: 'Ph�n t�ch & Thi?t k?', duration: '3-5 ng�y', tasks: 'Thu th?p y�u c?u, wireframe, UI mockup' },
-        { phase: 'Ph�t tri?n Frontend', duration: '7-10 ng�y', tasks: 'X�y d?ng giao di?n responsive, t�ch h?p API' },
-        { phase: 'Ph�t tri?n Backend', duration: '7-10 ng�y', tasks: 'API, database, authentication, business logic' },
-        { phase: 'Testing & Deploy', duration: '3-5 ng�y', tasks: 'Ki?m th?, fix bug, deploy production' }
+        { phase: 'Phân tích & Thiết kế', duration: '3-5 ngày', tasks: 'Thu thập yêu cầu, wireframe, UI mockup' },
+        { phase: 'Phát triển Frontend', duration: '7-10 ngày', tasks: 'Xây dựng giao diện responsive, tích hợp API' },
+        { phase: 'Phát triển Backend', duration: '7-10 ngày', tasks: 'API, database, authentication, business logic' },
+        { phase: 'Testing & Deploy', duration: '3-5 ngày', tasks: 'Kiểm thử, fix bug, deploy production' }
       ],
       techStack: stack ? stack.split(',').map(s=>s.trim()) : ['React','Node.js','MongoDB','Vercel'],
-      deliverables: ['Source code d?y d?','T�i li?u k? thu?t','Hu?ng d?n s? d?ng','H? tr? 30 ng�y sau b�n giao'],
-      terms: ['Thanh to�n 50% tru?c khi b?t d?u','50% c�n l?i khi b�n giao','Revision t?i da 3 l?n','B?o h�nh l?i 30 ng�y','B�n giao source code sau thanh to�n d?y d?'],
-      whyMe: '10+ nam kinh nghi?m Full Stack, d� ho�n th�nh 50+ d? �n. Cam k?t ch?t lu?ng, d�ng deadline v� h? tr? t?n t�nh sau b�n giao.'
+      deliverables: ['Source code đầy đủ','Tài liệu kỹ thuật','Hướng dẫn sử dụng','Hỗ trợ 30 ngày sau bàn giao'],
+      terms: ['Thanh toán 50% trước khi bắt đầu','50% còn lại khi bàn giao','Revision tối đa 3 lần','Bảo hành lỗi 30 ngày','Bàn giao source code sau thanh toán đầy đủ'],
+      whyMe: '10+ năm kinh nghiệm Full Stack, đã hoàn thành 50+ dự án. Cam kết chất lượng, đúng deadline và hỗ trợ tận tình sau bàn giao.'
     };
   }
 
   function copyProposal() {
     const doc = document.getElementById('proposalDoc');
     navigator.clipboard.writeText(doc.innerText).then(() => {
-      if (typeof showToast === 'function') showToast('? �� copy proposal!', 'success', 2000);
+      if (typeof showToast === 'function') showToast('✅ Đã copy proposal!', 'success', 2000);
     });
   }
 

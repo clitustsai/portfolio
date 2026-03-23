@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿﻿<!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#667eea">
-  <meta name="description" content="B�i vi?t blog c?a Clitus PC - Full Stack Developer">
+  <meta name="description" content="Bài viết blog của Clitus PC - Full Stack Developer">
   <meta name="author" content="Clitus PC">
   <meta name="robots" content="index, follow">
   <meta property="og:type" content="article">
@@ -36,23 +36,23 @@
   <header>
     <nav>
       <a href="index.html" class="logo">
-        <span class="logo-icon">??</span>
+        <span class="logo-icon">💻</span>
         <span class="logo-text">Clitus<span class="logo-accent">PC</span></span>
       </a>
       <ul id="navMenu">
-        <li><a href="index.html">Trang Ch?</a></li>
-        <li><a href="index.html#about">V? T�i</a></li>
+        <li><a href="index.html">Trang Chủ</a></li>
+        <li><a href="index.html#about">Về Tôi</a></li>
         <li><a href="blog.html">Blog</a></li>
         <li class="nav-dropdown">
-          <a href="#" class="nav-dropdown-toggle">C�ng C? <i class="fas fa-chevron-down nav-chevron"></i></a>
+          <a href="#" class="nav-dropdown-toggle">Công Cụ <i class="fas fa-chevron-down nav-chevron"></i></a>
           <ul class="nav-dropdown-menu">
-            <li><a href="tools.html"><span class="dd-icon">??</span> AI Tools</a></li>
-            <li><a href="arcade.html"><span class="dd-icon">??</span> Arcade & Coins</a></li>
-            <li><a href="services.html"><span class="dd-icon">???</span> D?ch V?</a></li>
-            <li><a href="roadmap.html"><span class="dd-icon">???</span> Roadmap</a></li>
-            <li><a href="proposal.html"><span class="dd-icon">??</span> Proposal</a></li>
-            <li><a href="invoice.html"><span class="dd-icon">??</span> Invoice</a></li>
-            <li><a href="payment.html"><span class="dd-icon">??</span> D?ch V? & VIP</a></li>
+            <li><a href="tools.html"><span class="dd-icon">🤖</span> AI Tools</a></li>
+            <li><a href="arcade.html"><span class="dd-icon">🎮</span> Arcade & Coins</a></li>
+            <li><a href="services.html"><span class="dd-icon">🛍️</span> Dịch Vụ</a></li>
+            <li><a href="roadmap.html"><span class="dd-icon">🗺️</span> Roadmap</a></li>
+            <li><a href="proposal.html"><span class="dd-icon">💼</span> Proposal</a></li>
+            <li><a href="invoice.html"><span class="dd-icon">🧾</span> Invoice</a></li>
+            <li><a href="payment.html"><span class="dd-icon">💳</span> Dịch Vụ & VIP</a></li>
           </ul>
         </li>
       </ul>
@@ -68,7 +68,7 @@
 
   <article id="postContainer" class="post-container" style="display:none">
     <div class="post-header">
-      <a href="blog.html" class="back-btn"><i class="fas fa-arrow-left"></i> Quay l?i Blog</a>
+      <a href="blog.html" class="back-btn"><i class="fas fa-arrow-left"></i> Quay lại Blog</a>
       <div id="postTags" class="post-tags"></div>
       <h1 id="postTitle"></h1>
       <div class="post-meta">
@@ -83,7 +83,7 @@
       <div class="post-body">
         <!-- Table of contents -->
         <div id="tocBox" class="toc-box" style="display:none">
-          <h4><i class="fas fa-list"></i> M?c L?c</h4>
+          <h4><i class="fas fa-list"></i> Mục Lục</h4>
           <div id="tocList"></div>
         </div>
         <div id="postContent" class="post-content markdown-body"></div>
@@ -91,22 +91,22 @@
         <!-- Like / Share -->
         <div class="post-actions">
           <button class="post-like-btn" id="postLikeBtn" onclick="likePost()">
-            <i class="far fa-heart"></i> <span id="postLikes">0</span> Th�ch
+            <i class="far fa-heart"></i> <span id="postLikes">0</span> Thích
           </button>
           <div class="share-btns">
-            <span>Chia s?:</span>
+            <span>Chia sẻ:</span>
             <button onclick="sharePost('facebook')"><i class="fab fa-facebook-f"></i></button>
-            <button onclick="sharePost('twitter')" title="Chia s? l�n X"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></button>
+            <button onclick="sharePost('twitter')" title="Chia sẻ lên X"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></button>
             <button onclick="copyLink()"><i class="fas fa-link"></i></button>
           </div>
         </div>
 
         <!-- Comments -->
         <div class="post-comments">
-          <h3><i class="fas fa-comments"></i> B�nh Lu?n (<span id="postCommentCount">0</span>)</h3>
+          <h3><i class="fas fa-comments"></i> Bình Luận (<span id="postCommentCount">0</span>)</h3>
           <form id="postCommentForm" class="post-comment-form">
-            <textarea id="pcText" placeholder="Vi?t b�nh lu?n..." required></textarea>
-            <button type="submit"><i class="fas fa-paper-plane"></i> G?i</button>
+            <textarea id="pcText" placeholder="Viết bình luận..." required></textarea>
+            <button type="submit"><i class="fas fa-paper-plane"></i> Gửi</button>
           </form>
           <div id="postCommentList"></div>
         </div>
@@ -115,14 +115,14 @@
       <!-- Sidebar -->
       <aside class="post-sidebar">
         <div class="sidebar-card">
-          <h3><i class="fas fa-newspaper"></i> B�i Li�n Quan</h3>
+          <h3><i class="fas fa-newspaper"></i> Bài Liên Quan</h3>
           <div id="relatedPosts"></div>
         </div>
         <div class="sidebar-card author-card">
           <img src="img/z7643593902682_1d1e5b7671cc398923d350f14dd68934.jpg" alt="Clitus PC" class="author-avatar">
           <h4>Clitus PC</h4>
-          <p>Full Stack Developer � 10+ nam kinh nghi?m</p>
-          <a href="index.html#contact" class="author-contact-btn">Li�n H?</a>
+          <p>Full Stack Developer · 10+ năm kinh nghiệm</p>
+          <a href="index.html#contact" class="author-contact-btn">Liên Hệ</a>
         </div>
       </aside>
     </div>
@@ -130,11 +130,11 @@
 
   <div id="postNotFound" class="post-not-found" style="display:none">
     <i class="fas fa-file-slash"></i>
-    <h2>B�i vi?t kh�ng t?n t?i</h2>
-    <a href="blog.html" class="btn btn-primary">? Quay l?i Blog</a>
+    <h2>Bài viết không tồn tại</h2>
+    <a href="blog.html" class="btn btn-primary">← Quay lại Blog</a>
   </div>
 
-  <footer><p>� 2026 Clitus PC. <a href="blog.html" style="color:#667eea">Blog</a></p></footer>
+  <footer><p>© 2026 Clitus PC. <a href="blog.html" style="color:#667eea">Blog</a></p></footer>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
@@ -184,27 +184,27 @@
     function getDemoPost(slug) {
       const demos = {
         'react-hooks-guide': {
-          id:1, title:'React Hooks: T?t c? nh?ng g� b?n c?n bi?t', slug:'react-hooks-guide',
+          id:1, title:'React Hooks: Tất cả những gì bạn cần biết', slug:'react-hooks-guide',
           tags:['React','Frontend'], views:342, likes:87, read_time:8,
           created_at: new Date(Date.now()-2*86400000).toISOString(),
-          content: `# React Hooks: T?t c? nh?ng g� b?n c?n bi?t
+          content: `# React Hooks: Tất cả những gì bạn cần biết
 
-React Hooks du?c gi?i thi?u t? React 16.8 v� d� thay d?i ho�n to�n c�ch ch�ng ta vi?t React components.
+React Hooks được giới thiệu từ React 16.8 và đã thay đổi hoàn toàn cách chúng ta viết React components.
 
 ## useState
 
-Hook co b?n nh?t d? qu?n l� state:
+Hook cơ bản nhất để quản lý state:
 
 \`\`\`javascript
 const [count, setCount] = useState(0);
 
-// C?p nh?t state
+// Cập nhật state
 setCount(prev => prev + 1);
 \`\`\`
 
 ## useEffect
 
-X? l� side effects nhu fetch data, subscriptions:
+Xử lý side effects như fetch data, subscriptions:
 
 \`\`\`javascript
 useEffect(() => {
@@ -220,7 +220,7 @@ useEffect(() => {
 
 ## useCallback & useMemo
 
-T?i uu performance b?ng memoization:
+Tối ưu performance bằng memoization:
 
 \`\`\`javascript
 const memoizedFn = useCallback(() => {
@@ -234,7 +234,7 @@ const memoizedValue = useMemo(() => {
 
 ## Custom Hooks
 
-T�i s? d?ng logic gi?a c�c components:
+Tái sử dụng logic giữa các components:
 
 \`\`\`javascript
 function useFetch(url) {
@@ -250,13 +250,13 @@ function useFetch(url) {
   return { data, loading };
 }
 
-// S? d?ng
+// Sử dụng
 const { data, loading } = useFetch('/api/users');
 \`\`\`
 
-## K?t lu?n
+## Kết luận
 
-Hooks gi�p code React tr? n�n **ng?n g?n**, **d? test** v� **d? t�i s? d?ng** hon r?t nhi?u so v?i class components.`,
+Hooks giúp code React trở nên **ngắn gọn**, **dễ test** và **dễ tái sử dụng** hơn rất nhiều so với class components.`,
           comments: []
         }
       };
@@ -288,8 +288,8 @@ Hooks gi�p code React tr? n�n **ng?n g?n**, **d? test** v� **d? t�i s? d
       document.getElementById('postTags').innerHTML = (p.tags||[]).map(t=>`<span class="blog-tag">${t}</span>`).join('');
       document.getElementById('postDate').innerHTML = `<i class="fas fa-calendar"></i> ${new Date(p.created_at).toLocaleDateString('vi-VN')}`;
       const rt = calcReadTime(p.content || '');
-      document.getElementById('postReadTime').innerHTML = `<i class="fas fa-clock"></i> ${rt} ph�t d?c`;
-      document.getElementById('postViews').innerHTML = `<i class="fas fa-eye"></i> ${p.views||0} lu?t d?c`;
+      document.getElementById('postReadTime').innerHTML = `<i class="fas fa-clock"></i> ${rt} phút đọc`;
+      document.getElementById('postViews').innerHTML = `<i class="fas fa-eye"></i> ${p.views||0} lượt đọc`;
       document.getElementById('postLikes').textContent = p.likes||0;
 
       if (postLiked[p.id]) {
@@ -351,7 +351,7 @@ Hooks gi�p code React tr? n�n **ng?n g?n**, **d? test** v� **d? t�i s? d
     function renderComments(comments) {
       document.getElementById('postCommentCount').textContent = comments.length;
       const list = document.getElementById('postCommentList');
-      if (!comments.length) { list.innerHTML = '<p class="no-comments-msg">Chua c� b�nh lu?n. H�y l� ngu?i d?u ti�n!</p>'; return; }
+      if (!comments.length) { list.innerHTML = '<p class="no-comments-msg">Chưa có bình luận. Hãy là người đầu tiên!</p>'; return; }
       list.innerHTML = comments.map(c => `
         <div class="post-comment">
           <div class="pc-avatar">${c.name[0].toUpperCase()}</div>
@@ -365,7 +365,7 @@ Hooks gi�p code React tr? n�n **ng?n g?n**, **d? test** v� **d? t�i s? d
 
     document.getElementById('postCommentForm').addEventListener('submit', async function(e) {
       e.preventDefault();
-      // Ki?m tra dang nh?p
+      // Kiểm tra đăng nhập
       if (typeof isLoggedIn === 'function' && !isLoggedIn()) {
         openAuthModal('login'); return;
       }
@@ -378,7 +378,7 @@ Hooks gi�p code React tr? n�n **ng?n g?n**, **d? test** v� **d? t�i s? d
         if (typeof postBlogCommentAuth === 'function' && isLoggedIn()) {
           c = await postBlogCommentAuth(postData.id, text);
         } else {
-          const name = document.getElementById('pcName')?.value?.trim() || '?n danh';
+          const name = document.getElementById('pcName')?.value?.trim() || 'Ẩn danh';
           const r = await fetch(`${API}/blog/posts/${postData.id}/comments`, {
             method:'POST', headers:{'Content-Type':'application/json'},
             body: JSON.stringify({ name, text })
@@ -390,9 +390,9 @@ Hooks gi�p code React tr? n�n **ng?n g?n**, **d? test** v� **d? t�i s? d
         renderComments(postData.comments);
         this.reset();
       } catch(err) {
-        alert(err.message || 'L?i khi g?i b�nh lu?n');
+        alert(err.message || 'Lỗi khi gửi bình luận');
       } finally {
-        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> G?i'; }
+        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Gửi'; }
       }
     });
 
@@ -411,8 +411,8 @@ Hooks gi�p code React tr? n�n **ng?n g?n**, **d? test** v� **d? t�i s? d
 
     function renderRelated(posts) {
       document.getElementById('relatedPosts').innerHTML = posts.length
-        ? posts.map(p=>`<a href="blog-post.html?slug=${p.slug||p.id}" class="related-item"><span>${p.title}</span><small><i class="fas fa-clock"></i> ${calcReadTime(p.content) || p.read_time || 5} ph�t</small></a>`).join('')
-        : '<p style="color:#aaa;font-size:0.85rem">Kh�ng c� b�i li�n quan</p>';
+        ? posts.map(p=>`<a href="blog-post.html?slug=${p.slug||p.id}" class="related-item"><span>${p.title}</span><small><i class="fas fa-clock"></i> ${calcReadTime(p.content) || p.read_time || 5} phút</small></a>`).join('')
+        : '<p style="color:#aaa;font-size:0.85rem">Không có bài liên quan</p>';
     }
 
     function sharePost(platform) {
@@ -426,7 +426,7 @@ Hooks gi�p code React tr? n�n **ng?n g?n**, **d? test** v� **d? t�i s? d
     }
 
     function copyLink() {
-      navigator.clipboard.writeText(location.href).then(() => alert('? �� copy link!'));
+      navigator.clipboard.writeText(location.href).then(() => alert('✅ Đã copy link!'));
     }
 
     function showNotFound() {
@@ -441,9 +441,9 @@ Hooks gi�p code React tr? n�n **ng?n g?n**, **d? test** v� **d? t�i s? d
 
     function timeAgo(d) {
       const s=(Date.now()-new Date(d))/1000;
-      if(s<3600) return Math.floor(s/60)+' ph�t tru?c';
-      if(s<86400) return Math.floor(s/3600)+' gi? tru?c';
-      if(s<2592000) return Math.floor(s/86400)+' ng�y tru?c';
+      if(s<3600) return Math.floor(s/60)+' phút trước';
+      if(s<86400) return Math.floor(s/3600)+' giờ trước';
+      if(s<2592000) return Math.floor(s/86400)+' ngày trước';
       return new Date(d).toLocaleDateString('vi-VN');
     }
 
