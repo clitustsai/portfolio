@@ -21,6 +21,7 @@ const JS_FILES = [
   'admin.js',
   'i18n.js',
   'sw.js',
+  'bug-report.js',
 ];
 
 const TERSER_OPTIONS = {

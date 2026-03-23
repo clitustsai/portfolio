@@ -1628,6 +1628,61 @@ app.get('/api/referral/stats', requireUser, (req, res) => {
     res.json({ count: refs.length, totalCoins, referrals: refs });
 });
 
+// ========== BUG REPORT ==========
+app.post('/api/bug-report', async (req, res) => {
+    const { type, desc, page, browser, device, ua, userId, username, userEmail, time, screenSize, lang } = req.body;
+    if (!desc?.trim()) return res.status(400).json({ error: 'Thiếu mô tả lỗi' });
+
+    const typeLabels = { ui:'🎨 Giao diện', func:'⚙️ Tính năng', perf:'🐌 Hiệu năng', auth:'🔐 Đăng nhập', payment:'💳 Thanh toán', other:'❓ Khác' };
+    const typeLabel = typeLabels[type] || type || 'Khác';
+    const reportTime = time ? new Date(time).toLocaleString('vi-VN') : new Date().toLocaleString('vi-VN');
+
+    console.log(`\n🐛 BUG REPORT [${typeLabel}]\n👤 ${username || 'Khách'} | 🌐 ${browser} | ${device}\n📄 ${page}\n📝 ${desc}\n🕒 ${reportTime}\n`);
+
+    // Gửi email nếu có Resend
+    if (process.env.RESEND_API_KEY) {
+        try {
+            const { Resend } = require('resend');
+            const resend = new Resend(process.env.RESEND_API_KEY);
+            const adminEmail = process.env.ADMIN_EMAIL || 'infoclituspc@gmail.com';
+            await resend.emails.send({
+                from: 'Clitus PC Bug Report <onboarding@resend.dev>',
+                to: [adminEmail],
+                subject: `🐛 Bug Report: ${typeLabel} — ${(desc).slice(0,60)}`,
+                html: `<!DOCTYPE html><html><head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f5f5ff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+<div style="max-width:520px;margin:32px auto;background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 8px 32px rgba(245,87,108,.15);">
+  <div style="background:linear-gradient(135deg,#f5576c,#f093fb);padding:1.75rem 2rem;">
+    <div style="font-size:2rem;margin-bottom:.4rem;">🐛</div>
+    <h2 style="color:#fff;margin:0;font-size:1.2rem;font-weight:800;">Bug Report nhận được</h2>
+    <p style="color:rgba(255,255,255,0.85);margin:.3rem 0 0;font-size:.85rem;">${reportTime}</p>
+  </div>
+  <div style="padding:1.5rem 2rem;">
+    <table style="width:100%;border-collapse:collapse;font-size:.88rem;">
+      <tr><td style="padding:.5rem 0;color:#999;width:120px;">Loại lỗi</td><td style="padding:.5rem 0;font-weight:700;color:#f5576c;">${typeLabel}</td></tr>
+      <tr><td style="padding:.5rem 0;color:#999;">Trang</td><td style="padding:.5rem 0;color:#667eea;word-break:break-all;">${page || '-'}</td></tr>
+      <tr><td style="padding:.5rem 0;color:#999;">User</td><td style="padding:.5rem 0;font-weight:600;">${username || 'Khách'}${userId ? ' (ID: '+userId+')' : ''}${userEmail ? ' — '+userEmail : ''}</td></tr>
+      <tr><td style="padding:.5rem 0;color:#999;">Trình duyệt</td><td style="padding:.5rem 0;">${browser || '-'}</td></tr>
+      <tr><td style="padding:.5rem 0;color:#999;">Thiết bị</td><td style="padding:.5rem 0;">${device || '-'}</td></tr>
+      <tr><td style="padding:.5rem 0;color:#999;">Màn hình</td><td style="padding:.5rem 0;">${screenSize || '-'} | ${lang || '-'}</td></tr>
+    </table>
+    <div style="margin-top:1rem;background:#fff5f5;border-left:4px solid #f5576c;border-radius:0 10px 10px 0;padding:1rem 1.25rem;">
+      <div style="font-size:.75rem;color:#f5576c;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.4rem;">Mô tả lỗi</div>
+      <div style="color:#333;font-size:.92rem;line-height:1.6;">${desc.replace(/\n/g,'<br>')}</div>
+    </div>
+    ${ua ? `<div style="margin-top:.75rem;font-size:.7rem;color:#ccc;word-break:break-all;">UA: ${ua}</div>` : ''}
+  </div>
+</div>
+</body></html>`
+            });
+        } catch(e) {
+            console.error('Bug report email error:', e.message);
+        }
+    }
+
+    res.json({ ok: true });
+});
+
 // ========== PHONE OTP AUTH ==========
 const BCRYPT_ROUNDS = 10;
 const OTP_EXPIRY_MINUTES = 5;
