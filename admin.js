@@ -697,6 +697,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (tabName === 'ads') {
                 loadAdminAds();
             }
+            if (tabName === 'pr-posts') {
+                loadAdminPrPosts();
+            }
         });
     });
 
@@ -1104,5 +1107,112 @@ async function adminAdDelete(id) {
         await fetch(`${ADS_ADMIN_API}/admin/ads/${id}`, { method: 'DELETE', headers: { 'x-admin-token': token } });
         if (typeof showToast === 'function') showToast('🗑️ Đã xóa', 'info', 2000);
         loadAdminAds();
+    } catch(e) {}
+}
+
+// ========== PR POSTS ADMIN ==========
+async function loadAdminPrPosts() {
+    const token = sessionStorage.getItem('admin_token') || '';
+    const status = document.getElementById('pr-filter-status')?.value || '';
+    const el = document.getElementById('adminPrList');
+    if (!el) return;
+    el.innerHTML = '<div style="text-align:center;padding:2rem;color:#888"><i class="fas fa-spinner fa-spin"></i> Đang tải...</div>';
+    try {
+        const url = `${ADS_ADMIN_API}/admin/pr-posts${status ? '?status=' + status : ''}`;
+        const r = await fetch(url, { headers: { 'x-admin-token': token } });
+        const posts = await r.json();
+        if (!posts.length) {
+            el.innerHTML = '<div style="text-align:center;padding:2rem;color:rgba(255,255,255,.35)">Không có bài PR nào</div>';
+            return;
+        }
+        const statusBadge = s => ({
+            pending: '<span style="background:rgba(251,191,36,.15);color:#fbbf24;padding:.2rem .65rem;border-radius:50px;font-size:.72rem;font-weight:700">Chờ duyệt</span>',
+            paid:    '<span style="background:rgba(96,165,250,.15);color:#60a5fa;padding:.2rem .65rem;border-radius:50px;font-size:.72rem;font-weight:700">Đã TT</span>',
+            active:  '<span style="background:rgba(74,222,128,.15);color:#4ade80;padding:.2rem .65rem;border-radius:50px;font-size:.72rem;font-weight:700">Đang chạy</span>',
+            rejected:'<span style="background:rgba(248,113,113,.15);color:#f87171;padding:.2rem .65rem;border-radius:50px;font-size:.72rem;font-weight:700">Từ chối</span>',
+            expired: '<span style="background:rgba(255,255,255,.06);color:rgba(255,255,255,.3);padding:.2rem .65rem;border-radius:50px;font-size:.72rem;font-weight:700">Hết hạn</span>'
+        }[s] || s);
+
+        el.innerHTML = `<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:.83rem">
+            <thead><tr style="border-bottom:1px solid rgba(255,255,255,.1)">
+                <th style="padding:.65rem .85rem;text-align:left;color:rgba(255,255,255,.45);font-size:.72rem;text-transform:uppercase">Tiêu đề</th>
+                <th style="padding:.65rem .85rem;text-align:left;color:rgba(255,255,255,.45);font-size:.72rem;text-transform:uppercase">User</th>
+                <th style="padding:.65rem .85rem;text-align:center;color:rgba(255,255,255,.45);font-size:.72rem;text-transform:uppercase">Gói</th>
+                <th style="padding:.65rem .85rem;text-align:center;color:rgba(255,255,255,.45);font-size:.72rem;text-transform:uppercase">Trạng thái</th>
+                <th style="padding:.65rem .85rem;text-align:center;color:rgba(255,255,255,.45);font-size:.72rem;text-transform:uppercase">Views</th>
+                <th style="padding:.65rem .85rem;text-align:center;color:rgba(255,255,255,.45);font-size:.72rem;text-transform:uppercase">Hành động</th>
+            </tr></thead>
+            <tbody>${posts.map(p => `<tr style="border-bottom:1px solid rgba(255,255,255,.05)">
+                <td style="padding:.75rem .85rem">
+                    <div style="display:flex;align-items:center;gap:.6rem">
+                        ${p.image_url ? `<img src="${p.image_url}" style="width:38px;height:38px;border-radius:8px;object-fit:cover" onerror="this.style.display='none'">` : '<div style="width:38px;height:38px;border-radius:8px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center">📝</div>'}
+                        <div>
+                            <div style="font-weight:700;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.title}</div>
+                            ${p.rejection_reason ? `<div style="font-size:.72rem;color:#f87171;margin-top:.15rem">${p.rejection_reason}</div>` : ''}
+                        </div>
+                    </div>
+                </td>
+                <td style="padding:.75rem .85rem">
+                    <div style="font-weight:600;font-size:.82rem">${p.username || '—'}</div>
+                    <div style="font-size:.72rem;color:rgba(255,255,255,.4)">${p.user_email || ''}</div>
+                </td>
+                <td style="padding:.75rem .85rem;text-align:center;font-size:.78rem;text-transform:capitalize;color:rgba(255,255,255,.6)">${p.plan}</td>
+                <td style="padding:.75rem .85rem;text-align:center">${statusBadge(p.status)}</td>
+                <td style="padding:.75rem .85rem;text-align:center;font-size:.82rem">${p.views || 0}</td>
+                <td style="padding:.75rem .85rem;text-align:center">
+                    <div style="display:flex;gap:.35rem;justify-content:center;flex-wrap:wrap">
+                        ${(p.status === 'pending' || p.status === 'paid') ? `<button onclick="adminPrAction(${p.id},'approve')" style="padding:.3rem .7rem;border:none;border-radius:8px;background:rgba(74,222,128,.2);color:#4ade80;font-size:.75rem;font-weight:700;cursor:pointer"><i class="fas fa-check"></i> Duyệt</button>` : ''}
+                        ${(p.status === 'pending' || p.status === 'paid') ? `<button onclick="adminPrReject(${p.id})" style="padding:.3rem .7rem;border:none;border-radius:8px;background:rgba(248,113,113,.15);color:#f87171;font-size:.75rem;font-weight:700;cursor:pointer"><i class="fas fa-times"></i> Từ chối</button>` : ''}
+                        ${p.status === 'active' ? `<button onclick="adminPrAction(${p.id},'hide')" style="padding:.3rem .7rem;border:none;border-radius:8px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.6);font-size:.75rem;font-weight:700;cursor:pointer"><i class="fas fa-eye-slash"></i> Ẩn</button>` : ''}
+                        <button onclick="adminPrDelete(${p.id})" style="padding:.3rem .7rem;border:none;border-radius:8px;background:rgba(239,68,68,.15);color:#ef4444;font-size:.75rem;font-weight:700;cursor:pointer"><i class="fas fa-trash"></i></button>
+                    </div>
+                </td>
+            </tr>`).join('')}
+            </tbody>
+        </table></div>`;
+    } catch(e) {
+        el.innerHTML = '<div style="color:#f87171;padding:1rem">Lỗi tải dữ liệu</div>';
+    }
+}
+
+async function adminPrAction(id, action) {
+    const token = sessionStorage.getItem('admin_token') || '';
+    try {
+        const r = await fetch(`${ADS_ADMIN_API}/admin/pr-posts/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
+            body: JSON.stringify({ action })
+        });
+        if (r.ok) {
+            const labels = { approve: '✅ Đã duyệt bài PR', hide: '🙈 Đã ẩn bài PR' };
+            if (typeof showToast === 'function') showToast(labels[action] || 'Thành công', 'success', 2500);
+            loadAdminPrPosts();
+        }
+    } catch(e) { if (typeof showToast === 'function') showToast('❌ Lỗi', 'error', 2000); }
+}
+
+async function adminPrReject(id) {
+    const reason = prompt('Lý do từ chối bài PR:');
+    if (reason === null) return;
+    const token = sessionStorage.getItem('admin_token') || '';
+    try {
+        const r = await fetch(`${ADS_ADMIN_API}/admin/pr-posts/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
+            body: JSON.stringify({ action: 'reject', rejection_reason: reason })
+        });
+        if (r.ok) {
+            if (typeof showToast === 'function') showToast('🚫 Đã từ chối bài PR', 'info', 2500);
+            loadAdminPrPosts();
+        }
+    } catch(e) {}
+}
+
+async function adminPrDelete(id) {
+    const token = sessionStorage.getItem('admin_token') || '';
+    try {
+        await fetch(`${ADS_ADMIN_API}/admin/pr-posts/${id}`, { method: 'DELETE', headers: { 'x-admin-token': token } });
+        if (typeof showToast === 'function') showToast('🗑️ Đã xóa bài PR', 'info', 2000);
+        loadAdminPrPosts();
     } catch(e) {}
 }

@@ -1221,6 +1221,7 @@
                     <button class="admin-tab" data-tab="analytics"><i class="fas fa-chart-bar"></i> Thống Kê</button>
                     <button class="admin-tab" data-tab="subscriptions"><i class="fas fa-crown"></i> VIP</button>
                     <button class="admin-tab" data-tab="ads"><i class="fas fa-bullhorn"></i> Ads</button>
+                    <button class="admin-tab" data-tab="pr-posts"><i class="fas fa-newspaper"></i> Bài PR</button>
                 </div>
                 <div class="admin-tab-content active" id="tab-projects">
                     <div class="admin-section-header"><h3>Quản Lý Dự Án</h3></div>
@@ -1318,6 +1319,25 @@
                     <div id="ads-revenue-stats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-bottom:1.25rem"></div>
                     <!-- Ads list -->
                     <div id="adminAdsList" style="margin-top:.5rem"></div>
+                </div>
+
+                <!-- PR POSTS Tab -->
+                <div class="admin-tab-content" id="tab-pr-posts" style="display:none">
+                    <div class="admin-section-header">
+                        <h3>📰 Quản Lý Bài PR</h3>
+                        <div style="display:flex;gap:.5rem;margin-left:auto;flex-wrap:wrap">
+                            <select id="pr-filter-status" onchange="loadAdminPrPosts()" style="padding:.4rem .8rem;border-radius:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:.82rem">
+                                <option value="">Tất cả</option>
+                                <option value="pending">Chờ duyệt</option>
+                                <option value="paid">Đã thanh toán</option>
+                                <option value="active">Đang chạy</option>
+                                <option value="rejected">Bị từ chối</option>
+                                <option value="expired">Hết hạn</option>
+                            </select>
+                            <button class="admin-btn-primary" onclick="loadAdminPrPosts()"><i class="fas fa-sync"></i> Làm mới</button>
+                        </div>
+                    </div>
+                    <div id="adminPrList" style="margin-top:.5rem"></div>
                 </div>
             </div>
         </div>

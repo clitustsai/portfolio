@@ -2237,6 +2237,102 @@ app.post('/api/webhooks/paypal', (req, res) => {
     res.json({ received: true });
 });
 
+// ========== PR POSTS ==========
+const PR_PLAN_CONFIG = {
+    standard:  { amount: 100000, display_days: 7  },
+    premium:   { amount: 250000, display_days: 30 },
+    featured:  { amount: 500000, display_days: 14 }
+};
+
+// POST /api/pr-posts — tạo bài PR mới
+app.post('/api/pr-posts', adLimiter, requireUser, (req, res) => {
+    const { title, content, excerpt, image_url, link, contact, plan, payment_method } = req.body;
+    if (!title?.trim()) return res.status(400).json({ error: 'Thiếu tiêu đề' });
+    if (!content?.trim()) return res.status(400).json({ error: 'Thiếu nội dung' });
+    const planCfg = PR_PLAN_CONFIG[plan || 'standard'];
+    if (!planCfg) return res.status(400).json({ error: 'Plan không hợp lệ' });
+    if (image_url && !image_url.trim().startsWith('https://')) return res.status(400).json({ error: 'image_url phải là HTTPS' });
+    if (link && !isValidUrl(link)) return res.status(400).json({ error: 'Link không hợp lệ' });
+
+    run('INSERT INTO pr_posts (user_id, title, content, excerpt, image_url, link, contact, plan, amount, payment_method, status) VALUES (?,?,?,?,?,?,?,?,?,?,?)', [
+        req.userId,
+        stripHtml(title).slice(0, 200),
+        content.trim().slice(0, 10000),
+        stripHtml(excerpt || '').slice(0, 500),
+        (image_url || '').trim(),
+        (link || '').trim(),
+        stripHtml(contact || '').slice(0, 200),
+        plan || 'standard',
+        planCfg.amount,
+        payment_method || 'acb',
+        'pending'
+    ]);
+    const post = get('SELECT * FROM pr_posts ORDER BY id DESC LIMIT 1');
+    res.status(201).json(post);
+});
+
+// POST /api/pr-posts/:id/pay — ghi nhận thanh toán thủ công
+app.post('/api/pr-posts/:id/pay', adLimiter, requireUser, (req, res) => {
+    const id = parseInt(req.params.id);
+    const post = get('SELECT * FROM pr_posts WHERE id=? AND user_id=?', [id, req.userId]);
+    if (!post) return res.status(404).json({ error: 'Không tìm thấy bài PR' });
+    if (post.status !== 'pending') return res.status(400).json({ error: 'Bài PR không ở trạng thái chờ thanh toán' });
+    const { method = 'acb' } = req.body;
+    run("UPDATE pr_posts SET status='paid', payment_method=? WHERE id=?", [method, id]);
+    res.json({ ok: true, message: 'Đã ghi nhận. Admin sẽ duyệt sau khi xác nhận thanh toán.' });
+});
+
+// GET /api/pr-posts/my — bài PR của user
+app.get('/api/pr-posts/my', adLimiter, requireUser, (req, res) => {
+    res.json(all('SELECT * FROM pr_posts WHERE user_id=? ORDER BY created_at DESC', [req.userId]));
+});
+
+// GET /api/pr-posts/public — bài PR đang active (public)
+app.get('/api/pr-posts/public', (req, res) => {
+    res.json(all("SELECT id,title,excerpt,image_url,link,plan,views,activated_at,expires_at FROM pr_posts WHERE status='active' AND (expires_at IS NULL OR expires_at > datetime('now')) ORDER BY plan DESC, activated_at ASC LIMIT 20"));
+});
+
+// GET /api/pr-posts/:id — xem chi tiết bài PR
+app.get('/api/pr-posts/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+    const post = get("SELECT * FROM pr_posts WHERE id=? AND status='active'", [id]);
+    if (!post) return res.status(404).json({ error: 'Không tìm thấy' });
+    run('UPDATE pr_posts SET views=views+1 WHERE id=?', [id]);
+    res.json(post);
+});
+
+// ========== PR ADMIN ==========
+app.get('/api/admin/pr-posts', requireAdmin, (req, res) => {
+    const { status } = req.query;
+    let sql = 'SELECT pr_posts.*, users.username, users.email as user_email FROM pr_posts LEFT JOIN users ON pr_posts.user_id=users.id';
+    const params = [];
+    if (status) { sql += ' WHERE pr_posts.status=?'; params.push(status); }
+    sql += ' ORDER BY pr_posts.created_at DESC';
+    res.json(all(sql, params));
+});
+
+app.patch('/api/admin/pr-posts/:id', requireAdmin, (req, res) => {
+    const id = parseInt(req.params.id);
+    const post = get('SELECT * FROM pr_posts WHERE id=?', [id]);
+    if (!post) return res.status(404).json({ error: 'Không tìm thấy' });
+    const { action, rejection_reason } = req.body;
+    if (action === 'approve') {
+        const planCfg = PR_PLAN_CONFIG[post.plan] || PR_PLAN_CONFIG.standard;
+        run("UPDATE pr_posts SET status='active', display_days=?, activated_at=datetime('now'), expires_at=datetime('now','+'||?||' days') WHERE id=?",
+            [planCfg.display_days, planCfg.display_days, id]);
+    } else if (action === 'reject') {
+        run("UPDATE pr_posts SET status='rejected', rejection_reason=? WHERE id=?", [(rejection_reason || '').slice(0, 500), id]);
+    } else {
+        return res.status(400).json({ error: 'Action không hợp lệ' });
+    }
+    res.json({ ok: true });
+});
+
+app.delete('/api/admin/pr-posts/:id', requireAdmin, (req, res) => {
+    run('DELETE FROM pr_posts WHERE id=?', [parseInt(req.params.id)]);
+    res.json({ ok: true });
+});
+
 // ========== AD ADMIN ==========
 // GET /api/admin/ads
 app.get('/api/admin/ads', requireAdmin, (req, res) => {
@@ -2352,6 +2448,107 @@ app.post('/api/ads/track/impression/:id', (req, res) => {
     if (existing) return res.json({ ok: true, skipped: true });
 
     run('INSERT INTO ad_impressions (ad_id, session_id) VALUES (?,?)', [id, sessionId]);
+    res.json({ ok: true });
+});
+
+// ========== PR POSTS ==========
+const PR_PLAN_CONFIG = {
+    standard: { price: 100000, days: 7 },
+    premium:  { price: 250000, days: 30 },
+    featured: { price: 500000, days: 14 }
+};
+
+// POST /api/pr-posts — tạo bài PR mới
+app.post('/api/pr-posts', adLimiter, requireUser, (req, res) => {
+    const { title, content, excerpt, image_url, link, contact, plan } = req.body;
+    if (!title || !content) return res.status(400).json({ error: 'Thiếu tiêu đề hoặc nội dung' });
+    const planCfg = PR_PLAN_CONFIG[plan] || PR_PLAN_CONFIG.standard;
+    const r = run(
+        `INSERT INTO pr_posts (user_id, title, content, excerpt, image_url, link, contact, plan, amount, status)
+         VALUES (?,?,?,?,?,?,?,?,?,'pending')`,
+        [req.userId, title.slice(0,200), content.slice(0,10000), (excerpt||'').slice(0,500),
+         (image_url||'').slice(0,500), (link||'').slice(0,500), (contact||'').slice(0,200),
+         plan || 'standard', planCfg.price]
+    );
+    res.json({ id: r.lastInsertRowid, plan: plan || 'standard', amount: planCfg.price });
+});
+
+// POST /api/pr-posts/:id/pay — ghi nhận thanh toán
+app.post('/api/pr-posts/:id/pay', adLimiter, requireUser, (req, res) => {
+    const id = parseInt(req.params.id);
+    const { method, plan } = req.body;
+    const post = get('SELECT * FROM pr_posts WHERE id=? AND user_id=?', [id, req.userId]);
+    if (!post) return res.status(404).json({ error: 'Không tìm thấy bài PR' });
+    const planCfg = PR_PLAN_CONFIG[plan || post.plan] || PR_PLAN_CONFIG.standard;
+    run("UPDATE pr_posts SET status='paid', plan=?, amount=?, payment_method=? WHERE id=?",
+        [plan || post.plan, planCfg.price, method || 'manual', id]);
+    res.json({ ok: true });
+});
+
+// GET /api/pr-posts/my — bài PR của user
+app.get('/api/pr-posts/my', requireUser, (req, res) => {
+    const posts = all(
+        `SELECT pr_posts.*, users.username FROM pr_posts
+         LEFT JOIN users ON pr_posts.user_id=users.id
+         WHERE pr_posts.user_id=? ORDER BY pr_posts.created_at DESC`,
+        [req.userId]
+    );
+    res.json(posts);
+});
+
+// GET /api/pr-posts/public — bài PR đang active (public)
+app.get('/api/pr-posts/public', (req, res) => {
+    const posts = all(
+        `SELECT id, title, excerpt, image_url, link, contact, plan, views, activated_at, expires_at
+         FROM pr_posts WHERE status='active' ORDER BY
+         CASE plan WHEN 'featured' THEN 0 WHEN 'premium' THEN 1 ELSE 2 END, activated_at DESC`
+    );
+    res.json(posts);
+});
+
+// GET /api/pr-posts/:id — chi tiết bài PR
+app.get('/api/pr-posts/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+    const post = get('SELECT * FROM pr_posts WHERE id=? AND status=?', [id, 'active']);
+    if (!post) return res.status(404).json({ error: 'Không tìm thấy' });
+    run('UPDATE pr_posts SET views=views+1 WHERE id=?', [id]);
+    res.json(post);
+});
+
+// ── PR Admin routes ──
+// GET /api/admin/pr-posts
+app.get('/api/admin/pr-posts', requireAdmin, (req, res) => {
+    const { status } = req.query;
+    let sql = `SELECT pr_posts.*, users.username, users.email as user_email
+               FROM pr_posts LEFT JOIN users ON pr_posts.user_id=users.id`;
+    const params = [];
+    if (status) { sql += ' WHERE pr_posts.status=?'; params.push(status); }
+    sql += ' ORDER BY pr_posts.created_at DESC';
+    res.json(all(sql, params));
+});
+
+// PATCH /api/admin/pr-posts/:id
+app.patch('/api/admin/pr-posts/:id', requireAdmin, (req, res) => {
+    const id = parseInt(req.params.id);
+    const { action, rejection_reason } = req.body;
+    const post = get('SELECT * FROM pr_posts WHERE id=?', [id]);
+    if (!post) return res.status(404).json({ error: 'Không tìm thấy' });
+    if (action === 'approve') {
+        const planCfg = PR_PLAN_CONFIG[post.plan] || PR_PLAN_CONFIG.standard;
+        const now = new Date().toISOString();
+        const exp = new Date(Date.now() + planCfg.days * 86400000).toISOString();
+        run("UPDATE pr_posts SET status='active', activated_at=?, expires_at=? WHERE id=?", [now, exp, id]);
+    } else if (action === 'reject') {
+        run("UPDATE pr_posts SET status='rejected', rejection_reason=? WHERE id=?", [rejection_reason || '', id]);
+    } else if (action === 'hide') {
+        run("UPDATE pr_posts SET status='hidden' WHERE id=?", [id]);
+    }
+    res.json({ ok: true });
+});
+
+// DELETE /api/admin/pr-posts/:id
+app.delete('/api/admin/pr-posts/:id', requireAdmin, (req, res) => {
+    run('DELETE FROM pr_posts WHERE id=?', [parseInt(req.params.id)]);
     res.json({ ok: true });
 });
 
