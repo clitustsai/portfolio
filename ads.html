@@ -23,9 +23,20 @@
 <script src="dist/auth.js" defer></script>
 <script src="dist/nav.js" defer></script>
 <style>
-:root{--g1:#667eea;--g2:#764ba2;--g3:#f093fb;}
-*{box-sizing:border-box;}
-body{background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);min-height:100vh;color:#fff;}
+:root{
+    --g1:#667eea;
+    --g2:#764ba2;--g3:#f093fb;
+}
+
+*{
+    box-sizing:
+    border-box;
+}
+
+body{
+    background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
+    min-height:100vh;color:#fff;
+}
 .ads-wrap{max-width:1100px;margin:0 auto;padding:2rem 1.25rem 5rem;}
 /* Hero */
 .ads-hero{text-align:center;padding:2.5rem 1rem 2rem;}
@@ -253,7 +264,7 @@ tr:last-child td{border-bottom:none;}
           </div>
         </div>
 
-        <button type="submit" class="btn-ads btn-primary-ads"><i class="fas fa-paper-plane"></i> Đăng quảng cáo</button>
+        <button type="submit" class="btn-ads btn-primary-ads"><i class="fas fa-paper-plane"></i> Đăng & Thanh toán</button>
       </form>
     </div>
   </div>
@@ -392,7 +403,16 @@ async function confirmPay(method) {
       return;
     }
     const url = d.url || d.approvalUrl;
-    if (url) window.location.href = url;
+    if (url) {
+      window.location.href = url;
+    } else {
+      closePaymentModal();
+      document.getElementById('create-ad-form').reset();
+      document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+      document.querySelector('.plan-card[data-plan="standard"]').classList.add('selected');
+      selectedPlan = 'standard';
+      switchTab('my-ads');
+    }
   } catch(e) {
     document.getElementById('pay-modal-alert').innerHTML = `<div class="ads-alert ads-alert-error">Lỗi kết nối</div>`;
     btn.disabled = false; btn.innerHTML = origHtml;
@@ -462,16 +482,12 @@ document.getElementById('create-ad-form').addEventListener('submit', async (e) =
       body: JSON.stringify(body)
     });
     const d = await r.json();
-    if (!r.ok) { showAlert('create-alert', d.error || 'Lỗi tạo quảng cáo'); btn.disabled=false; btn.innerHTML='<i class="fas fa-paper-plane"></i> Đăng quảng cáo'; return; }
+    if (!r.ok) { showAlert('create-alert', d.error || 'Lỗi tạo quảng cáo'); btn.disabled=false; btn.innerHTML='<i class="fas fa-paper-plane"></i> Đăng & Thanh toán'; return; }
     pendingAdId = d.id;
-    showAlert('create-alert', '✅ Đã lưu! Chuyển sang "Quảng cáo của tôi" để thanh toán.', 'success');
-    e.target.reset();
-    document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
-    document.querySelector('.plan-card[data-plan="standard"]').classList.add('selected');
-    selectedPlan = 'standard';
-    setTimeout(() => switchTab('my-ads'), 1200);
+    // Mở payment modal để chọn plan + method
+    openPaymentModal(d.id, selectedPlan);
   } catch(e) { showAlert('create-alert', 'Lỗi kết nối'); }
-  btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Đăng quảng cáo';
+  btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Đăng & Thanh toán';
 });
 
 
