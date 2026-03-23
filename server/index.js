@@ -2177,6 +2177,8 @@ app.post('/api/ads/:id/pay/manual', adLimiter, requireUser, (req, res) => {
     // Lưu transaction pending — admin xác nhận thủ công
     run('INSERT OR IGNORE INTO ad_transactions (ad_id, user_id, plan, amount, payment_method, payment_id, status) VALUES (?,?,?,?,?,?,?)',
         [id, req.userId, plan, amount, method, `MANUAL_${id}_${Date.now()}`, 'pending']);
+    // Đổi status ad → paid để admin biết user đã chuyển khoản
+    run("UPDATE ads SET status='paid', plan=? WHERE id=? AND status='pending'", [plan, id]);
     res.json({ ok: true, message: 'Đã ghi nhận. Admin sẽ xác nhận sau khi nhận thanh toán.' });
 });
 
@@ -2254,7 +2256,15 @@ app.patch('/api/admin/ads/:id', requireAdmin, (req, res) => {
     const { action, rejection_reason, product_name, description, image_url } = req.body;
 
     if (action === 'approve') {
-        run("UPDATE ads SET status='active', activated_at=datetime('now'), expires_at=datetime('now','+'||display_days||' days') WHERE id=?", [id]);
+        // Lấy plan từ transaction gần nhất nếu có
+        const tx = get("SELECT plan FROM ad_transactions WHERE ad_id=? ORDER BY id DESC LIMIT 1", [id]);
+        const plan = tx?.plan || 'standard';
+        const planCfgs = { standard: { display_days: 7, boost_score: 1 }, premium: { display_days: 30, boost_score: 3 }, vip_boost: { display_days: 7, boost_score: 10 } };
+        const planCfg = planCfgs[plan] || planCfgs.standard;
+        run("UPDATE ads SET status='active', plan=?, display_days=?, boost_score=?, activated_at=datetime('now'), expires_at=datetime('now','+'||?||' days') WHERE id=?",
+            [plan, planCfg.display_days, planCfg.boost_score, planCfg.display_days, id]);
+        // Đánh dấu transaction là paid
+        run("UPDATE ad_transactions SET status='paid' WHERE ad_id=? AND status='pending'", [id]);
     } else if (action === 'reject') {
         run("UPDATE ads SET status='rejected', rejection_reason=? WHERE id=?", [(rejection_reason || '').slice(0, 500), id]);
     } else if (action === 'hide') {
