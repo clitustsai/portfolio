@@ -420,7 +420,6 @@ async function confirmPay(method) {
 }
 
 async function deleteAd(adId) {
-  if (!confirm('Xóa quảng cáo này?')) return;
   try {
     const r = await fetch(`${API_BASE}/api/ads/${adId}`, {
       method: 'DELETE',
