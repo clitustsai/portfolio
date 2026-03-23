@@ -2231,6 +2231,18 @@ app.get('/api/admin/ads/revenue', requireAdmin, (req, res) => {
     });
 });
 
+// DELETE /api/ads/:id — owner xóa ad của mình (chỉ khi pending hoặc rejected)
+app.delete('/api/ads/:id', adLimiter, requireUser, (req, res) => {
+    const id = parseInt(req.params.id);
+    const ad = get('SELECT * FROM ads WHERE id=? AND user_id=?', [id, req.userId]);
+    if (!ad) return res.status(404).json({ error: 'Không tìm thấy quảng cáo' });
+    if (!['pending', 'rejected'].includes(ad.status)) {
+        return res.status(400).json({ error: 'Chỉ có thể xóa quảng cáo đang chờ duyệt hoặc bị từ chối' });
+    }
+    run('DELETE FROM ads WHERE id=?', [id]);
+    res.json({ ok: true });
+});
+
 // ========== AD TRACKER + SCHEDULER ==========
 // POST /api/ads/track/click/:id
 app.post('/api/ads/track/click/:id', (req, res) => {

@@ -287,6 +287,35 @@ tr:last-child td{border-bottom:none;}
   </div>
 </div>
 
+<!-- Payment modal -->
+<div id="payment-modal" class="modal-overlay">
+  <div class="modal-box" style="max-width:480px">
+    <button class="modal-close" onclick="closePaymentModal()">×</button>
+    <h3 style="margin:0 0 1.25rem;font-size:1.1rem;font-weight:800;color:#fff">💳 Chọn gói thanh toán</h3>
+    <div id="pay-plan-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;margin-bottom:1.25rem">
+      <div class="plan-card selected" data-plan="standard" onclick="selectPayPlan(this)">
+        <h3>Standard</h3><div class="price" style="font-size:1rem">50.000₫</div><div class="desc">7 ngày</div>
+      </div>
+      <div class="plan-card" data-plan="premium" onclick="selectPayPlan(this)">
+        <h3>Premium</h3><div class="price" style="font-size:1rem">150.000₫</div><div class="desc">30 ngày</div>
+      </div>
+      <div class="plan-card" data-plan="vip_boost" onclick="selectPayPlan(this)">
+        <h3>⭐ VIP</h3><div class="price" style="font-size:1rem">300.000₫</div><div class="desc">7 ngày Top</div>
+      </div>
+    </div>
+    <p style="font-size:.8rem;color:rgba(255,255,255,.45);margin:0 0 1rem">Chọn phương thức thanh toán:</p>
+    <div style="display:flex;gap:.75rem">
+      <button class="btn-ads btn-primary-ads" style="flex:1;justify-content:center" onclick="confirmPay('stripe')">
+        <i class="fas fa-credit-card"></i> Stripe (Thẻ QT)
+      </button>
+      <button class="btn-ads btn-ghost" style="flex:1;justify-content:center;border:1.5px solid rgba(255,255,255,.2)!important" onclick="confirmPay('paypal')">
+        <i class="fab fa-paypal"></i> PayPal
+      </button>
+    </div>
+    <div id="pay-modal-alert" style="margin-top:.75rem"></div>
+  </div>
+</div>
+
 
 <script src="dist/interactions-vip.js"></script>
 <script src="dist/live-activity.js"></script>
@@ -303,6 +332,8 @@ const API_BASE = (window.location.hostname === 'localhost' || window.location.ho
 let selectedPlan = 'standard';
 let myAds = [];
 let pendingAdId = null;
+let payingAdId = null;
+let payingPlan = 'standard';
 
 function getToken() {
   return localStorage.getItem('user_token') || localStorage.getItem('auth_token');
@@ -322,6 +353,64 @@ function selectPlan(el) {
   document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
   el.classList.add('selected');
   selectedPlan = el.dataset.plan;
+}
+
+function selectPayPlan(el) {
+  document.querySelectorAll('#pay-plan-grid .plan-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  payingPlan = el.dataset.plan;
+}
+
+function openPaymentModal(adId, currentPlan) {
+  payingAdId = adId;
+  payingPlan = currentPlan || 'standard';
+  document.querySelectorAll('#pay-plan-grid .plan-card').forEach(c => {
+    c.classList.toggle('selected', c.dataset.plan === payingPlan);
+  });
+  document.getElementById('pay-modal-alert').innerHTML = '';
+  document.getElementById('payment-modal').classList.add('open');
+}
+
+function closePaymentModal() {
+  document.getElementById('payment-modal').classList.remove('open');
+}
+
+async function confirmPay(method) {
+  const btn = event.target.closest('button');
+  const origHtml = btn.innerHTML;
+  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+  try {
+    const r = await fetch(`${API_BASE}/api/ads/${payingAdId}/pay/${method}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
+      body: JSON.stringify({ plan: payingPlan })
+    });
+    const d = await r.json();
+    if (!r.ok) {
+      document.getElementById('pay-modal-alert').innerHTML = `<div class="ads-alert ads-alert-error">${d.error || 'Lỗi thanh toán'}</div>`;
+      btn.disabled = false; btn.innerHTML = origHtml;
+      return;
+    }
+    const url = d.url || d.approvalUrl;
+    if (url) window.location.href = url;
+  } catch(e) {
+    document.getElementById('pay-modal-alert').innerHTML = `<div class="ads-alert ads-alert-error">Lỗi kết nối</div>`;
+    btn.disabled = false; btn.innerHTML = origHtml;
+  }
+}
+
+async function deleteAd(adId) {
+  if (!confirm('Xóa quảng cáo này?')) return;
+  try {
+    const r = await fetch(`${API_BASE}/api/ads/${adId}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${getToken()}` }
+    });
+    const d = await r.json();
+    if (!r.ok) return showAlert('my-ads-alert', d.error || 'Không thể xóa', 'error');
+    showAlert('my-ads-alert', '✅ Đã xóa quảng cáo', 'success');
+    loadMyAds();
+  } catch(e) { showAlert('my-ads-alert', 'Lỗi kết nối'); }
 }
 
 function showAlert(id, msg, type = 'error') {
@@ -355,6 +444,8 @@ async function generateAiDesc() {
 
 document.getElementById('create-ad-form').addEventListener('submit', async (e) => {
   e.preventDefault();
+  const btn = e.target.querySelector('[type=submit]');
+  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang lưu...';
   const body = {
     product_name: document.getElementById('ad-name').value,
     link: document.getElementById('ad-link').value,
@@ -371,27 +462,18 @@ document.getElementById('create-ad-form').addEventListener('submit', async (e) =
       body: JSON.stringify(body)
     });
     const d = await r.json();
-    if (!r.ok) return showAlert('create-alert', d.error || 'Lỗi tạo quảng cáo');
+    if (!r.ok) { showAlert('create-alert', d.error || 'Lỗi tạo quảng cáo'); btn.disabled=false; btn.innerHTML='<i class="fas fa-paper-plane"></i> Đăng quảng cáo'; return; }
     pendingAdId = d.id;
-    showAlert('create-alert', '✅ Đã tạo quảng cáo! Đang chuyển sang thanh toán...', 'success');
-    setTimeout(() => payAd(d.id, selectedPlan), 1500);
+    showAlert('create-alert', '✅ Đã lưu! Chuyển sang "Quảng cáo của tôi" để thanh toán.', 'success');
+    e.target.reset();
+    document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+    document.querySelector('.plan-card[data-plan="standard"]').classList.add('selected');
+    selectedPlan = 'standard';
+    setTimeout(() => switchTab('my-ads'), 1200);
   } catch(e) { showAlert('create-alert', 'Lỗi kết nối'); }
+  btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Đăng quảng cáo';
 });
 
-async function payAd(adId, plan) {
-  const method = confirm('Thanh toán qua Stripe?\n\nOK = Stripe (thẻ quốc tế)\nCancel = PayPal') ? 'stripe' : 'paypal';
-  try {
-    const r = await fetch(`${API_BASE}/api/ads/${adId}/pay/${method}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
-      body: JSON.stringify({ plan: plan || selectedPlan })
-    });
-    const d = await r.json();
-    if (!r.ok) return showAlert('create-alert', d.error || 'Lỗi thanh toán');
-    const url = d.url || d.approvalUrl;
-    if (url) window.location.href = url;
-  } catch(e) { showAlert('create-alert', 'Lỗi kết nối'); }
-}
 
 async function loadMyAds() {
   const container = document.getElementById('my-ads-list');
@@ -427,9 +509,10 @@ async function loadMyAds() {
         <td>${ad.impression_count}</td>
         <td>${(ad.ctr * 100).toFixed(2)}%</td>
         <td>${ad.days_remaining !== null ? ad.days_remaining + ' ngày' : '—'}</td>
-        <td style="white-space:nowrap">
+        <td style="white-space:nowrap;display:flex;gap:.35rem;align-items:center;flex-wrap:wrap">
           <button class="btn-ads btn-ghost btn-sm-ads" onclick="showStats(${ad.id})" title="Xem thống kê"><i class="fas fa-chart-bar"></i></button>
-          ${ad.status === 'pending' ? `<button class="btn-ads btn-primary-ads btn-sm-ads" onclick="payAd(${ad.id},'standard')" style="margin-left:.4rem"><i class="fas fa-credit-card"></i> Thanh toán</button>` : ''}
+          ${ad.status === 'pending' ? `<button class="btn-ads btn-primary-ads btn-sm-ads" onclick="openPaymentModal(${ad.id},'standard')"><i class="fas fa-credit-card"></i> Thanh toán</button>` : ''}
+          ${['pending','rejected'].includes(ad.status) ? `<button class="btn-ads btn-danger-ads btn-sm-ads" onclick="deleteAd(${ad.id})"><i class="fas fa-trash"></i></button>` : ''}
         </td>
       </tr>`).join('')}
       </tbody>
