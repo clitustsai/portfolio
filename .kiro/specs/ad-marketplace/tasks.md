@@ -167,7 +167,7 @@ Triển khai hệ thống Ad Marketplace theo từng lớp: DB schema → Backen
   - [x] 10.3 Inject vào `blog-post.html`: `top_vip`, `pinned_post`, `banner_mid_article`
     - _Requirements: 6.6_
 
-- [ ] 11. Final checkpoint — Ensure all tests pass
+- [x] 11. Final checkpoint — Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes
