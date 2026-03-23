@@ -1,10 +1,45 @@
 /* ============================================================
-   FAB LAYOUT — Sắp xếp tất cả floating buttons không chồng nhau
-   Cột TRÁI (từ dưới lên):  like(80) → feedback(132) → bug(184) → weather(236) → clock(284)
-   Cột PHẢI (từ dưới lên):  btt(80) → shortcut(136) → fab-toggle(192) → [group expand lên]
+   FAB LAYOUT v3 — Không chồng nhau, khoảng cách rõ ràng
+   
+   CỘT PHẢI (bottom, từ dưới lên):
+     20px  → #cw-fab (chat) — từ chat.js, KHÔNG đổi
+     82px  → #cw-box (chat box)
+     80px  → #btt-btn (back to top) — dịch sang trái chat
+     136px → #rec-toggle (recommend) — chỉ index.html
+   
+   CỘT TRÁI (bottom, từ dưới lên):
+     20px  → #_bugBtn (báo lỗi)
+     80px  → #page-like-btn
+     136px → #float-clock
+     192px → #weather-widget
+   
+   ẨN: feedback, shortcut-sheet-btn, fab-group-toggle, live-visitors
+        mini-poll, voice/share/wakelock/pip/eyedropper buttons
    ============================================================ */
 
+/* ══ CỘT PHẢI ══ */
+
+/* Chat FAB giữ nguyên bottom:20px right:20px */
+
+/* Back-to-top: dịch sang trái để không đè chat */
+#btt-btn {
+  bottom: 20px !important;
+  right: 80px !important;
+}
+
+/* Recommend toggle */
+#rec-toggle {
+  bottom: 80px !important;
+  right: 20px !important;
+}
+
 /* ══ CỘT TRÁI ══ */
+
+#_bugBtn {
+  bottom: 20px !important;
+  left: 16px !important;
+  right: auto !important;
+}
 
 #page-like-btn {
   bottom: 80px !important;
@@ -12,116 +47,80 @@
   right: auto !important;
 }
 
-#feedback-fab {
-  bottom: 132px !important;
-  left: 16px !important;
-  right: auto !important;
-}
-
-#_bugBtn {
-  bottom: 184px !important;
+#float-clock {
+  bottom: 136px !important;
   left: 16px !important;
   right: auto !important;
 }
 
 #weather-widget {
-  bottom: 236px !important;
-  left: 16px !important;
-  right: auto !important;
-}
-
-#float-clock {
-  bottom: 284px !important;
-  left: 16px !important;
-  right: auto !important;
-}
-
-#live-visitors {
-  top: 70px !important;
-  left: 16px !important;
-  right: auto !important;
-}
-
-/* ══ CỘT PHẢI ══ */
-
-#btt-btn {
-  bottom: 80px !important;
-  right: 16px !important;
-}
-
-#shortcut-sheet-btn {
-  bottom: 136px !important;
-  right: 16px !important;
-}
-
-#shortcut-sheet {
-  bottom: 188px !important;
-  right: 16px !important;
-}
-
-/* FAB group toggle (features3) */
-#fab-group-toggle {
   bottom: 192px !important;
-  right: 16px !important;
+  left: 16px !important;
+  right: auto !important;
 }
 
-/* Mini poll — slide từ phải, không đè nút */
-#mini-poll {
-  bottom: 136px !important;
-  right: 70px !important;
+/* ══ ẨN CÁC NÚT THỪA ══ */
+
+/* Ẩn shortcut sheet button — dùng phím tắt thay */
+#shortcut-sheet-btn {
+  display: none !important;
 }
 
-/* Các nút trong FAB group: ẩn mặc định, hiện khi expand */
+/* Ẩn FAB group toggle và các nút trong group */
+#fab-group-toggle,
 #voice-btn,
 #native-share-btn,
 #wakelock-btn,
 #doc-pip-btn,
 #eyedropper-btn {
-  right: 16px !important;
-  display: flex !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-  transform: scale(0) translateY(10px) !important;
-  transition: all .25s cubic-bezier(.34,1.56,.64,1) !important;
+  display: none !important;
 }
 
-/* ══ MOBILE ══ */
+/* Ẩn feedback fab — đã có bug report */
+#feedback-fab {
+  display: none !important;
+}
+
+/* Ẩn live visitors — quá nhiều thứ */
+#live-visitors {
+  display: none !important;
+}
+
+/* Mini poll: slide từ phải, không đè nút nào */
+#mini-poll {
+  bottom: 80px !important;
+  right: 80px !important;
+}
+
+/* ══ MOBILE (max 768px) ══ */
 @media (max-width: 768px) {
-  /* Ẩn bớt nút trái trên mobile */
+  /* Ẩn clock và weather trên mobile */
   #float-clock,
-  #weather-widget,
-  #feedback-fab {
+  #weather-widget {
     display: none !important;
   }
 
-  #page-like-btn {
+  /* Bug btn */
+  #_bugBtn {
     bottom: 72px !important;
     left: 8px !important;
   }
 
-  #_bugBtn {
+  /* Like btn */
+  #page-like-btn {
     bottom: 120px !important;
     left: 8px !important;
   }
 
-  #live-visitors {
-    top: 60px !important;
-    left: 8px !important;
-    font-size: .68rem !important;
-    padding: .3rem .6rem !important;
-  }
-
+  /* Back to top: góc phải, trên thanh nav */
   #btt-btn {
     bottom: 72px !important;
     right: 8px !important;
   }
 
-  #shortcut-sheet-btn {
-    display: none !important;
-  }
-
-  #fab-group-toggle {
-    bottom: 120px !important;
-    right: 8px !important;
+  /* Chat FAB */
+  #cw-fab {
+    bottom: 72px !important;
+    right: 64px !important;
   }
 }
