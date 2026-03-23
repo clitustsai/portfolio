@@ -1,100 +1,41 @@
 /* ============================================================
-   FAB LAYOUT — Override tất cả vị trí floating buttons
+   FAB LAYOUT — Gom tất cả vào 2 nút chính, không chồng nhau
    
-   CỘT PHẢI (right:20px, từ dưới lên, bước 60px):
-     20px  → #cw-fab       (chat)
-     80px  → #btt-btn      (back to top)  ← features.css
-     140px → #rec-toggle   (recommend)    ← recommend.js
-     200px → #share-fab    (share)        ← features.css
+   PHẢI: chat(20) + btt(80) — cố định luôn hiện
+   TRÁI: bug(20) — cố định luôn hiện
    
-   CỘT TRÁI (left:16-20px, từ dưới lên, bước 60px):
-     20px  → #_bugBtn      (báo lỗi)
-     80px  → #pn-bell      (push notify)
-     140px → #page-like-btn
-     200px → #float-clock
-     260px → #weather-widget
-     320px → #feedback-fab
+   Tất cả nút còn lại: ẨN hoàn toàn
    ============================================================ */
 
-/* ══ CỘT PHẢI ══ */
-#btt-btn {
-  bottom: 80px !important;
-  right: 20px !important;
-}
-#rec-toggle {
-  bottom: 140px !important;
-  right: 20px !important;
-}
-#share-fab {
-  bottom: 200px !important;
-  right: 20px !important;
-}
-/* shortcut-sheet-btn: ẩn, dùng phím tắt thay */
-#shortcut-sheet-btn { display: none !important; }
-/* fab-group-toggle và các nút trong group: ẩn */
+/* ══ GIỮ LẠI: Chat + Back-to-top + Bug report ══ */
+#cw-fab  { bottom: 20px !important; right: 20px !important; }
+#btt-btn { bottom: 80px !important; right: 20px !important; }
+#_bugBtn { bottom: 20px !important; left: 16px !important; right: auto !important; }
+
+/* ══ ẨN TẤT CẢ NÚT THỪA ══ */
+#rec-toggle,
+#share-fab,
+#pn-bell,
+#page-like-btn,
+#float-clock,
+#weather-widget,
+#feedback-fab,
+#live-visitors,
+#shortcut-sheet-btn,
+#shortcut-sheet,
 #fab-group-toggle,
-#voice-btn, #native-share-btn, #wakelock-btn,
-#doc-pip-btn, #eyedropper-btn { display: none !important; }
-
-/* ══ CỘT TRÁI ══ */
-#_bugBtn {
-  bottom: 20px !important;
-  left: 16px !important;
-  right: auto !important;
-}
-#pn-bell {
-  bottom: 80px !important;
-  left: 16px !important;
-  right: auto !important;
-}
-#page-like-btn {
-  bottom: 140px !important;
-  left: 16px !important;
-  right: auto !important;
-}
-#float-clock {
-  bottom: 200px !important;
-  left: 16px !important;
-  right: auto !important;
-}
-#weather-widget {
-  bottom: 260px !important;
-  left: 16px !important;
-  right: auto !important;
-}
-#feedback-fab {
-  bottom: 320px !important;
-  left: 16px !important;
-  right: auto !important;
-}
-
-/* live-visitors: top right để không đè gì */
-#live-visitors {
-  top: 70px !important;
-  right: 16px !important;
-  left: auto !important;
-  bottom: auto !important;
-}
-
-/* mini-poll: slide từ phải, không đè nút */
+#voice-btn,
+#native-share-btn,
+#wakelock-btn,
+#doc-pip-btn,
+#eyedropper-btn,
 #mini-poll {
-  bottom: 140px !important;
-  right: 80px !important;
+  display: none !important;
 }
 
-/* ══ MOBILE (max 768px) ══ */
+/* ══ MOBILE ══ */
 @media (max-width: 768px) {
-  #float-clock,
-  #weather-widget,
-  #feedback-fab,
-  #share-fab,
-  #live-visitors { display: none !important; }
-
-  #_bugBtn   { bottom: 72px !important; left: 8px !important; }
-  #pn-bell   { bottom: 132px !important; left: 8px !important; }
-  #page-like-btn { bottom: 192px !important; left: 8px !important; }
-
-  #btt-btn   { bottom: 72px !important; right: 8px !important; }
-  #rec-toggle { bottom: 132px !important; right: 8px !important; }
-  #cw-fab    { bottom: 72px !important; right: 64px !important; }
+  #cw-fab  { bottom: 72px !important; right: 12px !important; }
+  #btt-btn { bottom: 72px !important; right: 64px !important; }
+  #_bugBtn { bottom: 72px !important; left: 12px !important; }
 }
