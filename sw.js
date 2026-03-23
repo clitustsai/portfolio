@@ -1,5 +1,5 @@
 // ========== SERVICE WORKER - PWA ==========
-const CACHE_NAME = 'clituspc-v29';
+const CACHE_NAME = 'clituspc-v30';
 const OFFLINE_URL = '/offline.html';
 
 // Files cần cache để offline
@@ -8,28 +8,13 @@ const PRECACHE_ASSETS = [
   '/index.html',
   '/arcade.html',
   '/dashboard.html',
-  '/offline.html',
   '/styles.css',
-  '/styles-new.css',
   '/interactions.css',
-  '/testimonials.css',
   '/admin.css',
-  '/i18n.js',
-  '/api.js',
-  '/admin.js',
+  '/mobile-ux.css',
   '/manifest.json',
   '/img/z7643593902682_1d1e5b7671cc398923d350f14dd68934.jpg',
   '/img/z7643399499088_fbf2b939d27d107fda73c5053dbb4dd0.jpg',
-  '/recommend.js',
-  '/chat.js',
-  '/live-activity.js',
-  '/push-notify.js',
-  '/mobile-nav.js',
-  '/mobile-ux.css',
-  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
-  'https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.css',
-  'https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js',
 ];
 
 // ===== INSTALL: cache tất cả assets =====
