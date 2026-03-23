@@ -538,11 +538,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     const r = await fetch(`${API_BASE}/api/auth/me`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
-    if (!r.ok) { window.location.href = 'index.html'; return; }
+    if (r.status === 401 || r.status === 403) {
+      // Token hết hạn hoặc không hợp lệ
+      localStorage.removeItem('user_token');
+      localStorage.removeItem('auth_token');
+      window.location.href = 'index.html';
+      return;
+    }
+    // Kể cả lỗi server (5xx) hay network chậm — vẫn cho vào, không redirect
     document.getElementById('adsLoading').style.display = 'none';
     document.getElementById('adsMain').style.display = 'block';
   } catch(e) {
-    window.location.href = 'index.html';
+    // Network error (Render cold start, offline...) — vẫn cho vào nếu có token
+    console.warn('Auth check failed, proceeding with cached token:', e.message);
+    document.getElementById('adsLoading').style.display = 'none';
+    document.getElementById('adsMain').style.display = 'block';
   }
 });
 </script>
