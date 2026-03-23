@@ -13,6 +13,22 @@
 /* ===== MOBILE: layout các floating elements ===== */
 @media (max-width: 768px) {
 
+  /* Ẩn hamburger — đã có bottom nav */
+  .nav-hamburger {
+    display: none !important;
+  }
+
+  /* Ẩn chat-toggle cũ (duplicate với #cw-fab từ chat.js) */
+  .chat-toggle,
+  #chatToggle {
+    display: none !important;
+  }
+
+  /* Ẩn chat-widget cũ */
+  .chat-widget {
+    display: none !important;
+  }
+
   /* Bottom nav — luôn ở dưới cùng */
   #mobile-bottom-nav {
     display: block !important;

@@ -1302,10 +1302,11 @@ nav ul li a {
     box-shadow: 0 16px 48px rgba(102,126,234,0.2), 0 4px 16px rgba(0,0,0,0.08);
     min-width: 200px;
     padding: 0.5rem;
-    z-index: 2000;
+    z-index: 1100000;
     flex-direction: column;
     gap: 0.15rem;
     animation: dropdownIn 0.2s cubic-bezier(0.4,0,0.2,1);
+    pointer-events: auto;
 }
 html[data-theme="dark"] .nav-dropdown-menu {
     background: rgba(15,15,30,0.98);
@@ -1369,6 +1370,14 @@ html[data-theme="dark"] .nav-dropdown-menu::before {
         padding: 0.25rem 0.5rem;
         margin-top: 0.25rem;
         animation: none;
+        z-index: auto;
+        pointer-events: auto;
+    }
+    .nav-dropdown-menu li,
+    .nav-dropdown-menu li a {
+        pointer-events: auto !important;
+        position: relative;
+        z-index: 1100001;
     }
     .nav-dropdown-menu::before { display: none; }
     .nav-dropdown-menu li a {
