@@ -231,11 +231,15 @@ window.submitBugReport = async function() {
         if (!r.ok) throw new Error(d.error || 'Lỗi gửi báo cáo');
 
         // Hiện success
+        const coinMsg = d.coinsAwarded
+            ? `<div style="margin-top:.75rem;background:linear-gradient(135deg,rgba(245,158,11,.12),rgba(251,191,36,.08));border:1.5px solid rgba(245,158,11,.3);border-radius:12px;padding:.65rem 1rem;font-size:.88rem;color:#d97706;font-weight:700;">🎁 Tặng bạn <span style="font-size:1.1rem">+${d.coinsAwarded} coin</span> vì đã báo lỗi!</div>`
+            : `<div style="margin-top:.75rem;font-size:.8rem;color:#aaa;">Đăng nhập để nhận coin khi báo lỗi 🎁</div>`;
         document.getElementById('_bugBox').innerHTML = `
             <div class="_bug-success">
                 <div class="icon">✅</div>
                 <h4>Đã gửi báo lỗi!</h4>
                 <p>Cảm ơn bạn. Chúng tôi sẽ kiểm tra và sửa sớm nhất có thể.</p>
+                ${coinMsg}
                 <button onclick="closeBugModal()" style="margin-top:1rem;padding:.6rem 1.5rem;border:none;border-radius:50px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-weight:700;cursor:pointer;">Đóng</button>
             </div>`;
     } catch(err) {

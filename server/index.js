@@ -1639,6 +1639,13 @@ app.post('/api/bug-report', async (req, res) => {
 
     console.log(`\n🐛 BUG REPORT [${typeLabel}]\n👤 ${username || 'Khách'} | 🌐 ${browser} | ${device}\n📄 ${page}\n📝 ${desc}\n🕒 ${reportTime}\n`);
 
+    // Tặng 10 coin nếu user đã đăng nhập
+    let coinsAwarded = 0;
+    if (userId) {
+        addCoins(parseInt(userId), 10, 'bug_report', 'Báo lỗi trang web');
+        coinsAwarded = 10;
+    }
+
     // Gửi email nếu có Resend
     if (process.env.RESEND_API_KEY) {
         try {
@@ -1680,7 +1687,7 @@ app.post('/api/bug-report', async (req, res) => {
         }
     }
 
-    res.json({ ok: true });
+    res.json({ ok: true, coinsAwarded });
 });
 
 // ========== PHONE OTP AUTH ==========
