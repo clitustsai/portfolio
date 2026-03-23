@@ -238,7 +238,7 @@ function initFloatingClock() {
   const el = document.createElement('div');
   el.id = 'float-clock';
   el.style.cssText = `
-    position:fixed;bottom:130px;left:16px;z-index:9980;
+    position:fixed;bottom:140px;left:16px;z-index:9980;
     background:rgba(15,12,41,.85);border:1px solid rgba(102,126,234,.25);
     color:#fff;padding:.45rem .9rem;border-radius:50px;font-size:.78rem;
     font-weight:700;backdrop-filter:blur(12px);cursor:default;
@@ -264,7 +264,7 @@ function initWeatherWidget() {
   const el = document.createElement('div');
   el.id = 'weather-widget';
   el.style.cssText = `
-    position:fixed;bottom:170px;left:16px;z-index:9980;
+    position:fixed;bottom:200px;left:16px;z-index:9980;
     background:rgba(15,12,41,.85);border:1px solid rgba(102,126,234,.25);
     color:#fff;padding:.45rem .9rem;border-radius:50px;font-size:.75rem;
     font-weight:700;backdrop-filter:blur(12px);cursor:default;
@@ -293,7 +293,7 @@ function initShortcutSheet() {
   btn.id = 'shortcut-sheet-btn';
   btn.setAttribute('aria-label', 'Phím tắt');
   btn.style.cssText = `
-    position:fixed;bottom:130px;right:16px;z-index:9980;
+    position:fixed;bottom:260px;right:16px;z-index:9980;
     background:rgba(15,12,41,.85);border:1px solid rgba(102,126,234,.25);
     color:#fff;padding:.45rem .75rem;border-radius:50px;font-size:.75rem;
     font-weight:700;backdrop-filter:blur(12px);cursor:pointer;
@@ -348,7 +348,7 @@ function initPageLike() {
   const btn = document.createElement('button');
   btn.id = 'page-like-btn';
   btn.style.cssText = `
-    position:fixed;left:16px;bottom:90px;z-index:9980;
+    position:fixed;left:16px;bottom:260px;z-index:9980;
     background:rgba(15,12,41,.85);border:1px solid rgba(245,87,108,.3);
     color:#fff;padding:.5rem .9rem;border-radius:50px;font-size:.8rem;
     font-weight:700;backdrop-filter:blur(12px);cursor:pointer;
@@ -627,7 +627,7 @@ function initFeedbackBtn() {
   const btn = document.createElement('button');
   btn.id = 'feedback-fab';
   btn.style.cssText = `
-    position:fixed;left:16px;bottom:50px;z-index:9980;
+    position:fixed;left:16px;bottom:320px;z-index:9980;
     background:linear-gradient(135deg,#667eea,#764ba2);
     border:none;color:#fff;padding:.5rem 1rem;border-radius:50px;
     font-size:.78rem;font-weight:700;cursor:pointer;

@@ -19,7 +19,7 @@ if (localStorage.getItem(sessionKey)) return;
 const style = document.createElement('style');
 style.textContent = `
 #rec-panel {
-  position:fixed; bottom:196px; right:20px; z-index:9990;
+  position:fixed; bottom:200px; right:20px; z-index:9990;
   width:300px; max-width:calc(100vw - 40px);
   background:#fff; border-radius:20px;
   box-shadow:0 20px 60px rgba(0,0,0,.18), 0 0 0 1px rgba(102,126,234,.1);
@@ -63,7 +63,7 @@ html[data-theme="dark"] #rec-footer { border-color:rgba(255,255,255,.06); }
 #rec-footer button:hover { color:#667eea; }
 /* Toggle button */
 #rec-toggle {
-  position:fixed; bottom:136px; right:20px; z-index:9991;
+  position:fixed; bottom:140px; right:20px; z-index:9991;
   width:48px; height:48px; border-radius:50%;
   background:linear-gradient(135deg,#667eea,#764ba2);
   border:none; color:#fff; font-size:1.2rem; cursor:pointer;

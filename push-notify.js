@@ -34,7 +34,7 @@ html[data-theme="dark"] .pn-btn-no { border-color:rgba(255,255,255,.1); }
 
 /* Floating bell button */
 #pn-bell {
-  position:fixed; bottom:140px; left:20px; z-index:9959;
+  position:fixed; bottom:80px; left:20px; z-index:9959;
   width:44px; height:44px; border-radius:50%;
   background:#fff; border:1.5px solid rgba(102,126,234,.2);
   color:#667eea; font-size:1rem; cursor:pointer;

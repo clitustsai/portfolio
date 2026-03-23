@@ -17,7 +17,7 @@ function initBugReport() {
     const style = document.createElement('style');
     style.textContent = `
     #_bugBtn {
-        position:fixed; bottom:20px; left:18px; z-index:9955;
+    position:fixed; bottom:20px; left:18px; z-index:9955;
         width:44px; height:44px; border-radius:50%; border:none;
         background:linear-gradient(135deg,#f5576c,#f093fb);
         color:#fff; font-size:1.2rem; cursor:pointer;
