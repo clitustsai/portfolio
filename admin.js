@@ -694,6 +694,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (tabName === 'subscriptions') {
                 loadAdminSubs();
             }
+            if (tabName === 'ads') {
+                loadAdminAds();
+            }
         });
     });
 
@@ -961,5 +964,138 @@ async function deleteSub(id) {
         await fetch(`${SUB_API}/admin/${id}`, { method:'DELETE', headers:{'x-admin-token':token} });
         if (typeof showToast==='function') showToast('🗑️ Đã xóa','info',2000);
         loadAdminSubs();
+    } catch(e) {}
+}
+
+// ========== ADS ADMIN ==========
+const ADS_ADMIN_API = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+    ? 'http://localhost:3001/api'
+    : `${location.origin}/api`;
+
+async function loadAdminAds() {
+    const token = sessionStorage.getItem('admin_token') || '';
+    const status = document.getElementById('ads-filter-status')?.value || '';
+    const el = document.getElementById('adminAdsList');
+    const revenueEl = document.getElementById('ads-revenue-stats');
+    if (!el) return;
+    el.innerHTML = '<div style="text-align:center;padding:2rem;color:#888"><i class="fas fa-spinner fa-spin"></i> Đang tải...</div>';
+
+    // Load revenue stats
+    try {
+        const rv = await fetch(`${ADS_ADMIN_API}/admin/ads/revenue`, { headers: { 'x-admin-token': token } });
+        const rd = await rv.json();
+        if (revenueEl && rd.revenue) {
+            const fmt = n => Number(n||0).toLocaleString('vi-VN') + '₫';
+            revenueEl.innerHTML = [
+                ['Hôm nay', fmt(rd.revenue.today), '#4ade80'],
+                ['7 ngày', fmt(rd.revenue.week), '#a5f3fc'],
+                ['30 ngày', fmt(rd.revenue.month), '#c4b5fd'],
+                ['Tổng', fmt(rd.revenue.all_time), '#f9a8d4']
+            ].map(([l,v,c]) => `<div style="background:rgba(255,255,255,.06);border-radius:14px;padding:1rem;text-align:center">
+                <div style="font-size:1.2rem;font-weight:900;color:${c}">${v}</div>
+                <div style="font-size:.72rem;color:rgba(255,255,255,.45);margin-top:.2rem">${l}</div>
+            </div>`).join('');
+        }
+    } catch(e) {}
+
+    // Load ads list
+    try {
+        const url = `${ADS_ADMIN_API}/admin/ads${status ? '?status=' + status : ''}`;
+        const r = await fetch(url, { headers: { 'x-admin-token': token } });
+        const ads = await r.json();
+        if (!ads.length) {
+            el.innerHTML = '<div style="text-align:center;padding:2rem;color:rgba(255,255,255,.35)">Không có quảng cáo nào</div>';
+            return;
+        }
+        const statusBadge = s => ({
+            pending: '<span style="background:rgba(251,191,36,.15);color:#fbbf24;padding:.2rem .65rem;border-radius:50px;font-size:.72rem;font-weight:700">Chờ duyệt</span>',
+            active:  '<span style="background:rgba(74,222,128,.15);color:#4ade80;padding:.2rem .65rem;border-radius:50px;font-size:.72rem;font-weight:700">Đang chạy</span>',
+            rejected:'<span style="background:rgba(248,113,113,.15);color:#f87171;padding:.2rem .65rem;border-radius:50px;font-size:.72rem;font-weight:700">Từ chối</span>',
+            hidden:  '<span style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.4);padding:.2rem .65rem;border-radius:50px;font-size:.72rem;font-weight:700">Đã ẩn</span>',
+            expired: '<span style="background:rgba(255,255,255,.06);color:rgba(255,255,255,.3);padding:.2rem .65rem;border-radius:50px;font-size:.72rem;font-weight:700">Hết hạn</span>',
+            paid:    '<span style="background:rgba(96,165,250,.15);color:#60a5fa;padding:.2rem .65rem;border-radius:50px;font-size:.72rem;font-weight:700">Đã TT</span>'
+        }[s] || s);
+
+        el.innerHTML = `<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:.83rem">
+            <thead><tr style="border-bottom:1px solid rgba(255,255,255,.1)">
+                <th style="padding:.65rem .85rem;text-align:left;color:rgba(255,255,255,.45);font-size:.72rem;text-transform:uppercase">Sản phẩm</th>
+                <th style="padding:.65rem .85rem;text-align:left;color:rgba(255,255,255,.45);font-size:.72rem;text-transform:uppercase">User</th>
+                <th style="padding:.65rem .85rem;text-align:center;color:rgba(255,255,255,.45);font-size:.72rem;text-transform:uppercase">Trạng thái</th>
+                <th style="padding:.65rem .85rem;text-align:center;color:rgba(255,255,255,.45);font-size:.72rem;text-transform:uppercase">Ngày tạo</th>
+                <th style="padding:.65rem .85rem;text-align:center;color:rgba(255,255,255,.45);font-size:.72rem;text-transform:uppercase">Hành động</th>
+            </tr></thead>
+            <tbody>${ads.map(ad => `<tr style="border-bottom:1px solid rgba(255,255,255,.05)">
+                <td style="padding:.75rem .85rem">
+                    <div style="display:flex;align-items:center;gap:.6rem">
+                        ${ad.image_url ? `<img src="${ad.image_url}" style="width:38px;height:38px;border-radius:8px;object-fit:cover" onerror="this.style.display='none'">` : '<div style="width:38px;height:38px;border-radius:8px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center">📦</div>'}
+                        <div>
+                            <div style="font-weight:700;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${ad.product_name}</div>
+                            <div style="font-size:.72rem;color:rgba(255,255,255,.4)">${ad.platform || ''} · ${ad.slot || ''}</div>
+                            ${ad.rejection_reason ? `<div style="font-size:.72rem;color:#f87171;margin-top:.15rem">${ad.rejection_reason}</div>` : ''}
+                        </div>
+                    </div>
+                </td>
+                <td style="padding:.75rem .85rem">
+                    <div style="font-weight:600;font-size:.82rem">${ad.username || '—'}</div>
+                    <div style="font-size:.72rem;color:rgba(255,255,255,.4)">${ad.user_email || ''}</div>
+                </td>
+                <td style="padding:.75rem .85rem;text-align:center">${statusBadge(ad.status)}</td>
+                <td style="padding:.75rem .85rem;text-align:center;font-size:.78rem;color:rgba(255,255,255,.45)">${new Date(ad.created_at).toLocaleDateString('vi-VN')}</td>
+                <td style="padding:.75rem .85rem;text-align:center">
+                    <div style="display:flex;gap:.35rem;justify-content:center;flex-wrap:wrap">
+                        ${ad.status === 'pending' ? `<button onclick="adminAdAction(${ad.id},'approve')" style="padding:.3rem .7rem;border:none;border-radius:8px;background:rgba(74,222,128,.2);color:#4ade80;font-size:.75rem;font-weight:700;cursor:pointer"><i class="fas fa-check"></i> Duyệt</button>` : ''}
+                        ${ad.status === 'pending' ? `<button onclick="adminAdReject(${ad.id})" style="padding:.3rem .7rem;border:none;border-radius:8px;background:rgba(248,113,113,.15);color:#f87171;font-size:.75rem;font-weight:700;cursor:pointer"><i class="fas fa-times"></i> Từ chối</button>` : ''}
+                        ${ad.status === 'active' ? `<button onclick="adminAdAction(${ad.id},'hide')" style="padding:.3rem .7rem;border:none;border-radius:8px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.6);font-size:.75rem;font-weight:700;cursor:pointer"><i class="fas fa-eye-slash"></i> Ẩn</button>` : ''}
+                        ${ad.status === 'hidden' ? `<button onclick="adminAdAction(${ad.id},'unhide')" style="padding:.3rem .7rem;border:none;border-radius:8px;background:rgba(96,165,250,.15);color:#60a5fa;font-size:.75rem;font-weight:700;cursor:pointer"><i class="fas fa-eye"></i> Hiện</button>` : ''}
+                        <button onclick="adminAdDelete(${ad.id})" style="padding:.3rem .7rem;border:none;border-radius:8px;background:rgba(239,68,68,.15);color:#ef4444;font-size:.75rem;font-weight:700;cursor:pointer"><i class="fas fa-trash"></i></button>
+                    </div>
+                </td>
+            </tr>`).join('')}
+            </tbody>
+        </table></div>`;
+    } catch(e) {
+        el.innerHTML = '<div style="color:#f87171;padding:1rem">Lỗi tải dữ liệu</div>';
+    }
+}
+
+async function adminAdAction(id, action) {
+    const token = sessionStorage.getItem('admin_token') || '';
+    try {
+        const r = await fetch(`${ADS_ADMIN_API}/admin/ads/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
+            body: JSON.stringify({ action })
+        });
+        if (r.ok) {
+            const labels = { approve: '✅ Đã duyệt', hide: '🙈 Đã ẩn', unhide: '👁️ Đã hiện' };
+            if (typeof showToast === 'function') showToast(labels[action] || 'Thành công', 'success', 2500);
+            loadAdminAds();
+        }
+    } catch(e) { if (typeof showToast === 'function') showToast('❌ Lỗi', 'error', 2000); }
+}
+
+async function adminAdReject(id) {
+    const reason = prompt('Lý do từ chối (để trống nếu không cần):') ?? null;
+    if (reason === null) return; // user bấm Cancel
+    const token = sessionStorage.getItem('admin_token') || '';
+    try {
+        const r = await fetch(`${ADS_ADMIN_API}/admin/ads/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
+            body: JSON.stringify({ action: 'reject', rejection_reason: reason })
+        });
+        if (r.ok) {
+            if (typeof showToast === 'function') showToast('🚫 Đã từ chối', 'info', 2500);
+            loadAdminAds();
+        }
+    } catch(e) {}
+}
+
+async function adminAdDelete(id) {
+    const token = sessionStorage.getItem('admin_token') || '';
+    try {
+        await fetch(`${ADS_ADMIN_API}/admin/ads/${id}`, { method: 'DELETE', headers: { 'x-admin-token': token } });
+        if (typeof showToast === 'function') showToast('🗑️ Đã xóa', 'info', 2000);
+        loadAdminAds();
     } catch(e) {}
 }
