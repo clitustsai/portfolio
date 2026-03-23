@@ -1288,10 +1288,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-
                 <!-- VIP Subscriptions Tab -->
                 <div class="admin-tab-content" id="tab-subscriptions" style="display:none">
                     <div class="admin-section-header">
@@ -1322,6 +1318,26 @@
                     <!-- Ads list -->
                     <div id="adminAdsList" style="margin-top:.5rem"></div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ads Reject Modal -->
+    <div id="adsRejectModal" class="admin-sub-modal" style="display:none">
+        <div class="admin-sub-modal-content">
+            <h3>🚫 Từ chối quảng cáo</h3>
+            <input type="hidden" id="adsRejectId">
+            <div class="form-group">
+                <label>Lý do từ chối (tùy chọn)</label>
+                <textarea id="adsRejectReason" rows="3" placeholder="Nhập lý do từ chối..."></textarea>
+            </div>
+            <div class="admin-modal-actions">
+                <button class="admin-btn-danger" onclick="confirmAdReject()"><i class="fas fa-times"></i> Từ chối</button>
+                <button class="admin-btn-secondary" onclick="document.getElementById('adsRejectModal').style.display='none'"><i class="fas fa-arrow-left"></i> Hủy</button>
+            </div>
+        </div>
+    </div>
+
     <div id="projectEditModal" class="admin-sub-modal" style="display:none">
         <div class="admin-sub-modal-content">
             <h3 id="projectEditTitle">Chỉnh Sửa Dự Án</h3>

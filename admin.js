@@ -1075,8 +1075,15 @@ async function adminAdAction(id, action) {
 }
 
 async function adminAdReject(id) {
-    const reason = prompt('Lý do từ chối (để trống nếu không cần):') ?? null;
-    if (reason === null) return; // user bấm Cancel
+    document.getElementById('adsRejectId').value = id;
+    document.getElementById('adsRejectReason').value = '';
+    document.getElementById('adsRejectModal').style.display = 'flex';
+}
+
+async function confirmAdReject() {
+    const id = document.getElementById('adsRejectId').value;
+    const reason = document.getElementById('adsRejectReason').value.trim();
+    document.getElementById('adsRejectModal').style.display = 'none';
     const token = sessionStorage.getItem('admin_token') || '';
     try {
         const r = await fetch(`${ADS_ADMIN_API}/admin/ads/${id}`, {

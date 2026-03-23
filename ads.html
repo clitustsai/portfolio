@@ -415,7 +415,7 @@ async function aiFillForm() {
   btn.innerHTML = '🤖 AI điền'; btn.disabled = false;
 }
 
-
+function selectPlan(el) {
   document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
   el.classList.add('selected');
   selectedPlan = el.dataset.plan;
