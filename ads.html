@@ -636,31 +636,37 @@ if (urlParams.get('payment') === 'success') {
   });
 }
 
-// Init — kiểm tra auth, redirect về index.html nếu chưa đăng nhập
+// Init — kiểm tra auth
 document.addEventListener('DOMContentLoaded', async () => {
   const token = getToken();
 
   if (!token) {
-    // Không redirect — hiện overlay đăng nhập ngay trên trang
     showLoginWall();
     return;
   }
+
+  // Có token → show app ngay, verify ở background
+  document.getElementById('adsLoading').style.display = 'none';
+  document.getElementById('adsMain').style.display = 'block';
+
+  // Verify token ở background — nếu thực sự invalid thì mới show login wall
   try {
     const r = await fetch(`${API_BASE}/api/auth/me`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     if (r.status === 401 || r.status === 403) {
-      localStorage.removeItem('user_token');
-      localStorage.removeItem('auth_token');
-      showLoginWall();
-      return;
+      const d = await r.json().catch(() => ({}));
+      // Chỉ logout nếu server xác nhận rõ ràng token invalid
+      if (d.error && (d.error.includes('hết hạn') || d.error.includes('không tồn tại') || d.error.includes('Unauthorized'))) {
+        localStorage.removeItem('user_token');
+        localStorage.removeItem('auth_token');
+        showLoginWall();
+      }
     }
   } catch(e) {
-    // Network error / backend chưa start — vẫn cho vào nếu có token
+    // Network error — vẫn giữ app hiển thị
     console.warn('Auth check failed:', e.message);
   }
-  document.getElementById('adsLoading').style.display = 'none';
-  document.getElementById('adsMain').style.display = 'block';
 });
 
 function showLoginWall() {
