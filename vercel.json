@@ -17,6 +17,11 @@
     { "source": "/api/subscription/:path*", "destination": "/api/subscription.js" },
     { "source": "/api/chat-ai", "destination": "/api/aichat.js" },
     { "source": "/api/live/:path*", "destination": "/api/live.js" },
-    { "source": "/api/live", "destination": "/api/live.js" }
+    { "source": "/api/live", "destination": "/api/live.js" },
+    { "source": "/api/ads/ai-fill", "destination": "/api/ads.js" },
+    { "source": "/api/ads/:path*", "destination": "/api/ads.js" },
+    { "source": "/api/ads", "destination": "/api/ads.js" },
+    { "source": "/api/pr-posts/:path*", "destination": "/api/ads.js" },
+    { "source": "/api/pr-posts", "destination": "/api/ads.js" }
   ]
 }

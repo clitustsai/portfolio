@@ -28,7 +28,7 @@ module.exports = async (req, res) => {
     if (idMatch) {
         const id = parseInt(idMatch[1]);
         if (req.method === 'PATCH' && isAdmin) {
-            await run('UPDATE messages SET read=1 WHERE id=$1', [id]);
+            await run('UPDATE messages SET read=true WHERE id=$1', [id]);
             return res.json({ ok: true });
         }
         if (req.method === 'DELETE' && isAdmin) {

@@ -492,17 +492,19 @@ async function submitOrder() {
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
 
   try {
-    await fetch(`${API_BASE}/messages`, {
+    const r = await fetch(`${API_BASE}/messages`, {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify(body)
     });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(d.error || 'Lỗi server');
     document.getElementById('formContent').style.display = 'none';
     const sb = document.getElementById('successBox');
     sb.style.display = 'block';
     document.getElementById('s-contact').textContent = email || phone;
   } catch(e) {
-    alert('Lỗi gửi form. Vui lòng thử lại hoặc liên hệ Zalo!');
+    alert('Lỗi gửi form: ' + e.message + '\nVui lòng thử lại hoặc liên hệ Zalo!');
     btn.disabled = false;
     btn.innerHTML = '<i class="fas fa-paper-plane"></i> Gửi Yêu Cầu Tư Vấn';
   }
