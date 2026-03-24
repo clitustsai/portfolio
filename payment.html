@@ -402,8 +402,23 @@
   <!-- VIP MEMBERSHIP -->
   <div id="vip" class="section-head">
     <div class="eyebrow">👑 Membership</div>
-    <h2>Gói VIP — 2.500.000 VNĐ/tháng</h2>
+    <h2>Gói VIP</h2>
     <p>Truy cập toàn bộ source code, tải không giới hạn, nội dung độc quyền</p>
+  </div>
+
+  <!-- Student VIP Banner -->
+  <div style="background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);border-radius:20px;padding:1.5rem 2rem;margin-bottom:2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;border:1px solid rgba(96,165,250,0.3);box-shadow:0 8px 32px rgba(0,0,0,0.2);">
+    <div style="display:flex;align-items:center;gap:1rem;">
+      <div style="font-size:2.5rem;">🎓</div>
+      <div>
+        <div style="font-size:0.7rem;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#60a5fa;margin-bottom:0.25rem;">Ưu đãi học sinh / sinh viên</div>
+        <div style="font-size:1.2rem;font-weight:900;color:#fff;">Gói VIP Học Sinh — chỉ <span style="background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">299.000 VNĐ/tháng</span></div>
+        <div style="font-size:0.83rem;color:rgba(255,255,255,0.55);margin-top:0.2rem;">Đầy đủ quyền lợi VIP · Yêu cầu mã số sinh viên/học sinh hợp lệ</div>
+      </div>
+    </div>
+    <button onclick="openStudentVipModal()" style="padding:0.8rem 1.6rem;border:none;border-radius:14px;background:linear-gradient(135deg,#60a5fa,#a78bfa);color:#fff;font-size:0.93rem;font-weight:800;cursor:pointer;white-space:nowrap;box-shadow:0 6px 20px rgba(96,165,250,0.35);transition:all 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+      <i class="fas fa-graduation-cap"></i> Đăng Ký Ngay
+    </button>
   </div>
 
   <div class="vip-wrap">
@@ -501,6 +516,57 @@
 
 </div>
 </main>
+
+<!-- Student VIP Modal -->
+<div class="modal-wrap" id="studentVipModal">
+  <div class="modal-bg" onclick="closeStudentVipModal()"></div>
+  <div class="modal-box" style="max-width:460px;">
+    <button class="modal-close" onclick="closeStudentVipModal()"><i class="fas fa-times"></i></button>
+    <div class="modal-icon" style="background:linear-gradient(135deg,#60a5fa,#a78bfa);">🎓</div>
+    <div class="modal-title">Đăng Ký VIP Học Sinh</div>
+    <div class="modal-price" style="background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">299.000 VNĐ/tháng</div>
+
+    <div id="studentStep1">
+      <div style="margin-bottom:1rem;display:flex;flex-direction:column;gap:0.6rem;">
+        <input type="text" id="stuName" placeholder="Họ tên của bạn *" style="width:100%;padding:0.75rem 1rem;border:1.5px solid var(--border);border-radius:12px;background:var(--bg);color:var(--text);font-size:0.9rem;outline:none;font-family:inherit;">
+        <input type="email" id="stuEmail" placeholder="Email của bạn *" style="width:100%;padding:0.75rem 1rem;border:1.5px solid var(--border);border-radius:12px;background:var(--bg);color:var(--text);font-size:0.9rem;outline:none;font-family:inherit;">
+        <div style="position:relative;">
+          <input type="text" id="stuStudentId" placeholder="Mã số sinh viên / học sinh *" style="width:100%;padding:0.75rem 1rem;border:1.5px solid #60a5fa;border-radius:12px;background:var(--bg);color:var(--text);font-size:0.9rem;outline:none;font-family:inherit;">
+          <span style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);font-size:0.7rem;color:#60a5fa;font-weight:700;pointer-events:none;">BẮT BUỘC</span>
+        </div>
+        <input type="text" id="stuSchool" placeholder="Tên trường học *" style="width:100%;padding:0.75rem 1rem;border:1.5px solid var(--border);border-radius:12px;background:var(--bg);color:var(--text);font-size:0.9rem;outline:none;font-family:inherit;">
+      </div>
+      <div style="background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,0.2);border-radius:12px;padding:0.75rem 1rem;margin-bottom:1rem;font-size:0.78rem;color:rgba(96,165,250,0.9);display:flex;gap:0.5rem;align-items:flex-start;">
+        <i class="fas fa-info-circle" style="margin-top:0.1rem;flex-shrink:0;"></i>
+        <span>Mã số sinh viên/học sinh sẽ được xác minh. Nếu không hợp lệ, đơn đăng ký sẽ bị từ chối.</span>
+      </div>
+      <div style="background:var(--bg);border-radius:14px;padding:1rem;margin-bottom:1rem;">
+        <div style="font-size:0.78rem;font-weight:700;color:var(--sub);margin-bottom:0.75rem;text-transform:uppercase;letter-spacing:0.05em;">Chuyển khoản ACB</div>
+        <div class="bank-table" style="margin:0;">
+          <div class="bank-row"><span class="k">Ngân hàng</span><span class="v">ACB</span></div>
+          <div class="bank-row"><span class="k">Số TK</span><span class="v">26996867 <button class="copy-btn" onclick="cp('26996867')"><i class="fas fa-copy"></i></button></span></div>
+          <div class="bank-row"><span class="k">Chủ TK</span><span class="v">THAI TUAN KIET</span></div>
+          <div class="bank-row"><span class="k">Số tiền</span><span class="v" style="color:#60a5fa;font-weight:800;">299.000 VNĐ</span></div>
+          <div class="bank-row"><span class="k">Nội dung</span><span class="v" style="font-size:0.78rem;">VIPHS [mã số SV/HS]</span></div>
+        </div>
+      </div>
+      <img src="img/qr-acb.webp" alt="QR ACB" style="width:140px;height:140px;border-radius:12px;display:block;margin:0 auto 1rem;border:2px solid var(--border);">
+      <button onclick="submitStudentVip()" id="stuSubmitBtn" style="width:100%;padding:0.9rem;border:none;border-radius:14px;background:linear-gradient(135deg,#60a5fa,#a78bfa);color:#fff;font-size:0.95rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.5rem;box-shadow:0 6px 20px rgba(96,165,250,0.35);transition:all 0.2s;">
+        <i class="fas fa-graduation-cap"></i> Xác nhận đã chuyển khoản
+      </button>
+      <div style="font-size:0.75rem;color:var(--sub);text-align:center;margin-top:0.75rem;">Sau khi xác nhận, admin sẽ kích hoạt trong 1-2 giờ</div>
+    </div>
+
+    <div id="studentStep2" style="display:none;text-align:center;padding:1rem 0;">
+      <div style="font-size:3rem;margin-bottom:0.75rem;">🎉</div>
+      <div style="font-size:1.1rem;font-weight:800;color:var(--text);margin-bottom:0.5rem;">Đăng ký thành công!</div>
+      <div style="font-size:0.88rem;color:var(--sub);line-height:1.6;margin-bottom:1.25rem;">Chúng tôi đã nhận được yêu cầu của bạn.<br>Gói VIP Học Sinh sẽ được kích hoạt trong <strong>1-2 giờ</strong>.</div>
+      <button onclick="window.open('https://zalo.me/0906857331','_blank')" style="padding:0.75rem 1.5rem;border:none;border-radius:50px;background:linear-gradient(135deg,#0068ff,#00c6ff);color:#fff;font-weight:700;cursor:pointer;font-size:0.9rem;">
+        <i class="fas fa-comment-dots"></i> Nhắn Zalo để nhanh hơn
+      </button>
+    </div>
+  </div>
+</div>
 
 <!-- VIP Modal -->
 <div class="modal-wrap" id="vipModal">
@@ -700,6 +766,41 @@ function cp(t) {
 }
 
 // ===== VIP =====
+function openStudentVipModal() {
+  document.getElementById('studentVipModal').style.display='flex';
+  document.getElementById('studentStep1').style.display='block';
+  document.getElementById('studentStep2').style.display='none';
+  document.body.style.overflow='hidden';
+}
+function closeStudentVipModal() {
+  document.getElementById('studentVipModal').style.display='none';
+  document.body.style.overflow='';
+}
+async function submitStudentVip() {
+  const name = document.getElementById('stuName').value.trim();
+  const email = document.getElementById('stuEmail').value.trim();
+  const studentId = document.getElementById('stuStudentId').value.trim();
+  const school = document.getElementById('stuSchool').value.trim();
+  if(!name||!email) { alert('Vui lòng nhập họ tên và email!'); return; }
+  if(!studentId) { alert('Vui lòng nhập mã số sinh viên / học sinh!'); document.getElementById('stuStudentId').focus(); return; }
+  if(!school) { alert('Vui lòng nhập tên trường!'); return; }
+  const btn = document.getElementById('stuSubmitBtn');
+  btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
+  try {
+    const r = await fetch(`${API_BASE}/subscription/register`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ name, email, transferRef: `VIPHS ${studentId}`, plan: 'student', studentId, school })
+    });
+    const d = await r.json();
+    if(!r.ok && r.status!==409) throw new Error(d.error);
+    document.getElementById('studentStep1').style.display='none';
+    document.getElementById('studentStep2').style.display='block';
+  } catch(e) {
+    alert('Lỗi: '+e.message);
+    btn.disabled=false;
+    btn.innerHTML='<i class="fas fa-graduation-cap"></i> Xác nhận đã chuyển khoản';
+  }
+}
 </script>
 <script src="dist/interactions-vip.js"></script>
 <script src="dist/live-activity.js"></script>
