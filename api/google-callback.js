@@ -2,23 +2,35 @@ const { queryOne, run } = require('./_db');
 const { signJWT } = require('./_auth');
 
 module.exports = async (req, res) => {
-    const { code } = req.query;
+    const { code, error: oauthError } = req.query;
     const appUrl = process.env.APP_URL || `https://${req.headers.host}`;
+    
+    if (oauthError) return res.redirect(`${appUrl}/?auth_error=${encodeURIComponent('Google error: ' + oauthError)}`);
     if (!code) return res.redirect(`${appUrl}/?auth_error=no_code`);
+    
     try {
+        const redirectUri = `${appUrl}/api/google-callback`;
+        const params = new URLSearchParams({
+            code,
+            client_id: process.env.GOOGLE_CLIENT_ID,
+            client_secret: process.env.GOOGLE_CLIENT_SECRET,
+            redirect_uri: redirectUri,
+            grant_type: 'authorization_code'
+        });
+
         const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({
-                code,
-                client_id: process.env.GOOGLE_CLIENT_ID,
-                client_secret: process.env.GOOGLE_CLIENT_SECRET,
-                redirect_uri: `${appUrl}/api/google-callback`,
-                grant_type: 'authorization_code'
-            })
+            body: params.toString()
         });
         const tokenData = await tokenRes.json();
-        if (!tokenData.access_token) throw new Error('No access token');
+        
+        // Log chi tiết lỗi từ Google
+        if (!tokenData.access_token) {
+            const errDetail = tokenData.error_description || tokenData.error || JSON.stringify(tokenData);
+            throw new Error('Google token error: ' + errDetail);
+        }
+
         const userRes = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
             headers: { Authorization: `Bearer ${tokenData.access_token}` }
         });
