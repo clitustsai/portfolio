@@ -600,6 +600,7 @@ html[data-theme="dark"] .cb.fn{color:#e879f9;}
 <script src="dist/api.js"></script>
 <script src="dist/auth.js"></script>
 <script src="dist/nav.js"></script>
+<script src="freemium.js"></script>
 <script>
 // ============================================================
 // CALCULATOR CORE — dùng math.js để tính chính xác 100%
@@ -633,6 +634,8 @@ function calcDel() {
 
 function calcEval() {
   if (!calcExpr.trim()) return;
+  // Kiểm tra freemium
+  if (window.freemium && !window.freemium.consume()) return;
   try {
     // Tự động đóng ngoặc nếu thiếu
     let expr = calcExpr;
@@ -732,6 +735,7 @@ function showRes(id, html, isErr) {
 }
 
 function solvePT1() {
+  if (window.freemium && !window.freemium.consume()) return;
   const a = parseFloat(document.getElementById('pt1a').value);
   const b = parseFloat(document.getElementById('pt1b').value);
   if (isNaN(a) || isNaN(b)) return showRes('pt1res', 'Vui lòng nhập đủ a, b', true);
@@ -745,6 +749,7 @@ function solvePT1() {
 }
 
 function solvePT2() {
+  if (window.freemium && !window.freemium.consume()) return;
   const a = parseFloat(document.getElementById('pt2a').value);
   const b = parseFloat(document.getElementById('pt2b').value);
   const c = parseFloat(document.getElementById('pt2c').value);
@@ -765,6 +770,7 @@ function solvePT2() {
 }
 
 function solveHPT() {
+  if (window.freemium && !window.freemium.consume()) return;
   try {
     const [a,b,c] = document.getElementById('hpt1').value.split(',').map(Number);
     const [d,e,f] = document.getElementById('hpt2').value.split(',').map(Number);
@@ -781,6 +787,7 @@ function solveHPT() {
 }
 
 function solveComb() {
+  if (window.freemium && !window.freemium.consume()) return;
   const n = parseInt(document.getElementById('cbn').value);
   const k = parseInt(document.getElementById('cbk').value);
   if (isNaN(n) || isNaN(k) || n < 0 || k < 0) return showRes('combres', 'n, k phải là số nguyên không âm', true);
@@ -820,6 +827,7 @@ function solvePow() {
 // LƯỢNG GIÁC
 // ============================================================
 function solveTrig() {
+  if (window.freemium && !window.freemium.consume()) return;
   const angle = parseFloat(document.getElementById('trigAngle').value);
   const unit = document.getElementById('trigUnit').value;
   if (isNaN(angle)) return showRes('trigres', 'Nhập góc', true);
@@ -957,6 +965,7 @@ function solveSphere() {
 // THỐNG KÊ
 // ============================================================
 function solveStats() {
+  if (window.freemium && !window.freemium.consume()) return;
   const raw = document.getElementById('statsData').value;
   const nums = raw.split(/[,;\s]+/).map(Number).filter(n => !isNaN(n));
   if (nums.length < 2) return showRes('statsres', 'Nhập ít nhất 2 số, cách nhau bởi dấu phẩy', true);

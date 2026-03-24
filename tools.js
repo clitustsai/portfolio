@@ -199,6 +199,8 @@ async function submitUpsell() {
 // ===== CODE REVIEW =====
 async function runCodeReview() {
   if (!isLoggedIn()) { openAuthModal('login'); return; }
+  // Freemium check
+  if (window.freemium && !window.freemium.consume()) return;
   var code = document.getElementById('cr-code').value.trim();
   var lang = document.getElementById('cr-lang').value;
   var btn = document.getElementById('cr-btn');
@@ -278,6 +280,8 @@ function copyReview() {
 var cvHTML = '';
 async function runCVGen() {
   if (!isLoggedIn()) { openAuthModal('login'); return; }
+  // Freemium check
+  if (window.freemium && !window.freemium.consume()) return;
   var name = document.getElementById('cv-name').value.trim();
   var btn = document.getElementById('cv-btn');
   var errBox = document.getElementById('cv-error');
@@ -441,6 +445,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 async function runImageAI() {
   if (!isLoggedIn()) { openAuthModal('login'); return; }
+  // Freemium check
+  if (window.freemium && !window.freemium.consume()) return;
   if (!_imgBase64) {
     const errBox = document.getElementById('img-error');
     errBox.textContent = '⚠️ Vui lòng chọn ảnh trước.'; errBox.classList.add('show'); return;

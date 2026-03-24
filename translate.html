@@ -269,6 +269,8 @@ function updateLabels() {
 async function translate() {
   const text = document.getElementById('srcText').value.trim();
   if (!text) return;
+  // Kiểm tra freemium
+  if (window.freemium && !window.freemium.consume()) return;
   const btn = document.getElementById('translateBtn');
   const loading = document.getElementById('loadingIndicator');
   btn.disabled = true;
@@ -446,6 +448,7 @@ renderHistory();
 <script src="dist/api.js"></script>
 <script src="dist/auth.js"></script>
 <script src="dist/nav.js"></script>
+<script src="freemium.js"></script>
 <script src="dist/mobile-nav.js"></script>
 <script src="dist/push-notify.js"></script>
 <script src="dist/bug-report.js"></script>
