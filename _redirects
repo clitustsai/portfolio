@@ -1,0 +1,5 @@
+# API proxy to Render backend
+/api/*  https://portfolio-utbu.onrender.com/api/:splat  200
+
+# SPA fallback
+/*  /index.html  200

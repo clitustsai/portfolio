@@ -1,0 +1,10 @@
+node_modules/
+server/
+.git/
+.kiro/
+*.md
+.env
+.env.*
+package.json
+package-lock.json
+wrangler.toml
