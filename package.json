@@ -2,7 +2,7 @@
   "name": "portfolio-frontend",
   "version": "1.0.0",
   "scripts": {
-    "build": "echo 'no build needed'"
+    "build": "echo no-build"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
