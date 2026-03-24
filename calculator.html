@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<script>if(localStorage.getItem('theme')==='dark')document.documentElement.setAttribute('data-theme','dark');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+<meta name="theme-color" content="#667eea">
+<title>Máy Tính Toán Học THCS/THPT — Clitus PC</title>
+<meta name="description" content="Máy tính toán học chính xác cho học sinh THCS, THPT: đại số, lượng giác, logarithm, tổ hợp, phương trình, hình học.">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="mobile-responsive.css">
+<link rel="stylesheet" href="mobile-ux.css">
+<link rel="stylesheet" href="mobile-fix.css">
+<link rel="stylesheet" href="modern.css">
+<link rel="stylesheet" href="ultra-modern.css">
+<link rel="stylesheet" href="fab-layout.css">
+<!-- math.js for exact computation -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.4.0/math.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#f0f2ff;--card:#fff;--text:#1a1a2e;--sub:#6b7280;--border:#e5e7ff;
+  --g1:#667eea;--g2:#764ba2;--g3:#f093fb;
+  --btn-bg:#f5f6ff;--btn-hover:#e8eaff;--btn-text:#1a1a2e;
+  --op-bg:rgba(102,126,234,.12);--op-text:#667eea;
+  --eq-bg:linear-gradient(135deg,#667eea,#764ba2);
+  --display-bg:#1a1a2e;--display-text:#fff;
+}
+html[data-theme="dark"]{
+  --bg:#080818;--card:#12122a;--text:#e8e8ff;--sub:#8888aa;--border:#1e1e3a;
+  --btn-bg:#1e1e3a;--btn-hover:#2a2a4a;--btn-text:#e8e8ff;
+  --op-bg:rgba(102,126,234,.2);--op-text:#a78bfa;
+  --display-bg:#0a0a1a;--display-text:#e8e8ff;
+}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;}
+
+.calc-page{padding:5rem 1rem 5rem;max-width:1100px;margin:0 auto;}
+.calc-header{text-align:center;margin-bottom:2rem;}
+.calc-header h1{font-size:clamp(1.5rem,4vw,2.2rem);font-weight:900;background:linear-gradient(135deg,#667eea,#f093fb,#764ba2);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.calc-header p{color:var(--sub);margin-top:.4rem;font-size:.95rem;}
+
+/* TABS */
+.calc-tabs{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;margin-bottom:1.5rem;}
+.calc-tab{padding:.5rem 1.1rem;border-radius:50px;border:1.5px solid var(--border);background:var(--card);color:var(--sub);font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s;}
+.calc-tab.active{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(102,126,234,.35);}
+.calc-tab:hover:not(.active){border-color:#667eea;color:#667eea;}
+
+/* PANELS */
+.calc-panel{display:none;}
+.calc-panel.active{display:block;}
+
+/* MAIN CALCULATOR */
+.calc-wrap{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start;}
+@media(max-width:700px){.calc-wrap{grid-template-columns:1fr;}}
+
+.calc-box{background:var(--card);border-radius:24px;overflow:hidden;box-shadow:0 8px 40px rgba(102,126,234,.12);border:1px solid var(--border);}
+.calc-display{background:var(--display-bg);padding:1.2rem 1.4rem;min-height:110px;display:flex;flex-direction:column;justify-content:flex-end;gap:.3rem;}
+.calc-expr{font-size:.82rem;color:rgba(255,255,255,.45);min-height:1.2em;word-break:break-all;text-align:right;}
+.calc-result{font-size:2.2rem;font-weight:800;color:var(--display-text);text-align:right;word-break:break-all;line-height:1.2;}
+.calc-result.error{color:#f87171;font-size:1.1rem;}
+
+.calc-btns{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:12px;}
+.cb{padding:.75rem .4rem;border:none;border-radius:12px;font-size:.95rem;font-weight:700;cursor:pointer;transition:all .18s;background:var(--btn-bg);color:var(--btn-text);}
+.cb:hover{background:var(--btn-hover);transform:translateY(-1px);}
+.cb:active{transform:scale(.95);}
+.cb.op{background:var(--op-bg);color:var(--op-text);}
+.cb.fn{background:rgba(240,147,251,.1);color:#c026d3;font-size:.78rem;}
+html[data-theme="dark"] .cb.fn{color:#e879f9;}
+.cb.eq{background:var(--eq-bg);color:#fff;box-shadow:0 4px 14px rgba(102,126,234,.4);}
+.cb.eq:hover{opacity:.9;transform:translateY(-2px);}
+.cb.clear{background:rgba(248,113,113,.12);color:#ef4444;}
+.cb.span2{grid-column:span 2;}
+.cb.span3{grid-column:span 3;}
+
+/* HISTORY */
+.calc-history{background:var(--card);border-radius:20px;padding:1.2rem;border:1px solid var(--border);box-shadow:0 4px 20px rgba(102,126,234,.08);}
+.calc-history h3{font-size:.88rem;font-weight:800;color:var(--sub);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.8rem;display:flex;justify-content:space-between;align-items:center;}
+.calc-history h3 button{background:none;border:none;color:#ef4444;font-size:.75rem;cursor:pointer;font-weight:700;}
+.hist-list{display:flex;flex-direction:column;gap:.5rem;max-height:320px;overflow-y:auto;}
+.hist-item{background:var(--btn-bg);border-radius:10px;padding:.6rem .9rem;cursor:pointer;transition:background .2s;}
+.hist-item:hover{background:var(--btn-hover);}
+.hist-expr{font-size:.78rem;color:var(--sub);}
+.hist-val{font-size:1rem;font-weight:800;color:var(--g1);}
+.hist-empty{color:var(--sub);font-size:.85rem;text-align:center;padding:1rem;}
+
+/* FORMULA PANELS */
+.formula-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;}
+.formula-card{background:var(--card);border-radius:16px;padding:1.2rem;border:1px solid var(--border);box-shadow:0 4px 16px rgba(102,126,234,.07);}
+.formula-card h3{font-size:.9rem;font-weight:800;color:var(--g1);margin-bottom:.8rem;display:flex;align-items:center;gap:.4rem;}
+.formula-inputs{display:flex;flex-direction:column;gap:.6rem;}
+.fi-row{display:flex;gap:.5rem;align-items:center;}
+.fi-row label{font-size:.78rem;font-weight:700;color:var(--sub);min-width:80px;}
+.fi-row input,.fi-row select{flex:1;padding:.5rem .75rem;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:.88rem;outline:none;transition:border .2s;}
+.fi-row input:focus,.fi-row select:focus{border-color:#667eea;}
+.fi-btn{width:100%;padding:.65rem;border:none;border-radius:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-weight:700;font-size:.88rem;cursor:pointer;margin-top:.5rem;transition:all .2s;}
+.fi-btn:hover{opacity:.9;transform:translateY(-1px);}
+.fi-result{margin-top:.6rem;padding:.6rem .9rem;border-radius:10px;background:rgba(102,126,234,.08);border:1px solid rgba(102,126,234,.15);font-size:.9rem;font-weight:700;color:var(--g1);display:none;word-break:break-all;}
+.fi-result.show{display:block;}
+.fi-result.err{color:#ef4444;background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.2);}
+
+/* UNIT CONVERTER */
+.unit-wrap{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;}
+.unit-card{background:var(--card);border-radius:16px;padding:1.2rem;border:1px solid var(--border);}
+.unit-card h3{font-size:.88rem;font-weight:800;color:var(--g1);margin-bottom:.8rem;}
+.unit-row{display:flex;gap:.5rem;margin-bottom:.5rem;align-items:center;}
+.unit-row input{flex:1;padding:.5rem .75rem;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:.9rem;outline:none;}
+.unit-row input:focus{border-color:#667eea;}
+.unit-row select{padding:.5rem .5rem;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:.82rem;outline:none;}
+.unit-eq{text-align:center;font-size:.82rem;color:var(--sub);margin:.3rem 0;}
+</style>
+</head>
+<body>
+<script src="dist/protect.js"></script>
+<header>
+  <nav>
+    <a href="index.html" class="logo"><span class="logo-icon">💻</span><span class="logo-text">Clitus<span class="logo-accent">PC</span></span></a>
+    <ul id="navMenu">
+      <li><a href="index.html">Trang Chủ</a></li>
+      <li><a href="blog.html">Blog</a></li>
+      <li class="nav-dropdown">
+        <a href="#" class="nav-dropdown-toggle">Công Cụ <i class="fas fa-chevron-down nav-chevron"></i></a>
+        <ul class="nav-dropdown-menu">
+          <li><a href="tools.html"><span class="dd-icon">🤖</span> AI Tools</a></li>
+          <li><a href="calculator.html" class="active"><span class="dd-icon">🧮</span> Máy Tính</a></li>
+          <li><a href="arcade.html"><span class="dd-icon">🎮</span> Arcade & Coins</a></li>
+          <li><a href="services.html"><span class="dd-icon">🛍️</span> Dịch Vụ</a></li>
+          <li><a href="roadmap.html"><span class="dd-icon">🗺️</span> Roadmap</a></li>
+          <li><a href="payment.html"><span class="dd-icon">💳</span> Dịch Vụ & VIP</a></li>
+        </ul>
+      </li>
+    </ul>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+      <div class="nav-auth-slot"></div>
+      <button class="nav-hamburger" id="navHamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+</header>
+
+<main class="calc-page">
+  <div class="calc-header">
+    <div style="font-size:3rem;margin-bottom:.5rem;">🧮</div>
+    <h1>Máy Tính Toán Học THCS/THPT</h1>
+    <p>Tính chính xác 100% — Đại số · Lượng giác · Logarithm · Tổ hợp · Hình học · Đổi đơn vị</p>
+  </div>
+
+  <!-- TABS -->
+  <div class="calc-tabs">
+    <button class="calc-tab active" onclick="switchTab('basic')">🔢 Máy Tính</button>
+    <button class="calc-tab" onclick="switchTab('algebra')">📐 Đại Số</button>
+    <button class="calc-tab" onclick="switchTab('trig')">📏 Lượng Giác</button>
+    <button class="calc-tab" onclick="switchTab('geometry')">🔷 Hình Học</button>
+    <button class="calc-tab" onclick="switchTab('stats')">📊 Thống Kê</button>
+    <button class="calc-tab" onclick="switchTab('unit')">⚖️ Đổi Đơn Vị</button>
+  </div>
+
+  <!-- ===== TAB: BASIC CALCULATOR ===== -->
+  <div class="calc-panel active" id="tab-basic">
+    <div class="calc-wrap">
+      <div class="calc-box">
+        <div class="calc-display">
+          <div class="calc-expr" id="calcExpr"></div>
+          <div class="calc-result" id="calcResult">0</div>
+        </div>
+        <div class="calc-btns">
+          <!-- Row 1 -->
+          <button class="cb fn" onclick="calcFn('sin(')">sin</button>
+          <button class="cb fn" onclick="calcFn('cos(')">cos</button>
+          <button class="cb fn" onclick="calcFn('tan(')">tan</button>
+          <button class="cb fn" onclick="calcFn('log(')">log</button>
+          <!-- Row 2 -->
+          <button class="cb fn" onclick="calcFn('sqrt(')">√</button>
+          <button class="cb fn" onclick="calcFn('^2')">x²</button>
+          <button class="cb fn" onclick="calcFn('^')">xⁿ</button>
+          <button class="cb fn" onclick="calcFn('ln(')">ln</button>
+          <!-- Row 3 -->
+          <button class="cb fn" onclick="calcFn('pi')">π</button>
+          <button class="cb fn" onclick="calcFn('e')">e</button>
+          <button class="cb fn" onclick="calcFn('abs(')">|x|</button>
+          <button class="cb fn" onclick="calcFn('factorial(')">n!</button>
+          <!-- Row 4 -->
+          <button class="cb clear" onclick="calcClear()">AC</button>
+          <button class="cb clear" onclick="calcDel()">⌫</button>
+          <button class="cb op" onclick="calcFn('%')">%</button>
+          <button class="cb op" onclick="calcFn('/')">÷</button>
+          <!-- Row 5 -->
+          <button class="cb" onclick="calcFn('7')">7</button>
+          <button class="cb" onclick="calcFn('8')">8</button>
+          <button class="cb" onclick="calcFn('9')">9</button>
+          <button class="cb op" onclick="calcFn('*')">×</button>
+          <!-- Row 6 -->
+          <button class="cb" onclick="calcFn('4')">4</button>
+          <button class="cb" onclick="calcFn('5')">5</button>
+          <button class="cb" onclick="calcFn('6')">6</button>
+          <button class="cb op" onclick="calcFn('-')">−</button>
+          <!-- Row 7 -->
+          <button class="cb" onclick="calcFn('1')">1</button>
+          <button class="cb" onclick="calcFn('2')">2</button>
+          <button class="cb" onclick="calcFn('3')">3</button>
+          <button class="cb op" onclick="calcFn('+')">+</button>
+          <!-- Row 8 -->
+          <button class="cb" onclick="calcFn('(')"> ( </button>
+          <button class="cb" onclick="calcFn('0')">0</button>
+          <button class="cb" onclick="calcFn('.')">.</button>
+          <button class="cb eq" onclick="calcEval()">=</button>
+        </div>
+      </div>
+
+      <div class="calc-history">
+        <h3>Lịch Sử <button onclick="clearHistory()">Xóa tất cả</button></h3>
+        <div class="hist-list" id="histList">
+          <div class="hist-empty">Chưa có phép tính nào</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TAB: ĐẠI SỐ ===== -->
+  <div class="calc-panel" id="tab-algebra">
+    <div class="formula-grid">
+
+      <!-- Phương trình bậc 1 -->
+      <div class="formula-card">
+        <h3>📌 Phương trình bậc 1: ax + b = 0</h3>
+        <div class="formula-inputs">
+          <div class="fi-row"><label>a =</label><input type="number" id="pt1a" placeholder="hệ số a"></div>
+          <div class="fi-row"><label>b =</label><input type="number" id="pt1b" placeholder="hệ số b"></div>
+          <button class="fi-btn" onclick="solvePT1()">Giải</button>
+          <div class="fi-result" id="pt1res"></div>
+        </div>
+      </div>
+
+      <!-- Phương trình bậc 2 -->
+      <div class="formula-card">
+        <h3>📌 Phương trình bậc 2: ax² + bx + c = 0</h3>
+        <div class="formula-inputs">
+          <div class="fi-row"><label>a =</label><input type="number" id="pt2a" placeholder="hệ số a"></div>
+          <div class="fi-row"><label>b =</label><input type="number" id="pt2b" placeholder="hệ số b"></div>
+          <div class="fi-row"><label>c =</label><input type="number" id="pt2c" placeholder="hệ số c"></div>
+          <button class="fi-btn" onclick="solvePT2()">Giải</button>
+          <div class="fi-result" id="pt2res"></div>
+        </div>
+      </div>
+
+      <!-- Hệ phương trình bậc 1 -->
+      <div class="formula-card">
+        <h3>📌 Hệ PT bậc 1: ax+by=c / dx+ey=f</h3>
+        <div class="formula-inputs">
+          <div class="fi-row"><label>a, b, c =</label><input type="text" id="hpt1" placeholder="VD: 2, 3, 7"></div>
+          <div class="fi-row"><label>d, e, f =</label><input type="text" id="hpt2" placeholder="VD: 1, -1, 1"></div>
+          <button class="fi-btn" onclick="solveHPT()">Giải</button>
+          <div class="fi-result" id="hptres"></div>
+        </div>
+      </div>
+
+      <!-- Tổ hợp & Chỉnh hợp -->
+      <div class="formula-card">
+        <h3>🎲 Tổ hợp C(n,k) & Chỉnh hợp A(n,k)</h3>
+        <div class="formula-inputs">
+          <div class="fi-row"><label>n =</label><input type="number" id="cbn" placeholder="n" min="0"></div>
+          <div class="fi-row"><label>k =</label><input type="number" id="cbk" placeholder="k" min="0"></div>
+          <button class="fi-btn" onclick="solveComb()">Tính</button>
+          <div class="fi-result" id="combres"></div>
+        </div>
+      </div>
+
+      <!-- Logarithm -->
+      <div class="formula-card">
+        <h3>📊 Logarithm: log_a(b)</h3>
+        <div class="formula-inputs">
+          <div class="fi-row"><label>Cơ số a =</label><input type="number" id="loga" placeholder="VD: 2, 10, e" step="any"></div>
+          <div class="fi-row"><label>Số b =</label><input type="number" id="logb" placeholder="b > 0" step="any"></div>
+          <button class="fi-btn" onclick="solveLog()">Tính</button>
+          <div class="fi-result" id="logres"></div>
+        </div>
+      </div>
+
+      <!-- Lũy thừa & Căn -->
+      <div class="formula-card">
+        <h3>⚡ Lũy thừa & Căn bậc n</h3>
+        <div class="formula-inputs">
+          <div class="fi-row"><label>Cơ số x =</label><input type="number" id="powx" placeholder="x" step="any"></div>
+          <div class="fi-row"><label>Số mũ n =</label><input type="number" id="pown" placeholder="n" step="any"></div>
+          <div class="fi-row"><label>Căn bậc k =</label><input type="number" id="rootk" placeholder="k (để trống = bỏ qua)" step="any"></div>
+          <button class="fi-btn" onclick="solvePow()">Tính</button>
+          <div class="fi-result" id="powres"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== TAB: LƯỢNG GIÁC ===== -->
+  <div class="calc-panel" id="tab-trig">
+    <div class="formula-grid">
+
+      <div class="formula-card">
+        <h3>📐 Giá trị lượng giác</h3>
+        <div class="formula-inputs">
+          <div class="fi-row"><label>Góc =</label><input type="number" id="trigAngle" placeholder="VD: 30, 45, 60, 90" step="any"></div>
+          <div class="fi-row"><label>Đơn vị</label>
+            <select id="trigUnit"><option value="deg">Độ (°)</option><option value="rad">Radian</option></select>
+          </div>
+          <button class="fi-btn" onclick="solveTrig()">Tính tất cả</button>
+          <div class="fi-result" id="trigres"></div>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <h3>📐 Định lý Cos: a² = b²+c²−2bc·cos(A)</h3>
+        <div class="formula-inputs">
+          <div class="fi-row"><label>b =</label><input type="number" id="cosb" placeholder="cạnh b" step="any"></div>
+          <div class="fi-row"><label>c =</label><input type="number" id="cosc" placeholder="cạnh c" step="any"></div>
+          <div class="fi-row"><label>Góc A (°) =</label><input type="number" id="cosA" placeholder="góc đối cạnh a" step="any"></div>
+          <button class="fi-btn" onclick="solveCosRule()">Tính cạnh a</button>
+          <div class="fi-result" id="cosres"></div>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <h3>📐 Định lý Sin: a/sin(A) = b/sin(B) = c/sin(C)</h3>
+        <div class="formula-inputs">
+          <div class="fi-row"><label>a =</label><input type="number" id="sina" placeholder="cạnh a" step="any"></div>
+          <div class="fi-row"><label>Góc A (°) =</label><input type="number" id="sinA" placeholder="góc A" step="any"></div>
+          <div class="fi-row"><label>Góc B (°) =</label><input type="number" id="sinB" placeholder="góc B" step="any"></div>
+          <button class="fi-btn" onclick="solveSinRule()">Tính cạnh b</button>
+          <div class="fi-result" id="sinres"></div>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <h3>🔄 Chuyển đổi Độ ↔ Radian</h3>
+        <div class="formula-inputs">
+          <div class="fi-row"><label>Độ (°) =</label><input type="number" id="deg2rad" placeholder="VD: 180" step="any" oninput="convertDegRad(this,'deg')"></div>
+          <div class="fi-row"><label>Radian =</label><input type="number" id="rad2deg" placeholder="VD: 3.14159" step="any" oninput="convertDegRad(this,'rad')"></div>
+          <div class="fi-result show" id="degradres" style="display:block;">Nhập giá trị để chuyển đổi</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== TAB: HÌNH HỌC ===== -->
+  <div class="calc-panel" id="tab-geometry">
+    <div class="formula-grid">
+
+      <div class="formula-card">
+        <h3>⭕ Hình tròn</h3>
+        <div class="formula-inputs">
+          <div class="fi-row"><label>Bán kính r =</label><input type="number" id="circR" placeholder="r" step="any"></div>
+          <button class="fi-btn" onclick="solveCircle()">Tính</button>
+          <div class="fi-result" id="circres"></div>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <h3>🔷 Tam giác</h3>
+        <div class="formula-inputs">
+          <div class="fi-row"><label>Đáy a =</label><input type="number" id="triA" placeholder="đáy" step="any"></div>
+          <div class="fi-row"><label>Chiều cao h =</label><input type="number" id="triH" placeholder="chiều cao" step="any"></div>
+          <div class="fi-row"><label>Cạnh b =</label><input type="number" id="triB" placeholder="(tùy chọn)" step="any"></div>
+          <div class="fi-row"><label>Cạnh c =</label><input type="number" id="triC" placeholder="(tùy chọn)" step="any"></div>
+          <button class="fi-btn" onclick="solveTriangle()">Tính</button>
+          <div class="fi-result" id="trires"></div>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <h3>▭ Hình chữ nhật / Hình vuông</h3>
+        <div class="formula-inputs">
+          <div class="fi-row"><label>Chiều dài a =</label><input type="number" id="rectA" placeholder="a" step="any"></div>
+          <div class="fi-row"><label>Chiều rộng b =</label><input type="number" id="rectB" placeholder="b (để trống = hình vuông)" step="any"></div>
+          <button class="fi-btn" onclick="solveRect()">Tính</button>
+          <div class="fi-result" id="rectres"></div>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <h3>🔺 Hình thang</h3>
+        <div class="formula-inputs">
+          <div class="fi-row"><label>Đáy lớn a =</label><input type="number" id="trapA" placeholder="a" step="any"></div>
+          <div class="fi-row"><label>Đáy nhỏ b =</label><input type="number" id="trapB" placeholder="b" step="any"></div>
+          <div class="fi-row"><label>Chiều cao h =</label><input type="number" id="trapH" placeholder="h" step="any"></div>
+          <button class="fi-btn" onclick="solveTrap()">Tính diện tích</button>
+          <div class="fi-result" id="trapres"></div>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <h3>🧊 Hình hộp chữ nhật</h3>
+        <div class="formula-inputs">
+          <div class="fi-row"><label>Dài a =</label><input type="number" id="boxA" placeholder="a" step="any"></div>
+          <div class="fi-row"><label>Rộng b =</label><input type="number" id="boxB" placeholder="b" step="any"></div>
+          <div class="fi-row"><label>Cao c =</label><input type="number" id="boxC" placeholder="c" step="any"></div>
+          <button class="fi-btn" onclick="solveBox()">Tính</button>
+          <div class="fi-result" id="boxres"></div>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <h3>🔵 Hình cầu & Hình trụ</h3>
+        <div class="formula-inputs">
+          <div class="fi-row"><label>Bán kính r =</label><input type="number" id="sphereR" placeholder="r" step="any"></div>
+          <div class="fi-row"><label>Chiều cao h =</label><input type="number" id="sphereH" placeholder="h (trụ, để trống = cầu)" step="any"></div>
+          <button class="fi-btn" onclick="solveSphere()">Tính</button>
+          <div class="fi-result" id="sphereres"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== TAB: THỐNG KÊ ===== -->
+  <div class="calc-panel" id="tab-stats">
+    <div class="formula-grid">
+
+      <div class="formula-card" style="grid-column:1/-1;">
+        <h3>📊 Thống kê mô tả (nhập dãy số)</h3>
+        <div class="formula-inputs">
+          <div class="fi-row"><label>Dãy số =</label><input type="text" id="statsData" placeholder="VD: 5, 8, 3, 9, 7, 4, 6, 10, 2, 1"></div>
+          <button class="fi-btn" onclick="solveStats()">Tính tất cả</button>
+          <div class="fi-result" id="statsres"></div>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <h3>📈 Xác suất: P(A) = m/n</h3>
+        <div class="formula-inputs">
+          <div class="fi-row"><label>Số kết quả thuận lợi m =</label><input type="number" id="probM" placeholder="m" min="0"></div>
+          <div class="fi-row"><label>Tổng số kết quả n =</label><input type="number" id="probN" placeholder="n" min="1"></div>
+          <button class="fi-btn" onclick="solveProb()">Tính xác suất</button>
+          <div class="fi-result" id="probres"></div>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <h3>🎯 Cấp số cộng</h3>
+        <div class="formula-inputs">
+          <div class="fi-row"><label>Số hạng đầu u₁ =</label><input type="number" id="apU1" placeholder="u1" step="any"></div>
+          <div class="fi-row"><label>Công sai d =</label><input type="number" id="apD" placeholder="d" step="any"></div>
+          <div class="fi-row"><label>Số hạng thứ n =</label><input type="number" id="apN" placeholder="n" min="1"></div>
+          <button class="fi-btn" onclick="solveAP()">Tính</button>
+          <div class="fi-result" id="apres"></div>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <h3>📉 Cấp số nhân</h3>
+        <div class="formula-inputs">
+          <div class="fi-row"><label>Số hạng đầu u₁ =</label><input type="number" id="gpU1" placeholder="u1" step="any"></div>
+          <div class="fi-row"><label>Công bội q =</label><input type="number" id="gpQ" placeholder="q ≠ 0" step="any"></div>
+          <div class="fi-row"><label>Số hạng thứ n =</label><input type="number" id="gpN" placeholder="n" min="1"></div>
+          <button class="fi-btn" onclick="solveGP()">Tính</button>
+          <div class="fi-result" id="gpres"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== TAB: ĐỔI ĐƠN VỊ ===== -->
+  <div class="calc-panel" id="tab-unit">
+    <div class="unit-wrap">
+
+      <div class="unit-card">
+        <h3>📏 Độ dài</h3>
+        <div class="unit-row">
+          <input type="number" id="lenVal" placeholder="Giá trị" step="any" oninput="convertUnit('len')">
+          <select id="lenFrom" onchange="convertUnit('len')">
+            <option value="mm">mm</option><option value="cm">cm</option>
+            <option value="dm">dm</option><option value="m" selected>m</option>
+            <option value="km">km</option><option value="inch">inch</option>
+            <option value="ft">ft</option><option value="mile">mile</option>
+          </select>
+        </div>
+        <div class="unit-eq">↕</div>
+        <div class="unit-row">
+          <input type="number" id="lenRes" placeholder="Kết quả" step="any" oninput="convertUnitRev('len')">
+          <select id="lenTo" onchange="convertUnit('len')">
+            <option value="mm">mm</option><option value="cm" selected>cm</option>
+            <option value="dm">dm</option><option value="m">m</option>
+            <option value="km">km</option><option value="inch">inch</option>
+            <option value="ft">ft</option><option value="mile">mile</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="unit-card">
+        <h3>⚖️ Khối lượng</h3>
+        <div class="unit-row">
+          <input type="number" id="massVal" placeholder="Giá trị" step="any" oninput="convertUnit('mass')">
+          <select id="massFrom" onchange="convertUnit('mass')">
+            <option value="mg">mg</option><option value="g">g</option>
+            <option value="kg" selected>kg</option><option value="ton">tấn</option>
+            <option value="lb">lb</option><option value="oz">oz</option>
+          </select>
+        </div>
+        <div class="unit-eq">↕</div>
+        <div class="unit-row">
+          <input type="number" id="massRes" placeholder="Kết quả" step="any" oninput="convertUnitRev('mass')">
+          <select id="massTo" onchange="convertUnit('mass')">
+            <option value="mg">mg</option><option value="g" selected>g</option>
+            <option value="kg">kg</option><option value="ton">tấn</option>
+            <option value="lb">lb</option><option value="oz">oz</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="unit-card">
+        <h3>🌡️ Nhiệt độ</h3>
+        <div class="unit-row">
+          <input type="number" id="tempVal" placeholder="Giá trị" step="any" oninput="convertTemp()">
+          <select id="tempFrom" onchange="convertTemp()">
+            <option value="C" selected>°C</option>
+            <option value="F">°F</option>
+            <option value="K">K</option>
+          </select>
+        </div>
+        <div class="unit-eq">↕</div>
+        <div class="unit-row">
+          <input type="number" id="tempRes" placeholder="Kết quả" step="any" oninput="convertTempRev()">
+          <select id="tempTo" onchange="convertTemp()">
+            <option value="C">°C</option>
+            <option value="F" selected>°F</option>
+            <option value="K">K</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="unit-card">
+        <h3>⏱️ Thời gian</h3>
+        <div class="unit-row">
+          <input type="number" id="timeVal" placeholder="Giá trị" step="any" oninput="convertUnit('time')">
+          <select id="timeFrom" onchange="convertUnit('time')">
+            <option value="ms">ms</option><option value="s">giây</option>
+            <option value="min" selected>phút</option><option value="h">giờ</option>
+            <option value="day">ngày</option><option value="week">tuần</option>
+          </select>
+        </div>
+        <div class="unit-eq">↕</div>
+        <div class="unit-row">
+          <input type="number" id="timeRes" placeholder="Kết quả" step="any" oninput="convertUnitRev('time')">
+          <select id="timeTo" onchange="convertUnit('time')">
+            <option value="ms">ms</option><option value="s" selected>giây</option>
+            <option value="min">phút</option><option value="h">giờ</option>
+            <option value="day">ngày</option><option value="week">tuần</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="unit-card">
+        <h3>📐 Diện tích</h3>
+        <div class="unit-row">
+          <input type="number" id="areaVal" placeholder="Giá trị" step="any" oninput="convertUnit('area')">
+          <select id="areaFrom" onchange="convertUnit('area')">
+            <option value="mm2">mm²</option><option value="cm2">cm²</option>
+            <option value="dm2">dm²</option><option value="m2" selected>m²</option>
+            <option value="km2">km²</option><option value="ha">ha</option>
+          </select>
+        </div>
+        <div class="unit-eq">↕</div>
+        <div class="unit-row">
+          <input type="number" id="areaRes" placeholder="Kết quả" step="any" oninput="convertUnitRev('area')">
+          <select id="areaTo" onchange="convertUnit('area')">
+            <option value="mm2">mm²</option><option value="cm2" selected>cm²</option>
+            <option value="dm2">dm²</option><option value="m2">m²</option>
+            <option value="km2">km²</option><option value="ha">ha</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="unit-card">
+        <h3>🧪 Thể tích</h3>
+        <div class="unit-row">
+          <input type="number" id="volVal" placeholder="Giá trị" step="any" oninput="convertUnit('vol')">
+          <select id="volFrom" onchange="convertUnit('vol')">
+            <option value="ml">ml</option><option value="cl">cl</option>
+            <option value="dl">dl</option><option value="l" selected>lít</option>
+            <option value="m3">m³</option><option value="cm3">cm³</option>
+          </select>
+        </div>
+        <div class="unit-eq">↕</div>
+        <div class="unit-row">
+          <input type="number" id="volRes" placeholder="Kết quả" step="any" oninput="convertUnitRev('vol')">
+          <select id="volTo" onchange="convertUnit('vol')">
+            <option value="ml" selected>ml</option><option value="cl">cl</option>
+            <option value="dl">dl</option><option value="l">lít</option>
+            <option value="m3">m³</option><option value="cm3">cm³</option>
+          </select>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<script src="dist/api.js"></script>
+<script src="dist/auth.js"></script>
+<script src="dist/nav.js"></script>
+<script>
+// ============================================================
+// CALCULATOR CORE — dùng math.js để tính chính xác 100%
+// ============================================================
+let calcExpr = '';
+let calcHistory = JSON.parse(localStorage.getItem('calcHistory') || '[]');
+
+function calcFn(v) {
+  calcExpr += v;
+  document.getElementById('calcExpr').textContent = calcExpr;
+  // Live preview
+  try {
+    const preview = math.evaluate(calcExpr.replace(/\^/g, '^'));
+    const r = formatNum(preview);
+    document.getElementById('calcResult').textContent = r;
+    document.getElementById('calcResult').className = 'calc-result';
+  } catch(e) { /* ignore live errors */ }
+}
+
+function calcClear() {
+  calcExpr = '';
+  document.getElementById('calcExpr').textContent = '';
+  document.getElementById('calcResult').textContent = '0';
+  document.getElementById('calcResult').className = 'calc-result';
+}
+
+function calcDel() {
+  calcExpr = calcExpr.slice(0, -1);
+  document.getElementById('calcExpr').textContent = calcExpr;
+}
+
+function calcEval() {
+  if (!calcExpr.trim()) return;
+  try {
+    // Tự động đóng ngoặc nếu thiếu
+    let expr = calcExpr;
+    const opens = (expr.match(/\(/g)||[]).length;
+    const closes = (expr.match(/\)/g)||[]).length;
+    expr += ')'.repeat(Math.max(0, opens - closes));
+
+    const result = math.evaluate(expr);
+    const formatted = formatNum(result);
+
+    document.getElementById('calcResult').textContent = formatted;
+    document.getElementById('calcResult').className = 'calc-result';
+    document.getElementById('calcExpr').textContent = calcExpr + ' =';
+
+    // Lưu lịch sử
+    calcHistory.unshift({ expr: calcExpr, val: formatted });
+    if (calcHistory.length > 50) calcHistory.pop();
+    localStorage.setItem('calcHistory', JSON.stringify(calcHistory));
+    renderHistory();
+
+    calcExpr = formatted === 'Lỗi' ? '' : formatted;
+  } catch(e) {
+    document.getElementById('calcResult').textContent = 'Biểu thức không hợp lệ';
+    document.getElementById('calcResult').className = 'calc-result error';
+  }
+}
+
+function formatNum(n) {
+  if (typeof n === 'number') {
+    if (!isFinite(n)) return 'Lỗi';
+    // Làm tròn 12 chữ số để tránh floating point noise
+    const rounded = math.round(n, 12);
+    // Nếu là số nguyên, hiển thị nguyên
+    if (Number.isInteger(rounded)) return rounded.toString();
+    // Nếu quá lớn/nhỏ dùng scientific
+    if (Math.abs(rounded) > 1e15 || (Math.abs(rounded) < 1e-10 && rounded !== 0)) {
+      return rounded.toExponential(6);
+    }
+    return parseFloat(rounded.toPrecision(12)).toString();
+  }
+  return n.toString();
+}
+
+function renderHistory() {
+  const list = document.getElementById('histList');
+  if (!calcHistory.length) {
+    list.innerHTML = '<div class="hist-empty">Chưa có phép tính nào</div>';
+    return;
+  }
+  list.innerHTML = calcHistory.map(h => `
+    <div class="hist-item" onclick="loadHist('${h.val}')">
+      <div class="hist-expr">${h.expr}</div>
+      <div class="hist-val">= ${h.val}</div>
+    </div>`).join('');
+}
+
+function loadHist(val) {
+  calcExpr = val;
+  document.getElementById('calcExpr').textContent = '';
+  document.getElementById('calcResult').textContent = val;
+}
+
+function clearHistory() {
+  calcHistory = [];
+  localStorage.removeItem('calcHistory');
+  renderHistory();
+}
+
+// Keyboard support
+document.addEventListener('keydown', e => {
+  const map = {
+    'Enter': calcEval, 'Backspace': calcDel, 'Escape': calcClear,
+  };
+  if (map[e.key]) { map[e.key](); return; }
+  if (/^[0-9+\-*/.()%^]$/.test(e.key)) calcFn(e.key);
+});
+
+renderHistory();
+
+// ============================================================
+// TABS
+// ============================================================
+function switchTab(id) {
+  document.querySelectorAll('.calc-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.calc-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ============================================================
+// ĐẠI SỐ
+// ============================================================
+function showRes(id, html, isErr) {
+  const el = document.getElementById(id);
+  el.innerHTML = html;
+  el.className = 'fi-result show' + (isErr ? ' err' : '');
+}
+
+function solvePT1() {
+  const a = parseFloat(document.getElementById('pt1a').value);
+  const b = parseFloat(document.getElementById('pt1b').value);
+  if (isNaN(a) || isNaN(b)) return showRes('pt1res', 'Vui lòng nhập đủ a, b', true);
+  if (a === 0) {
+    if (b === 0) showRes('pt1res', 'Phương trình vô số nghiệm (0 = 0)');
+    else showRes('pt1res', 'Phương trình vô nghiệm (0 ≠ ' + b + ')', true);
+  } else {
+    const x = math.round(-b / a, 10);
+    showRes('pt1res', `x = ${formatNum(x)}`);
+  }
+}
+
+function solvePT2() {
+  const a = parseFloat(document.getElementById('pt2a').value);
+  const b = parseFloat(document.getElementById('pt2b').value);
+  const c = parseFloat(document.getElementById('pt2c').value);
+  if (isNaN(a) || isNaN(b) || isNaN(c)) return showRes('pt2res', 'Vui lòng nhập đủ a, b, c', true);
+  if (a === 0) return showRes('pt2res', 'a ≠ 0 để là PT bậc 2', true);
+  const delta = b*b - 4*a*c;
+  const dFmt = formatNum(math.round(delta, 10));
+  if (delta < 0) {
+    showRes('pt2res', `Δ = ${dFmt} < 0 → Phương trình vô nghiệm thực`);
+  } else if (delta === 0) {
+    const x = math.round(-b / (2*a), 10);
+    showRes('pt2res', `Δ = 0 → Nghiệm kép: x₁ = x₂ = ${formatNum(x)}`);
+  } else {
+    const x1 = math.round((-b + Math.sqrt(delta)) / (2*a), 10);
+    const x2 = math.round((-b - Math.sqrt(delta)) / (2*a), 10);
+    showRes('pt2res', `Δ = ${dFmt} > 0<br>x₁ = ${formatNum(x1)}<br>x₂ = ${formatNum(x2)}`);
+  }
+}
+
+function solveHPT() {
+  try {
+    const [a,b,c] = document.getElementById('hpt1').value.split(',').map(Number);
+    const [d,e,f] = document.getElementById('hpt2').value.split(',').map(Number);
+    if ([a,b,c,d,e,f].some(isNaN)) return showRes('hptres', 'Nhập đúng định dạng: a, b, c', true);
+    const det = a*e - b*d;
+    if (det === 0) {
+      showRes('hptres', 'Hệ phương trình vô nghiệm hoặc vô số nghiệm (det = 0)');
+    } else {
+      const x = math.round((c*e - b*f) / det, 10);
+      const y = math.round((a*f - c*d) / det, 10);
+      showRes('hptres', `x = ${formatNum(x)}<br>y = ${formatNum(y)}`);
+    }
+  } catch(e) { showRes('hptres', 'Lỗi nhập liệu', true); }
+}
+
+function solveComb() {
+  const n = parseInt(document.getElementById('cbn').value);
+  const k = parseInt(document.getElementById('cbk').value);
+  if (isNaN(n) || isNaN(k) || n < 0 || k < 0) return showRes('combres', 'n, k phải là số nguyên không âm', true);
+  if (k > n) return showRes('combres', 'k không được lớn hơn n', true);
+  try {
+    const C = math.combinations(n, k);
+    const A = math.permutations(n, k);
+    showRes('combres', `C(${n},${k}) = ${formatNum(C)}<br>A(${n},${k}) = ${formatNum(A)}<br>${n}! = ${formatNum(math.factorial(n))}`);
+  } catch(e) { showRes('combres', 'Số quá lớn', true); }
+}
+
+function solveLog() {
+  const a = parseFloat(document.getElementById('loga').value);
+  const b = parseFloat(document.getElementById('logb').value);
+  if (isNaN(a) || isNaN(b)) return showRes('logres', 'Nhập đủ a và b', true);
+  if (a <= 0 || a === 1) return showRes('logres', 'Cơ số a > 0 và a ≠ 1', true);
+  if (b <= 0) return showRes('logres', 'b > 0', true);
+  const result = math.round(math.log(b, a), 12);
+  showRes('logres', `log_${a}(${b}) = ${formatNum(result)}<br>log₁₀(${b}) = ${formatNum(math.round(math.log10(b),12))}<br>ln(${b}) = ${formatNum(math.round(math.log(b),12))}`);
+}
+
+function solvePow() {
+  const x = parseFloat(document.getElementById('powx').value);
+  const n = parseFloat(document.getElementById('pown').value);
+  const k = parseFloat(document.getElementById('rootk').value);
+  if (isNaN(x) || isNaN(n)) return showRes('powres', 'Nhập x và n', true);
+  const pow = math.round(math.pow(x, n), 12);
+  let html = `${x}^${n} = ${formatNum(pow)}`;
+  if (!isNaN(k) && k > 0) {
+    const root = math.round(math.pow(x, 1/k), 12);
+    html += `<br>Căn bậc ${k} của ${x} = ${formatNum(root)}`;
+  }
+  showRes('powres', html);
+}
+
+// ============================================================
+// LƯỢNG GIÁC
+// ============================================================
+function solveTrig() {
+  const angle = parseFloat(document.getElementById('trigAngle').value);
+  const unit = document.getElementById('trigUnit').value;
+  if (isNaN(angle)) return showRes('trigres', 'Nhập góc', true);
+  const rad = unit === 'deg' ? angle * Math.PI / 180 : angle;
+  const r = n => formatNum(math.round(n, 10));
+  const sinV = r(Math.sin(rad)), cosV = r(Math.cos(rad)), tanV = r(Math.tan(rad));
+  const cotV = Math.abs(Math.sin(rad)) < 1e-12 ? '∞' : r(1/Math.tan(rad));
+  showRes('trigres',
+    `sin(${angle}${unit==='deg'?'°':' rad'}) = ${sinV}<br>` +
+    `cos(${angle}${unit==='deg'?'°':' rad'}) = ${cosV}<br>` +
+    `tan(${angle}${unit==='deg'?'°':' rad'}) = ${tanV}<br>` +
+    `cot(${angle}${unit==='deg'?'°':' rad'}) = ${cotV}`
+  );
+}
+
+function solveCosRule() {
+  const b = parseFloat(document.getElementById('cosb').value);
+  const c = parseFloat(document.getElementById('cosc').value);
+  const A = parseFloat(document.getElementById('cosA').value);
+  if ([b,c,A].some(isNaN)) return showRes('cosres', 'Nhập đủ b, c, A', true);
+  const a2 = b*b + c*c - 2*b*c*Math.cos(A * Math.PI / 180);
+  if (a2 < 0) return showRes('cosres', 'Không tồn tại tam giác với các giá trị này', true);
+  const a = math.round(Math.sqrt(a2), 10);
+  showRes('cosres', `a = ${formatNum(a)}`);
+}
+
+function solveSinRule() {
+  const a = parseFloat(document.getElementById('sina').value);
+  const A = parseFloat(document.getElementById('sinA').value);
+  const B = parseFloat(document.getElementById('sinB').value);
+  if ([a,A,B].some(isNaN)) return showRes('sinres', 'Nhập đủ a, A, B', true);
+  const b = math.round(a * Math.sin(B * Math.PI / 180) / Math.sin(A * Math.PI / 180), 10);
+  const C = 180 - A - B;
+  const c = math.round(a * Math.sin(C * Math.PI / 180) / Math.sin(A * Math.PI / 180), 10);
+  showRes('sinres', `b = ${formatNum(b)}<br>Góc C = ${C}°<br>c = ${formatNum(c)}`);
+}
+
+function convertDegRad(el, from) {
+  const v = parseFloat(el.value);
+  if (isNaN(v)) return;
+  if (from === 'deg') {
+    const rad = math.round(v * Math.PI / 180, 12);
+    document.getElementById('rad2deg').value = rad;
+    showRes('degradres', `${v}° = ${formatNum(rad)} rad`);
+  } else {
+    const deg = math.round(v * 180 / Math.PI, 10);
+    document.getElementById('deg2rad').value = deg;
+    showRes('degradres', `${v} rad = ${formatNum(deg)}°`);
+  }
+}
+
+// ============================================================
+// HÌNH HỌC
+// ============================================================
+const PI = Math.PI;
+function r(n) { return formatNum(math.round(n, 10)); }
+
+function solveCircle() {
+  const radius = parseFloat(document.getElementById('circR').value);
+  if (isNaN(radius) || radius <= 0) return showRes('circres', 'r > 0', true);
+  showRes('circres',
+    `Chu vi C = 2πr = ${r(2*PI*radius)}<br>` +
+    `Diện tích S = πr² = ${r(PI*radius*radius)}`
+  );
+}
+
+function solveTriangle() {
+  const a = parseFloat(document.getElementById('triA').value);
+  const h = parseFloat(document.getElementById('triH').value);
+  const b = parseFloat(document.getElementById('triB').value);
+  const c = parseFloat(document.getElementById('triC').value);
+  if (isNaN(a) || isNaN(h)) return showRes('trires', 'Nhập ít nhất đáy a và chiều cao h', true);
+  let html = `Diện tích S = (a×h)/2 = ${r(a*h/2)}`;
+  if (!isNaN(b) && !isNaN(c)) {
+    // Chu vi
+    html += `<br>Chu vi P = a+b+c = ${r(a+b+c)}`;
+    // Heron
+    const s = (a+b+c)/2;
+    const area2 = s*(s-a)*(s-b)*(s-c);
+    if (area2 >= 0) html += `<br>Diện tích (Heron) = ${r(Math.sqrt(area2))}`;
+  }
+  showRes('trires', html);
+}
+
+function solveRect() {
+  const a = parseFloat(document.getElementById('rectA').value);
+  const bv = parseFloat(document.getElementById('rectB').value);
+  if (isNaN(a)) return showRes('rectres', 'Nhập chiều dài a', true);
+  const b = isNaN(bv) ? a : bv;
+  const label = isNaN(bv) ? 'Hình vuông' : 'Hình chữ nhật';
+  showRes('rectres',
+    `${label}<br>Chu vi P = ${r(2*(a+b))}<br>Diện tích S = ${r(a*b)}<br>Đường chéo d = ${r(Math.sqrt(a*a+b*b))}`
+  );
+}
+
+function solveTrap() {
+  const a = parseFloat(document.getElementById('trapA').value);
+  const b = parseFloat(document.getElementById('trapB').value);
+  const h = parseFloat(document.getElementById('trapH').value);
+  if ([a,b,h].some(isNaN)) return showRes('trapres', 'Nhập đủ a, b, h', true);
+  showRes('trapres', `Diện tích S = (a+b)×h/2 = ${r((a+b)*h/2)}`);
+}
+
+function solveBox() {
+  const a = parseFloat(document.getElementById('boxA').value);
+  const b = parseFloat(document.getElementById('boxB').value);
+  const c = parseFloat(document.getElementById('boxC').value);
+  if ([a,b,c].some(isNaN)) return showRes('boxres', 'Nhập đủ a, b, c', true);
+  showRes('boxres',
+    `Thể tích V = a×b×c = ${r(a*b*c)}<br>` +
+    `Diện tích xung quanh = ${r(2*(a+b)*c)}<br>` +
+    `Diện tích toàn phần = ${r(2*(a*b+b*c+a*c))}<br>` +
+    `Đường chéo d = ${r(Math.sqrt(a*a+b*b+c*c))}`
+  );
+}
+
+function solveSphere() {
+  const rv = parseFloat(document.getElementById('sphereR').value);
+  const h = parseFloat(document.getElementById('sphereH').value);
+  if (isNaN(rv) || rv <= 0) return showRes('sphereres', 'r > 0', true);
+  if (isNaN(h)) {
+    // Hình cầu
+    showRes('sphereres',
+      `Hình cầu:<br>Diện tích S = 4πr² = ${r(4*PI*rv*rv)}<br>Thể tích V = (4/3)πr³ = ${r(4/3*PI*rv*rv*rv)}`
+    );
+  } else {
+    // Hình trụ
+    showRes('sphereres',
+      `Hình trụ:<br>Diện tích xung quanh = 2πrh = ${r(2*PI*rv*h)}<br>Diện tích toàn phần = 2πr(r+h) = ${r(2*PI*rv*(rv+h))}<br>Thể tích V = πr²h = ${r(PI*rv*rv*h)}`
+    );
+  }
+}
+
+// ============================================================
+// THỐNG KÊ
+// ============================================================
+function solveStats() {
+  const raw = document.getElementById('statsData').value;
+  const nums = raw.split(/[,;\s]+/).map(Number).filter(n => !isNaN(n));
+  if (nums.length < 2) return showRes('statsres', 'Nhập ít nhất 2 số, cách nhau bởi dấu phẩy', true);
+  const sorted = [...nums].sort((a,b) => a-b);
+  const n = nums.length;
+  const sum = math.sum(nums);
+  const mean = math.round(sum / n, 10);
+  const variance = math.round(math.variance(nums), 10);
+  const std = math.round(math.std(nums), 10);
+  const min = sorted[0], max = sorted[n-1];
+  const range = max - min;
+  // Median
+  const mid = Math.floor(n/2);
+  const median = n%2 ? sorted[mid] : math.round((sorted[mid-1]+sorted[mid])/2, 10);
+  // Mode
+  const freq = {};
+  nums.forEach(x => freq[x] = (freq[x]||0)+1);
+  const maxFreq = Math.max(...Object.values(freq));
+  const modes = Object.keys(freq).filter(k => freq[k]===maxFreq).join(', ');
+  showRes('statsres',
+    `n = ${n} | Tổng = ${formatNum(sum)}<br>` +
+    `Trung bình (mean) = ${formatNum(mean)}<br>` +
+    `Trung vị (median) = ${formatNum(median)}<br>` +
+    `Mode = ${modes} (tần số ${maxFreq})<br>` +
+    `Min = ${min} | Max = ${max} | Range = ${range}<br>` +
+    `Phương sai = ${formatNum(variance)}<br>` +
+    `Độ lệch chuẩn = ${formatNum(std)}`
+  );
+}
+
+function solveProb() {
+  const m = parseFloat(document.getElementById('probM').value);
+  const n = parseFloat(document.getElementById('probN').value);
+  if (isNaN(m) || isNaN(n) || n <= 0) return showRes('probres', 'Nhập m ≥ 0 và n > 0', true);
+  if (m > n) return showRes('probres', 'm không được lớn hơn n', true);
+  const p = math.round(m/n, 10);
+  const pct = math.round(p*100, 8);
+  showRes('probres', `P(A) = ${m}/${n} = ${formatNum(p)} ≈ ${formatNum(pct)}%`);
+}
+
+function solveAP() {
+  const u1 = parseFloat(document.getElementById('apU1').value);
+  const d = parseFloat(document.getElementById('apD').value);
+  const n = parseInt(document.getElementById('apN').value);
+  if ([u1,d,n].some(isNaN) || n < 1) return showRes('apres', 'Nhập đủ u₁, d, n', true);
+  const un = math.round(u1 + (n-1)*d, 10);
+  const Sn = math.round(n*(u1+un)/2, 10);
+  showRes('apres', `u${n} = u₁ + (n-1)d = ${formatNum(un)}<br>S${n} = n(u₁+u${n})/2 = ${formatNum(Sn)}`);
+}
+
+function solveGP() {
+  const u1 = parseFloat(document.getElementById('gpU1').value);
+  const q = parseFloat(document.getElementById('gpQ').value);
+  const n = parseInt(document.getElementById('gpN').value);
+  if ([u1,q,n].some(isNaN) || n < 1 || q === 0) return showRes('gpres', 'Nhập đủ u₁, q ≠ 0, n', true);
+  const un = math.round(u1 * Math.pow(q, n-1), 10);
+  let Sn;
+  if (q === 1) Sn = u1 * n;
+  else Sn = math.round(u1 * (1 - Math.pow(q, n)) / (1 - q), 10);
+  showRes('gpres', `u${n} = u₁ × q^(n-1) = ${formatNum(un)}<br>S${n} = ${formatNum(Sn)}`);
+}
+
+// ============================================================
+// ĐỔI ĐƠN VỊ — dùng math.js unit
+// ============================================================
+const unitToBase = {
+  len:  { mm:0.001, cm:0.01, dm:0.1, m:1, km:1000, inch:0.0254, ft:0.3048, mile:1609.344 },
+  mass: { mg:0.000001, g:0.001, kg:1, ton:1000, lb:0.453592, oz:0.0283495 },
+  time: { ms:0.001, s:1, min:60, h:3600, day:86400, week:604800 },
+  area: { mm2:0.000001, cm2:0.0001, dm2:0.01, m2:1, km2:1e6, ha:10000 },
+  vol:  { ml:0.001, cl:0.01, dl:0.1, l:1, m3:1000, cm3:0.001 }
+};
+
+function convertUnit(type) {
+  const val = parseFloat(document.getElementById(type+'Val').value);
+  const from = document.getElementById(type+'From').value;
+  const to = document.getElementById(type+'To').value;
+  if (isNaN(val)) return;
+  const base = val * unitToBase[type][from];
+  const result = math.round(base / unitToBase[type][to], 12);
+  document.getElementById(type+'Res').value = result;
+}
+
+function convertUnitRev(type) {
+  const val = parseFloat(document.getElementById(type+'Res').value);
+  const from = document.getElementById(type+'From').value;
+  const to = document.getElementById(type+'To').value;
+  if (isNaN(val)) return;
+  const base = val * unitToBase[type][to];
+  const result = math.round(base / unitToBase[type][from], 12);
+  document.getElementById(type+'Val').value = result;
+}
+
+function convertTemp() {
+  const val = parseFloat(document.getElementById('tempVal').value);
+  const from = document.getElementById('tempFrom').value;
+  const to = document.getElementById('tempTo').value;
+  if (isNaN(val)) return;
+  let celsius;
+  if (from === 'C') celsius = val;
+  else if (from === 'F') celsius = (val - 32) * 5/9;
+  else celsius = val - 273.15;
+  let result;
+  if (to === 'C') result = celsius;
+  else if (to === 'F') result = celsius * 9/5 + 32;
+  else result = celsius + 273.15;
+  document.getElementById('tempRes').value = math.round(result, 10);
+}
+
+function convertTempRev() {
+  const val = parseFloat(document.getElementById('tempRes').value);
+  const from = document.getElementById('tempFrom').value;
+  const to = document.getElementById('tempTo').value;
+  if (isNaN(val)) return;
+  let celsius;
+  if (to === 'C') celsius = val;
+  else if (to === 'F') celsius = (val - 32) * 5/9;
+  else celsius = val - 273.15;
+  let result;
+  if (from === 'C') result = celsius;
+  else if (from === 'F') result = celsius * 9/5 + 32;
+  else result = celsius + 273.15;
+  document.getElementById('tempVal').value = math.round(result, 10);
+}
+</script>
+<script src="dist/interactions-vip.js"></script>
+<script src="dist/live-activity.js"></script>
+<script src="dist/chat.js"></script>
+<script src="dist/push-notify.js"></script>
+<script src="dist/mobile-nav.js"></script>
+<script src="dist/bug-report.js"></script>
+</body>
+</html>
