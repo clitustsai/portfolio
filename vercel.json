@@ -3,8 +3,8 @@
   "rewrites": [
     { "source": "/api/health", "destination": "/api/health.js" },
     { "source": "/api/stats", "destination": "/api/stats.js" },
-    { "source": "/api/google-login", "destination": "/api/google-login.js" },
-    { "source": "/api/google-callback", "destination": "/api/google-callback.js" },
+    { "source": "/api/google-login", "destination": "/api/auth.js" },
+    { "source": "/api/google-callback", "destination": "/api/auth.js" },
     { "source": "/api/auth/:path*", "destination": "/api/auth.js" },
     { "source": "/api/auth", "destination": "/api/auth.js" },
     { "source": "/api/comments/:path*", "destination": "/api/comments.js" },

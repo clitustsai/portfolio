@@ -71,18 +71,18 @@ module.exports = async (req, res) => {
         return res.json({ ok: true });
     }
 
-    // GET /api/auth/google
-    if (req.method === 'GET' && url.endsWith('/google')) {
+    // GET /api/auth/google  OR  /api/google-login
+    if (req.method === 'GET' && (url.endsWith('/google') || url.endsWith('/google-login'))) {
         const clientId = process.env.GOOGLE_CLIENT_ID;
         if (!clientId) return res.status(503).json({ error: 'Google OAuth chưa cấu hình' });
         const appUrl = process.env.APP_URL || `https://${req.headers.host}`;
-        const redirect = encodeURIComponent(`${appUrl}/api/auth/google/callback`);
+        const redirect = encodeURIComponent(`${appUrl}/api/google-callback`);
         const url2 = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirect}&response_type=code&scope=openid%20email%20profile&prompt=select_account`;
         return res.redirect(url2);
     }
 
-    // GET /api/auth/google/callback
-    if (req.method === 'GET' && url.endsWith('/google/callback')) {
+    // GET /api/auth/google/callback  OR  /api/google-callback
+    if (req.method === 'GET' && (url.endsWith('/google/callback') || url.endsWith('/google-callback'))) {
         const { code } = req.query;
         const appUrl = process.env.APP_URL || `https://${req.headers.host}`;
         if (!code) return res.redirect(`${appUrl}/?auth_error=no_code`);
@@ -93,7 +93,7 @@ module.exports = async (req, res) => {
                 body: new URLSearchParams({
                     code, client_id: process.env.GOOGLE_CLIENT_ID,
                     client_secret: process.env.GOOGLE_CLIENT_SECRET,
-                    redirect_uri: `${appUrl}/api/auth/google/callback`,
+                    redirect_uri: `${appUrl}/api/google-callback`,
                     grant_type: 'authorization_code'
                 })
             });
