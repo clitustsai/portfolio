@@ -3,6 +3,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
+    <script>if(localStorage.getItem('theme')==='dark')document.documentElement.setAttribute('data-theme','dark');</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
@@ -566,7 +567,6 @@
                 </li>
             </ul>
             <div class="nav-actions">
-                <button id="langToggle" title="Chuyển ngôn ngữ" style="background:none;border:none;cursor:pointer;font-size:1.3rem;padding:4px 6px;border-radius:8px;transition:transform 0.2s;" title="Switch language">🇻🇳</button>
                 <button class="theme-toggle" id="themeToggle" title="Chuyển đổi chế độ tối/sáng">
                     <i class="fas fa-moon"></i>
                 </button>
@@ -1517,17 +1517,6 @@
         }
     </script>
     <script>
-        // ===== DARK MODE =====
-        const themeToggle = document.getElementById('themeToggle');
-        const htmlEl = document.documentElement;
-        if (localStorage.getItem('theme') === 'dark') { htmlEl.setAttribute('data-theme', 'dark'); themeToggle && (themeToggle.innerHTML = '<i class="fas fa-sun"></i>'); }
-        themeToggle && themeToggle.addEventListener('click', () => {
-            const isDark = htmlEl.getAttribute('data-theme') === 'dark';
-            htmlEl.setAttribute('data-theme', isDark ? 'light' : 'dark');
-            localStorage.setItem('theme', isDark ? 'light' : 'dark');
-            themeToggle.innerHTML = isDark ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
-            showToast(isDark ? '☀️ Chế độ sáng bật' : '🌙 Chế độ tối bật', 'info', 2000);
-        });
         // ===== BACK TO TOP =====
         const backToTopBtn = document.getElementById('backToTop');
         window.addEventListener('scroll', () => backToTopBtn && backToTopBtn.classList.toggle('show', window.pageYOffset > 300));

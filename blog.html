@@ -2,10 +2,7 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta name="description" content="Blog lập trình của Clitus PC - Chia sẻ kiến thức React, Node.js, Vue.js, Python và các công nghệ web hiện đại.">
+  <script>if(localStorage.getItem('theme')==='dark')document.documentElement.setAttribute('data-theme','dark');</script> - Chia sẻ kiến thức React, Node.js, Vue.js, Python và các công nghệ web hiện đại.">
   <meta name="keywords" content="blog lập trình, React, Node.js, Vue.js, Python, web development, Clitus PC">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -152,20 +149,7 @@
     let allPosts = [], currentTag = 'all', currentPage = 1;
     const PER_PAGE = 6;
 
-    // Dark mode
-    const themeToggle = document.getElementById('themeToggle');
-    if (localStorage.getItem('theme') === 'dark') {
-      document.documentElement.setAttribute('data-theme', 'dark');
-      themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-    }
-    themeToggle.addEventListener('click', () => {
-      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
-      localStorage.setItem('theme', isDark ? 'light' : 'dark');
-      themeToggle.innerHTML = isDark ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
-    });
-
-    async function loadPosts() {
+    // Dark mode handled by nav.js
       try {
         const r = await fetch(`${API}/blog/posts`);
         const data = await r.json();
