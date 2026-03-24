@@ -16,7 +16,7 @@ module.exports = async (req, res) => {
 
     // GET /api/blog/posts
     if (req.method === 'GET' && url.endsWith('/posts')) {
-        const posts = await query('SELECT id,title,slug,excerpt,cover,tags,views,likes,read_time,created_at FROM blog_posts WHERE published=1 ORDER BY created_at DESC');
+        const posts = await query('SELECT id,title,slug,excerpt,cover,tags,views,likes,read_time,created_at FROM blog_posts WHERE published=true ORDER BY created_at DESC');
         return res.json(posts.map(parsePost));
     }
 
@@ -28,7 +28,7 @@ module.exports = async (req, res) => {
             title.trim(), slug.trim().toLowerCase().replace(/\s+/g, '-'),
             (excerpt || '').trim(), (content || '').trim(),
             (cover || '').trim(), JSON.stringify(tags || []),
-            parseInt(read_time) || 5, published === false ? 0 : 1
+            parseInt(read_time) || 5, published === false ? false : true
         ]);
         const post = await queryOne('SELECT * FROM blog_posts ORDER BY id DESC LIMIT 1');
         return res.status(201).json(parsePost(post));
@@ -38,7 +38,7 @@ module.exports = async (req, res) => {
     const slugMatch = url.match(/\/posts\/([^/]+)$/);
     if (req.method === 'GET' && slugMatch) {
         const slug = slugMatch[1];
-        const p = await queryOne('SELECT * FROM blog_posts WHERE (slug=$1 OR id::text=$1) AND published=1', [slug]);
+        const p = await queryOne('SELECT * FROM blog_posts WHERE (slug=$1 OR id::text=$1) AND published=true', [slug]);
         if (!p) return res.status(404).json({ error: 'Not found' });
         await run('UPDATE blog_posts SET views=views+1 WHERE id=$1', [p.id]);
         const comments = await query('SELECT * FROM blog_comments WHERE post_id=$1 ORDER BY created_at DESC', [p.id]);
@@ -54,7 +54,7 @@ module.exports = async (req, res) => {
         await run('UPDATE blog_posts SET title=$1,slug=$2,excerpt=$3,content=$4,cover=$5,tags=$6,read_time=$7,published=$8,updated_at=NOW() WHERE id=$9', [
             title, slug, excerpt || '', content || '', cover || '',
             JSON.stringify(tags || []), parseInt(read_time) || 5,
-            published === false ? 0 : 1, parseInt(idMatch[1])
+            published === false ? false : true, parseInt(idMatch[1])
         ]);
         return res.json({ ok: true });
     }
