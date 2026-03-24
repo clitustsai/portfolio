@@ -10,5 +10,8 @@
     "pg": "^8.20.0",
     "resend": "^6.9.4",
     "web-push": "^3.6.7"
+  },
+  "devDependencies": {
+    "terser": "^5.46.1"
   }
 }

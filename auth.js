@@ -1113,7 +1113,7 @@ async function handlePhoneResetPassword(e) {
 
 // ========== OAUTH ==========
 function loginWithGoogle() {
-    window.location.href = `${API_BASE}/auth/google`;
+    window.location.href = `${API_BASE}/google-login`;
 }
 
 function loginWithFacebook() {
