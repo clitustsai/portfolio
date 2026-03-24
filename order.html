@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<script>if(localStorage.getItem('theme')==='dark')document.documentElement.setAttribute('data-theme','dark');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Đặt Dịch Vụ — Clitus PC</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="modern.css">
+<script src="dist/api.js" defer></script>
+<script src="dist/auth.js" defer></script>
+<script src="dist/nav.js" defer></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#f0f2ff;--card:#fff;--text:#1a1a2e;--sub:#6b7280;--border:#e5e7ff;--g1:#667eea;--g2:#764ba2;}
+html[data-theme="dark"]{--bg:#080818;--card:#12122a;--text:#e8e8ff;--sub:#8888aa;--border:#1e1e3a;}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;}
+
+/* HERO */
+.ord-hero{background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);padding:5rem 1.5rem 3rem;text-align:center;position:relative;overflow:hidden;}
+.ord-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(102,126,234,.3),transparent);}
+.ord-hero h1{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:900;color:#fff;position:relative;margin-bottom:.75rem;}
+.ord-hero h1 span{background:linear-gradient(135deg,#a78bfa,#60a5fa);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.ord-hero p{color:rgba(255,255,255,.65);font-size:.95rem;position:relative;}
+
+/* SERVICE PICKER */
+.ord-body{max-width:860px;margin:0 auto;padding:3rem 1.5rem 5rem;}
+.svc-picker{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2.5rem;}
+.svc-pick-card{background:var(--card);border:2px solid var(--border);border-radius:20px;padding:1.5rem 1rem;text-align:center;cursor:pointer;transition:all .25s;position:relative;}
+.svc-pick-card:hover{border-color:var(--g1);transform:translateY(-4px);box-shadow:0 12px 32px rgba(102,126,234,.15);}
+.svc-pick-card.selected{border-color:var(--g1);background:linear-gradient(135deg,rgba(102,126,234,.08),rgba(118,75,162,.08));box-shadow:0 8px 28px rgba(102,126,234,.2);}
+.svc-pick-card.selected::after{content:'✓';position:absolute;top:.6rem;right:.75rem;background:var(--g1);color:#fff;width:20px;height:20px;border-radius:50%;font-size:.7rem;font-weight:900;display:flex;align-items:center;justify-content:center;}
+.svc-pick-icon{font-size:2.2rem;margin-bottom:.6rem;}
+.svc-pick-name{font-size:.88rem;font-weight:800;color:var(--text);}
+.svc-pick-price{font-size:.75rem;color:var(--sub);margin-top:.25rem;}
+
+/* FORM CARD */
+.form-card{background:var(--card);border-radius:24px;padding:2.5rem 2rem;border:1px solid var(--border);box-shadow:0 8px 40px rgba(0,0,0,.07);}
+.form-section-title{font-size:.7rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--g1);margin-bottom:1.25rem;display:flex;align-items:center;gap:.5rem;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}
+@media(max-width:560px){.form-row{grid-template-columns:1fr;}}
+.form-group{margin-bottom:1rem;}
+.form-group label{display:block;font-size:.78rem;font-weight:700;color:var(--sub);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.04em;}
+.form-group label .req{color:#ef4444;margin-left:.2rem;}
+.form-control{width:100%;padding:.75rem 1rem;border:1.5px solid var(--border);border-radius:12px;background:var(--bg);color:var(--text);font-size:.9rem;font-family:inherit;outline:none;transition:all .2s;}
+.form-control:focus{border-color:var(--g1);box-shadow:0 0 0 3px rgba(102,126,234,.12);}
+.form-control::placeholder{color:var(--sub);opacity:.7;}
+textarea.form-control{resize:vertical;min-height:110px;}
+select.form-control{cursor:pointer;}
+
+/* BUDGET CHIPS */
+.budget-chips{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.5rem;}
+.budget-chip{padding:.45rem 1rem;border-radius:50px;border:1.5px solid var(--border);background:var(--bg);color:var(--sub);font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s;}
+.budget-chip:hover,.budget-chip.active{background:var(--g1);border-color:var(--g1);color:#fff;}
+
+/* TIMELINE CHIPS */
+.timeline-chips{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.5rem;}
+.tl-chip{padding:.45rem 1rem;border-radius:50px;border:1.5px solid var(--border);background:var(--bg);color:var(--sub);font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s;}
+.tl-chip:hover,.tl-chip.active{background:linear-gradient(135deg,#11998e,#38ef7d);border-color:#11998e;color:#fff;}
+
+/* FEATURE CHECKBOXES */
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.6rem;margin-top:.5rem;}
+.feat-check{display:flex;align-items:center;gap:.6rem;padding:.6rem .85rem;border-radius:10px;border:1.5px solid var(--border);cursor:pointer;transition:all .2s;font-size:.83rem;color:var(--sub);}
+.feat-check input{display:none;}
+.feat-check.checked{border-color:var(--g1);background:rgba(102,126,234,.07);color:var(--text);}
+.feat-check .fc-box{width:18px;height:18px;border-radius:5px;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.65rem;transition:all .2s;}
+.feat-check.checked .fc-box{background:var(--g1);border-color:var(--g1);color:#fff;}
+
+/* DIVIDER */
+.form-divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:1.75rem 0;}
+
+/* SUBMIT */
+.submit-wrap{margin-top:2rem;}
+.btn-submit{width:100%;padding:1rem;border:none;border-radius:16px;background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;font-size:1rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.6rem;box-shadow:0 8px 28px rgba(102,126,234,.4);transition:all .25s;}
+.btn-submit:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(102,126,234,.55);}
+.btn-submit:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+.form-note{font-size:.75rem;color:var(--sub);text-align:center;margin-top:.75rem;}
+
+/* SUCCESS */
+.success-box{text-align:center;padding:2rem 1rem;display:none;}
+.success-box .s-icon{font-size:4rem;margin-bottom:1rem;}
+.success-box h3{font-size:1.3rem;font-weight:900;color:var(--text);margin-bottom:.5rem;}
+.success-box p{color:var(--sub);font-size:.9rem;line-height:1.7;margin-bottom:1.5rem;}
+
+/* DYNAMIC FIELDS */
+.dyn-fields{display:none;}
+.dyn-fields.show{display:block;}
+
+/* PROGRESS */
+.form-progress{display:flex;align-items:center;gap:.5rem;margin-bottom:2rem;}
+.fp-step{flex:1;height:4px;border-radius:2px;background:var(--border);transition:background .3s;}
+.fp-step.done{background:var(--g1);}
+.fp-label{font-size:.75rem;color:var(--sub);white-space:nowrap;}
+</style>
+</head>
+<body>
+<script src="dist/protect.js"></script>
+
+<header>
+  <nav>
+    <a href="index.html" class="logo"><span class="logo-icon">💻</span><span class="logo-text">Clitus<span class="logo-accent">PC</span></span></a>
+    <ul id="navMenu">
+      <li><a href="index.html">Trang Chủ</a></li>
+      <li><a href="services.html">Dịch Vụ</a></li>
+      <li><a href="payment.html">Thanh Toán</a></li>
+      <li><a href="blog.html">Blog</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+      <div class="nav-auth-slot"></div>
+      <button class="nav-hamburger" id="navHamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+</header>
+
+<div class="ord-hero">
+  <div style="position:relative;">
+    <div style="display:inline-flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:50px;padding:.35rem 1rem;font-size:.75rem;color:rgba(255,255,255,.8);margin-bottom:1rem;backdrop-filter:blur(10px);">
+      <i class="fas fa-bolt"></i> Phản hồi trong 2 giờ
+    </div>
+    <h1>Đặt <span>Dịch Vụ</span></h1>
+    <p>Điền form bên dưới — tôi sẽ liên hệ tư vấn miễn phí và báo giá chi tiết</p>
+  </div>
+</div>
+
+<div class="ord-body">
+
+  <!-- SERVICE PICKER -->
+  <div style="margin-bottom:.75rem;font-size:.78rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--sub);">Chọn dịch vụ bạn cần</div>
+  <div class="svc-picker" id="svcPicker">
+    <div class="svc-pick-card selected" data-svc="course" onclick="pickSvc(this)">
+      <div class="svc-pick-icon">🎓</div>
+      <div class="svc-pick-name">Bán Khóa Học</div>
+      <div class="svc-pick-price">Từ 3.000.000 VNĐ</div>
+    </div>
+    <div class="svc-pick-card" data-svc="aitool" onclick="pickSvc(this)">
+      <div class="svc-pick-icon">🤖</div>
+      <div class="svc-pick-name">Bán Tool AI</div>
+      <div class="svc-pick-price">Từ 5.000.000 VNĐ</div>
+    </div>
+    <div class="svc-pick-card" data-svc="edu" onclick="pickSvc(this)">
+      <div class="svc-pick-icon">📚</div>
+      <div class="svc-pick-name">Web Giải Bài Tập</div>
+      <div class="svc-pick-price">Từ 4.000.000 VNĐ</div>
+    </div>
+    <div class="svc-pick-card" data-svc="webdev" onclick="pickSvc(this)">
+      <div class="svc-pick-icon">💻</div>
+      <div class="svc-pick-name">Code / Thiết Kế Web</div>
+      <div class="svc-pick-price">Từ 2.000.000 VNĐ</div>
+    </div>
+  </div>
+
+  <!-- FORM -->
+  <div class="form-card" id="mainForm">
+    <div id="formContent">
+
+      <!-- PROGRESS -->
+      <div class="form-progress">
+        <span class="fp-label">Thông tin</span>
+        <div class="fp-step done" id="fp1"></div>
+        <div class="fp-step done" id="fp2"></div>
+        <div class="fp-step" id="fp3"></div>
+        <span class="fp-label">Yêu cầu</span>
+      </div>
+
+      <!-- SECTION 1: CONTACT -->
+      <div class="form-section-title"><i class="fas fa-user"></i> Thông tin liên hệ</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Họ tên <span class="req">*</span></label>
+          <input type="text" class="form-control" id="fName" placeholder="Nguyễn Văn A">
+        </div>
+        <div class="form-group">
+          <label>Số điện thoại <span class="req">*</span></label>
+          <input type="tel" class="form-control" id="fPhone" placeholder="0901 234 567">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Email <span class="req">*</span></label>
+          <input type="email" class="form-control" id="fEmail" placeholder="email@example.com">
+        </div>
+        <div class="form-group">
+          <label>Zalo / Facebook</label>
+          <input type="text" class="form-control" id="fSocial" placeholder="Link hoặc số Zalo">
+        </div>
+      </div>
+
+      <div class="form-divider"></div>
+
+      <!-- SECTION 2: SERVICE DETAILS — DYNAMIC -->
+
+      <!-- KHÓA HỌC -->
+      <div class="dyn-fields show" id="dyn-course">
+        <div class="form-section-title"><i class="fas fa-graduation-cap"></i> Chi tiết khóa học</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Tên khóa học <span class="req">*</span></label>
+            <input type="text" class="form-control" id="c-name" placeholder="VD: Khóa học React từ A-Z">
+          </div>
+          <div class="form-group">
+            <label>Lĩnh vực</label>
+            <select class="form-control" id="c-field">
+              <option value="">-- Chọn lĩnh vực --</option>
+              <option>Lập trình Web</option>
+              <option>Lập trình Mobile</option>
+              <option>AI / Machine Learning</option>
+              <option>Thiết kế UI/UX</option>
+              <option>Marketing Online</option>
+              <option>Kinh doanh / Khởi nghiệp</option>
+              <option>Khác</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Tính năng cần có</label>
+          <div class="feature-grid">
+            <label class="feat-check" onclick="toggleFeat(this)"><input type="checkbox"><div class="fc-box"><i class="fas fa-check"></i></div>Video bài giảng</label>
+            <label class="feat-check" onclick="toggleFeat(this)"><input type="checkbox"><div class="fc-box"><i class="fas fa-check"></i></div>Bài tập / Quiz</label>
+            <label class="feat-check" onclick="toggleFeat(this)"><input type="checkbox"><div class="fc-box"><i class="fas fa-check"></i></div>Chứng chỉ hoàn thành</label>
+            <label class="feat-check" onclick="toggleFeat(this)"><input type="checkbox"><div class="fc-box"><i class="fas fa-check"></i></div>Forum thảo luận</label>
+            <label class="feat-check" onclick="toggleFeat(this)"><input type="checkbox"><div class="fc-box"><i class="fas fa-check"></i></div>Thanh toán online</label>
+            <label class="feat-check" onclick="toggleFeat(this)"><input type="checkbox"><div class="fc-box"><i class="fas fa-check"></i></div>App mobile</label>
+            <label class="feat-check" onclick="toggleFeat(this)"><input type="checkbox"><div class="fc-box"><i class="fas fa-check"></i></div>Affiliate cho học viên</label>
+            <label class="feat-check" onclick="toggleFeat(this)"><input type="checkbox"><div class="fc-box"><i class="fas fa-check"></i></div>Live stream</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- TOOL AI -->
+      <div class="dyn-fields" id="dyn-aitool">
+        <div class="form-section-title"><i class="fas fa-robot"></i> Chi tiết tool AI</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Tên tool <span class="req">*</span></label>
+            <input type="text" class="form-control" id="ai-name" placeholder="VD: AI viết content tự động">
+          </div>
+          <div class="form-group">
+            <label>Loại AI</label>
+            <select class="form-control" id="ai-type">
+              <option value="">-- Chọn loại --</option>
+              <option>Chatbot / Trợ lý AI</option>
+              <option>AI viết nội dung</option>
+              <option>AI phân tích dữ liệu</option>
+              <option>AI xử lý ảnh / video</option>
+              <option>AI giải bài tập</option>
+              <option>AI tự động hóa</option>
+              <option>Khác</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Tính năng cần có</label>
+          <div class="feature-grid">
+            <label class="feat-check" onclick="toggleFeat(this)"><input type="checkbox"><div class="fc-box"><i class="fas fa-check"></i></div>Giao diện web</label>
+            <label class="feat-check" onclick="toggleFeat(this)"><input type="checkbox"><div class="fc-box"><i class="fas fa-check"></i></div>API tích hợp</label>
+            <label class="feat-check" onclick="toggleFeat(this)"><input type="checkbox"><div class="fc-box"><i class="fas fa-check"></i></div>Quản lý user</label>
+            <label class="feat-check" onclick="toggleFeat(this)"><input type="checkbox"><div class="fc-box"><i class="fas fa-check"></i></div>Gói subscription</label>
+            <label class="feat-check" onclick="toggleFeat(this)"><input type="checkbox"><div class="fc-box"><i class="fas fa-check"></i></div>Dashboard admin</label>
+            <label class="feat-check" onclick="toggleFeat(this)"><input type="checkbox"><div class="fc-box"><i class="fas fa-check"></i></div>Tích hợp Zalo/Telegram</label>
+            <label class="feat-check" onclick="toggleFeat(this)"><input type="checkbox"><div class="fc-box"><i class="fas fa-check"></i></div>Giới hạn lượt dùng</label>
+            <label class="feat-check" onclick="toggleFeat(this)"><input type="checkbox"><div class="fc-box"><i class="fas fa-check"></i></div>Thanh toán tự động</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- WEB GIẢI BÀI TẬP -->
+      <div class="dyn-fields" id="dyn-edu">
+        <div class="form-section-title"><i class="fas fa-book-open"></i> Chi tiết web giải bài tập</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Cấp học <span class="req">*</span></label>
+            <select class="form-control" id="edu-level">
+              <option value="">-- Chọn cấp học --</option>
+              <option>THCS (Lớp 6-9)</option>
+              <option>THPT (Lớp 10-12)</option>
+              <option>Cả THCS và THPT</option>
+              <option>Đại học</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Môn học chính</label>
+            <select class="form-control" id="edu-subject">
+              <option value="">-- Chọn môn --</option>
+              <option>Toán</option>
+              <option>Vật lý</option>
+              <option>Hóa học</option>
+              <option>Sinh học</option>
+              <option>Ngữ văn</option>
+              <option>Tiếng Anh</option>
+              <option>Lịch sử / Địa lý</option>
+              <option>Tất cả môn</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Tính năng cần có</label>
+          <div class="feature-grid">
+            <label class="feat-check" onclick="toggleFeat(this)"><input type="checkbox"><div class="fc-box"><i class="fas fa-check"></i></div>AI giải bài tự động</label>
+            <label class="feat-check" onclick="toggleFeat(this)"><input type="checkbox"><div class="fc-box"><i class="fas fa-check"></i></div>Giải thích từng bước</label>
+            <label class="feat-check" onclick="toggleFeat(this)"><input type="checkbox"><div class="fc-box"><i class="fas fa-check"></i></div>Upload ảnh bài tập</label>
+            <label class="feat-check" onclick="toggleFeat(this)"><input type="checkbox"><div class="fc-box"><i class="fas fa-check"></i></div>Ngân hàng đề thi</label>
+            <label class="feat-check" onclick="toggleFeat(this)"><input type="checkbox"><div class="fc-box"><i class="fas fa-check"></i></div>Luyện tập trắc nghiệm</label>
+            <label class="feat-check" onclick="toggleFeat(this)"><input type="checkbox"><div class="fc-box"><i class="fas fa-check"></i></div>Theo dõi tiến độ</label>
+            <label class="feat-check" onclick="toggleFeat(this)"><input type="checkbox"><div class="fc-box"><i class="fas fa-check"></i></div>Gói premium</label>
+            <label class="feat-check" onclick="toggleFeat(this)"><input type="checkbox"><div class="fc-box"><i class="fas fa-check"></i></div>App mobile</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- CODE / THIẾT KẾ WEB -->
+      <div class="dyn-fields" id="dyn-webdev">
+        <div class="form-section-title"><i class="fas fa-code"></i> Chi tiết dự án web</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Loại website <span class="req">*</span></label>
+            <select class="form-control" id="wd-type">
+              <option value="">-- Chọn loại --</option>
+              <option>Landing page / Giới thiệu</option>
+              <option>Website bán hàng</option>
+              <option>Web app / SaaS</option>
+              <option>Blog / Tin tức</option>
+              <option>Portfolio cá nhân</option>
+              <option>Dashboard / Admin</option>
+              <option>Khác</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Công nghệ ưu tiên</label>
+            <select class="form-control" id="wd-tech">
+              <option value="">-- Không yêu cầu --</option>
+              <option>HTML/CSS/JS thuần</option>
+              <option>React / Next.js</option>
+              <option>Vue.js / Nuxt</option>
+              <option>WordPress</option>
+              <option>Node.js Backend</option>
+              <option>Python / Django</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Tính năng cần có</label>
+          <div class="feature-grid">
+            <label class="feat-check" onclick="toggleFeat(this)"><input type="checkbox"><div class="fc-box"><i class="fas fa-check"></i></div>Responsive mobile</label>
+            <label class="feat-check" onclick="toggleFeat(this)"><input type="checkbox"><div class="fc-box"><i class="fas fa-check"></i></div>Dark mode</label>
+            <label class="feat-check" onclick="toggleFeat(this)"><input type="checkbox"><div class="fc-box"><i class="fas fa-check"></i></div>Đăng nhập / Đăng ký</label>
+            <label class="feat-check" onclick="toggleFeat(this)"><input type="checkbox"><div class="fc-box"><i class="fas fa-check"></i></div>Thanh toán online</label>
+            <label class="feat-check" onclick="toggleFeat(this)"><input type="checkbox"><div class="fc-box"><i class="fas fa-check"></i></div>SEO tối ưu</label>
+            <label class="feat-check" onclick="toggleFeat(this)"><input type="checkbox"><div class="fc-box"><i class="fas fa-check"></i></div>Admin dashboard</label>
+            <label class="feat-check" onclick="toggleFeat(this)"><input type="checkbox"><div class="fc-box"><i class="fas fa-check"></i></div>Tích hợp AI</label>
+            <label class="feat-check" onclick="toggleFeat(this)"><input type="checkbox"><div class="fc-box"><i class="fas fa-check"></i></div>Deploy & hosting</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-divider"></div>
+
+      <!-- SECTION 3: BUDGET & TIMELINE -->
+      <div class="form-section-title"><i class="fas fa-wallet"></i> Ngân sách & Thời gian</div>
+      <div class="form-group">
+        <label>Ngân sách dự kiến</label>
+        <div class="budget-chips" id="budgetChips">
+          <div class="budget-chip active" onclick="pickChip(this,'budgetChips','fBudget','Dưới 2 triệu')">Dưới 2 triệu</div>
+          <div class="budget-chip" onclick="pickChip(this,'budgetChips','fBudget','2 - 5 triệu')">2 – 5 triệu</div>
+          <div class="budget-chip" onclick="pickChip(this,'budgetChips','fBudget','5 - 15 triệu')">5 – 15 triệu</div>
+          <div class="budget-chip" onclick="pickChip(this,'budgetChips','fBudget','15 - 30 triệu')">15 – 30 triệu</div>
+          <div class="budget-chip" onclick="pickChip(this,'budgetChips','fBudget','Trên 30 triệu')">Trên 30 triệu</div>
+        </div>
+        <input type="hidden" id="fBudget" value="Dưới 2 triệu">
+      </div>
+      <div class="form-group" style="margin-top:1rem;">
+        <label>Thời gian hoàn thành mong muốn</label>
+        <div class="timeline-chips" id="timelineChips">
+          <div class="tl-chip active" onclick="pickChip(this,'timelineChips','fTimeline','Càng sớm càng tốt')">⚡ Gấp</div>
+          <div class="tl-chip" onclick="pickChip(this,'timelineChips','fTimeline','1 - 2 tuần')">1 – 2 tuần</div>
+          <div class="tl-chip" onclick="pickChip(this,'timelineChips','fTimeline','1 tháng')">1 tháng</div>
+          <div class="tl-chip" onclick="pickChip(this,'timelineChips','fTimeline','2 - 3 tháng')">2 – 3 tháng</div>
+          <div class="tl-chip" onclick="pickChip(this,'timelineChips','fTimeline','Chưa xác định')">Chưa xác định</div>
+        </div>
+        <input type="hidden" id="fTimeline" value="Càng sớm càng tốt">
+      </div>
+
+      <div class="form-divider"></div>
+
+      <!-- SECTION 4: DESCRIPTION -->
+      <div class="form-section-title"><i class="fas fa-align-left"></i> Mô tả yêu cầu</div>
+      <div class="form-group">
+        <label>Mô tả chi tiết dự án <span class="req">*</span></label>
+        <textarea class="form-control" id="fDesc" placeholder="Mô tả ý tưởng, tính năng mong muốn, đối tượng người dùng, tham khảo website tương tự..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Link tham khảo (nếu có)</label>
+        <input type="url" class="form-control" id="fRef" placeholder="https://example.com">
+      </div>
+
+      <!-- SUBMIT -->
+      <div class="submit-wrap">
+        <button class="btn-submit" id="submitBtn" onclick="submitOrder()">
+          <i class="fas fa-paper-plane"></i> Gửi Yêu Cầu Tư Vấn
+        </button>
+        <div class="form-note">Tôi sẽ liên hệ trong vòng 2 giờ · Tư vấn hoàn toàn miễn phí</div>
+      </div>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="success-box" id="successBox">
+      <div class="s-icon">🎉</div>
+      <h3>Đã nhận yêu cầu!</h3>
+      <p>Cảm ơn bạn đã tin tưởng Clitus PC.<br>Tôi sẽ liên hệ qua <strong id="s-contact"></strong> trong vòng <strong>2 giờ</strong> để tư vấn chi tiết.</p>
+      <button onclick="window.open('https://zalo.me/0906857331','_blank')" style="padding:.75rem 1.75rem;border:none;border-radius:50px;background:linear-gradient(135deg,#0068ff,#00c6ff);color:#fff;font-weight:700;cursor:pointer;font-size:.9rem;margin-right:.5rem;">
+        <i class="fas fa-comment-dots"></i> Nhắn Zalo ngay
+      </button>
+      <button onclick="location.href='services.html'" style="padding:.75rem 1.75rem;border:2px solid var(--border);border-radius:50px;background:none;color:var(--sub);font-weight:700;cursor:pointer;font-size:.9rem;margin-top:.5rem;">
+        Xem thêm dịch vụ
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="dist/interactions-vip.js"></script>
+<script src="dist/mobile-nav.js"></script>
+<script src="dist/bug-report.js"></script>
+<script>
+const API_BASE = (location.hostname==='localhost'||location.hostname==='127.0.0.1')
+  ? 'http://localhost:3001/api' : `${location.origin}/api`;
+
+let currentSvc = 'course';
+
+function pickSvc(el) {
+  document.querySelectorAll('.svc-pick-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  currentSvc = el.dataset.svc;
+  document.querySelectorAll('.dyn-fields').forEach(d => d.classList.remove('show'));
+  const target = document.getElementById('dyn-' + currentSvc);
+  if (target) target.classList.add('show');
+}
+
+function toggleFeat(el) {
+  el.classList.toggle('checked');
+  el.querySelector('input').checked = el.classList.contains('checked');
+}
+
+function pickChip(el, groupId, hiddenId, val) {
+  document.querySelectorAll('#' + groupId + ' > div').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(hiddenId).value = val;
+}
+
+function getCheckedFeatures() {
+  const checked = [];
+  document.querySelectorAll('#dyn-' + currentSvc + ' .feat-check.checked').forEach(el => {
+    checked.push(el.textContent.trim());
+  });
+  return checked.join(', ');
+}
+
+function getDynDetails() {
+  const m = {
+    course: () => `Tên khóa: ${v('c-name')} | Lĩnh vực: ${v('c-field')}`,
+    aitool: () => `Tên tool: ${v('ai-name')} | Loại AI: ${v('ai-type')}`,
+    edu:    () => `Cấp học: ${v('edu-level')} | Môn: ${v('edu-subject')}`,
+    webdev: () => `Loại web: ${v('wd-type')} | Công nghệ: ${v('wd-tech')}`
+  };
+  return m[currentSvc] ? m[currentSvc]() : '';
+}
+
+function v(id) { return (document.getElementById(id)||{}).value || ''; }
+
+async function submitOrder() {
+  const name = v('fName').trim();
+  const phone = v('fPhone').trim();
+  const email = v('fEmail').trim();
+  const desc = v('fDesc').trim();
+  if (!name || !phone || !email) { alert('Vui lòng điền họ tên, số điện thoại và email!'); return; }
+  if (!desc) { alert('Vui lòng mô tả yêu cầu của bạn!'); return; }
+
+  const svcLabels = {course:'Bán Khóa Học', aitool:'Bán Tool AI', edu:'Web Giải Bài Tập', webdev:'Code / Thiết Kế Web'};
+  const body = {
+    name, email, phone,
+    subject: `[Đặt dịch vụ] ${svcLabels[currentSvc]}`,
+    message: `Dịch vụ: ${svcLabels[currentSvc]}\n${getDynDetails()}\nTính năng: ${getCheckedFeatures()}\nNgân sách: ${v('fBudget')}\nThời gian: ${v('fTimeline')}\nZalo/FB: ${v('fSocial')}\nTham khảo: ${v('fRef')}\n\nMô tả:\n${desc}`
+  };
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
+
+  try {
+    await fetch(`${API_BASE}/messages`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    });
+    document.getElementById('formContent').style.display = 'none';
+    const sb = document.getElementById('successBox');
+    sb.style.display = 'block';
+    document.getElementById('s-contact').textContent = email || phone;
+  } catch(e) {
+    alert('Lỗi gửi form. Vui lòng thử lại hoặc liên hệ Zalo!');
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Gửi Yêu Cầu Tư Vấn';
+  }
+}
+
+// Pre-select from URL param
+const urlSvc = new URLSearchParams(location.search).get('svc');
+if (urlSvc) {
+  const card = document.querySelector(`[data-svc="${urlSvc}"]`);
+  if (card) pickSvc(card);
+}
+</script>
+</body>
+</html>
