@@ -2,14 +2,14 @@ const { queryOne, run } = require('./_db');
 
 module.exports = async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
     if (req.method === 'OPTIONS') return res.status(200).end();
 
     const url = req.url.split('?')[0];
 
     const viewMatch = url.match(/\/projects\/(\d+)\/view$/);
-    if (req.method === 'POST' && viewMatch) {
+    if ((req.method === 'POST' || req.method === 'GET') && viewMatch) {
         const id = parseInt(viewMatch[1]);
         await run('UPDATE project_stats SET views=views+1 WHERE project_id=$1', [id]);
         await run("UPDATE site_stats SET value=value+1 WHERE key='total_views'");
