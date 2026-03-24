@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dịch Thuật - ClitusPC</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="modern.css">
+<link rel="stylesheet" href="fab-layout.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+  --g1:#667eea;--g2:#764ba2;
+  --bg:#f8f9ff;--card:#fff;--text:#1a1a2e;--border:#e0e4ff;--sub:#888;
+}
+[data-theme="dark"] {
+  --bg:#0f0f1a;--card:#1a1a2e;--text:#e0e0ff;--border:#2a2a4a;--sub:#aaa;
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+body { background:var(--bg); color:var(--text); font-family:'Segoe UI',sans-serif; min-height:100vh; }
+
+.tr-header {
+  background:linear-gradient(135deg,var(--g1),var(--g2));
+  padding:1rem 1.5rem;
+  display:flex; align-items:center; gap:1rem;
+}
+.tr-header a { color:#fff; text-decoration:none; font-size:1.1rem; opacity:.8; }
+.tr-header h1 { color:#fff; font-size:1.2rem; font-weight:800; flex:1; }
+.tr-header button { background:rgba(255,255,255,.2); border:none; color:#fff; padding:.4rem .8rem; border-radius:8px; cursor:pointer; font-size:.85rem; }
+
+.tr-wrap { max-width:900px; margin:0 auto; padding:1.5rem 1rem; }
+
+/* Lang selector bar */
+.lang-bar {
+  display:flex; align-items:center; gap:.5rem;
+  background:var(--card); border:1.5px solid var(--border);
+  border-radius:16px; padding:.5rem .75rem; margin-bottom:1rem;
+  box-shadow:0 2px 12px rgba(102,126,234,.08);
+}
+.lang-btn {
+  flex:1; background:none; border:none; color:var(--text);
+  font-size:.95rem; font-weight:600; padding:.5rem .75rem;
+  border-radius:10px; cursor:pointer; transition:all .2s;
+  text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.lang-btn.active { background:linear-gradient(135deg,var(--g1),var(--g2)); color:#fff; }
+.lang-btn:hover:not(.active) { background:var(--border); }
+.swap-btn {
+  background:none; border:1.5px solid var(--border); color:var(--g1);
+  width:36px; height:36px; border-radius:50%; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  font-size:1rem; transition:all .2s; flex-shrink:0;
+}
+.swap-btn:hover { background:var(--g1); color:#fff; transform:rotate(180deg); }
+
+/* Text areas */
+.tr-panels { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+@media(max-width:600px) { .tr-panels { grid-template-columns:1fr; } }
+
+.tr-panel {
+  background:var(--card); border:1.5px solid var(--border);
+  border-radius:16px; overflow:hidden;
+  box-shadow:0 2px 12px rgba(102,126,234,.08);
+}
+.tr-panel-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:.6rem 1rem; border-bottom:1px solid var(--border);
+  font-size:.8rem; font-weight:700; color:var(--sub);
+}
+.tr-panel-header select {
+  background:none; border:none; color:var(--g1); font-weight:700;
+  font-size:.85rem; cursor:pointer; outline:none;
+}
+.tr-textarea {
+  width:100%; min-height:200px; padding:1rem;
+  background:none; border:none; color:var(--text);
+  font-size:1rem; line-height:1.6; resize:vertical; outline:none;
+  font-family:inherit;
+}
+.tr-panel-footer {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:.5rem 1rem; border-top:1px solid var(--border);
+}
+.char-count { font-size:.75rem; color:var(--sub); }
+.panel-actions { display:flex; gap:.4rem; }
+.icon-btn {
+  background:none; border:none; color:var(--sub); cursor:pointer;
+  padding:.3rem .5rem; border-radius:8px; font-size:.9rem; transition:all .2s;
+}
+.icon-btn:hover { color:var(--g1); background:var(--border); }
+
+/* Translate button */
+.tr-btn-wrap { text-align:center; margin:1rem 0; }
+.tr-btn {
+  background:linear-gradient(135deg,var(--g1),var(--g2));
+  color:#fff; border:none; padding:.75rem 2.5rem;
+  border-radius:50px; font-size:1rem; font-weight:700;
+  cursor:pointer; transition:all .2s;
+  box-shadow:0 4px 15px rgba(102,126,234,.4);
+}
+.tr-btn:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(102,126,234,.5); }
+.tr-btn:disabled { opacity:.6; cursor:not-allowed; transform:none; }
+
+/* Quick langs */
+.quick-langs {
+  display:flex; flex-wrap:wrap; gap:.4rem; margin-bottom:1rem;
+}
+.ql-btn {
+  background:var(--card); border:1.5px solid var(--border);
+  color:var(--text); padding:.3rem .8rem; border-radius:50px;
+  font-size:.8rem; cursor:pointer; transition:all .2s;
+}
+.ql-btn:hover { border-color:var(--g1); color:var(--g1); }
+.ql-btn.active { background:var(--g1); color:#fff; border-color:var(--g1); }
+
+/* History */
+.history-section { margin-top:1.5rem; }
+.history-title { font-size:.9rem; font-weight:700; color:var(--sub); margin-bottom:.75rem; display:flex; align-items:center; justify-content:space-between; }
+.history-item {
+  background:var(--card); border:1.5px solid var(--border);
+  border-radius:12px; padding:.75rem 1rem; margin-bottom:.5rem;
+  cursor:pointer; transition:all .2s;
+}
+.history-item:hover { border-color:var(--g1); }
+.history-item .hi-src { font-size:.85rem; color:var(--sub); margin-bottom:.25rem; }
+.history-item .hi-dst { font-size:.9rem; font-weight:600; }
+.history-item .hi-langs { font-size:.7rem; color:var(--g1); font-weight:700; }
+
+.loading-dots::after { content:'...'; animation:dots 1s infinite; }
+@keyframes dots { 0%{content:'.'} 33%{content:'..'} 66%{content:'...'} }
+</style>
+</head>
+<body>
+
+<div class="tr-header">
+  <a href="index.html"><i class="fas fa-arrow-left"></i></a>
+  <h1><i class="fas fa-language"></i> Dịch Thuật</h1>
+  <button id="themeToggle"><i class="fas fa-moon"></i></button>
+</div>
+
+<div class="tr-wrap">
+
+  <!-- Quick language pairs -->
+  <div class="quick-langs" id="quickLangs">
+    <button class="ql-btn active" data-src="vi" data-dst="en">🇻🇳 → 🇺🇸</button>
+    <button class="ql-btn" data-src="en" data-dst="vi">🇺🇸 → 🇻🇳</button>
+    <button class="ql-btn" data-src="vi" data-dst="zh">🇻🇳 → 🇨🇳</button>
+    <button class="ql-btn" data-src="vi" data-dst="ja">🇻🇳 → 🇯🇵</button>
+    <button class="ql-btn" data-src="vi" data-dst="ko">🇻🇳 → 🇰🇷</button>
+    <button class="ql-btn" data-src="en" data-dst="zh">🇺🇸 → 🇨🇳</button>
+    <button class="ql-btn" data-src="en" data-dst="ja">🇺🇸 → 🇯🇵</button>
+    <button class="ql-btn" data-src="en" data-dst="ko">🇺🇸 → 🇰🇷</button>
+  </div>
+
+  <!-- Lang selector bar -->
+  <div class="lang-bar">
+    <select id="srcLangSelect" style="flex:1;background:none;border:none;color:var(--text);font-size:.95rem;font-weight:600;cursor:pointer;outline:none;padding:.3rem;">
+    </select>
+    <button class="swap-btn" id="swapBtn" title="Đổi ngôn ngữ"><i class="fas fa-exchange-alt"></i></button>
+    <select id="dstLangSelect" style="flex:1;background:none;border:none;color:var(--text);font-size:.95rem;font-weight:600;cursor:pointer;outline:none;padding:.3rem;">
+    </select>
+  </div>
+
+  <!-- Panels -->
+  <div class="tr-panels">
+    <div class="tr-panel">
+      <div class="tr-panel-header">
+        <span id="srcLangLabel">Tiếng Việt</span>
+        <div style="display:flex;gap:.3rem;">
+          <button class="icon-btn" id="micBtn" title="Nhập bằng giọng nói"><i class="fas fa-microphone"></i></button>
+          <button class="icon-btn" id="clearBtn" title="Xóa"><i class="fas fa-times"></i></button>
+        </div>
+      </div>
+      <textarea class="tr-textarea" id="srcText" placeholder="Nhập văn bản cần dịch..." maxlength="5000"></textarea>
+      <div class="tr-panel-footer">
+        <span class="char-count"><span id="charCount">0</span>/5000</span>
+        <div class="panel-actions">
+          <button class="icon-btn" id="copySrcBtn" title="Sao chép"><i class="fas fa-copy"></i></button>
+          <button class="icon-btn" id="speakSrcBtn" title="Đọc to"><i class="fas fa-volume-up"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="tr-panel">
+      <div class="tr-panel-header">
+        <span id="dstLangLabel">Tiếng Anh</span>
+        <span id="loadingIndicator" style="display:none;color:var(--g1);font-size:.8rem;" class="loading-dots">Đang dịch</span>
+      </div>
+      <textarea class="tr-textarea" id="dstText" placeholder="Bản dịch sẽ hiện ở đây..." readonly></textarea>
+      <div class="tr-panel-footer">
+        <span class="char-count" id="dstCharCount">0 ký tự</span>
+        <div class="panel-actions">
+          <button class="icon-btn" id="copyDstBtn" title="Sao chép bản dịch"><i class="fas fa-copy"></i></button>
+          <button class="icon-btn" id="speakDstBtn" title="Đọc to bản dịch"><i class="fas fa-volume-up"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tr-btn-wrap">
+    <button class="tr-btn" id="translateBtn"><i class="fas fa-language"></i> Dịch Ngay</button>
+  </div>
+
+  <!-- History -->
+  <div class="history-section" id="historySection" style="display:none;">
+    <div class="history-title">
+      <span><i class="fas fa-history"></i> Lịch sử dịch</span>
+      <button class="icon-btn" id="clearHistoryBtn" style="font-size:.75rem;">Xóa tất cả</button>
+    </div>
+    <div id="historyList"></div>
+  </div>
+
+</div>
+
+<script>
+const LANGS = {
+  'vi':'Tiếng Việt','en':'Tiếng Anh','zh':'Tiếng Trung','ja':'Tiếng Nhật',
+  'ko':'Tiếng Hàn','fr':'Tiếng Pháp','de':'Tiếng Đức','es':'Tiếng Tây Ban Nha',
+  'it':'Tiếng Ý','pt':'Tiếng Bồ Đào Nha','ru':'Tiếng Nga','ar':'Tiếng Ả Rập',
+  'th':'Tiếng Thái','id':'Tiếng Indonesia','ms':'Tiếng Mã Lai','hi':'Tiếng Hindi',
+  'tr':'Tiếng Thổ Nhĩ Kỳ','nl':'Tiếng Hà Lan','pl':'Tiếng Ba Lan','sv':'Tiếng Thụy Điển'
+};
+
+let srcLang = 'vi', dstLang = 'en';
+let history = JSON.parse(localStorage.getItem('tr_history') || '[]');
+let translateTimer = null;
+
+// Build selects
+function buildSelects() {
+  ['srcLangSelect','dstLangSelect'].forEach(id => {
+    const sel = document.getElementById(id);
+    sel.innerHTML = Object.entries(LANGS).map(([k,v]) => `<option value="${k}">${v}</option>`).join('');
+  });
+  document.getElementById('srcLangSelect').value = srcLang;
+  document.getElementById('dstLangSelect').value = dstLang;
+  updateLabels();
+}
+
+function updateLabels() {
+  document.getElementById('srcLangLabel').textContent = LANGS[srcLang] || srcLang;
+  document.getElementById('dstLangLabel').textContent = LANGS[dstLang] || dstLang;
+}
+
+// Translate
+async function translate() {
+  const text = document.getElementById('srcText').value.trim();
+  if (!text) return;
+  const btn = document.getElementById('translateBtn');
+  const loading = document.getElementById('loadingIndicator');
+  btn.disabled = true;
+  loading.style.display = 'inline';
+  document.getElementById('dstText').value = '';
+  try {
+    const pair = `${srcLang}|${dstLang}`;
+    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${pair}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const translated = data.responseData?.translatedText || '';
+    document.getElementById('dstText').value = translated;
+    document.getElementById('dstCharCount').textContent = translated.length + ' ký tự';
+    // Save history
+    if (translated && translated !== text) {
+      history.unshift({ src: text.slice(0,100), dst: translated.slice(0,100), srcLang, dstLang, time: Date.now() });
+      if (history.length > 20) history.pop();
+      localStorage.setItem('tr_history', JSON.stringify(history));
+      renderHistory();
+    }
+  } catch(e) {
+    document.getElementById('dstText').value = 'Lỗi kết nối. Vui lòng thử lại.';
+  }
+  btn.disabled = false;
+  loading.style.display = 'none';
+}
+
+// Auto translate on typing (debounce 800ms)
+document.getElementById('srcText').addEventListener('input', function() {
+  document.getElementById('charCount').textContent = this.value.length;
+  clearTimeout(translateTimer);
+  if (this.value.trim().length > 2) {
+    translateTimer = setTimeout(translate, 800);
+  }
+});
+
+document.getElementById('translateBtn').addEventListener('click', translate);
+
+// Swap
+document.getElementById('swapBtn').addEventListener('click', () => {
+  const tmp = srcLang; srcLang = dstLang; dstLang = tmp;
+  const srcText = document.getElementById('srcText').value;
+  const dstText = document.getElementById('dstText').value;
+  document.getElementById('srcText').value = dstText;
+  document.getElementById('dstText').value = '';
+  document.getElementById('charCount').textContent = dstText.length;
+  document.getElementById('srcLangSelect').value = srcLang;
+  document.getElementById('dstLangSelect').value = dstLang;
+  updateLabels();
+  updateQuickLangs();
+  if (dstText.trim()) translate();
+});
+
+// Select change
+document.getElementById('srcLangSelect').addEventListener('change', function() {
+  srcLang = this.value; updateLabels(); updateQuickLangs();
+});
+document.getElementById('dstLangSelect').addEventListener('change', function() {
+  dstLang = this.value; updateLabels(); updateQuickLangs();
+});
+
+// Quick langs
+document.getElementById('quickLangs').addEventListener('click', e => {
+  const btn = e.target.closest('.ql-btn');
+  if (!btn) return;
+  srcLang = btn.dataset.src; dstLang = btn.dataset.dst;
+  document.getElementById('srcLangSelect').value = srcLang;
+  document.getElementById('dstLangSelect').value = dstLang;
+  updateLabels(); updateQuickLangs();
+  if (document.getElementById('srcText').value.trim()) translate();
+});
+
+function updateQuickLangs() {
+  document.querySelectorAll('.ql-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.src === srcLang && b.dataset.dst === dstLang);
+  });
+}
+
+// Copy
+document.getElementById('copySrcBtn').addEventListener('click', () => {
+  navigator.clipboard.writeText(document.getElementById('srcText').value);
+  showToast('Đã sao chép!');
+});
+document.getElementById('copyDstBtn').addEventListener('click', () => {
+  navigator.clipboard.writeText(document.getElementById('dstText').value);
+  showToast('Đã sao chép bản dịch!');
+});
+
+// Clear
+document.getElementById('clearBtn').addEventListener('click', () => {
+  document.getElementById('srcText').value = '';
+  document.getElementById('dstText').value = '';
+  document.getElementById('charCount').textContent = '0';
+  document.getElementById('dstCharCount').textContent = '0 ký tự';
+});
+
+// Speak
+function speak(text, lang) {
+  if (!text) return;
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = lang === 'vi' ? 'vi-VN' : lang === 'zh' ? 'zh-CN' : lang === 'ja' ? 'ja-JP' : lang === 'ko' ? 'ko-KR' : 'en-US';
+  speechSynthesis.speak(utt);
+}
+document.getElementById('speakSrcBtn').addEventListener('click', () => speak(document.getElementById('srcText').value, srcLang));
+document.getElementById('speakDstBtn').addEventListener('click', () => speak(document.getElementById('dstText').value, dstLang));
+
+// Mic
+document.getElementById('micBtn').addEventListener('click', () => {
+  if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+    showToast('Trình duyệt không hỗ trợ nhập giọng nói'); return;
+  }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const rec = new SR();
+  rec.lang = srcLang === 'vi' ? 'vi-VN' : 'en-US';
+  rec.onresult = e => {
+    document.getElementById('srcText').value = e.results[0][0].transcript;
+    document.getElementById('charCount').textContent = document.getElementById('srcText').value.length;
+    translate();
+  };
+  rec.start();
+  showToast('Đang nghe...');
+});
+
+// History
+function renderHistory() {
+  const sec = document.getElementById('historySection');
+  const list = document.getElementById('historyList');
+  if (!history.length) { sec.style.display = 'none'; return; }
+  sec.style.display = 'block';
+  list.innerHTML = history.slice(0,10).map((h,i) => `
+    <div class="history-item" onclick="loadHistory(${i})">
+      <div class="hi-langs">${LANGS[h.srcLang]||h.srcLang} → ${LANGS[h.dstLang]||h.dstLang}</div>
+      <div class="hi-src">${h.src}${h.src.length>=100?'...':''}</div>
+      <div class="hi-dst">${h.dst}${h.dst.length>=100?'...':''}</div>
+    </div>
+  `).join('');
+}
+
+function loadHistory(i) {
+  const h = history[i];
+  srcLang = h.srcLang; dstLang = h.dstLang;
+  document.getElementById('srcLangSelect').value = srcLang;
+  document.getElementById('dstLangSelect').value = dstLang;
+  document.getElementById('srcText').value = h.src;
+  document.getElementById('charCount').textContent = h.src.length;
+  updateLabels(); updateQuickLangs(); translate();
+}
+
+document.getElementById('clearHistoryBtn').addEventListener('click', () => {
+  history = []; localStorage.removeItem('tr_history'); renderHistory();
+});
+
+// Theme
+const html = document.documentElement;
+const saved = localStorage.getItem('theme');
+if (saved === 'dark') html.setAttribute('data-theme','dark');
+document.getElementById('themeToggle').addEventListener('click', () => {
+  const dark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', dark ? 'light' : 'dark');
+  localStorage.setItem('theme', dark ? 'light' : 'dark');
+  document.getElementById('themeToggle').innerHTML = dark ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+});
+if (saved === 'dark') document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+
+// Toast
+function showToast(msg) {
+  let t = document.getElementById('_tr_toast');
+  if (!t) { t = document.createElement('div'); t.id='_tr_toast'; t.style.cssText='position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#667eea;color:#fff;padding:.6rem 1.4rem;border-radius:50px;font-size:.85rem;font-weight:700;z-index:9999;transition:opacity .3s;'; document.body.appendChild(t); }
+  t.textContent = msg; t.style.opacity = '1';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.style.opacity = '0', 2000);
+}
+
+buildSelects();
+renderHistory();
+</script>
+</body>
+</html>
