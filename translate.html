@@ -136,14 +136,43 @@ body { background:var(--bg); color:var(--text); font-family:'Segoe UI',sans-seri
 </style>
 </head>
 <body>
+<script src="dist/protect.js"></script>
+<header>
+  <nav>
+    <a href="index.html" class="logo"><span class="logo-icon">💻</span><span class="logo-text">Clitus<span class="logo-accent">PC</span></span></a>
+    <ul id="navMenu">
+      <li><a href="index.html">Trang Chủ</a></li>
+      <li><a href="blog.html">Blog</a></li>
+      <li class="nav-dropdown">
+        <a href="#" class="nav-dropdown-toggle">Công Cụ <i class="fas fa-chevron-down nav-chevron"></i></a>
+        <ul class="nav-dropdown-menu">
+          <li><a href="tools.html"><span class="dd-icon">🤖</span> AI Tools</a></li>
+          <li><a href="calculator.html"><span class="dd-icon">🧮</span> Máy Tính</a></li>
+          <li><a href="translate.html" class="active"><span class="dd-icon">🌐</span> Dịch Thuật</a></li>
+          <li><a href="order.html"><span class="dd-icon">📋</span> Đặt Dịch Vụ</a></li>
+          <li><a href="arcade.html"><span class="dd-icon">🎮</span> Arcade & Coins</a></li>
+          <li><a href="services.html"><span class="dd-icon">🛍️</span> Dịch Vụ</a></li>
+          <li><a href="roadmap.html"><span class="dd-icon">🗺️</span> Roadmap</a></li>
+          <li><a href="payment.html"><span class="dd-icon">💳</span> Dịch Vụ & VIP</a></li>
+        </ul>
+      </li>
+    </ul>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+      <div class="nav-auth-slot"></div>
+      <button class="nav-hamburger" id="navHamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+</header>
 
-<div class="tr-header">
-  <a href="index.html"><i class="fas fa-arrow-left"></i></a>
-  <h1><i class="fas fa-language"></i> Dịch Thuật</h1>
-  <button id="themeToggle"><i class="fas fa-moon"></i></button>
-</div>
+<div class="tr-wrap" style="padding-top:5rem;">
 
-<div class="tr-wrap">
+  <!-- Page title -->
+  <div style="text-align:center;margin-bottom:1.5rem;">
+    <div style="font-size:2.5rem;margin-bottom:.3rem;">🌐</div>
+    <h1 style="font-size:clamp(1.4rem,4vw,2rem);font-weight:900;background:linear-gradient(135deg,#667eea,#f093fb,#764ba2);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">Dịch Thuật Chính Xác</h1>
+    <p style="color:var(--sub);font-size:.9rem;margin-top:.3rem;">Powered by Google Translate · 20+ ngôn ngữ</p>
+  </div>
 
   <!-- Quick language pairs -->
   <div class="quick-langs" id="quickLangs">
@@ -255,17 +284,13 @@ async function translate() {
   btn.disabled = true;
   loading.style.display = 'inline';
   document.getElementById('dstText').value = '';
+
   try {
-    const pair = `${srcLang}|${dstLang}`;
-    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${pair}`;
-    const res = await fetch(url);
-    const data = await res.json();
-    const translated = data.responseData?.translatedText || '';
-    document.getElementById('dstText').value = translated;
-    document.getElementById('dstCharCount').textContent = translated.length + ' ký tự';
-    // Save history
-    if (translated && translated !== text) {
-      history.unshift({ src: text.slice(0,100), dst: translated.slice(0,100), srcLang, dstLang, time: Date.now() });
+    const result = await translateText(text, srcLang, dstLang);
+    document.getElementById('dstText').value = result;
+    document.getElementById('dstCharCount').textContent = result.length + ' ký tự';
+    if (result && result !== text) {
+      history.unshift({ src: text.slice(0,100), dst: result.slice(0,100), srcLang, dstLang, time: Date.now() });
       if (history.length > 20) history.pop();
       localStorage.setItem('tr_history', JSON.stringify(history));
       renderHistory();
@@ -275,6 +300,34 @@ async function translate() {
   }
   btn.disabled = false;
   loading.style.display = 'none';
+}
+
+// ── ENGINE: Google Translate unofficial (chính xác cao) ──
+async function translateText(text, from, to) {
+  // Thử Google Translate unofficial endpoint trước
+  try {
+    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${from}&tl=${to}&dt=t&q=${encodeURIComponent(text)}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('google fail');
+    const data = await res.json();
+    // data[0] là mảng các đoạn dịch
+    if (Array.isArray(data[0])) {
+      return data[0].map(seg => seg[0] || '').join('');
+    }
+    throw new Error('parse fail');
+  } catch(e1) {
+    // Fallback: MyMemory
+    try {
+      const url2 = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${from}|${to}`;
+      const res2 = await fetch(url2);
+      const data2 = await res2.json();
+      const t = data2.responseData?.translatedText || '';
+      if (t && t !== text) return t;
+      throw new Error('mymemory fail');
+    } catch(e2) {
+      throw new Error('Tất cả engine đều lỗi');
+    }
+  }
 }
 
 // Auto translate on typing (debounce 800ms)
@@ -402,17 +455,7 @@ document.getElementById('clearHistoryBtn').addEventListener('click', () => {
   history = []; localStorage.removeItem('tr_history'); renderHistory();
 });
 
-// Theme
-const html = document.documentElement;
-const saved = localStorage.getItem('theme');
-if (saved === 'dark') html.setAttribute('data-theme','dark');
-document.getElementById('themeToggle').addEventListener('click', () => {
-  const dark = html.getAttribute('data-theme') === 'dark';
-  html.setAttribute('data-theme', dark ? 'light' : 'dark');
-  localStorage.setItem('theme', dark ? 'light' : 'dark');
-  document.getElementById('themeToggle').innerHTML = dark ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
-});
-if (saved === 'dark') document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+// Theme — handled by nav.js
 
 // Toast
 function showToast(msg) {
@@ -426,9 +469,9 @@ function showToast(msg) {
 buildSelects();
 renderHistory();
 </script>
-<script src="api.js"></script>
-<script src="auth.js"></script>
-<script src="nav.js"></script>
+<script src="dist/api.js"></script>
+<script src="dist/auth.js"></script>
+<script src="dist/nav.js"></script>
 <script src="dist/mobile-nav.js"></script>
 <script src="dist/push-notify.js"></script>
 <script src="dist/bug-report.js"></script>
