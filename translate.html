@@ -174,17 +174,7 @@ body { background:var(--bg); color:var(--text); font-family:'Segoe UI',sans-seri
     <p style="color:var(--sub);font-size:.9rem;margin-top:.3rem;">Powered by Google Translate · 20+ ngôn ngữ</p>
   </div>
 
-  <!-- Quick language pairs -->
-  <div class="quick-langs" id="quickLangs">
-    <button class="ql-btn active" data-src="vi" data-dst="en">🇻🇳 → 🇺🇸</button>
-    <button class="ql-btn" data-src="en" data-dst="vi">🇺🇸 → 🇻🇳</button>
-    <button class="ql-btn" data-src="vi" data-dst="zh">🇻🇳 → 🇨🇳</button>
-    <button class="ql-btn" data-src="vi" data-dst="ja">🇻🇳 → 🇯🇵</button>
-    <button class="ql-btn" data-src="vi" data-dst="ko">🇻🇳 → 🇰🇷</button>
-    <button class="ql-btn" data-src="en" data-dst="zh">🇺🇸 → 🇨🇳</button>
-    <button class="ql-btn" data-src="en" data-dst="ja">🇺🇸 → 🇯🇵</button>
-    <button class="ql-btn" data-src="en" data-dst="ko">🇺🇸 → 🇰🇷</button>
-  </div>
+
 
   <!-- Lang selector bar -->
   <div class="lang-bar">
@@ -352,34 +342,18 @@ document.getElementById('swapBtn').addEventListener('click', () => {
   document.getElementById('srcLangSelect').value = srcLang;
   document.getElementById('dstLangSelect').value = dstLang;
   updateLabels();
-  updateQuickLangs();
   if (dstText.trim()) translate();
 });
 
 // Select change
 document.getElementById('srcLangSelect').addEventListener('change', function() {
-  srcLang = this.value; updateLabels(); updateQuickLangs();
+  srcLang = this.value; updateLabels();
 });
 document.getElementById('dstLangSelect').addEventListener('change', function() {
-  dstLang = this.value; updateLabels(); updateQuickLangs();
+  dstLang = this.value; updateLabels();
 });
 
-// Quick langs
-document.getElementById('quickLangs').addEventListener('click', e => {
-  const btn = e.target.closest('.ql-btn');
-  if (!btn) return;
-  srcLang = btn.dataset.src; dstLang = btn.dataset.dst;
-  document.getElementById('srcLangSelect').value = srcLang;
-  document.getElementById('dstLangSelect').value = dstLang;
-  updateLabels(); updateQuickLangs();
-  if (document.getElementById('srcText').value.trim()) translate();
-});
 
-function updateQuickLangs() {
-  document.querySelectorAll('.ql-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.src === srcLang && b.dataset.dst === dstLang);
-  });
-}
 
 // Copy
 document.getElementById('copySrcBtn').addEventListener('click', () => {
