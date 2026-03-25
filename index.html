@@ -76,6 +76,12 @@
     <link rel="stylesheet" href="ultra-modern.css">
     <link rel="stylesheet" href="features.css?v=2">
     <link rel="stylesheet" href="fab-layout.css?v=2">
+    <style>
+    /* Force dropdown visible */
+    .nav-dropdown { position: relative !important; overflow: visible !important; }
+    nav, header, nav ul { overflow: visible !important; }
+    .nav-dropdown.open .nav-dropdown-menu { display: flex !important; visibility: visible !important; opacity: 1 !important; pointer-events: all !important; z-index: 99999 !important; }
+    </style>
     <!-- Non-critical CSS: load async -->
     <link rel="preload" href="styles-new.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <link rel="preload" href="responsive.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
