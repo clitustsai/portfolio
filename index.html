@@ -1764,8 +1764,11 @@
         }
         document.querySelectorAll('.nav-dropdown').forEach(dd => {
             const toggle = dd.querySelector('.nav-dropdown-toggle');
-            const isMobile = () => window.innerWidth <= 768;
-            toggle.addEventListener('click', (e) => { if (isMobile()) { e.preventDefault(); dd.classList.toggle('open'); } });
+            if (!toggle) return;
+            toggle.addEventListener('click', (e) => {
+                e.preventDefault();
+                dd.classList.toggle('open');
+            });
             document.addEventListener('click', (e) => { if (!dd.contains(e.target)) dd.classList.remove('open'); });
         });
     </script>

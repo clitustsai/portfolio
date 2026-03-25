@@ -1122,7 +1122,15 @@ function loginWithGoogle() {
 }
 
 function loginWithFacebook() {
-    window.location.href = `${API_BASE}/auth/facebook`;
+    // Facebook OAuth trực tiếp — cần FB App ID
+    const appId = window.FB_APP_ID || '';
+    if (!appId) {
+        if (typeof showToast === 'function') showToast('❌ Facebook login chưa được cấu hình', 'error', 3000);
+        return;
+    }
+    const redirectUri = encodeURIComponent('https://portfolio-xi-gray-20.vercel.app/oauth-callback-fb.html');
+    const url = `https://www.facebook.com/v19.0/dialog/oauth?client_id=${appId}&redirect_uri=${redirectUri}&scope=email,public_profile&response_type=code`;
+    window.location.href = url;
 }
 
 // Xử lý redirect sau OAuth (nhận token từ URL params)
