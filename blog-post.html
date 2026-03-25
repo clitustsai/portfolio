@@ -86,6 +86,25 @@
         <span id="postReadTime"></span>
         <span id="postViews"></span>
       </div>
+      <!-- TTS Player -->
+      <div id="tts-player" style="display:none;margin-top:1rem;background:linear-gradient(135deg,rgba(102,126,234,.1),rgba(118,75,162,.1));border:1px solid rgba(102,126,234,.2);border-radius:16px;padding:.85rem 1.1rem;display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;" role="region" aria-label="Nghe bài viết">
+        <button id="tts-btn" onclick="ttsToggle()" aria-label="Phát/Dừng đọc bài" style="width:40px;height:40px;border-radius:50%;border:none;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;">
+          <i class="fas fa-play" id="tts-icon"></i>
+        </button>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:.78rem;font-weight:700;color:#667eea;margin-bottom:.2rem;">🔊 Nghe bài viết</div>
+          <div id="tts-progress-wrap" style="height:4px;background:rgba(102,126,234,.2);border-radius:2px;overflow:hidden;">
+            <div id="tts-progress" style="height:100%;background:linear-gradient(90deg,#667eea,#764ba2);width:0%;transition:width .3s;border-radius:2px;"></div>
+          </div>
+          <div id="tts-status" style="font-size:.72rem;color:#888;margin-top:.2rem;">Nhấn ▶ để nghe</div>
+        </div>
+        <div style="display:flex;gap:.4rem;align-items:center;">
+          <button onclick="ttsSpeed(0.75)" id="tts-s75" aria-label="Tốc độ 0.75x" style="padding:.25rem .55rem;border-radius:6px;border:1.5px solid rgba(102,126,234,.3);background:none;color:#667eea;font-size:.7rem;font-weight:700;cursor:pointer;">0.75x</button>
+          <button onclick="ttsSpeed(1)" id="tts-s1" aria-label="Tốc độ 1x" style="padding:.25rem .55rem;border-radius:6px;border:1.5px solid #667eea;background:#667eea;color:#fff;font-size:.7rem;font-weight:700;cursor:pointer;">1x</button>
+          <button onclick="ttsSpeed(1.5)" id="tts-s15" aria-label="Tốc độ 1.5x" style="padding:.25rem .55rem;border-radius:6px;border:1.5px solid rgba(102,126,234,.3);background:none;color:#667eea;font-size:.7rem;font-weight:700;cursor:pointer;">1.5x</button>
+          <button onclick="ttsStop()" aria-label="Dừng đọc" style="padding:.25rem .55rem;border-radius:6px;border:1.5px solid rgba(239,68,68,.3);background:none;color:#ef4444;font-size:.7rem;font-weight:700;cursor:pointer;">■</button>
+        </div>
+      </div>
     </div>
 
     <div class="post-layout">
@@ -468,6 +487,130 @@ Hooks giúp code React trở nên **ngắn gọn**, **dễ test** và **dễ tá
 <script src="dist/push-notify.js"></script>
 <script src="dist/mobile-nav.js"></script>
 <script src="dist/bug-report.js"></script>
+<script>
+// ===== TEXT TO SPEECH =====
+let ttsUtter = null, ttsPaused = false, ttsWords = [], ttsIdx = 0, ttsRate = 1;
+
+function ttsGetText() {
+  const el = document.getElementById('postContent');
+  if (!el) return '';
+  return el.innerText || el.textContent || '';
+}
+
+function ttsToggle() {
+  if (!('speechSynthesis' in window)) {
+    alert('Trình duyệt không hỗ trợ đọc văn bản. Vui lòng dùng Chrome hoặc Edge.');
+    return;
+  }
+  if (window.speechSynthesis.speaking && !ttsPaused) {
+    window.speechSynthesis.pause();
+    ttsPaused = true;
+    document.getElementById('tts-icon').className = 'fas fa-play';
+    document.getElementById('tts-status').textContent = 'Đã tạm dừng';
+    return;
+  }
+  if (ttsPaused) {
+    window.speechSynthesis.resume();
+    ttsPaused = false;
+    document.getElementById('tts-icon').className = 'fas fa-pause';
+    document.getElementById('tts-status').textContent = 'Đang đọc...';
+    return;
+  }
+  ttsStart();
+}
+
+function ttsStart() {
+  window.speechSynthesis.cancel();
+  ttsPaused = false;
+  const text = ttsGetText();
+  if (!text.trim()) return;
+
+  ttsUtter = new SpeechSynthesisUtterance(text);
+  ttsUtter.lang = 'vi-VN';
+  ttsUtter.rate = ttsRate;
+  ttsUtter.pitch = 1;
+
+  // Chọn giọng tiếng Việt nếu có
+  const voices = window.speechSynthesis.getVoices();
+  const viVoice = voices.find(v => v.lang.startsWith('vi')) || voices.find(v => v.lang.startsWith('vi-VN'));
+  if (viVoice) ttsUtter.voice = viVoice;
+
+  ttsUtter.onstart = () => {
+    document.getElementById('tts-icon').className = 'fas fa-pause';
+    document.getElementById('tts-status').textContent = 'Đang đọc...';
+    document.getElementById('tts-progress').style.width = '0%';
+  };
+
+  ttsUtter.onboundary = (e) => {
+    if (e.name === 'word') {
+      const pct = Math.min(100, (e.charIndex / text.length) * 100);
+      document.getElementById('tts-progress').style.width = pct + '%';
+      document.getElementById('tts-status').textContent = 'Đang đọc... ' + Math.round(pct) + '%';
+    }
+  };
+
+  ttsUtter.onend = () => {
+    document.getElementById('tts-icon').className = 'fas fa-play';
+    document.getElementById('tts-status').textContent = 'Đã đọc xong ✓';
+    document.getElementById('tts-progress').style.width = '100%';
+    ttsPaused = false;
+  };
+
+  ttsUtter.onerror = () => {
+    document.getElementById('tts-icon').className = 'fas fa-play';
+    document.getElementById('tts-status').textContent = 'Lỗi đọc văn bản';
+  };
+
+  window.speechSynthesis.speak(ttsUtter);
+}
+
+function ttsStop() {
+  window.speechSynthesis.cancel();
+  ttsPaused = false;
+  document.getElementById('tts-icon').className = 'fas fa-play';
+  document.getElementById('tts-status').textContent = 'Nhấn ▶ để nghe';
+  document.getElementById('tts-progress').style.width = '0%';
+}
+
+function ttsSpeed(rate) {
+  ttsRate = rate;
+  ['75','1','15'].forEach(s => {
+    const btn = document.getElementById('tts-s' + s);
+    if (btn) { btn.style.background = 'none'; btn.style.color = '#667eea'; btn.style.borderColor = 'rgba(102,126,234,.3)'; }
+  });
+  const key = rate === 0.75 ? '75' : rate === 1 ? '1' : '15';
+  const active = document.getElementById('tts-s' + key);
+  if (active) { active.style.background = '#667eea'; active.style.color = '#fff'; active.style.borderColor = '#667eea'; }
+  if (window.speechSynthesis.speaking) {
+    const wasPlaying = !ttsPaused;
+    ttsStop();
+    if (wasPlaying) setTimeout(ttsStart, 100);
+  }
+}
+
+// Hiện TTS player sau khi bài load xong
+function showTTSPlayer() {
+  const player = document.getElementById('tts-player');
+  if (player) player.style.display = 'flex';
+  // Load voices
+  if (window.speechSynthesis) window.speechSynthesis.getVoices();
+}
+
+// Hook vào sau khi post content load
+const _origLoadPost = window.loadPost;
+document.addEventListener('DOMContentLoaded', () => {
+  // Observe postContent để biết khi nào bài load xong
+  const observer = new MutationObserver(() => {
+    const content = document.getElementById('postContent');
+    if (content && content.textContent.trim().length > 50) {
+      showTTSPlayer();
+      observer.disconnect();
+    }
+  });
+  const target = document.getElementById('postContent');
+  if (target) observer.observe(target, { childList: true, subtree: true });
+});
+</script>
 <link rel="stylesheet" href="ads.css">
 <script src="ads.js"></script>
 <script>
