@@ -574,6 +574,7 @@
                         <li><a href="ads.html"><span class="dd-icon">📢</span> Ad Marketplace</a></li>
                         <li><a href="messages.html"><span class="dd-icon">✉️</span> Nhắn Tin</a></li>
                         <li><a href="code-challenge.html"><span class="dd-icon">⚡</span> Code Challenge</a></li>
+                        <li><a href="portfolio-gallery.html"><span class="dd-icon">🖼️</span> Portfolio Gallery</a></li>
                     </ul>
                 </li>
             </ul>
@@ -758,8 +759,9 @@
                 <button class="filter-btn" data-filter="Python">Python</button>
             </div>
             <div class="projects-grid">
-                <div class="project-card" data-filter="React,Node,MongoDB" data-aos="fade-up" data-aos-delay="100" data-project-id="1">
-                    <div class="project-image"><i class="fas fa-globe"></i></div>
+                <div class="project-card" data-filter="React,Node,MongoDB" data-aos="fade-up" data-aos-delay="100" data-project-id="1" onclick="openProjectDetail(1)">
+                    <div class="proj-badge hot">🔥 HOT</div>
+                    <div class="project-image"><i class="fas fa-shopping-cart"></i><div class="proj-img-glow"></div></div>
                     <div class="project-content">
                         <h3 data-i18n="projects.p1.title">Website Thương Mại Điện Tử</h3>
                         <p data-i18n="projects.p1.desc">Nền tảng mua sắm trực tuyến hiện đại với thanh toán an toàn và giao diện thân thiện.</p>
@@ -768,26 +770,29 @@
                         </div>
                         <div class="project-stats">
                             <span class="view-count"><i class="fas fa-eye"></i> <span class="view-number">0</span></span>
-                            <button class="like-btn" onclick="toggleLike(1)"><i class="far fa-heart"></i> <span class="like-number">0</span></button>
+                            <button class="like-btn" onclick="event.stopPropagation();toggleLike(1)"><i class="far fa-heart"></i> <span class="like-number">0</span></button>
+                            <span class="proj-detail-hint">Xem chi tiết →</span>
                         </div>
                     </div>
                 </div>
-                <div class="project-card" data-filter="React,Firebase" data-aos="fade-up" data-aos-delay="200" data-project-id="2">
-                    <div class="project-image"><i class="fas fa-mobile-alt"></i></div>
+                <div class="project-card" data-filter="React,Firebase" data-aos="fade-up" data-aos-delay="200" data-project-id="2" onclick="openProjectDetail(2)">
+                    <div class="proj-badge new">✨ NEW</div>
+                    <div class="project-image"><i class="fas fa-robot"></i><div class="proj-img-glow" style="background:radial-gradient(circle,rgba(240,147,251,.4),transparent 70%)"></div></div>
                     <div class="project-content">
-                        <h3 data-i18n="projects.p2.title">Quản Lý Dự Án</h3>
-                        <p data-i18n="projects.p2.desc">Công cụ quản lý dự án toàn diện giúp tổ chức công việc và cộng tác nhóm hiệu quả.</p>
+                        <h3>AI Chat Website</h3>
+                        <p>Ứng dụng chat AI thông minh tích hợp GPT-4, real-time messaging, đa ngôn ngữ.</p>
                         <div class="project-tags">
-                            <span class="tag">React Native</span><span class="tag">Firebase</span><span class="tag">Redux</span>
+                            <span class="tag">AI</span><span class="tag">React</span><span class="tag">Python</span>
                         </div>
                         <div class="project-stats">
                             <span class="view-count"><i class="fas fa-eye"></i> <span class="view-number">0</span></span>
-                            <button class="like-btn" onclick="toggleLike(2)"><i class="far fa-heart"></i> <span class="like-number">0</span></button>
+                            <button class="like-btn" onclick="event.stopPropagation();toggleLike(2)"><i class="far fa-heart"></i> <span class="like-number">0</span></button>
+                            <span class="proj-detail-hint">Xem chi tiết →</span>
                         </div>
                     </div>
                 </div>
-                <div class="project-card" data-filter="Vue,Python,DataViz" data-aos="fade-up" data-aos-delay="300" data-project-id="3">
-                    <div class="project-image"><i class="fas fa-chart-line"></i></div>
+                <div class="project-card" data-filter="Vue,Python,DataViz" data-aos="fade-up" data-aos-delay="300" data-project-id="3" onclick="openProjectDetail(3)">
+                    <div class="project-image"><i class="fas fa-chart-line"></i><div class="proj-img-glow" style="background:radial-gradient(circle,rgba(16,185,129,.4),transparent 70%)"></div></div>
                     <div class="project-content">
                         <h3 data-i18n="projects.p3.title">Dashboard Phân Tích Dữ Liệu</h3>
                         <p data-i18n="projects.p3.desc">Hệ thống visualize dữ liệu real-time với biểu đồ tương tác và báo cáo chi tiết.</p>
@@ -796,9 +801,25 @@
                         </div>
                         <div class="project-stats">
                             <span class="view-count"><i class="fas fa-eye"></i> <span class="view-number">0</span></span>
-                            <button class="like-btn" onclick="toggleLike(3)"><i class="far fa-heart"></i> <span class="like-number">0</span></button>
+                            <button class="like-btn" onclick="event.stopPropagation();toggleLike(3)"><i class="far fa-heart"></i> <span class="like-number">0</span></button>
+                            <span class="proj-detail-hint">Xem chi tiết →</span>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Hire Me Banner -->
+            <div class="hire-banner" data-aos="fade-up" data-aos-delay="100">
+                <div class="hire-banner-glow"></div>
+                <div style="position:relative;z-index:1;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;justify-content:space-between;">
+                    <div>
+                        <div style="font-size:.75rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:.35rem;">💼 Dịch vụ</div>
+                        <div style="font-size:1.3rem;font-weight:900;color:#fff;margin-bottom:.25rem;">Thuê tôi làm web cho bạn</div>
+                        <div style="font-size:.88rem;color:rgba(255,255,255,.65);">Landing page · E-commerce · Web App · AI Tools · Từ 3 triệu VNĐ</div>
+                    </div>
+                    <a href="order.html" style="padding:.85rem 2rem;border:none;border-radius:50px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-size:.95rem;font-weight:800;text-decoration:none;white-space:nowrap;box-shadow:0 8px 24px rgba(245,158,11,.4);transition:all .2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+                        🚀 Đặt Dịch Vụ Ngay
+                    </a>
                 </div>
             </div>
         </div>
@@ -1211,15 +1232,44 @@
     </script>
 
     <footer>
-        <h3 data-i18n="footer.follow">Theo Dõi Tôi</h3>
-        <div class="social-links">
-            <a href="https://www.facebook.com/OtisPc.Developer" target="_blank" class="facebook"><i class="fab fa-facebook-f"></i></a>
-            <a href="https://www.linkedin.com/in/clitus-tsai-a4bbb3363" target="_blank" class="linkedin"><i class="fab fa-linkedin-in"></i></a>
-            <a href="https://www.instagram.com/clituspc?igsh=YTcwZTRtbjV4dmdk&utm_source=qr" target="_blank" class="instagram"><i class="fab fa-instagram"></i></a>
-            <a href="https://x.com/clituspc?s=21" target="_blank" class="linkedin"><i class="fa-solid fa-x"></i></a>
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <div class="footer-logo">💻 Clitus<span style="color:#667eea">PC</span></div>
+                <p class="footer-tagline">Full Stack Developer · TP.HCM · Việt Nam</p>
+                <div class="social-links">
+                    <a href="https://www.facebook.com/OtisPc.Developer" target="_blank" class="facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.linkedin.com/in/clitus-tsai-a4bbb3363" target="_blank" class="linkedin"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="https://www.instagram.com/clituspc?igsh=YTcwZTRtbjV4dmdk&utm_source=qr" target="_blank" class="instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="https://x.com/clituspc?s=21" target="_blank" class="linkedin"><i class="fa-solid fa-x"></i></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <div class="footer-col">
+                    <div class="footer-col-title">Trang</div>
+                    <a href="#about">Về Tôi</a>
+                    <a href="#projects">Dự Án</a>
+                    <a href="blog.html">Blog</a>
+                    <a href="#contact">Liên Hệ</a>
+                </div>
+                <div class="footer-col">
+                    <div class="footer-col-title">Dịch Vụ</div>
+                    <a href="order.html">Đặt Dịch Vụ</a>
+                    <a href="payment.html">Gói VIP</a>
+                    <a href="tools.html">AI Tools</a>
+                    <a href="ads.html">Quảng Cáo</a>
+                </div>
+                <div class="footer-col">
+                    <div class="footer-col-title">Liên Hệ</div>
+                    <a href="mailto:infoclituspc@gmail.com">📧 Email</a>
+                    <a href="https://zalo.me/0906857331" target="_blank">💬 Zalo</a>
+                    <a href="messages.html">✉️ Nhắn Tin</a>
+                </div>
+            </div>
         </div>
-        <p style="margin-top:1rem;font-size:0.9rem;" data-i18n="footer.copy">© 2026 Trang Cá Nhân của Tôi. Bản quyền được bảo vệ.</p>
-        <span class="admin-secret-hint" onclick="openAdmin()" title="Admin">⚙</span>
+        <div class="footer-bottom">
+            <p data-i18n="footer.copy">© 2026 Clitus PC · Bản quyền được bảo vệ</p>
+            <span class="admin-secret-hint" onclick="openAdmin()" title="Admin">⚙</span>
+        </div>
     </footer>
 
     <!-- Admin Dashboard Modal -->
@@ -2324,6 +2374,124 @@
 #exit-stay{width:100%;padding:.75rem;border:none;border-radius:50px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s}
 #exit-stay:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(102,126,234,.4)}
 </style>
+
+<!-- Project Detail Modal -->
+<div id="projDetailModal" style="display:none;position:fixed;inset:0;z-index:99997;align-items:center;justify-content:center;padding:1rem;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);" onclick="if(event.target===this)closeProjDetail()">
+  <div style="background:var(--card,#1a1a2e);border-radius:28px;max-width:680px;width:100%;max-height:90vh;overflow-y:auto;position:relative;box-shadow:0 32px 80px rgba(0,0,0,.5);border:1px solid rgba(102,126,234,.2);animation:authSlideIn .3s ease;">
+    <button onclick="closeProjDetail()" style="position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,.1);border:none;color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:1.1rem;z-index:1;">×</button>
+    <div id="projDetailContent" style="padding:2rem;"></div>
+  </div>
+</div>
+
+<style>
+/* ===== PROJECT CARD PREMIUM ===== */
+.project-card { position:relative; cursor:pointer; }
+.proj-badge { position:absolute;top:1rem;right:1rem;z-index:2;font-size:.68rem;font-weight:900;padding:.3rem .75rem;border-radius:50px;letter-spacing:.05em; }
+.proj-badge.hot { background:linear-gradient(135deg,#f5576c,#c0392b);color:#fff;box-shadow:0 4px 12px rgba(245,87,108,.4); }
+.proj-badge.new { background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;box-shadow:0 4px 12px rgba(102,126,234,.4); }
+.proj-img-glow { position:absolute;inset:0;background:radial-gradient(circle,rgba(102,126,234,.35),transparent 70%);pointer-events:none;border-radius:inherit; }
+.project-image { position:relative;overflow:hidden; }
+.proj-detail-hint { margin-left:auto;font-size:.72rem;color:#667eea;font-weight:700;opacity:0;transition:opacity .2s; }
+.project-card:hover .proj-detail-hint { opacity:1; }
+.project-card:hover { box-shadow:0 20px 60px rgba(102,126,234,.3),0 0 0 1px rgba(102,126,234,.2); }
+
+/* ===== HIRE BANNER ===== */
+.hire-banner { margin-top:2.5rem;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);border-radius:24px;padding:2rem;position:relative;overflow:hidden;border:1px solid rgba(102,126,234,.2); }
+.hire-banner-glow { position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(102,126,234,.25),transparent);pointer-events:none; }
+
+/* ===== FOOTER PREMIUM ===== */
+footer { background:linear-gradient(135deg,#0a0a1a,#12122a);border-top:1px solid rgba(102,126,234,.15);padding:0; }
+.footer-inner { max-width:1100px;margin:0 auto;padding:3rem 2rem 2rem;display:grid;grid-template-columns:1fr 2fr;gap:3rem;align-items:start; }
+@media(max-width:768px){.footer-inner{grid-template-columns:1fr;gap:2rem;padding:2rem 1.25rem 1.5rem;}}
+.footer-logo { font-size:1.4rem;font-weight:900;color:#fff;margin-bottom:.5rem; }
+.footer-tagline { font-size:.82rem;color:rgba(255,255,255,.45);margin-bottom:1.25rem; }
+.footer-links { display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem; }
+@media(max-width:480px){.footer-links{grid-template-columns:repeat(2,1fr);}}
+.footer-col { display:flex;flex-direction:column;gap:.5rem; }
+.footer-col-title { font-size:.72rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:.25rem; }
+.footer-col a { font-size:.85rem;color:rgba(255,255,255,.6);text-decoration:none;transition:color .2s; }
+.footer-col a:hover { color:#667eea; }
+.footer-bottom { border-top:1px solid rgba(255,255,255,.06);padding:1.25rem 2rem;display:flex;align-items:center;justify-content:space-between;max-width:1100px;margin:0 auto; }
+.footer-bottom p { font-size:.82rem;color:rgba(255,255,255,.35); }
+</style>
+
+<!-- Project Detail Data & Logic -->
+<script>
+const PROJECT_DATA = {
+  1: {
+    title: 'Website Thương Mại Điện Tử',
+    badge: '🔥 HOT',
+    icon: '🛒',
+    tags: ['React','Node.js','MongoDB','Stripe'],
+    desc: 'Nền tảng mua sắm trực tuyến hiện đại với đầy đủ tính năng: giỏ hàng, thanh toán Stripe, quản lý đơn hàng, admin dashboard.',
+    features: ['Giỏ hàng & Checkout', 'Thanh toán Stripe/VNPay', 'Admin quản lý sản phẩm', 'Responsive mobile', 'SEO tối ưu', 'Real-time inventory'],
+    tech: 'React · Node.js · MongoDB · Stripe · Redis',
+    time: '30-45 ngày',
+    price: 'Từ 15.000.000 VNĐ'
+  },
+  2: {
+    title: 'AI Chat Website',
+    badge: '✨ NEW',
+    icon: '🤖',
+    tags: ['AI','React','Python','GPT-4'],
+    desc: 'Ứng dụng chat AI thông minh tích hợp GPT-4, real-time messaging, hỗ trợ đa ngôn ngữ, lịch sử hội thoại.',
+    features: ['Chat AI GPT-4', 'Real-time WebSocket', 'Lịch sử hội thoại', 'Đa ngôn ngữ', 'Voice input', 'Export chat'],
+    tech: 'React · Python · FastAPI · OpenAI · PostgreSQL',
+    time: '20-30 ngày',
+    price: 'Từ 10.000.000 VNĐ'
+  },
+  3: {
+    title: 'Dashboard Phân Tích Dữ Liệu',
+    badge: null,
+    icon: '📊',
+    tags: ['Vue.js','Python','Chart.js','DataViz'],
+    desc: 'Hệ thống visualize dữ liệu real-time với biểu đồ tương tác, báo cáo chi tiết, export Excel/PDF.',
+    features: ['Biểu đồ real-time', 'Export Excel/PDF', 'Filter & Search', 'Dark mode', 'Responsive', 'API integration'],
+    tech: 'Vue.js · Python · Django · Chart.js · PostgreSQL',
+    time: '25-35 ngày',
+    price: 'Từ 12.000.000 VNĐ'
+  }
+};
+
+function openProjectDetail(id) {
+  const p = PROJECT_DATA[id];
+  if (!p) return;
+  const modal = document.getElementById('projDetailModal');
+  document.getElementById('projDetailContent').innerHTML = `
+    <div style="text-align:center;margin-bottom:1.5rem;">
+      <div style="font-size:3.5rem;margin-bottom:.5rem;">${p.icon}</div>
+      ${p.badge ? `<span style="background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:.72rem;font-weight:900;padding:.3rem .85rem;border-radius:50px;">${p.badge}</span>` : ''}
+      <h2 style="font-size:1.4rem;font-weight:900;color:var(--text,#e8e8ff);margin:.75rem 0 .5rem;">${p.title}</h2>
+      <p style="color:var(--sub,#8888aa);font-size:.9rem;line-height:1.7;">${p.desc}</p>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;margin-bottom:1.5rem;">
+      ${p.tags.map(t=>`<span style="padding:.3rem .75rem;border-radius:50px;background:rgba(102,126,234,.15);color:#667eea;font-size:.75rem;font-weight:700;border:1px solid rgba(102,126,234,.25);">${t}</span>`).join('')}
+    </div>
+    <div style="background:rgba(102,126,234,.06);border-radius:16px;padding:1.25rem;margin-bottom:1.25rem;">
+      <div style="font-size:.72rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:rgba(102,126,234,.8);margin-bottom:.85rem;">✅ Tính năng</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;">
+        ${p.features.map(f=>`<div style="font-size:.83rem;color:var(--sub,#8888aa);display:flex;align-items:center;gap:.4rem;"><span style="color:#10b981;font-size:.7rem;">●</span>${f}</div>`).join('')}
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;margin-bottom:1.5rem;text-align:center;">
+      <div style="background:rgba(255,255,255,.04);border-radius:12px;padding:.85rem;"><div style="font-size:.68rem;color:var(--sub,#8888aa);margin-bottom:.25rem;">CÔNG NGHỆ</div><div style="font-size:.78rem;font-weight:700;color:var(--text,#e8e8ff);">${p.tech}</div></div>
+      <div style="background:rgba(255,255,255,.04);border-radius:12px;padding:.85rem;"><div style="font-size:.68rem;color:var(--sub,#8888aa);margin-bottom:.25rem;">THỜI GIAN</div><div style="font-size:.88rem;font-weight:800;color:#667eea;">${p.time}</div></div>
+      <div style="background:rgba(255,255,255,.04);border-radius:12px;padding:.85rem;"><div style="font-size:.68rem;color:var(--sub,#8888aa);margin-bottom:.25rem;">GIÁ</div><div style="font-size:.82rem;font-weight:800;color:#f59e0b;">${p.price}</div></div>
+    </div>
+    <div style="display:flex;gap:.75rem;">
+      <a href="order.html?svc=webdev" style="flex:1;padding:.9rem;border:none;border-radius:14px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:.93rem;font-weight:800;text-align:center;text-decoration:none;display:block;">🚀 Đặt Dịch Vụ</a>
+      <a href="https://zalo.me/0906857331" target="_blank" style="flex:1;padding:.9rem;border:none;border-radius:14px;background:linear-gradient(135deg,#0068ff,#00c6ff);color:#fff;font-size:.93rem;font-weight:800;text-align:center;text-decoration:none;display:block;">💬 Tư Vấn Zalo</a>
+    </div>
+  `;
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeProjDetail() {
+  document.getElementById('projDetailModal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+</script>
 
 <!-- AI Chat Bubble -->
 <div id="ai-chat-bubble" style="position:fixed;bottom:90px;right:80px;z-index:9975;display:flex;flex-direction:column;align-items:flex-end;gap:.5rem;">
