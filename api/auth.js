@@ -71,6 +71,20 @@ module.exports = async (req, res) => {
         return res.json({ ok: true });
     }
 
+    // POST /api/auth/google-token — Google Identity Services
+    if (req.method === 'POST' && url.endsWith('/google-token')) {
+        const { accessToken, googleId, name, email, avatar } = req.body || {};
+        if (!accessToken || !googleId) return res.status(400).json({ error: 'Thiếu thông tin' });
+        try {
+            const gRes = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', { headers: { Authorization: `Bearer ${accessToken}` } });
+            const gData = await gRes.json();
+            if (!gData.id || gData.id !== googleId) return res.status(401).json({ error: 'Token không hợp lệ' });
+            const user = await upsertOAuthUser({ provider: 'google', providerId: googleId, username: gData.name || name, email: gData.email || email, avatar: gData.picture || avatar || '' });
+            const token = signJWT({ id: user.id, email: user.email, role: user.role || 'free' });
+            return res.json({ user, token });
+        } catch(err) { return res.status(500).json({ error: err.message }); }
+    }
+
     // GET /api/auth/google  OR  /api/google-login
     if (req.method === 'GET' && (url.endsWith('/google') || url.endsWith('/google-login'))) {
         const clientId = process.env.GOOGLE_CLIENT_ID;

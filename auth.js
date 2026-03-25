@@ -1113,7 +1113,33 @@ async function handlePhoneResetPassword(e) {
 
 // ========== OAUTH ==========
 function loginWithGoogle() {
-    window.location.href = `${API_BASE}/google-login`;
+    // Dùng Google Identity Services popup — tránh Vercel serve source code
+    if (typeof google !== 'undefined' && google.accounts) {
+        google.accounts.oauth2.initTokenClient({
+            client_id: '408149848832-bqro3nalmrneqoor6dpla55d455impgr.apps.googleusercontent.com',
+            scope: 'openid email profile',
+            callback: async (resp) => {
+                if (resp.error) { if(typeof showToast==='function') showToast('❌ Google login thất bại','error',3000); return; }
+                try {
+                    const uRes = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', { headers: { Authorization: 'Bearer ' + resp.access_token } });
+                    const p = await uRes.json();
+                    const r = await fetch(`${API_BASE}/auth/google-token`, {
+                        method: 'POST', headers: {'Content-Type':'application/json'},
+                        body: JSON.stringify({ accessToken: resp.access_token, googleId: p.id, name: p.name, email: p.email, avatar: p.picture||'' })
+                    });
+                    const d = await r.json().catch(()=>({}));
+                    if (!r.ok) throw new Error(d.error||'Lỗi server');
+                    saveSession(d.user, d.token);
+                    closeAuthModal();
+                    updateNavAuth(); updateCommentForms();
+                    if(typeof showToast==='function') showToast('🎉 Chào mừng '+d.user.username+'!','success',3000);
+                } catch(e) { if(typeof showToast==='function') showToast('❌ '+e.message,'error',4000); else alert(e.message); }
+            }
+        }).requestAccessToken({ prompt: 'select_account' });
+    } else {
+        // GIS chưa load, thử lại sau 1s
+        setTimeout(loginWithGoogle, 1000);
+    }
 }
 
 function loginWithFacebook() {
