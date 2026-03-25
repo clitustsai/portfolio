@@ -1,10 +1,11 @@
 {
-  "outputDirectory": ".",
   "rewrites": [
-    { "source": "/api/auth/:path*", "destination": "/api/auth/login.js" },
-    { "source": "/api/auth", "destination": "/api/auth/login.js" },
-    { "source": "/api/google-login", "destination": "/api/auth/login.js" },
-    { "source": "/api/google-callback", "destination": "/api/auth/login.js" },
+    { "source": "/api/health", "destination": "/api/health.js" },
+    { "source": "/api/stats", "destination": "/api/stats.js" },
+    { "source": "/api/google-login", "destination": "/api/auth.js" },
+    { "source": "/api/google-callback", "destination": "/api/auth.js" },
+    { "source": "/api/auth/:path*", "destination": "/api/auth.js" },
+    { "source": "/api/auth", "destination": "/api/auth.js" },
     { "source": "/api/comments/:path*", "destination": "/api/comments.js" },
     { "source": "/api/comments", "destination": "/api/comments.js" },
     { "source": "/api/messages/:path*", "destination": "/api/messages.js" },
@@ -20,8 +21,6 @@
     { "source": "/api/ads/:path*", "destination": "/api/ads.js" },
     { "source": "/api/ads", "destination": "/api/ads.js" },
     { "source": "/api/pr-posts/:path*", "destination": "/api/ads.js" },
-    { "source": "/api/pr-posts", "destination": "/api/ads.js" },
-    { "source": "/api/health", "destination": "/api/health.js" },
-    { "source": "/api/stats", "destination": "/api/stats.js" }
+    { "source": "/api/pr-posts", "destination": "/api/ads.js" }
   ]
 }
