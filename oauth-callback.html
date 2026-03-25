@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Đang đăng nhập...</title></head>
+<body>
+<script>
+// Lấy code từ URL và gửi lên API
+const params = new URLSearchParams(location.search);
+const code = params.get('code');
+const error = params.get('error');
+
+if (error || !code) {
+    window.location.href = '/?auth_error=' + encodeURIComponent(error || 'no_code');
+} else {
+    const API = location.origin + '/api';
+    fetch(API + '/auth/google-callback-ajax', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ code })
+    })
+    .then(r => r.json())
+    .then(d => {
+        if (d.token && d.user) {
+            window.location.href = '/?auth_token=' + d.token + '&auth_user=' + encodeURIComponent(JSON.stringify(d.user));
+        } else {
+            window.location.href = '/?auth_error=' + encodeURIComponent(d.error || 'Login failed');
+        }
+    })
+    .catch(() => {
+        window.location.href = '/?auth_error=network_error';
+    });
+}
+</script>
+<p style="font-family:sans-serif;text-align:center;margin-top:3rem">Đang xử lý đăng nhập...</p>
+</body>
+</html>

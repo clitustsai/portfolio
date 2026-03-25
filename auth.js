@@ -1113,7 +1113,12 @@ async function handlePhoneResetPassword(e) {
 
 // ========== OAUTH ==========
 function loginWithGoogle() {
-    window.location.href = `${API_BASE}/google-login`;
+    // Mở Google OAuth trực tiếp — không qua server redirect
+    const clientId = '408149848832-bqro3nalmrneqoor6dpla55d455impgr.apps.googleusercontent.com';
+    const redirectUri = encodeURIComponent('https://portfolio-xi-gray-20.vercel.app/oauth-callback.html');
+    const scope = encodeURIComponent('openid email profile');
+    const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&prompt=select_account`;
+    window.location.href = url;
 }
 
 function loginWithFacebook() {

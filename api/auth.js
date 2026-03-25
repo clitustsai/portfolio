@@ -71,6 +71,37 @@ module.exports = async (req, res) => {
         return res.json({ ok: true });
     }
 
+    // POST /api/auth/google-callback-ajax — called from oauth-callback.html
+    if (req.method === 'POST' && url.endsWith('/google-callback-ajax')) {
+        const { code } = req.body || {};
+        if (!code) return res.status(400).json({ error: 'No code' });
+        const appUrl = 'https://portfolio-xi-gray-20.vercel.app';
+        try {
+            const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({
+                    code,
+                    client_id: process.env.GOOGLE_CLIENT_ID,
+                    client_secret: process.env.GOOGLE_CLIENT_SECRET,
+                    redirect_uri: `${appUrl}/oauth-callback.html`,
+                    grant_type: 'authorization_code'
+                })
+            });
+            const tokenData = await tokenRes.json();
+            if (!tokenData.access_token) throw new Error(tokenData.error_description || 'No access token');
+            const userRes = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+                headers: { Authorization: `Bearer ${tokenData.access_token}` }
+            });
+            const profile = await userRes.json();
+            const user = await upsertOAuthUser({ provider: 'google', providerId: profile.id, username: profile.name || profile.email.split('@')[0], email: profile.email, avatar: profile.picture || '' });
+            const token = signJWT({ id: user.id, email: user.email, role: user.role || 'free' });
+            return res.json({ user, token });
+        } catch(err) {
+            return res.status(500).json({ error: err.message });
+        }
+    }
+
     // POST /api/auth/google-token — Google Identity Services
     if (req.method === 'POST' && url.endsWith('/google-token')) {
         const { accessToken, googleId, name, email, avatar } = req.body || {};
