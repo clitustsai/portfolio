@@ -1,21 +1,5 @@
 {
-  "buildCommand": "echo ok",
   "outputDirectory": ".",
-  "framework": null,
-  "functions": {
-    "api/auth.js": { "runtime": "nodejs20.x" },
-    "api/health.js": { "runtime": "nodejs20.x" },
-    "api/stats.js": { "runtime": "nodejs20.x" },
-    "api/comments.js": { "runtime": "nodejs20.x" },
-    "api/messages.js": { "runtime": "nodejs20.x" },
-    "api/projects.js": { "runtime": "nodejs20.x" },
-    "api/blog.js": { "runtime": "nodejs20.x" },
-    "api/chat.js": { "runtime": "nodejs20.x" },
-    "api/subscription.js": { "runtime": "nodejs20.x" },
-    "api/aichat.js": { "runtime": "nodejs20.x" },
-    "api/live.js": { "runtime": "nodejs20.x" },
-    "api/ads.js": { "runtime": "nodejs20.x" }
-  },
   "rewrites": [
     { "source": "/api/google-login", "destination": "/api/auth.js" },
     { "source": "/api/google-callback", "destination": "/api/auth.js" },
