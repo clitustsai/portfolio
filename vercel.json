@@ -1,9 +1,10 @@
 {
+  "outputDirectory": ".",
   "rewrites": [
-    { "source": "/api/google-login", "destination": "/api/auth.js" },
-    { "source": "/api/google-callback", "destination": "/api/auth.js" },
-    { "source": "/api/auth/:path*", "destination": "/api/auth.js" },
-    { "source": "/api/auth", "destination": "/api/auth.js" },
+    { "source": "/api/auth/:path*", "destination": "/api/auth/login.js" },
+    { "source": "/api/auth", "destination": "/api/auth/login.js" },
+    { "source": "/api/google-login", "destination": "/api/auth/login.js" },
+    { "source": "/api/google-callback", "destination": "/api/auth/login.js" },
     { "source": "/api/comments/:path*", "destination": "/api/comments.js" },
     { "source": "/api/comments", "destination": "/api/comments.js" },
     { "source": "/api/messages/:path*", "destination": "/api/messages.js" },
