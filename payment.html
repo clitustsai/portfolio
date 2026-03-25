@@ -678,8 +678,8 @@ async function submitVip() {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ name, email, transferRef: ref })
     });
-    const d = await r.json();
-    if(!r.ok && r.status!==409) throw new Error(d.error);
+    const d = await r.json().catch(() => ({}));
+    if(!r.ok && r.status!==409) throw new Error(d.error || `Lỗi server (${r.status})`);
     if (typeof laEvent === 'function') laEvent('vip', '💎 Ai đó vừa đăng ký gói VIP!');
     document.getElementById('vipStep1').style.display='none';
     document.getElementById('vipStep2').style.display='block';
@@ -794,8 +794,8 @@ async function submitStudentVip() {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ name, email, transferRef: `VIPHS ${studentId}`, plan: 'student', studentId, school })
     });
-    const d = await r.json();
-    if(!r.ok && r.status!==409) throw new Error(d.error);
+    const d = await r.json().catch(() => ({}));
+    if(!r.ok && r.status!==409) throw new Error(d.error || `Lỗi server (${r.status})`);
     document.getElementById('studentStep1').style.display='none';
     document.getElementById('studentStep2').style.display='block';
   } catch(e) {

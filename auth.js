@@ -1117,7 +1117,57 @@ function loginWithGoogle() {
 }
 
 function loginWithFacebook() {
-    window.location.href = `${API_BASE}/auth/facebook`;
+    // Facebook JS SDK — không cần server callback
+    if (typeof FB !== 'undefined') {
+        FB.login(function(response) {
+            if (response.authResponse) {
+                const accessToken = response.authResponse.accessToken;
+                // Lấy thông tin user từ Graph API
+                FB.api('/me', { fields: 'id,name,email,picture.width(200)' }, async function(profile) {
+                    try {
+                        const r = await fetch(`${API_BASE}/auth/facebook-token`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                accessToken,
+                                userId: profile.id,
+                                name: profile.name,
+                                email: profile.email || `fb_${profile.id}@facebook.com`,
+                                avatar: profile.picture?.data?.url || ''
+                            })
+                        });
+                        const d = await r.json().catch(() => ({}));
+                        if (!r.ok) throw new Error(d.error || 'Lỗi đăng nhập Facebook');
+                        saveSession(d.user, d.token);
+                        closeAuthModal();
+                        updateNavAuth();
+                        updateCommentForms();
+                        if (typeof showToast === 'function') showToast(`🎉 Chào mừng ${d.user.username}!`, 'success', 3000);
+                    } catch(e) {
+                        if (typeof showToast === 'function') showToast('❌ ' + e.message, 'error', 4000);
+                        else alert('Lỗi: ' + e.message);
+                    }
+                });
+            } else {
+                if (typeof showToast === 'function') showToast('❌ Đăng nhập Facebook bị hủy', 'error', 3000);
+            }
+        }, { scope: 'public_profile,email' });
+    } else {
+        // Fallback: load FB SDK rồi thử lại
+        if (!document.getElementById('fb-sdk')) {
+            const s = document.createElement('script');
+            s.id = 'fb-sdk';
+            s.src = 'https://connect.facebook.net/vi_VN/sdk.js';
+            s.onload = () => {
+                FB.init({ appId: window.FB_APP_ID || '1234567890', cookie: true, xfbml: true, version: 'v19.0' });
+                loginWithFacebook();
+            };
+            document.head.appendChild(s);
+        } else {
+            if (typeof showToast === 'function') showToast('⏳ Đang tải Facebook SDK, thử lại sau 2 giây...', 'info', 2000);
+            setTimeout(loginWithFacebook, 2000);
+        }
+    }
 }
 
 // Xử lý redirect sau OAuth (nhận token từ URL params)
