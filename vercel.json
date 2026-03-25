@@ -1,5 +1,4 @@
 {
-  "outputDirectory": ".",
   "routes": [
     { "src": "/api/health", "dest": "/api/health.js" },
     { "src": "/api/stats", "dest": "/api/stats.js" },
