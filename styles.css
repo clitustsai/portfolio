@@ -1317,7 +1317,7 @@ html[data-theme="dark"] .nav-dropdown-menu {
     to   { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 .nav-dropdown:hover .nav-dropdown-menu,
-.nav-dropdown.open .nav-dropdown-menu { display: flex; }
+.nav-dropdown.open .nav-dropdown-menu { display: flex !important; }
 
 /* Bridge: lấp khoảng trống giữa toggle và menu để hover không bị mất */
 .nav-dropdown-menu::after {
