@@ -1767,6 +1767,7 @@
             if (!toggle) return;
             toggle.addEventListener('click', (e) => {
                 e.preventDefault();
+                e.stopPropagation();
                 dd.classList.toggle('open');
             });
             document.addEventListener('click', (e) => { if (!dd.contains(e.target)) dd.classList.remove('open'); });
