@@ -73,10 +73,9 @@
       var toggle = dd.querySelector('.nav-dropdown-toggle');
       if (toggle) {
         toggle.addEventListener('click', function(e) {
-          if (window.innerWidth <= 768) {
-            e.preventDefault();
-            dd.classList.toggle('open');
-          }
+          e.preventDefault();
+          e.stopPropagation();
+          dd.classList.toggle('open');
         });
       }
       document.addEventListener('click', function(e) {
