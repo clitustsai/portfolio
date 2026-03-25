@@ -1,5 +1,4 @@
 {
-  "outputDirectory": ".",
   "rewrites": [
     { "source": "/api/health", "destination": "/api/health.js" },
     { "source": "/api/stats", "destination": "/api/stats.js" },
