@@ -71,72 +71,20 @@ module.exports = async (req, res) => {
         return res.json({ ok: true });
     }
 
-    // POST /api/auth/google-token — Google Identity Services token exchange
-    if (req.method === 'POST' && url.endsWith('/google-token')) {
-        const { accessToken, googleId, name, email, avatar } = req.body;
-        if (!accessToken || !googleId) return res.status(400).json({ error: 'Thiếu thông tin Google' });
-        try {
-            // Verify token
-            const verifyRes = await fetch(`https://www.googleapis.com/oauth2/v2/userinfo`, {
-                headers: { Authorization: `Bearer ${accessToken}` }
-            });
-            const gData = await verifyRes.json();
-            if (!gData.id || gData.id !== googleId) {
-                return res.status(401).json({ error: 'Token Google không hợp lệ' });
-            }
-            const user = await upsertOAuthUser({
-                provider: 'google', providerId: googleId,
-                username: gData.name || name, email: gData.email || email, avatar: gData.picture || avatar || ''
-            });
-            const token = signJWT({ id: user.id, email: user.email, role: user.role || 'free' });
-            return res.json({ user, token });
-        } catch(err) {
-            return res.status(500).json({ error: 'Lỗi xác thực Google: ' + err.message });
-        }
-    }
-
-    // POST /api/auth/facebook-token — Facebook JS SDK token exchange
-    if (req.method === 'POST' && url.endsWith('/facebook-token')) {
-        const { accessToken, userId, name, email, avatar } = req.body;
-        if (!accessToken || !userId) return res.status(400).json({ error: 'Thiếu thông tin Facebook' });
-        try {
-            // Verify token với Facebook Graph API
-            const verifyRes = await fetch(`https://graph.facebook.com/me?access_token=${accessToken}&fields=id,name,email`);
-            const fbData = await verifyRes.json();
-            if (!fbData.id || fbData.id !== userId) {
-                return res.status(401).json({ error: 'Token Facebook không hợp lệ' });
-            }
-            const finalEmail = fbData.email || email || `fb_${userId}@facebook.com`;
-            const finalName = fbData.name || name || 'Facebook User';
-            const user = await upsertOAuthUser({
-                provider: 'facebook', providerId: userId,
-                username: finalName, email: finalEmail, avatar: avatar || ''
-            });
-            const token = signJWT({ id: user.id, email: user.email, role: user.role || 'free' });
-            return res.json({ user, token });
-        } catch(err) {
-            return res.status(500).json({ error: 'Lỗi xác thực Facebook: ' + err.message });
-        }
-    }
-
     // GET /api/auth/google  OR  /api/google-login
     if (req.method === 'GET' && (url.endsWith('/google') || url.endsWith('/google-login'))) {
         const clientId = process.env.GOOGLE_CLIENT_ID;
         if (!clientId) return res.status(503).json({ error: 'Google OAuth chưa cấu hình' });
-        const host = req.headers.host || '';
-        const proto = host.includes('localhost') ? 'http' : 'https';
-        const appUrl = process.env.APP_URL || `${proto}://${host}`;
+        const appUrl = process.env.APP_URL || `https://${req.headers.host}`;
         const redirect = encodeURIComponent(`${appUrl}/api/google-callback`);
-        const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirect}&response_type=code&scope=openid%20email%20profile&prompt=select_account`;
-        return res.redirect(authUrl);
+        const url2 = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirect}&response_type=code&scope=openid%20email%20profile&prompt=select_account`;
+        return res.redirect(url2);
     }
 
     // GET /api/auth/google/callback  OR  /api/google-callback
     if (req.method === 'GET' && (url.endsWith('/google/callback') || url.endsWith('/google-callback'))) {
         const { code } = req.query;
-        const host = req.headers.host || '';
-        const proto = host.includes('localhost') ? 'http' : 'https';
-        const appUrl = process.env.APP_URL || `${proto}://${host}`;
+        const appUrl = process.env.APP_URL || `https://${req.headers.host}`;
         if (!code) return res.redirect(`${appUrl}/?auth_error=no_code`);
         try {
             const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
@@ -150,7 +98,7 @@ module.exports = async (req, res) => {
                 })
             });
             const tokenData = await tokenRes.json();
-            if (!tokenData.access_token) throw new Error(tokenData.error_description || 'No access token');
+            if (!tokenData.access_token) throw new Error('No access token');
             const userRes = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
                 headers: { Authorization: `Bearer ${tokenData.access_token}` }
             });
@@ -159,10 +107,7 @@ module.exports = async (req, res) => {
             const token = signJWT({ id: user.id, email: user.email, role: user.role || 'free' });
             return res.redirect(`${appUrl}/?auth_token=${token}&auth_user=${encodeURIComponent(JSON.stringify({ id: user.id, username: user.username, email: user.email, avatar: user.avatar, role: user.role }))}`);
         } catch (err) {
-            const host2 = req.headers.host || '';
-            const proto2 = host2.includes('localhost') ? 'http' : 'https';
-            const appUrl2 = process.env.APP_URL || `${proto2}://${host2}`;
-            return res.redirect(`${appUrl2}/?auth_error=${encodeURIComponent(err.message)}`);
+            return res.redirect(`${appUrl}/?auth_error=${encodeURIComponent(err.message)}`);
         }
     }
 
