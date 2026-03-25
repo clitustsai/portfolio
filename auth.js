@@ -1113,7 +1113,51 @@ async function handlePhoneResetPassword(e) {
 
 // ========== OAUTH ==========
 function loginWithGoogle() {
-    window.location.href = `${API_BASE}/google-login`;
+    // Dùng Google Identity Services popup — không cần server redirect
+    if (typeof google !== 'undefined' && google.accounts) {
+        google.accounts.oauth2.initTokenClient({
+            client_id: window.GOOGLE_CLIENT_ID || '408149848832-bqro3nalmrneqoor6dpla55d455impgr.apps.googleusercontent.com',
+            scope: 'openid email profile',
+            callback: async (tokenResponse) => {
+                if (tokenResponse.error) {
+                    if (typeof showToast === 'function') showToast('❌ Đăng nhập Google thất bại', 'error', 3000);
+                    return;
+                }
+                try {
+                    // Lấy thông tin user từ Google
+                    const userRes = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+                        headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
+                    });
+                    const profile = await userRes.json();
+                    // Gửi lên server để tạo/cập nhật user
+                    const r = await fetch(`${API_BASE}/auth/google-token`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            accessToken: tokenResponse.access_token,
+                            googleId: profile.id,
+                            name: profile.name,
+                            email: profile.email,
+                            avatar: profile.picture || ''
+                        })
+                    });
+                    const d = await r.json().catch(() => ({}));
+                    if (!r.ok) throw new Error(d.error || 'Lỗi đăng nhập Google');
+                    saveSession(d.user, d.token);
+                    closeAuthModal();
+                    updateNavAuth();
+                    updateCommentForms();
+                    if (typeof showToast === 'function') showToast(`🎉 Chào mừng ${d.user.username}!`, 'success', 3000);
+                } catch(e) {
+                    if (typeof showToast === 'function') showToast('❌ ' + e.message, 'error', 4000);
+                    else alert('Lỗi: ' + e.message);
+                }
+            }
+        }).requestAccessToken({ prompt: 'select_account' });
+    } else {
+        // Fallback: server redirect
+        window.location.href = `${API_BASE}/google-login`;
+    }
 }
 
 function loginWithFacebook() {
