@@ -19,27 +19,36 @@ const COMPLETIONS = [
 
 const css = `
 #fc-toast {
-  position:fixed;bottom:90px;left:20px;z-index:9970;
-  max-width:300px;pointer-events:none;
+  position:fixed;
+  bottom:160px;
+  left:16px;
+  z-index:99990;
+  max-width:290px;
+  pointer-events:none;
 }
 .fc-item {
-  background:#fff;border-radius:16px;padding:.85rem 1rem;
-  box-shadow:0 8px 32px rgba(0,0,0,.15);border:1px solid rgba(102,126,234,.12);
-  display:flex;align-items:center;gap:.75rem;
-  animation:fcSlideIn .4s cubic-bezier(.34,1.56,.64,1);
+  background:#fff;
+  border-radius:14px;
+  padding:.75rem .9rem;
+  box-shadow:0 8px 28px rgba(0,0,0,.18);
+  border:1px solid rgba(102,126,234,.15);
+  display:flex;align-items:center;gap:.65rem;
+  animation:fcSlideIn .4s cubic-bezier(.34,1.56,.64,1) both;
   margin-bottom:.5rem;
 }
-html[data-theme="dark"] .fc-item{background:#1a1a2e;border-color:rgba(102,126,234,.2);}
-@keyframes fcSlideIn{from{opacity:0;transform:translateX(-30px) scale(.9)}to{opacity:1;transform:translateX(0) scale(1)}}
-@keyframes fcSlideOut{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(-30px)}}
-.fc-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
+html[data-theme="dark"] .fc-item{background:#1e1e3a;border-color:rgba(102,126,234,.25);box-shadow:0 8px 28px rgba(0,0,0,.4);}
+@keyframes fcSlideIn{from{opacity:0;transform:translateX(-24px) scale(.92)}to{opacity:1;transform:translateX(0) scale(1)}}
+@keyframes fcSlideOut{from{opacity:1;transform:translateX(0) scale(1)}to{opacity:0;transform:translateX(-24px) scale(.92)}}
+.fc-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;font-size:1.15rem;flex-shrink:0;}
 .fc-body{flex:1;min-width:0;}
-.fc-name{font-size:.8rem;font-weight:800;color:#1a1a2e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.fc-name{font-size:.78rem;font-weight:800;color:#1a1a2e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 html[data-theme="dark"] .fc-name{color:#e8e8ff;}
-.fc-svc{font-size:.72rem;color:#667eea;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.fc-meta{font-size:.68rem;color:#aaa;margin-top:.1rem;}
-.fc-check{color:#10b981;font-size:.9rem;flex-shrink:0;}
-@media(max-width:480px){#fc-toast{left:12px;max-width:calc(100vw - 24px);bottom:140px;}}
+.fc-svc{font-size:.7rem;color:#667eea;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.fc-meta{font-size:.65rem;color:#aaa;margin-top:.1rem;}
+.fc-check{color:#10b981;font-size:1rem;flex-shrink:0;font-style:normal;}
+@media(max-width:480px){
+  #fc-toast{left:10px;max-width:calc(100vw - 20px);bottom:150px;}
+}
 `;
 
 const style = document.createElement('style');
@@ -50,7 +59,8 @@ const container = document.createElement('div');
 container.id = 'fc-toast';
 document.body.appendChild(container);
 
-let idx = 0;
+let idx = Math.floor(Math.random() * COMPLETIONS.length);
+
 function showNext() {
   const c = COMPLETIONS[idx % COMPLETIONS.length];
   idx++;
@@ -60,24 +70,34 @@ function showNext() {
   item.innerHTML = `
     <div class="fc-avatar">${c.avatar}</div>
     <div class="fc-body">
-      <div class="fc-name">${c.name} <span style="font-weight:400;color:#aaa;font-size:.68rem;">· ${c.city}</span></div>
+      <div class="fc-name">${c.name} <span style="font-weight:400;color:#aaa;font-size:.65rem;">· ${c.city}</span></div>
       <div class="fc-svc">✅ Đã hoàn thành: ${c.service}</div>
       <div class="fc-meta">⏱ ${c.time}</div>
     </div>
-    <i class="fas fa-check-circle fc-check"></i>
+    <span class="fc-check">✔</span>
   `;
   container.appendChild(item);
 
-  // Auto remove after 4s
   setTimeout(() => {
     item.style.animation = 'fcSlideOut .35s ease forwards';
-    setTimeout(() => item.remove(), 350);
-  }, 4000);
+    setTimeout(() => { if (item.parentNode) item.remove(); }, 380);
+  }, 4500);
 }
 
-// Start after 3s, then every 8-15s
-setTimeout(() => {
+function start() {
   showNext();
-  setInterval(showNext, 10000 + Math.random() * 5000);
-}, 3000);
+  // Random interval 8-14s
+  function loop() {
+    const delay = 8000 + Math.random() * 6000;
+    setTimeout(() => { showNext(); loop(); }, delay);
+  }
+  loop();
+}
+
+// Start after page fully loaded + 2s delay
+if (document.readyState === 'complete') {
+  setTimeout(start, 2000);
+} else {
+  window.addEventListener('load', () => setTimeout(start, 2000));
+}
 })();

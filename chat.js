@@ -29,15 +29,18 @@ let showStickers = false;
 const css = `
 #cw-fab {
   position:fixed;bottom:20px;right:20px;z-index:9980;
-  width:52px;height:52px;border-radius:50%;
+  width:56px;height:56px;border-radius:50%;
   background:linear-gradient(135deg,#667eea,#764ba2);
-  border:none;color:#fff;font-size:1.3rem;cursor:pointer;
+  border:none;color:#fff;font-size:1.4rem;cursor:pointer;
   box-shadow:0 6px 24px rgba(102,126,234,.5);
   display:flex;align-items:center;justify-content:center;
   transition:transform .25s;animation:cwPulse 4s ease-in-out infinite;
+  overflow:hidden;padding:0;
 }
 #cw-fab:hover{transform:scale(1.1);}
 #cw-fab.open{animation:none;background:linear-gradient(135deg,#f5576c,#c0392b);}
+#cw-fab-img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+#cw-fab-icon{display:flex;align-items:center;justify-content:center;width:100%;height:100%;}
 @keyframes cwPulse{0%,100%{box-shadow:0 6px 24px rgba(102,126,234,.5)}50%{box-shadow:0 6px 32px rgba(118,75,162,.75)}}
 #cw-badge{position:absolute;top:-3px;right:-3px;background:#f5576c;color:#fff;border-radius:50%;
   width:20px;height:20px;font-size:.65rem;font-weight:900;
@@ -157,7 +160,14 @@ document.head.appendChild(styleEl);
 // ===== HTML =====
 const html = `
 <button id="cw-fab" aria-label="Chat cộng đồng">
-  <i class="fas fa-comments"></i>
+  <div id="cw-fab-icon">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2Z" fill="white"/>
+      <circle cx="8" cy="11" r="1.2" fill="#667eea"/>
+      <circle cx="12" cy="11" r="1.2" fill="#667eea"/>
+      <circle cx="16" cy="11" r="1.2" fill="#667eea"/>
+    </svg>
+  </div>
   <div id="cw-badge"></div>
 </button>
 <div id="cw-box" role="dialog" aria-label="Chat cộng đồng">
@@ -599,10 +609,15 @@ document.getElementById('cw-rooms').querySelectorAll('.cw-room-btn').forEach(btn
 });
 
 // ===== OPEN/CLOSE =====
+const fabIcon = document.getElementById('cw-fab-icon');
+const MSG_SVG = `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2Z" fill="white"/><circle cx="8" cy="11" r="1.2" fill="#667eea"/><circle cx="12" cy="11" r="1.2" fill="#667eea"/><circle cx="16" cy="11" r="1.2" fill="#667eea"/></svg>`;
+const CLOSE_SVG = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>`;
+
 fab.onclick = () => {
   isOpen = !isOpen;
   box.classList.toggle('open', isOpen);
   fab.classList.toggle('open', isOpen);
+  if (fabIcon) fabIcon.innerHTML = isOpen ? CLOSE_SVG : MSG_SVG;
   if (isOpen) {
     unread = 0; badge.style.display = 'none';
     updateGuestBar();
@@ -613,7 +628,9 @@ fab.onclick = () => {
   } else { stopPolling(); }
 };
 document.getElementById('cw-close').onclick = () => {
-  isOpen = false; box.classList.remove('open'); fab.classList.remove('open'); stopPolling();
+  isOpen = false; box.classList.remove('open'); fab.classList.remove('open');
+  if (fabIcon) fabIcon.innerHTML = MSG_SVG;
+  stopPolling();
 };
 
 // ===== POLLING =====
