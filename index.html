@@ -566,6 +566,7 @@
                         <li><a href="invoice.html"><span class="dd-icon">🧾</span> Invoice</a></li>
                         <li><a href="payment.html"><span class="dd-icon">💳</span> Dịch Vụ & VIP</a></li>
                         <li><a href="ads.html"><span class="dd-icon">📢</span> Ad Marketplace</a></li>
+                        <li><a href="messages.html"><span class="dd-icon">✉️</span> Nhắn Tin</a></li>
                     </ul>
                 </li>
             </ul>
@@ -587,6 +588,7 @@
         <div class="hero-orb hero-orb-2"></div>
         <div class="hero-orb hero-orb-3"></div>
         <div class="hero-content">
+            <div id="wx-inject-hero"></div>
             <h1 data-i18n="hero.title"><span class="hero-name-gradient"></span>Xin Chào! 👋</span></h1>
             <p class="hero-typewriter-wrap" style="font-size:1.1rem;font-weight:600;margin-bottom:0.5rem;opacity:0.9;">
               <span data-typewriter="Full Stack Developer|Web & App Builder|AI Enthusiast|Problem Solver" data-tw-speed="65" data-tw-pause="2000" style="color:inherit;"></span>
@@ -2266,6 +2268,8 @@
 <script src="dist/live-activity.js" defer></script>
 <script src="dist/recommend.js" defer></script>
 <script src="dist/chat.js" defer></script>
+<script src="weather-widget.js" defer></script>
+<script src="fake-completions.js" defer></script>
 <script src="dist/push-notify.js" defer></script>
 <script src="dist/mobile-nav.js" defer></script>
 <script src="dist/bug-report.js" defer></script>
@@ -2299,5 +2303,31 @@
 #exit-stay{width:100%;padding:.75rem;border:none;border-radius:50px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s}
 #exit-stay:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(102,126,234,.4)}
 </style>
+
+<!-- AI Chat Bubble -->
+<div id="ai-chat-bubble" style="position:fixed;bottom:90px;right:80px;z-index:9975;display:flex;flex-direction:column;align-items:flex-end;gap:.5rem;">
+  <div id="ai-chat-hint" style="background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border-radius:16px 16px 4px 16px;padding:.6rem 1rem;font-size:.8rem;font-weight:700;box-shadow:0 6px 20px rgba(102,126,234,.4);white-space:nowrap;animation:aiBounce 2s ease-in-out infinite;">🤖 Chat với AI ngay!</div>
+  <div style="display:flex;align-items:center;gap:.5rem;justify-content:flex-end;">
+    <div style="background:linear-gradient(135deg,#667eea,#764ba2);border-radius:50%;width:52px;height:52px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 24px rgba(102,126,234,.5);border:3px solid #fff;overflow:hidden;cursor:pointer;animation:aiPulse 3s ease-in-out infinite;" onclick="document.getElementById('cw-fab')?.click()" title="Chat với AI">
+      <img src="https://api.dicebear.com/7.x/bottts/svg?seed=clitusai&backgroundColor=667eea" alt="AI" style="width:100%;height:100%;object-fit:cover;" onerror="this.outerHTML='<span style=font-size:1.6rem>🤖</span>'">
+    </div>
+  </div>
+</div>
+<style>
+@keyframes aiBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes aiPulse{0%,100%{box-shadow:0 6px 24px rgba(102,126,234,.5)}50%{box-shadow:0 6px 32px rgba(118,75,162,.8)}}
+</style>
+<script>
+setTimeout(() => {
+  const hint = document.getElementById('ai-chat-hint');
+  if (hint) { hint.style.opacity='0'; hint.style.transition='opacity .5s'; setTimeout(()=>hint.remove(),500); }
+}, 5000);
+document.addEventListener('click', e => {
+  if (e.target.closest('#cw-fab')) {
+    const b = document.getElementById('ai-chat-bubble');
+    if (b) b.style.opacity = '0';
+  }
+});
+</script>
 </body>
 </html>

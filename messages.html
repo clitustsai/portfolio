@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<script>if(localStorage.getItem('theme')==='dark')document.documentElement.setAttribute('data-theme','dark');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nhắn Tin — Clitus PC</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="mobile-ux.css">
+<link rel="stylesheet" href="mobile-fix.css">
+<link rel="stylesheet" href="modern.css">
+<link rel="stylesheet" href="ultra-modern.css">
+<link rel="stylesheet" href="fab-layout.css">
+<script src="dist/api.js" defer></script>
+<script src="dist/auth.js" defer></script>
+<script src="dist/nav.js" defer></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#f0f2ff;--card:#fff;--text:#1a1a2e;--sub:#6b7280;--border:#e5e7ff;--g1:#667eea;--g2:#764ba2;}
+html[data-theme="dark"]{--bg:#080818;--card:#12122a;--text:#e8e8ff;--sub:#8888aa;--border:#1e1e3a;}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;}
+
+/* HERO */
+.msg-hero{background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);padding:5rem 1.5rem 3rem;text-align:center;position:relative;overflow:hidden;}
+.msg-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(102,126,234,.3),transparent);}
+.msg-hero h1{font-size:clamp(1.8rem,4vw,2.6rem);font-weight:900;color:#fff;position:relative;margin-bottom:.5rem;}
+.msg-hero h1 span{background:linear-gradient(135deg,#a78bfa,#60a5fa);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.msg-hero p{color:rgba(255,255,255,.65);font-size:.95rem;position:relative;}
+
+/* LAYOUT */
+.msg-wrap{max-width:700px;margin:0 auto;padding:2.5rem 1.25rem 5rem;}
+
+/* LOGIN WALL */
+.login-wall{background:var(--card);border-radius:24px;padding:3rem 2rem;text-align:center;border:1px solid var(--border);box-shadow:0 8px 40px rgba(0,0,0,.07);}
+.login-wall .lw-icon{font-size:3.5rem;margin-bottom:1rem;}
+.login-wall h2{font-size:1.3rem;font-weight:900;color:var(--text);margin-bottom:.5rem;}
+.login-wall p{color:var(--sub);font-size:.9rem;margin-bottom:1.5rem;}
+.btn-login{padding:.85rem 2rem;border:none;border-radius:50px;background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;font-size:.95rem;font-weight:800;cursor:pointer;box-shadow:0 6px 20px rgba(102,126,234,.4);transition:all .2s;}
+.btn-login:hover{transform:translateY(-2px);opacity:.9;}
+
+/* FORM CARD */
+.form-card{background:var(--card);border-radius:24px;padding:2rem;border:1px solid var(--border);box-shadow:0 8px 40px rgba(0,0,0,.07);margin-bottom:1.5rem;}
+.form-card h2{font-size:1rem;font-weight:800;color:var(--text);margin-bottom:1.25rem;display:flex;align-items:center;gap:.5rem;}
+.form-group{margin-bottom:1rem;}
+.form-group label{display:block;font-size:.75rem;font-weight:700;color:var(--sub);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.05em;}
+.form-control{width:100%;padding:.75rem 1rem;border:1.5px solid var(--border);border-radius:12px;background:var(--bg);color:var(--text);font-size:.9rem;font-family:inherit;outline:none;transition:all .2s;}
+.form-control:focus{border-color:var(--g1);box-shadow:0 0 0 3px rgba(102,126,234,.1);}
+textarea.form-control{resize:vertical;min-height:120px;}
+.btn-send{width:100%;padding:.9rem;border:none;border-radius:14px;background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;font-size:.95rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.5rem;box-shadow:0 6px 20px rgba(102,126,234,.35);transition:all .25s;}
+.btn-send:hover{transform:translateY(-2px);}
+.btn-send:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+
+/* SUCCESS */
+.success-card{background:var(--card);border-radius:24px;padding:2.5rem 2rem;text-align:center;border:1px solid rgba(16,185,129,.3);box-shadow:0 8px 40px rgba(16,185,129,.1);display:none;}
+.success-card .s-icon{font-size:3.5rem;margin-bottom:1rem;}
+.success-card h3{font-size:1.2rem;font-weight:900;color:var(--text);margin-bottom:.5rem;}
+.success-card p{color:var(--sub);font-size:.88rem;line-height:1.7;margin-bottom:1.5rem;}
+.btn-zalo{padding:.75rem 1.75rem;border:none;border-radius:50px;background:linear-gradient(135deg,#0068ff,#00c6ff);color:#fff;font-weight:700;cursor:pointer;font-size:.9rem;margin-right:.5rem;}
+.btn-back{padding:.75rem 1.75rem;border:2px solid var(--border);border-radius:50px;background:none;color:var(--sub);font-weight:700;cursor:pointer;font-size:.9rem;}
+
+/* INFO CARDS */
+.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1.5rem;}
+.info-card{background:var(--card);border-radius:18px;padding:1.25rem;border:1px solid var(--border);text-align:center;box-shadow:0 4px 16px rgba(0,0,0,.05);}
+.info-card .ic-icon{font-size:1.8rem;margin-bottom:.5rem;}
+.info-card .ic-label{font-size:.72rem;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.25rem;}
+.info-card .ic-val{font-size:.9rem;font-weight:700;color:var(--text);}
+
+/* USER INFO */
+.user-info-bar{background:linear-gradient(135deg,rgba(102,126,234,.08),rgba(118,75,162,.08));border:1px solid rgba(102,126,234,.15);border-radius:14px;padding:.85rem 1.1rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:.75rem;font-size:.85rem;}
+.user-info-bar .ui-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--g1),var(--g2));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:.9rem;flex-shrink:0;overflow:hidden;}
+.user-info-bar .ui-avatar img{width:100%;height:100%;object-fit:cover;}
+.user-info-bar .ui-name{font-weight:700;color:var(--text);}
+.user-info-bar .ui-email{color:var(--sub);font-size:.78rem;}
+</style>
+</head>
+<body>
+<script src="dist/protect.js"></script>
+
+<header>
+  <nav>
+    <a href="index.html" class="logo"><span class="logo-icon">💻</span><span class="logo-text">Clitus<span class="logo-accent">PC</span></span></a>
+    <ul id="navMenu">
+      <li><a href="index.html">Trang Chủ</a></li>
+      <li><a href="blog.html">Blog</a></li>
+      <li><a href="services.html">Dịch Vụ</a></li>
+      <li><a href="payment.html">Thanh Toán</a></li>
+      <li><a href="messages.html" class="active">Nhắn Tin</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+      <div class="nav-auth-slot"></div>
+      <button class="nav-hamburger" id="navHamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+</header>
+
+<div class="msg-hero">
+  <div style="position:relative;">
+    <div style="display:inline-flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:50px;padding:.35rem 1rem;font-size:.75rem;color:rgba(255,255,255,.8);margin-bottom:1rem;backdrop-filter:blur(10px);">
+      <i class="fas fa-envelope"></i> Phản hồi trong 2 giờ
+    </div>
+    <h1>Gửi <span>Tin Nhắn</span></h1>
+    <p>Liên hệ trực tiếp — tôi sẽ phản hồi sớm nhất có thể</p>
+  </div>
+</div>
+
+<div class="msg-wrap">
+
+  <!-- INFO CARDS -->
+  <div class="info-grid">
+    <div class="info-card">
+      <div class="ic-icon">📱</div>
+      <div class="ic-label">Zalo / Phone</div>
+      <div class="ic-val">0906 857 331</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-icon">📧</div>
+      <div class="ic-label">Email</div>
+      <div class="ic-val">infoclituspc@gmail.com</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-icon">⏰</div>
+      <div class="ic-label">Giờ làm việc</div>
+      <div class="ic-val">8:00 – 22:00 hàng ngày</div>
+    </div>
+  </div>
+
+  <!-- LOGIN WALL -->
+  <div class="login-wall" id="loginWall" style="display:none;">
+    <div class="lw-icon">🔐</div>
+    <h2>Đăng nhập để nhắn tin</h2>
+    <p>Bạn cần đăng nhập hoặc đăng ký tài khoản để gửi tin nhắn cho tôi.</p>
+    <button class="btn-login" onclick="if(typeof openAuthModal==='function') openAuthModal('login'); else window.location.href='index.html'">
+      <i class="fas fa-sign-in-alt"></i> Đăng nhập / Đăng ký
+    </button>
+  </div>
+
+  <!-- FORM -->
+  <div class="form-card" id="msgForm" style="display:none;">
+    <h2><i class="fas fa-paper-plane" style="color:var(--g1)"></i> Gửi tin nhắn</h2>
+
+    <!-- User info bar -->
+    <div class="user-info-bar" id="userInfoBar">
+      <div class="ui-avatar" id="uiAvatar">?</div>
+      <div>
+        <div class="ui-name" id="uiName">Đang tải...</div>
+        <div class="ui-email" id="uiEmail"></div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Tiêu đề <span style="color:#ef4444">*</span></label>
+      <input type="text" class="form-control" id="msgSubject" placeholder="VD: Hỏi về dịch vụ thiết kế web">
+    </div>
+    <div class="form-group">
+      <label>Nội dung tin nhắn <span style="color:#ef4444">*</span></label>
+      <textarea class="form-control" id="msgBody" placeholder="Nhập nội dung tin nhắn của bạn..."></textarea>
+    </div>
+    <button class="btn-send" id="sendBtn" onclick="sendMessage()">
+      <i class="fas fa-paper-plane"></i> Gửi Tin Nhắn
+    </button>
+    <div style="font-size:.75rem;color:var(--sub);text-align:center;margin-top:.75rem;">Tôi sẽ phản hồi trong vòng 2 giờ qua email hoặc Zalo</div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="success-card" id="successCard">
+    <div class="s-icon">🎉</div>
+    <h3>Đã gửi thành công!</h3>
+    <p>Cảm ơn bạn đã liên hệ.<br>Tôi sẽ phản hồi sớm nhất có thể qua email hoặc Zalo.</p>
+    <button class="btn-zalo" onclick="window.open('https://zalo.me/0906857331','_blank')">
+      <i class="fas fa-comment-dots"></i> Nhắn Zalo ngay
+    </button>
+    <button class="btn-back" onclick="location.href='index.html'">← Về trang chủ</button>
+  </div>
+
+</div>
+
+<script src="dist/interactions-vip.js"></script>
+<script src="dist/mobile-nav.js"></script>
+<script src="dist/bug-report.js"></script>
+<script>
+const API_BASE = (location.hostname==='localhost'||location.hostname==='127.0.0.1')
+  ? 'http://localhost:3001/api' : `${location.origin}/api`;
+
+function getUser() {
+  try { return JSON.parse(localStorage.getItem('user_data')); } catch { return null; }
+}
+
+function initPage() {
+  const user = getUser();
+  const loginWall = document.getElementById('loginWall');
+  const msgForm = document.getElementById('msgForm');
+
+  if (!user) {
+    loginWall.style.display = 'block';
+    msgForm.style.display = 'none';
+    // Poll for login
+    const check = setInterval(() => {
+      const u = getUser();
+      if (u) { clearInterval(check); initPage(); }
+    }, 1000);
+    return;
+  }
+
+  loginWall.style.display = 'none';
+  msgForm.style.display = 'block';
+
+  // Fill user info
+  const avatarEl = document.getElementById('uiAvatar');
+  if (user.avatar) {
+    avatarEl.innerHTML = `<img src="${user.avatar}" alt="${user.name||user.email}">`;
+  } else {
+    avatarEl.textContent = (user.name||user.email||'?').slice(0,2).toUpperCase();
+  }
+  document.getElementById('uiName').textContent = user.name || user.email || 'Người dùng';
+  document.getElementById('uiEmail').textContent = user.email || '';
+}
+
+async function sendMessage() {
+  const user = getUser();
+  if (!user) { alert('Vui lòng đăng nhập!'); return; }
+
+  const subject = document.getElementById('msgSubject').value.trim();
+  const body = document.getElementById('msgBody').value.trim();
+  if (!subject) { alert('Vui lòng nhập tiêu đề!'); return; }
+  if (!body) { alert('Vui lòng nhập nội dung!'); return; }
+
+  const btn = document.getElementById('sendBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
+
+  try {
+    const r = await fetch(`${API_BASE}/messages`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        name: user.name || user.email || 'Người dùng',
+        email: user.email || '',
+        subject,
+        message: body
+      })
+    });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(d.error || 'Lỗi server');
+
+    document.getElementById('msgForm').style.display = 'none';
+    document.getElementById('successCard').style.display = 'block';
+  } catch(e) {
+    alert('Lỗi: ' + e.message);
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Gửi Tin Nhắn';
+  }
+}
+
+// Wait for auth to load
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(initPage, 600);
+});
+</script>
+</body>
+</html>
