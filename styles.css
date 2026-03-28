@@ -1263,6 +1263,7 @@ nav ul {
     flex: 1;
     justify-content: center;
     gap: 0.25rem;
+    overflow: visible;
 }
 nav ul li a {
     padding: 0.45rem 0.75rem;
