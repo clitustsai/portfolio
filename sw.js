@@ -1,6 +1,11 @@
 // ========== SERVICE WORKER - PWA ==========
-const CACHE_NAME = 'clituspc-v34';
+const CACHE_NAME = 'clituspc-v35';
 const OFFLINE_URL = '/offline.html';
+
+// Skip waiting khi nhận message
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
+});
 
 // Files cần cache để offline
 const PRECACHE_ASSETS = [

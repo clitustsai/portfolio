@@ -5,13 +5,15 @@
     <meta charset="UTF-8">
     <script>if(localStorage.getItem('theme')==='dark')document.documentElement.setAttribute('data-theme','dark');</script>
     <script>
-      // Force clear old SW cache
+      // Unregister ALL service workers and clear ALL caches
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.getRegistrations().then(function(regs) {
           regs.forEach(function(r) { r.unregister(); });
         });
+      }
+      if (window.caches) {
         caches.keys().then(function(keys) {
-          keys.forEach(function(k) { if (k !== 'clituspc-v34') caches.delete(k); });
+          keys.forEach(function(k) { caches.delete(k); });
         });
       }
     </script>
@@ -1775,10 +1777,17 @@
     <script>
         // ===== PWA: SERVICE WORKER =====
         if ('serviceWorker' in navigator) {
+            // Unregister old SW first, then re-register
+            navigator.serviceWorker.getRegistrations().then(function(regs) {
+                regs.forEach(function(r) { r.unregister(); });
+            });
             window.addEventListener('load', async () => {
                 try {
                     const reg = await navigator.serviceWorker.register('/sw.js');
                     window._swReg = reg;
+                    // Force update immediately
+                    reg.update();
+                    if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
                     reg.addEventListener('updatefound', () => { const newSW = reg.installing; newSW.addEventListener('statechange', () => { if (newSW.state === 'installed' && navigator.serviceWorker.controller) showToast('🔄 Có phiên bản mới! Tải lại để cập nhật.', 'info', 6000); }); });
                 } catch (err) { console.warn('SW registration failed:', err); }
             });
