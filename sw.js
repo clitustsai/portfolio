@@ -1,34 +1,29 @@
 // ========== SERVICE WORKER - PWA ==========
-const CACHE_NAME = 'clituspc-v35';
+const CACHE_NAME = 'clituspc-v36';
 const OFFLINE_URL = '/offline.html';
 
-// Skip waiting khi nhận message
+// Skip waiting ngay lập tức — không chờ tab cũ đóng
 self.addEventListener('message', event => {
   if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
 });
 
-// Files cần cache để offline
+// Files cần cache (KHÔNG cache HTML)
 const PRECACHE_ASSETS = [
-  '/',
-  '/index.html',
-  '/arcade.html',
-  '/dashboard.html',
   '/styles.css',
   '/interactions.css',
   '/admin.css',
   '/mobile-ux.css',
   '/manifest.json',
-  '/img/z7643593902682_1d1e5b7671cc398923d350f14dd68934.jpg',
-  '/img/z7643399499088_fbf2b939d27d107fda73c5053dbb4dd0.jpg',
 ];
 
-// ===== INSTALL: cache tất cả assets =====
+// ===== INSTALL =====
 self.addEventListener('install', event => {
+  self.skipWaiting(); // Activate ngay, không chờ
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
       return cache.addAll(PRECACHE_ASSETS.map(url => new Request(url, { cache: 'reload' })))
         .catch(err => console.warn('SW precache partial fail:', err));
-    }).then(() => self.skipWaiting())
+    })
   );
 });
 
@@ -38,6 +33,52 @@ self.addEventListener('activate', event => {
     caches.keys().then(keys =>
       Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
     ).then(() => self.clients.claim())
+  );
+});
+
+// ===== FETCH =====
+self.addEventListener('fetch', event => {
+  const url = new URL(event.request.url);
+
+  if (!event.request.url.startsWith('http')) return;
+  if (url.pathname.startsWith('/api/')) return;
+
+  // HTML: LUÔN fetch từ network, không cache
+  if (event.request.mode === 'navigate' || url.pathname.endsWith('.html') || url.pathname === '/') {
+    event.respondWith(
+      fetch(event.request, { cache: 'no-store' })
+        .catch(() => caches.match('/offline.html'))
+    );
+    return;
+  }
+
+  // JS / CSS: Network First
+  if (url.pathname.match(/\.(js|css)$/)) {
+    event.respondWith(
+      fetch(event.request)
+        .then(res => {
+          if (res && res.status === 200) {
+            const clone = res.clone();
+            caches.open(CACHE_NAME).then(c => c.put(event.request, clone));
+          }
+          return res;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // Images & fonts: Cache First
+  event.respondWith(
+    caches.match(event.request).then(cached => {
+      if (cached) return cached;
+      return fetch(event.request).then(res => {
+        if (!res || res.status !== 200 || res.type === 'opaque') return res;
+        const clone = res.clone();
+        caches.open(CACHE_NAME).then(c => c.put(event.request, clone));
+        return res;
+      }).catch(() => new Response('', { status: 404 }));
+    })
   );
 });
 
@@ -54,13 +95,8 @@ self.addEventListener('fetch', event => {
   // Navigation (HTML): Network First, fallback cache, fallback offline
   if (event.request.mode === 'navigate') {
     event.respondWith(
-      fetch(event.request)
-        .then(res => {
-          const clone = res.clone();
-          caches.open(CACHE_NAME).then(c => c.put(event.request, clone));
-          return res;
-        })
-        .catch(() => caches.match(event.request).then(c => c || caches.match('/offline.html')))
+      fetch(event.request, { cache: 'no-store' })
+        .catch(() => caches.match('/offline.html'))
     );
     return;
   }
