@@ -565,22 +565,21 @@ function updateNavAuth() {
             const menu = dd.querySelector('.nav-dropdown-menu');
             if (!toggle || toggle._dropdownBound) return;
             toggle._dropdownBound = true;
-            toggle.setAttribute('tabindex', '0');
-            function positionMenu() {
-                if (!menu) return;
-                var rect = dd.getBoundingClientRect();
-                var menuWidth = 220;
-                var left = rect.left + rect.width / 2 - menuWidth / 2;
-                left = Math.max(8, Math.min(left, window.innerWidth - menuWidth - 8));
-                menu.style.left = left + 'px';
-            }
-            dd.addEventListener('mouseenter', positionMenu);
             toggle.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 var opening = !dd.classList.contains('open');
                 document.querySelectorAll('.nav-dropdown.open').forEach(function(o) { o.classList.remove('open'); });
-                if (opening) { dd.classList.add('open'); positionMenu(); }
+                if (opening) {
+                    dd.classList.add('open');
+                    if (menu) {
+                        var rect = toggle.getBoundingClientRect();
+                        var menuW = 220;
+                        var left = rect.left + rect.width / 2 - menuW / 2;
+                        left = Math.max(8, Math.min(left, window.innerWidth - menuW - 8));
+                        menu.style.left = left + 'px';
+                    }
+                }
             });
             document.addEventListener('click', function(e) {
                 if (!dd.contains(e.target)) dd.classList.remove('open');

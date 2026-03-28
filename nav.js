@@ -74,28 +74,22 @@
       var menu = dd.querySelector('.nav-dropdown-menu');
       if (!toggle || !menu) return;
 
-      toggle.setAttribute('tabindex', '0');
-
-      function positionMenu() {
-        var rect = dd.getBoundingClientRect();
-        var menuWidth = 220;
-        var left = rect.left + rect.width / 2 - menuWidth / 2;
-        left = Math.max(8, Math.min(left, window.innerWidth - menuWidth - 8));
-        menu.style.left = left + 'px';
-      }
-
-      dd.addEventListener('mouseenter', positionMenu);
       toggle.addEventListener('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
         var opening = !dd.classList.contains('open');
-        // Đóng tất cả dropdown khác
-        document.querySelectorAll('.nav-dropdown.open').forEach(function(other) {
-          other.classList.remove('open');
+        // Đóng tất cả
+        document.querySelectorAll('.nav-dropdown.open').forEach(function(o) {
+          o.classList.remove('open');
         });
         if (opening) {
           dd.classList.add('open');
-          positionMenu();
+          // Tính vị trí
+          var rect = toggle.getBoundingClientRect();
+          var menuW = 220;
+          var left = rect.left + rect.width / 2 - menuW / 2;
+          left = Math.max(8, Math.min(left, window.innerWidth - menuW - 8));
+          menu.style.left = left + 'px';
         }
       });
 
