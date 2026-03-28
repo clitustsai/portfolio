@@ -558,6 +558,22 @@ function updateNavAuth() {
         }
     });
     _injectNavDropdownCSS();
+    // Re-attach dropdown handlers sau khi nav re-render
+    setTimeout(() => {
+        document.querySelectorAll('.nav-dropdown').forEach(function(dd) {
+            const toggle = dd.querySelector('.nav-dropdown-toggle');
+            if (!toggle || toggle._dropdownBound) return;
+            toggle._dropdownBound = true;
+            toggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                dd.classList.toggle('open');
+            });
+            document.addEventListener('click', function(e) {
+                if (!dd.contains(e.target)) dd.classList.remove('open');
+            });
+        });
+    }, 100);
 }
 
 async function _checkNavVip(email) {
