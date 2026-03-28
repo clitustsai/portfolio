@@ -1818,16 +1818,7 @@
             document.addEventListener('click', (e) => { if (navUl.classList.contains('open') && !navUl.contains(e.target) && e.target !== hamburger) closeMenu(); });
             document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
         }
-        document.querySelectorAll('.nav-dropdown').forEach(dd => {
-            const toggle = dd.querySelector('.nav-dropdown-toggle');
-            if (!toggle) return;
-            toggle.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                dd.classList.toggle('open');
-            });
-            document.addEventListener('click', (e) => { if (!dd.contains(e.target)) dd.classList.remove('open'); });
-        });
+        // Dropdown handled by dist/auth.js
     </script>
     <script>
         // ===== MUSIC PLAYER =====
