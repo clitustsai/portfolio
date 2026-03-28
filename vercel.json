@@ -1,7 +1,10 @@
 {
+  "outputDirectory": ".",
   "functions": {
     "api/tools.js": { "maxDuration": 30 }
   },
+  "cleanUrls": false,
+  "trailingSlash": false,
   "headers": [
     {
       "source": "/(.*\\.html)",
