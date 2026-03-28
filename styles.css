@@ -1305,8 +1305,8 @@ nav ul li a {
     display: none;
     position: fixed;
     top: 68px;
-    left: 50%;
-    transform: translateX(-50%);
+    left: -9999px;
+    transform: none;
     background: #fff;
     border: 1px solid rgba(102,126,234,0.2);
     border-radius: 14px;
