@@ -558,8 +558,8 @@
                 <li><a href="#contact" data-i18n="nav.contact">Liên Hệ</a></li>
                 <li><a href="blog.html">Blog</a></li>
                 <!-- Dropdown: Công Cụ -->
-                <li class="nav-dropdown">
-                    <a href="#" class="nav-dropdown-toggle">Công Cụ <i class="fas fa-chevron-down nav-chevron"></i></a>
+                <li class="nav-dropdown" id="mainNavDropdown">
+                    <a href="#" class="nav-dropdown-toggle" onclick="event.preventDefault();event.stopPropagation();document.getElementById('mainNavDropdown').classList.toggle('open')">Công Cụ <i class="fas fa-chevron-down nav-chevron"></i></a>
                     <ul class="nav-dropdown-menu">
                         <li><a href="tools.html"><span class="dd-icon">🤖</span> AI Tools</a></li>
                         <li><a href="calculator.html"><span class="dd-icon">🧮</span> Máy Tính</a></li>
@@ -1819,6 +1819,10 @@
             document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
         }
         // Dropdown handled by dist/auth.js
+        document.addEventListener('click', (e) => {
+            const dd = document.getElementById('mainNavDropdown');
+            if (dd && !dd.contains(e.target)) dd.classList.remove('open');
+        });
     </script>
     <script>
         // ===== MUSIC PLAYER =====
