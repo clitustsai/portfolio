@@ -1322,6 +1322,7 @@ html[data-theme="dark"] .nav-dropdown-menu {
     border-color: rgba(102,126,234,0.25);
 }
 .nav-dropdown.open .nav-dropdown-menu { display: flex !important; }
+.nav-dropdown-menu.open { display: flex !important; }
 .nav-dropdown-menu::before { display: none !important; }
 .nav-dropdown-menu::after { display: none !important; }
 
