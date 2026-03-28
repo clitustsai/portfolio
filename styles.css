@@ -103,6 +103,8 @@
             flex: 1;
             justify-content: center;
             overflow: visible;
+            flex-wrap: nowrap;
+            position: static;
         }
 
         nav ul li a {
@@ -1301,17 +1303,17 @@ nav ul li a {
 
 .nav-dropdown-menu {
     display: none;
-    position: absolute;
-    top: calc(100% + 8px);
+    position: fixed;
+    top: 68px;
     left: 50%;
     transform: translateX(-50%);
     background: #fff;
     border: 1px solid rgba(102,126,234,0.2);
     border-radius: 14px;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.18);
     min-width: 220px;
     padding: 0.4rem;
-    z-index: 99999;
+    z-index: 999999;
     flex-direction: column;
     gap: 0.1rem;
 }
@@ -1338,6 +1340,7 @@ html[data-theme="dark"] .nav-dropdown-menu li a { color: #e0e0ff; }
     .nav-dropdown-menu {
         position: static !important;
         transform: none !important;
+        top: auto !important; left: auto !important;
         box-shadow: none; border: none;
         background: rgba(102,126,234,0.06);
         border-radius: 12px; padding: 0.25rem 0.5rem;

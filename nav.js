@@ -71,14 +71,31 @@
     // ===== NAV DROPDOWN =====
     document.querySelectorAll('.nav-dropdown').forEach(function(dd) {
       var toggle = dd.querySelector('.nav-dropdown-toggle');
-      if (!toggle) return;
+      var menu = dd.querySelector('.nav-dropdown-menu');
+      if (!toggle || !menu) return;
+
+      function positionMenu() {
+        var rect = toggle.getBoundingClientRect();
+        var menuW = 220;
+        var left = rect.left + rect.width / 2 - menuW / 2;
+        left = Math.max(8, Math.min(left, window.innerWidth - menuW - 8));
+        var headerH = document.querySelector('header') ? document.querySelector('header').getBoundingClientRect().bottom : 64;
+        menu.style.left = left + 'px';
+        menu.style.top = (headerH + 4) + 'px';
+        menu.style.transform = 'none';
+      }
+
       toggle.addEventListener('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
         var opening = !dd.classList.contains('open');
         document.querySelectorAll('.nav-dropdown.open').forEach(function(o) { o.classList.remove('open'); });
-        if (opening) dd.classList.add('open');
+        if (opening) {
+          dd.classList.add('open');
+          positionMenu();
+        }
       });
+
       document.addEventListener('click', function(e) {
         if (!dd.contains(e.target)) dd.classList.remove('open');
       });
