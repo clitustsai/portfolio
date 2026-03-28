@@ -1030,7 +1030,7 @@
 }
 
 /* ===== HIDE NAV UL, SHOW HAMBURGER ===== */
-@media (max-width: 900px) {
+@media (max-width: 768px) {
     .nav-hamburger { display: flex !important; }
     nav ul { display: none !important; }
     nav ul.open { display: flex !important; }
@@ -1334,7 +1334,7 @@ html[data-theme="dark"] .nav-dropdown-menu li a { color: #e0e0ff; }
 .nav-dropdown-menu li a:hover { background: rgba(102,126,234,0.1); color: #667eea; }
 .dd-icon { font-size: 1rem; }
 
-@media (max-width: 900px) {
+@media (max-width: 768px) {
     .nav-dropdown-menu {
         position: static !important;
         transform: none !important;
