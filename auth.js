@@ -562,44 +562,17 @@ function updateNavAuth() {
     setTimeout(() => {
         document.querySelectorAll('.nav-dropdown').forEach(function(dd) {
             const toggle = dd.querySelector('.nav-dropdown-toggle');
-            let menu = dd.querySelector('.nav-dropdown-menu');
             if (!toggle || toggle._dropdownBound) return;
             toggle._dropdownBound = true;
-
-            // Move menu ra body nếu chưa
-            if (menu && menu.parentElement !== document.body) {
-                document.body.appendChild(menu);
-            }
-
-            function positionMenu() {
-                if (!menu) return;
-                var rect = toggle.getBoundingClientRect();
-                var menuW = 220;
-                var left = rect.left + rect.width / 2 - menuW / 2;
-                left = Math.max(8, Math.min(left, window.innerWidth - menuW - 8));
-                var headerEl = document.querySelector('header');
-                var top = headerEl ? headerEl.getBoundingClientRect().bottom + 4 : 68;
-                menu.style.left = left + 'px';
-                menu.style.top = top + 'px';
-            }
-
             toggle.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                var isOpen = menu && menu.classList.contains('open');
-                document.querySelectorAll('.nav-dropdown-menu.open').forEach(function(m) { m.classList.remove('open'); });
-                document.querySelectorAll('.nav-dropdown').forEach(function(d) { d.classList.remove('open'); });
-                if (!isOpen && menu) {
-                    positionMenu();
-                    menu.classList.add('open');
-                    dd.classList.add('open');
-                }
+                var isOpen = dd.classList.contains('open');
+                document.querySelectorAll('.nav-dropdown.open').forEach(function(o) { o.classList.remove('open'); });
+                if (!isOpen) dd.classList.add('open');
             });
             document.addEventListener('click', function(e) {
-                if (menu && !dd.contains(e.target) && !menu.contains(e.target)) {
-                    menu.classList.remove('open');
-                    dd.classList.remove('open');
-                }
+                if (!dd.contains(e.target)) dd.classList.remove('open');
             });
         });
     }, 150);

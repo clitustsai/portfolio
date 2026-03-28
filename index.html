@@ -91,8 +91,10 @@
     <link rel="stylesheet" href="fab-layout.css?v=2">
     <style>
     /* Dropdown overflow fix */
-    header, nav { overflow: visible !important; }
-    nav ul { overflow: visible !important; }
+    header { overflow: visible !important; }
+    nav { overflow: visible !important; }
+    nav ul { overflow: visible !important; flex-wrap: nowrap; }
+    nav ul li.nav-dropdown { position: relative; overflow: visible !important; }
     </style>
     <!-- Non-critical CSS: load async -->
     <link rel="preload" href="styles-new.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
