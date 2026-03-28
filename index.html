@@ -1824,50 +1824,19 @@
             if (dd && !dd.contains(e.target)) dd.classList.remove('open');
         });
 
-        // Move dropdown menu to body to bypass overflow clipping
-        (function fixDropdown() {
+        // Fix dropdown by moving menu to body (bypass overflow clipping)
+        setTimeout(function() {
             const dd = document.getElementById('mainNavDropdown');
             if (!dd) return;
             const menu = dd.querySelector('.nav-dropdown-menu');
             const toggle = dd.querySelector('.nav-dropdown-toggle');
             if (!menu || !toggle) return;
-
-            // Move menu to body
             document.body.appendChild(menu);
-            menu.style.cssText = 'display:none;position:fixed;z-index:999999;';
-
-            function positionMenu() {
-                const rect = toggle.getBoundingClientRect();
-                menu.style.top = (rect.bottom + 4) + 'px';
-                menu.style.left = rect.left + 'px';
-            }
-
-            toggle.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                const isOpen = menu.style.display === 'flex';
-                if (isOpen) {
-                    menu.style.display = 'none';
-                    dd.classList.remove('open');
-                } else {
-                    positionMenu();
-                    menu.style.display = 'flex';
-                    menu.style.flexDirection = 'column';
-                    dd.classList.add('open');
-                }
-            });
-
-            document.addEventListener('click', function(e) {
-                if (!dd.contains(e.target) && !menu.contains(e.target)) {
-                    menu.style.display = 'none';
-                    dd.classList.remove('open');
-                }
-            });
-
-            window.addEventListener('scroll', function() {
-                if (menu.style.display === 'flex') positionMenu();
-            });
-        })();
+            menu.style.cssText = 'display:none;position:fixed;z-index:999999;min-width:220px;background:rgba(15,15,30,0.98);border-radius:16px;padding:0.5rem;box-shadow:0 16px 48px rgba(102,126,234,0.3);border:1px solid rgba(102,126,234,0.2);flex-direction:column;gap:0.15rem;';
+            function pos() { var r=toggle.getBoundingClientRect(); menu.style.top=(r.bottom+8)+'px'; menu.style.left=Math.max(8,r.left-20)+'px'; }
+            toggle.onclick = function(e) { e.preventDefault(); e.stopPropagation(); if(menu.style.display==='flex'){menu.style.display='none';}else{pos();menu.style.display='flex';} };
+            document.addEventListener('click', function(e) { if(!dd.contains(e.target)&&!menu.contains(e.target)) menu.style.display='none'; });
+        }, 800);
     </script>
     <script>
         // ===== MUSIC PLAYER =====
