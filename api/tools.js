@@ -1,16 +1,21 @@
 const { verifyJWT, getAuthToken } = require('./_auth');
 const { queryOne } = require('./_db');
 
-const OPENAI_KEY = process.env.OPENAI_API_KEY;
+const OPENROUTER_KEY = process.env.OPENROUTER_API_KEY;
 
 async function callGPT(messages, max_tokens = 1500) {
-    const r = await fetch('https://api.openai.com/v1/chat/completions', {
+    const r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + OPENAI_KEY },
-        body: JSON.stringify({ model: 'gpt-4o-mini', messages, max_tokens, temperature: 0.7 })
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + OPENROUTER_KEY,
+            'HTTP-Referer': 'https://portfolio-xi-gray-20.vercel.app',
+            'X-Title': 'Clitus PC AI Tools'
+        },
+        body: JSON.stringify({ model: 'openai/gpt-4o-mini', messages, max_tokens, temperature: 0.7 })
     });
     const d = await r.json();
-    if (!r.ok) throw new Error(d.error?.message || 'OpenAI error');
+    if (!r.ok) throw new Error(d.error?.message || 'OpenRouter error');
     return d.choices[0].message.content;
 }
 
@@ -37,7 +42,7 @@ module.exports = async (req, res) => {
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
     if (req.method === 'OPTIONS') return res.status(200).end();
 
-    if (!OPENAI_KEY) return res.status(500).json({ error: 'API key chưa được cấu hình' });
+    if (!OPENROUTER_KEY) return res.status(500).json({ error: 'API key chưa được cấu hình' });
 
     const url = req.url.split('?')[0];
     const user = await checkAuth(req);
