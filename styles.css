@@ -1294,20 +1294,17 @@ nav ul li a {
     margin-left: auto;
 }
 
-.nav-dropdown { position: static; }
+.nav-dropdown { position: relative; }
 .nav-dropdown-toggle { cursor: pointer; display: flex; align-items: center; gap: 0.3rem; }
-.nav-chevron {
-    font-size: 0.65rem !important;
-    transition: transform 0.3s ease;
-    display: inline-block;
-}
+.nav-chevron { font-size: 0.65rem !important; transition: transform 0.3s ease; display: inline-block; }
 .nav-dropdown.open .nav-chevron { transform: rotate(180deg); }
 
 .nav-dropdown-menu {
     display: none;
-    position: fixed;
-    top: 64px;
-    left: -9999px;
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
     background: #fff;
     border: 1px solid rgba(102,126,234,0.2);
     border-radius: 14px;
@@ -1323,40 +1320,27 @@ html[data-theme="dark"] .nav-dropdown-menu {
     border-color: rgba(102,126,234,0.25);
 }
 .nav-dropdown.open .nav-dropdown-menu { display: flex !important; }
-
 .nav-dropdown-menu::before { display: none !important; }
 .nav-dropdown-menu::after { display: none !important; }
 
 .nav-dropdown-menu li { list-style: none; width: 100%; }
 .nav-dropdown-menu li a {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    padding: 0.6rem 0.9rem;
-    border-radius: 10px;
-    font-size: 0.88rem;
-    font-weight: 600;
-    color: #333;
-    text-decoration: none;
-    transition: background 0.15s;
-    white-space: nowrap;
+    display: flex; align-items: center; gap: 0.6rem;
+    padding: 0.6rem 0.9rem; border-radius: 10px;
+    font-size: 0.88rem; font-weight: 600; color: #333;
+    text-decoration: none; transition: background 0.15s; white-space: nowrap;
 }
 html[data-theme="dark"] .nav-dropdown-menu li a { color: #e0e0ff; }
 .nav-dropdown-menu li a:hover { background: rgba(102,126,234,0.1); color: #667eea; }
 .dd-icon { font-size: 1rem; }
 
-/* Mobile dropdown */
 @media (max-width: 900px) {
     .nav-dropdown-menu {
         position: static !important;
-        left: auto !important;
-        top: auto !important;
-        box-shadow: none;
-        border: none;
+        transform: none !important;
+        box-shadow: none; border: none;
         background: rgba(102,126,234,0.06);
-        border-radius: 12px;
-        padding: 0.25rem 0.5rem;
-        z-index: auto;
+        border-radius: 12px; padding: 0.25rem 0.5rem;
     }
     .nav-dropdown-menu li a { font-size: 1rem; padding: 0.75rem 1rem; }
     .nav-actions { gap: 0.35rem; }

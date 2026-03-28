@@ -71,28 +71,14 @@
     // ===== NAV DROPDOWN =====
     document.querySelectorAll('.nav-dropdown').forEach(function(dd) {
       var toggle = dd.querySelector('.nav-dropdown-toggle');
-      var menu = dd.querySelector('.nav-dropdown-menu');
-      if (!toggle || !menu) return;
-
+      if (!toggle) return;
       toggle.addEventListener('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
         var opening = !dd.classList.contains('open');
-        // Đóng tất cả
-        document.querySelectorAll('.nav-dropdown.open').forEach(function(o) {
-          o.classList.remove('open');
-        });
-        if (opening) {
-          dd.classList.add('open');
-          // Tính vị trí
-          var rect = toggle.getBoundingClientRect();
-          var menuW = 220;
-          var left = rect.left + rect.width / 2 - menuW / 2;
-          left = Math.max(8, Math.min(left, window.innerWidth - menuW - 8));
-          menu.style.left = left + 'px';
-        }
+        document.querySelectorAll('.nav-dropdown.open').forEach(function(o) { o.classList.remove('open'); });
+        if (opening) dd.classList.add('open');
       });
-
       document.addEventListener('click', function(e) {
         if (!dd.contains(e.target)) dd.classList.remove('open');
       });
