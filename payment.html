@@ -598,8 +598,9 @@ async function submitVip() {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ name, email, transferRef: ref })
     });
-    const d = await r.json();
-    if(!r.ok && r.status!==409) throw new Error(d.error);
+    const text = await r.text();
+    const d = text ? JSON.parse(text) : {};
+    if(!r.ok && r.status!==409) throw new Error(d.error || 'Lỗi server');
     if (typeof laEvent === 'function') laEvent('vip', '💎 Ai đó vừa đăng ký gói VIP!');
     document.getElementById('vipStep1').style.display='none';
     document.getElementById('vipStep2').style.display='block';
