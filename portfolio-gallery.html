@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<script>if(localStorage.getItem('theme')==='dark')document.documentElement.setAttribute('data-theme','dark');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio Gallery — Clitus PC</title>
+<meta name="description" content="Các dự án thực tế đã làm cho khách hàng — Website, App, AI Tools, Dashboard">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="mobile-ux.css">
+<link rel="stylesheet" href="mobile-fix.css">
+<link rel="stylesheet" href="modern.css">
+<link rel="stylesheet" href="ultra-modern.css">
+<link rel="stylesheet" href="fab-layout.css">
+<script src="dist/api.js" defer></script>
+<script src="dist/auth.js" defer></script>
+<script src="dist/nav.js" defer></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#0a0a1a;--card:#12122a;--text:#e8e8ff;--sub:#8888aa;--border:#1e1e3a;--g1:#667eea;--g2:#764ba2;}
+html[data-theme="light"]{--bg:#f0f2ff;--card:#fff;--text:#1a1a2e;--sub:#6b7280;--border:#e5e7ff;}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;}
+
+/* HERO */
+.pg-hero{background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);padding:5rem 1.5rem 3rem;text-align:center;position:relative;overflow:hidden;}
+.pg-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(102,126,234,.3),transparent);}
+.pg-hero h1{font-size:clamp(2rem,5vw,3rem);font-weight:900;color:#fff;position:relative;margin-bottom:.5rem;}
+.pg-hero h1 span{background:linear-gradient(135deg,#a78bfa,#60a5fa);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.pg-hero p{color:rgba(255,255,255,.65);font-size:.95rem;position:relative;margin-bottom:1.5rem;}
+.pg-stats{display:flex;gap:2.5rem;justify-content:center;flex-wrap:wrap;position:relative;}
+.pg-stat .num{font-size:1.8rem;font-weight:900;color:#fff;}
+.pg-stat .lbl{font-size:.7rem;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.08em;}
+
+/* TRUST BADGES */
+.trust-bar{background:rgba(102,126,234,.08);border-bottom:1px solid rgba(102,126,234,.15);padding:.75rem 1.5rem;display:flex;align-items:center;justify-content:center;gap:2rem;flex-wrap:wrap;}
+.trust-item{display:flex;align-items:center;gap:.5rem;font-size:.82rem;color:var(--sub);}
+.trust-item i{color:#10b981;}
+
+/* FILTER */
+.pg-wrap{max-width:1200px;margin:0 auto;padding:2.5rem 1.25rem 5rem;}
+.pg-filters{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:2rem;justify-content:center;}
+.pg-filter{padding:.5rem 1.25rem;border-radius:50px;border:1.5px solid var(--border);background:none;color:var(--sub);font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s;}
+.pg-filter:hover,.pg-filter.active{background:var(--g1);border-color:var(--g1);color:#fff;}
+
+/* GRID */
+.pg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5rem;}
+@media(max-width:480px){.pg-grid{grid-template-columns:1fr;}}
+
+/* CARD */
+.pg-card{background:var(--card);border-radius:20px;overflow:hidden;border:1px solid var(--border);transition:all .3s;cursor:pointer;position:relative;}
+.pg-card:hover{transform:translateY(-6px);box-shadow:0 20px 60px rgba(102,126,234,.2);border-color:rgba(102,126,234,.3);}
+.pg-card-img{position:relative;height:200px;overflow:hidden;background:linear-gradient(135deg,#1a1a3e,#2a2a5e);}
+.pg-card-img img{width:100%;height:100%;object-fit:cover;transition:transform .4s;}
+.pg-card:hover .pg-card-img img{transform:scale(1.05);}
+.pg-card-img-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:4rem;background:linear-gradient(135deg,rgba(102,126,234,.15),rgba(118,75,162,.15));}
+.pg-card-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.7),transparent);opacity:0;transition:opacity .3s;display:flex;align-items:flex-end;padding:1rem;}
+.pg-card:hover .pg-card-overlay{opacity:1;}
+.pg-overlay-btn{background:rgba(255,255,255,.15);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.2);color:#fff;padding:.5rem 1rem;border-radius:50px;font-size:.78rem;font-weight:700;cursor:pointer;}
+.pg-card-badge{position:absolute;top:.75rem;left:.75rem;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:.65rem;font-weight:900;padding:.25rem .65rem;border-radius:50px;letter-spacing:.05em;}
+.pg-card-body{padding:1.25rem;}
+.pg-card-cat{font-size:.68rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--g1);margin-bottom:.4rem;}
+.pg-card-title{font-size:1rem;font-weight:800;color:var(--text);margin-bottom:.4rem;}
+.pg-card-desc{font-size:.82rem;color:var(--sub);line-height:1.6;margin-bottom:.85rem;}
+.pg-card-tags{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.85rem;}
+.pg-tag{padding:.2rem .6rem;border-radius:50px;font-size:.68rem;font-weight:700;background:rgba(102,126,234,.1);color:var(--g1);border:1px solid rgba(102,126,234,.2);}
+.pg-card-footer{display:flex;align-items:center;justify-content:space-between;padding-top:.75rem;border-top:1px solid var(--border);}
+.pg-client{font-size:.75rem;color:var(--sub);display:flex;align-items:center;gap:.35rem;}
+.pg-year{font-size:.72rem;color:var(--sub);}
+
+/* LIGHTBOX */
+.pg-lightbox{display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.92);backdrop-filter:blur(12px);align-items:center;justify-content:center;padding:1rem;}
+.pg-lightbox.open{display:flex;}
+.pg-lb-box{background:var(--card);border-radius:24px;max-width:900px;width:100%;max-height:90vh;overflow-y:auto;position:relative;border:1px solid var(--border);}
+.pg-lb-close{position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,.1);border:none;color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:1.1rem;z-index:1;}
+.pg-lb-img{width:100%;max-height:400px;object-fit:cover;border-radius:24px 24px 0 0;}
+.pg-lb-img-placeholder{width:100%;height:300px;display:flex;align-items:center;justify-content:center;font-size:6rem;background:linear-gradient(135deg,rgba(102,126,234,.15),rgba(118,75,162,.15));border-radius:24px 24px 0 0;}
+.pg-lb-body{padding:2rem;}
+.pg-lb-title{font-size:1.4rem;font-weight:900;color:var(--text);margin-bottom:.5rem;}
+.pg-lb-desc{color:var(--sub);font-size:.9rem;line-height:1.75;margin-bottom:1.25rem;}
+.pg-lb-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:1.25rem;}
+.pg-lb-meta-item{background:rgba(102,126,234,.06);border-radius:12px;padding:.75rem;text-align:center;}
+.pg-lb-meta-label{font-size:.65rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--sub);margin-bottom:.25rem;}
+.pg-lb-meta-val{font-size:.88rem;font-weight:700;color:var(--text);}
+.pg-lb-actions{display:flex;gap:.75rem;}
+.pg-lb-btn{flex:1;padding:.85rem;border:none;border-radius:14px;font-size:.9rem;font-weight:800;cursor:pointer;text-align:center;text-decoration:none;display:block;transition:all .2s;}
+.pg-lb-btn-primary{background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;}
+.pg-lb-btn-secondary{background:linear-gradient(135deg,#0068ff,#00c6ff);color:#fff;}
+
+/* CTA */
+.pg-cta{background:linear-gradient(135deg,#0f0c29,#302b63);border-radius:24px;padding:3rem 2rem;text-align:center;margin-top:3rem;position:relative;overflow:hidden;border:1px solid rgba(102,126,234,.2);}
+.pg-cta::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(102,126,234,.25),transparent);}
+.pg-cta h2{font-size:1.6rem;font-weight:900;color:#fff;margin-bottom:.5rem;position:relative;}
+.pg-cta p{color:rgba(255,255,255,.6);font-size:.9rem;margin-bottom:1.75rem;position:relative;}
+.pg-cta-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;position:relative;}
+</style>
+</head>
+<body>
+<script src="dist/protect.js"></script>
+
+<header>
+  <nav>
+    <a href="index.html" class="logo"><span class="logo-icon">💻</span><span class="logo-text">Clitus<span class="logo-accent">PC</span></span></a>
+    <ul id="navMenu">
+      <li><a href="index.html">Trang Chủ</a></li>
+      <li><a href="index.html#projects">Dự Án</a></li>
+      <li><a href="blog.html">Blog</a></li>
+      <li><a href="order.html">Đặt Dịch Vụ</a></li>
+      <li><a href="portfolio-gallery.html" class="active">Gallery</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+      <div class="nav-auth-slot"></div>
+      <button class="nav-hamburger" id="navHamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+</header>
+
+<div class="pg-hero">
+  <div style="position:relative;">
+    <div style="display:inline-flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:50px;padding:.35rem 1rem;font-size:.75rem;color:rgba(255,255,255,.8);margin-bottom:1rem;backdrop-filter:blur(10px);">
+      <i class="fas fa-images"></i> Portfolio thực tế · Dự án đã bàn giao
+    </div>
+    <h1>Dự Án <span>Đã Làm</span></h1>
+    <p>Các sản phẩm thực tế tôi đã xây dựng cho khách hàng — từ landing page đến web app phức tạp</p>
+    <div class="pg-stats">
+      <div class="pg-stat"><div class="num">50+</div><div class="lbl">Dự án</div></div>
+      <div class="pg-stat"><div class="num">100%</div><div class="lbl">Hài lòng</div></div>
+      <div class="pg-stat"><div class="num">10+</div><div class="lbl">Năm KN</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="trust-bar">
+  <div class="trust-item"><i class="fas fa-check-circle"></i> Bàn giao đúng hạn</div>
+  <div class="trust-item"><i class="fas fa-check-circle"></i> Code sạch, có tài liệu</div>
+  <div class="trust-item"><i class="fas fa-check-circle"></i> Hỗ trợ sau bàn giao</div>
+  <div class="trust-item"><i class="fas fa-check-circle"></i> Bảo mật & tối ưu SEO</div>
+</div>
+
+<div class="pg-wrap">
+  <!-- Filters -->
+  <div class="pg-filters">
+    <button class="pg-filter active" data-cat="all" onclick="filterGallery('all',this)">Tất Cả</button>
+    <button class="pg-filter" data-cat="website" onclick="filterGallery('website',this)">🌐 Website</button>
+    <button class="pg-filter" data-cat="ecommerce" onclick="filterGallery('ecommerce',this)">🛒 E-Commerce</button>
+    <button class="pg-filter" data-cat="app" onclick="filterGallery('app',this)">📱 Web App</button>
+    <button class="pg-filter" data-cat="ai" onclick="filterGallery('ai',this)">🤖 AI Tools</button>
+    <button class="pg-filter" data-cat="dashboard" onclick="filterGallery('dashboard',this)">📊 Dashboard</button>
+  </div>
+
+  <!-- Grid -->
+  <div class="pg-grid" id="pgGrid"></div>
+
+  <!-- CTA -->
+  <div class="pg-cta">
+    <h2>Bạn cần một sản phẩm tương tự?</h2>
+    <p>Tôi có thể xây dựng cho bạn — từ ý tưởng đến sản phẩm hoàn chỉnh, bàn giao đúng hạn</p>
+    <div class="pg-cta-btns">
+      <a href="order.html" style="padding:.9rem 2rem;border:none;border-radius:50px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:.95rem;font-weight:800;text-decoration:none;box-shadow:0 8px 24px rgba(102,126,234,.4);">🚀 Đặt Dịch Vụ Ngay</a>
+      <a href="https://zalo.me/0906857331" target="_blank" style="padding:.9rem 2rem;border:none;border-radius:50px;background:linear-gradient(135deg,#0068ff,#00c6ff);color:#fff;font-size:.95rem;font-weight:800;text-decoration:none;box-shadow:0 8px 24px rgba(0,104,255,.3);">💬 Tư Vấn Miễn Phí</a>
+    </div>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div class="pg-lightbox" id="pgLightbox" onclick="if(event.target===this)closeLightbox()">
+  <div class="pg-lb-box">
+    <button class="pg-lb-close" onclick="closeLightbox()">×</button>
+    <div id="pgLbContent"></div>
+  </div>
+</div>
+
+<script src="dist/interactions-vip.js"></script>
+<script src="dist/mobile-nav.js"></script>
+<script src="dist/chat.js"></script>
+<script src="dist/bug-report.js"></script>
+<script src="fake-completions.js" defer></script>
+<script>
+// ===== PORTFOLIO DATA =====
+// Thay img bằng ảnh thật của bạn — đặt vào thư mục img/portfolio/
+const PORTFOLIO = [
+  {
+    id:1, cat:'ecommerce', badge:'🔥 HOT',
+    img:'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&q=80', icon:'🛒',
+    title:'Shop Thời Trang Online',
+    client:'Khách hàng TP.HCM', year:'2024',
+    cat_label:'E-Commerce',
+    desc:'Website bán hàng thời trang với giỏ hàng, thanh toán VNPay/Momo, quản lý đơn hàng, admin dashboard đầy đủ.',
+    tags:['React','Node.js','MongoDB','VNPay'],
+    result:'Tăng 300% doanh thu online trong 3 tháng đầu',
+    time:'35 ngày', price:'20.000.000 VNĐ'
+  },
+  {
+    id:2, cat:'ai', badge:'✨ NEW',
+    img:'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=600&q=80', icon:'🤖',
+    title:'AI Chatbot Hỗ Trợ Khách Hàng',
+    client:'Công ty CNTT Hà Nội', year:'2025',
+    cat_label:'AI Tools',
+    desc:'Chatbot AI tích hợp GPT-4 cho website doanh nghiệp, tự động trả lời 80% câu hỏi khách hàng 24/7.',
+    tags:['Python','GPT-4','React','FastAPI'],
+    result:'Giảm 70% tải cho bộ phận CSKH',
+    time:'20 ngày', price:'19.000.000 VNĐ'
+  },
+  {
+    id:3, cat:'dashboard', badge:null,
+    img:'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&q=80', icon:'📊',
+    title:'Dashboard Quản Lý Kho',
+    client:'Doanh nghiệp Bình Dương', year:'2024',
+    cat_label:'Dashboard',
+    desc:'Hệ thống quản lý kho hàng real-time: nhập/xuất kho, báo cáo tồn kho, cảnh báo hết hàng, export Excel.',
+    tags:['Vue.js','Python','PostgreSQL','Chart.js'],
+    result:'Tiết kiệm 4 giờ/ngày cho nhân viên kho',
+    time:'28 ngày', price:'17.000.000 VNĐ'
+  },
+  {
+    id:4, cat:'website', badge:null,
+    img:'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=600&q=80', icon:'🏢',
+    title:'Website Công Ty Xây Dựng',
+    client:'Công ty XD Đà Nẵng', year:'2024',
+    cat_label:'Website',
+    desc:'Website giới thiệu công ty xây dựng: portfolio dự án, form liên hệ, SEO tối ưu, tốc độ tải nhanh.',
+    tags:['HTML','CSS','JS','SEO'],
+    result:'Top 3 Google cho từ khóa địa phương',
+    time:'10 ngày', price:'10.500.000 VNĐ'
+  },
+  {
+    id:5, cat:'app', badge:'⭐ VIP',
+    img:'https://images.unsplash.com/photo-1501504905252-473c47e087f8?w=600&q=80', icon:'📚',
+    title:'App Học Tiếng Anh Online',
+    client:'Trung tâm Anh ngữ', year:'2025',
+    cat_label:'Web App',
+    desc:'Nền tảng học tiếng Anh: video bài giảng, bài tập tương tác, chứng chỉ hoàn thành, thanh toán subscription.',
+    tags:['React','Node.js','Firebase','Stripe'],
+    result:'500+ học viên đăng ký trong tháng đầu',
+    time:'45 ngày', price:'29.000.000 VNĐ'
+  },
+  {
+    id:6, cat:'ecommerce', badge:null,
+    img:'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&q=80', icon:'🍜',
+    title:'App Đặt Đồ Ăn Online',
+    client:'Chuỗi nhà hàng TP.HCM', year:'2024',
+    cat_label:'E-Commerce',
+    desc:'Ứng dụng đặt đồ ăn: menu online, giỏ hàng, thanh toán, theo dõi đơn hàng real-time, quản lý bếp.',
+    tags:['React','Node.js','Socket.io','Momo'],
+    result:'200+ đơn/ngày sau 2 tuần ra mắt',
+    time:'40 ngày', price:'28.000.000 VNĐ'
+  },
+  {
+    id:7, cat:'website', badge:null,
+    img:'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&q=80', icon:'🏥',
+    title:'Website Phòng Khám',
+    client:'Phòng khám tư nhân', year:'2025',
+    cat_label:'Website',
+    desc:'Website phòng khám: đặt lịch khám online, thông tin bác sĩ, dịch vụ, tích hợp Google Maps.',
+    tags:['HTML','CSS','JS','PHP'],
+    result:'Giảm 60% cuộc gọi đặt lịch thủ công',
+    time:'14 ngày', price:'8.900.000 VNĐ'
+  },
+  {
+    id:8, cat:'ai', badge:'✨ NEW',
+    img:'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=600&q=80', icon:'🎓',
+    title:'Web Giải Bài Tập AI',
+    client:'Startup EdTech', year:'2025',
+    cat_label:'AI Tools',
+    desc:'Nền tảng giải bài tập THCS/THPT bằng AI: upload ảnh bài tập, AI giải từng bước, giải thích chi tiết.',
+    tags:['React','Python','GPT-4V','PostgreSQL'],
+    result:'1000+ học sinh sử dụng mỗi ngày',
+    time:'30 ngày', price:'34.000.000 VNĐ'
+  },
+];
+
+let currentCat = 'all';
+
+function renderGallery(cat) {
+  const grid = document.getElementById('pgGrid');
+  const items = cat === 'all' ? PORTFOLIO : PORTFOLIO.filter(p => p.cat === cat);
+  grid.innerHTML = items.map(p => `
+    <div class="pg-card" onclick="openLightbox(${p.id})">
+      ${p.badge ? `<div class="pg-card-badge">${p.badge}</div>` : ''}
+      <div class="pg-card-img">
+        ${p.img
+          ? `<img src="${p.img}" alt="${p.title}" loading="lazy">`
+          : `<div class="pg-card-img-placeholder">${p.icon}</div>`
+        }
+        <div class="pg-card-overlay">
+          <button class="pg-overlay-btn"><i class="fas fa-expand"></i> Xem chi tiết</button>
+        </div>
+      </div>
+      <div class="pg-card-body">
+        <div class="pg-card-cat">${p.cat_label}</div>
+        <div class="pg-card-title">${p.title}</div>
+        <div class="pg-card-desc">${p.desc.slice(0,100)}...</div>
+        <div class="pg-card-tags">${p.tags.map(t=>`<span class="pg-tag">${t}</span>`).join('')}</div>
+        <div class="pg-card-footer">
+          <div class="pg-client"><i class="fas fa-user-tie"></i> ${p.client}</div>
+          <div class="pg-year">${p.year}</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterGallery(cat, el) {
+  currentCat = cat;
+  document.querySelectorAll('.pg-filter').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderGallery(cat);
+}
+
+function openLightbox(id) {
+  const p = PORTFOLIO.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('pgLbContent').innerHTML = `
+    ${p.img
+      ? `<img src="${p.img}" alt="${p.title}" class="pg-lb-img">`
+      : `<div class="pg-lb-img-placeholder">${p.icon}</div>`
+    }
+    <div class="pg-lb-body">
+      <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem;flex-wrap:wrap;">
+        <span style="background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:.7rem;font-weight:900;padding:.3rem .75rem;border-radius:50px;">${p.cat_label}</span>
+        ${p.badge ? `<span style="background:rgba(245,158,11,.15);color:#f59e0b;font-size:.7rem;font-weight:900;padding:.3rem .75rem;border-radius:50px;border:1px solid rgba(245,158,11,.3);">${p.badge}</span>` : ''}
+      </div>
+      <div class="pg-lb-title">${p.title}</div>
+      <div class="pg-lb-desc">${p.desc}</div>
+      <div style="background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:12px;padding:.85rem 1rem;margin-bottom:1.25rem;font-size:.85rem;color:#10b981;">
+        <i class="fas fa-chart-line" style="margin-right:.5rem;"></i><strong>Kết quả:</strong> ${p.result}
+      </div>
+      <div class="pg-lb-meta">
+        <div class="pg-lb-meta-item"><div class="pg-lb-meta-label">Khách hàng</div><div class="pg-lb-meta-val">${p.client}</div></div>
+        <div class="pg-lb-meta-item"><div class="pg-lb-meta-label">Thời gian</div><div class="pg-lb-meta-val">${p.time}</div></div>
+        <div class="pg-lb-meta-item"><div class="pg-lb-meta-label">Giá tham khảo</div><div class="pg-lb-meta-val" style="color:#f59e0b;">${p.price}</div></div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:1.25rem;">
+        ${p.tags.map(t=>`<span class="pg-tag">${t}</span>`).join('')}
+      </div>
+      <div class="pg-lb-actions">
+        <a href="order.html?svc=webdev" class="pg-lb-btn pg-lb-btn-primary">🚀 Đặt Dịch Vụ Tương Tự</a>
+        <a href="https://zalo.me/0906857331" target="_blank" class="pg-lb-btn pg-lb-btn-secondary">💬 Tư Vấn Zalo</a>
+      </div>
+    </div>
+  `;
+  document.getElementById('pgLightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  document.getElementById('pgLightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+renderGallery('all');
+</script>
+</body>
+</html>

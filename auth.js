@@ -1139,11 +1139,22 @@ function handleOAuthCallback() {
     const token = params.get('auth_token');
     const userStr = params.get('auth_user');
     const error = params.get('auth_error');
+    const success = params.get('auth_success');
+
+    // auth_success=1 từ oauth-callback.html (session đã được lưu vào localStorage)
+    if (success === '1') {
+        window.history.replaceState({}, '', window.location.pathname);
+        updateNavAuth();
+        updateCommentForms();
+        const user = getUser();
+        setTimeout(() => {
+            if (typeof showToast === 'function') showToast(`🎉 Chào mừng ${user?.username || ''}!`, 'success', 3000);
+        }, 300);
+        return;
+    }
 
     if (error) {
-        // Xóa params khỏi URL
-        const clean = window.location.pathname;
-        window.history.replaceState({}, '', clean);
+        window.history.replaceState({}, '', window.location.pathname);
         setTimeout(() => {
             if (typeof showToast === 'function') showToast('❌ Đăng nhập thất bại: ' + decodeURIComponent(error), 'error', 5000);
         }, 500);
@@ -1154,9 +1165,7 @@ function handleOAuthCallback() {
         try {
             const user = JSON.parse(decodeURIComponent(userStr));
             saveSession(user, token);
-            // Xóa params khỏi URL
-            const clean = window.location.pathname;
-            window.history.replaceState({}, '', clean);
+            window.history.replaceState({}, '', window.location.pathname);
             updateNavAuth();
             updateCommentForms();
             setTimeout(() => {
