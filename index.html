@@ -559,7 +559,7 @@
                 <li><a href="blog.html">Blog</a></li>
                 <!-- Dropdown: Công Cụ -->
                 <li class="nav-dropdown" id="mainNavDropdown">
-                    <a href="#" class="nav-dropdown-toggle" onclick="event.preventDefault();event.stopPropagation();document.getElementById('mainNavDropdown').classList.toggle('open')">Công Cụ <i class="fas fa-chevron-down nav-chevron"></i></a>
+                    <a href="#" class="nav-dropdown-toggle">Công Cụ <i class="fas fa-chevron-down nav-chevron"></i></a>
                     <ul class="nav-dropdown-menu">
                         <li><a href="tools.html"><span class="dd-icon">🤖</span> AI Tools</a></li>
                         <li><a href="calculator.html"><span class="dd-icon">🧮</span> Máy Tính</a></li>
@@ -1836,7 +1836,7 @@
             function pos() { var r=toggle.getBoundingClientRect(); menu.style.top=(r.bottom+8)+'px'; menu.style.left=Math.max(8,r.left-20)+'px'; }
             toggle.onclick = function(e) { e.preventDefault(); e.stopPropagation(); if(menu.style.display==='flex'){menu.style.display='none';}else{pos();menu.style.display='flex';} };
             document.addEventListener('click', function(e) { if(!dd.contains(e.target)&&!menu.contains(e.target)) menu.style.display='none'; });
-        }, 800);
+        }, 2000);
     </script>
     <script>
         // ===== MUSIC PLAYER =====
