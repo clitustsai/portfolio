@@ -1052,6 +1052,10 @@
         overflow-y: auto;
         pointer-events: none;
     }
+    /* Desktop dropdown must be visible even in mobile CSS context */
+    @media (min-width: 769px) {
+        nav ul { overflow: visible !important; }
+    }
     html[data-theme="dark"] nav ul {
         background: rgba(15,15,30,0.98);
     }
@@ -1263,7 +1267,7 @@ nav ul {
     flex: 1;
     justify-content: center;
     gap: 0.25rem;
-    overflow: visible;
+    overflow: visible !important;
 }
 nav ul li a {
     padding: 0.45rem 0.75rem;
