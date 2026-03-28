@@ -12,20 +12,25 @@ module.exports = async (req, res) => {
 
     // POST /api/subscription/register
     if (req.method === 'POST' && url.endsWith('/register')) {
-        const { name, email, transferRef } = req.body;
-        if (!name?.trim() || !email?.trim()) return res.status(400).json({ error: 'Thiếu thông tin' });
-        const existing = await queryOne("SELECT * FROM subscriptions WHERE email=$1 AND status='active' AND expires_at > NOW()", [email.trim()]);
-        if (existing) return res.status(409).json({ error: 'Email này đã có gói VIP đang hoạt động', subscription: existing });
-        const planType = (req.body.plan === 'student') ? 'student' : 'vip';
-        const planPrice = planType === 'student' ? 299000 : 2500000;
-        const extraRef = planType === 'student'
-            ? `VIPHS ${(req.body.studentId || '').trim().slice(0, 50)}`
-            : (transferRef || '').trim().slice(0, 100);
-        await run('INSERT INTO subscriptions (email,name,plan,price,status,transfer_ref) VALUES ($1,$2,$3,$4,$5,$6)', [
-            email.trim().slice(0, 100), name.trim().slice(0, 100), planType, planPrice, 'pending', extraRef
-        ]);
-        const sub = await queryOne('SELECT * FROM subscriptions ORDER BY id DESC LIMIT 1');
-        return res.status(201).json({ ok: true, message: 'Đăng ký thành công! Vui lòng chờ admin xác nhận.', subscription: sub });
+        try {
+            const { name, email, transferRef } = req.body;
+            if (!name?.trim() || !email?.trim()) return res.status(400).json({ error: 'Thiếu thông tin' });
+            const existing = await queryOne("SELECT * FROM subscriptions WHERE email=$1 AND status='active' AND expires_at > NOW()", [email.trim()]);
+            if (existing) return res.status(409).json({ error: 'Email này đã có gói VIP đang hoạt động', subscription: existing });
+            const planType = (req.body.plan === 'student') ? 'student' : 'vip';
+            const planPrice = planType === 'student' ? 299000 : 2500000;
+            const extraRef = planType === 'student'
+                ? `VIPHS ${(req.body.studentId || '').trim().slice(0, 50)}`
+                : (transferRef || '').trim().slice(0, 100);
+            await run('INSERT INTO subscriptions (email,name,plan,price,status,transfer_ref) VALUES ($1,$2,$3,$4,$5,$6)', [
+                email.trim().slice(0, 100), name.trim().slice(0, 100), planType, planPrice, 'pending', extraRef
+            ]);
+            const sub = await queryOne('SELECT * FROM subscriptions ORDER BY id DESC LIMIT 1');
+            return res.status(201).json({ ok: true, message: 'Đăng ký thành công! Vui lòng chờ admin xác nhận.', subscription: sub });
+        } catch(e) {
+            console.error('subscription register error:', e);
+            return res.status(500).json({ error: 'Lỗi server: ' + e.message });
+        }
     }
 
     // GET /api/subscription/check
