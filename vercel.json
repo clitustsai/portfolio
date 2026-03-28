@@ -27,6 +27,8 @@
     { "source": "/api/blog/:path*", "destination": "/api/blog.js" },
     { "source": "/api/chat/:path*", "destination": "/api/chat.js" },
     { "source": "/api/chat-ai", "destination": "/api/chat.js" },
+    { "source": "/api/tools/:path*", "destination": "/api/tools.js" },
+    { "source": "/api/tools", "destination": "/api/tools.js" },
     { "source": "/api/subscription/:path*", "destination": "/api/subscription.js" },
     { "source": "/api/subscription", "destination": "/api/subscription.js" },
     { "source": "/api/ads/ai-fill", "destination": "/api/ads.js" },
