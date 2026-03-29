@@ -95,6 +95,64 @@
     }
     </script>
 
+    <!-- FAQ Schema - tối ưu cho AI Overview -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Dịch vụ lập trình web tại TP.HCM giá bao nhiêu?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Clitus PC cung cấp dịch vụ lập trình web tại TP.HCM với giá từ 2.000.000đ cho website cơ bản, 5.000.000đ cho web app, và 8.000.000đ cho mobile app. Báo giá miễn phí, hỗ trợ 24/7."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Clitus PC chuyên lập trình công nghệ gì?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Clitus PC chuyên React, Vue.js, Node.js, Python, Full Stack Development. Có 10+ năm kinh nghiệm xây dựng website, web app, mobile app và tích hợp AI cho doanh nghiệp tại Việt Nam."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Thuê lập trình viên web ở đâu uy tín tại TP.HCM?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Clitus PC là dịch vụ lập trình web uy tín tại TP. Hồ Chí Minh. Liên hệ qua số điện thoại +84906857331 hoặc email infoclituspc@gmail.com để được tư vấn miễn phí."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Làm website mất bao lâu?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Thời gian làm website phụ thuộc vào độ phức tạp: website giới thiệu 3-7 ngày, web app 2-4 tuần, hệ thống lớn 1-3 tháng. Clitus PC cam kết đúng deadline và hỗ trợ bảo trì sau khi bàn giao."
+          }
+        }
+      ]
+    }
+    </script>
+    <!-- WebSite Schema với SearchAction -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Clitus PC - Dịch Vụ Lập Trình Web",
+      "url": "https://portfolio-xi-gray-20.vercel.app",
+      "description": "Dịch vụ lập trình web chuyên nghiệp tại TP.HCM. React, Node.js, Python. 10+ năm kinh nghiệm.",
+      "inLanguage": "vi-VN",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://portfolio-xi-gray-20.vercel.app/blog.html?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
     <meta name="theme-color" content="#667eea">
     <!-- Preload LCP image -->
     <link rel="preload" as="image" href="img/z7643399499088_fbf2b939d27d107fda73c5053dbb4dd0.webp" fetchpriority="high">
@@ -1352,6 +1410,39 @@
             <span class="admin-secret-hint" onclick="openAdmin()" title="Admin">⚙</span>
         </div>
     </footer>
+
+    <!-- FAQ Section - tối ưu cho Google AI Overview -->
+    <section id="faq" style="background:#0a0a1a;padding:3rem 2rem;border-top:1px solid rgba(102,126,234,.1);">
+      <div style="max-width:800px;margin:0 auto;">
+        <h2 style="color:#fff;font-size:1.4rem;font-weight:800;margin-bottom:1.5rem;text-align:center;">Câu Hỏi Thường Gặp</h2>
+        <div itemscope itemtype="https://schema.org/FAQPage">
+          <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" style="margin-bottom:1.25rem;border:1px solid rgba(102,126,234,.2);border-radius:12px;padding:1.25rem;">
+            <h3 itemprop="name" style="color:#a0a8ff;font-size:1rem;margin:0 0 .6rem;">Dịch vụ lập trình web tại TP.HCM giá bao nhiêu?</h3>
+            <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <p itemprop="text" style="color:rgba(255,255,255,.7);font-size:.9rem;margin:0;line-height:1.6;">Clitus PC cung cấp dịch vụ lập trình web tại TP.HCM với giá từ <strong style="color:#fff;">2.000.000đ</strong> cho website cơ bản, 5.000.000đ cho web app, và 8.000.000đ cho mobile app. Báo giá miễn phí, hỗ trợ 24/7.</p>
+            </div>
+          </div>
+          <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" style="margin-bottom:1.25rem;border:1px solid rgba(102,126,234,.2);border-radius:12px;padding:1.25rem;">
+            <h3 itemprop="name" style="color:#a0a8ff;font-size:1rem;margin:0 0 .6rem;">Clitus PC chuyên lập trình công nghệ gì?</h3>
+            <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <p itemprop="text" style="color:rgba(255,255,255,.7);font-size:.9rem;margin:0;line-height:1.6;">Clitus PC chuyên <strong style="color:#fff;">React, Vue.js, Node.js, Python</strong>, Full Stack Development. Có 10+ năm kinh nghiệm xây dựng website, web app, mobile app và tích hợp AI cho doanh nghiệp tại Việt Nam.</p>
+            </div>
+          </div>
+          <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" style="margin-bottom:1.25rem;border:1px solid rgba(102,126,234,.2);border-radius:12px;padding:1.25rem;">
+            <h3 itemprop="name" style="color:#a0a8ff;font-size:1rem;margin:0 0 .6rem;">Thuê lập trình viên web ở đâu uy tín tại TP.HCM?</h3>
+            <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <p itemprop="text" style="color:rgba(255,255,255,.7);font-size:.9rem;margin:0;line-height:1.6;">Clitus PC là dịch vụ lập trình web uy tín tại TP. Hồ Chí Minh. Liên hệ qua số điện thoại <strong style="color:#fff;">0906857331</strong> hoặc email infoclituspc@gmail.com để được tư vấn miễn phí.</p>
+            </div>
+          </div>
+          <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" style="border:1px solid rgba(102,126,234,.2);border-radius:12px;padding:1.25rem;">
+            <h3 itemprop="name" style="color:#a0a8ff;font-size:1rem;margin:0 0 .6rem;">Làm website mất bao lâu?</h3>
+            <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+              <p itemprop="text" style="color:rgba(255,255,255,.7);font-size:.9rem;margin:0;line-height:1.6;">Thời gian làm website phụ thuộc vào độ phức tạp: website giới thiệu <strong style="color:#fff;">3-7 ngày</strong>, web app 2-4 tuần, hệ thống lớn 1-3 tháng. Clitus PC cam kết đúng deadline và hỗ trợ bảo trì sau khi bàn giao.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <!-- Admin Dashboard Modal -->
     <div id="adminOverlay" class="admin-overlay" style="display:none">
