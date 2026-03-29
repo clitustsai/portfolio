@@ -131,7 +131,7 @@ async function sendMsg() {
   showTyping();
 
   try {
-    const r = await fetch('/ai-proxy', {
+    const r = await fetch('/api/gpt', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ messages: history.slice(-10), max_tokens: 1500 })
