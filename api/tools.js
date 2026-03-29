@@ -45,6 +45,24 @@ module.exports = async (req, res) => {
     if (!OPENROUTER_KEY) return res.status(500).json({ error: 'API key chưa được cấu hình' });
 
     const url = req.url.split('?')[0];
+
+    // ===== PROXY (no auth needed) =====
+    if (req.method === 'POST' && url.endsWith('/proxy')) {
+        const { messages, max_tokens } = req.body;
+        if (!messages) return res.status(400).json({ error: 'Missing messages' });
+        try {
+            const content = await callGPT(messages, max_tokens || 1500);
+            return res.json({ content });
+        } catch(e) {
+            return res.status(500).json({ error: e.message });
+        }
+    }
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+    if (req.method === 'OPTIONS') return res.status(200).end();
+
+    if (!OPENROUTER_KEY) return res.status(500).json({ error: 'API key chưa được cấu hình' });
+
+    const url = req.url.split('?')[0];
     const user = await checkAuth(req);
     if (!user) return res.status(401).json({ error: 'Chưa đăng nhập' });
 
