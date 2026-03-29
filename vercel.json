@@ -1,6 +1,7 @@
 {
   "functions": {
-    "api/ai.js": { "maxDuration": 30 }
+    "api/ai.js": { "maxDuration": 30 },
+    "ai-proxy.js": { "maxDuration": 30 }
   },
   "rewrites": [
     { "source": "/api/google-login",        "destination": "/api/auth.js" },
