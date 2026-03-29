@@ -35,10 +35,10 @@ function injectUI() {
       border:1px solid rgba(102,126,234,.3);border-radius:14px;padding:.8rem 1rem;color:#e0e0ff;
       font-size:.78rem;font-family:'Segoe UI',sans-serif;min-width:185px;display:none;
       backdrop-filter:blur(10px);box-shadow:0 8px 32px rgba(0,0,0,.5);}
-    #hg-video{position:fixed;bottom:12px;left:12px;width:160px;height:120px;border-radius:12px;
-      z-index:99996;object-fit:cover;display:none;border:2px solid rgba(102,126,234,.4);
-      transform:scaleX(-1);opacity:.85;}
-    #hg-canvas{position:fixed;bottom:12px;left:12px;width:160px;height:120px;border-radius:12px;
+    #hg-video{position:fixed;bottom:12px;left:12px;width:280px;height:210px;border-radius:16px;
+      z-index:99996;object-fit:cover;display:none;border:2px solid rgba(102,126,234,.5);
+      transform:scaleX(-1);opacity:.9;}
+    #hg-canvas{position:fixed;bottom:12px;left:12px;width:280px;height:210px;border-radius:16px;
       z-index:99997;display:none;pointer-events:none;}
   `;
   document.head.appendChild(style);
