@@ -23,7 +23,7 @@ p{color:rgba(255,255,255,.6);font-size:.9rem;}
     }
 
     try {
-        const r = await fetch('/api/auth/google-callback-ajax', {
+        const r = await fetch('/api/google-callback', {
             method: 'POST',
             headers: {'Content-Type':'application/json'},
             body: JSON.stringify({ code })

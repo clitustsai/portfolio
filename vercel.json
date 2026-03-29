@@ -39,6 +39,6 @@
     { "source": "/api/live",                "destination": "/api/live.js" },
     { "source": "/api/coins/:path*",        "destination": "/api/coins.js" },
     { "source": "/api/coins",               "destination": "/api/coins.js" },
-    { "source": "/api/health",              "destination": "/api/health.js" }
+    { "source": "/api/health",              "destination": "/api/auth.js" }
   ]
 }
