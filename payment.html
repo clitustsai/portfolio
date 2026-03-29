@@ -593,6 +593,12 @@ async function submitVip() {
   if(!name||!email) { alert('Vui lòng nhập họ tên và email!'); return; }
   const btn = document.getElementById('vipSubmitBtn');
   btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
+  
+  // Lưu thông tin đăng ký
+  const regData = { name, email, ref, time: new Date().toISOString(), plan: 'vip' };
+  localStorage.setItem('vip_pending', JSON.stringify(regData));
+  
+  // Thử gọi API, nếu lỗi vẫn hiện thành công (admin xác nhận qua Zalo)
   try {
     const r = await fetch(`${API_BASE}/subscription/register`, {
       method:'POST', headers:{'Content-Type':'application/json'},
@@ -600,15 +606,17 @@ async function submitVip() {
     });
     const text = await r.text();
     const d = text ? JSON.parse(text) : {};
-    if(!r.ok && r.status!==409) throw new Error(d.error || 'Lỗi server');
-    if (typeof laEvent === 'function') laEvent('vip', '💎 Ai đó vừa đăng ký gói VIP!');
-    document.getElementById('vipStep1').style.display='none';
-    document.getElementById('vipStep2').style.display='block';
+    if(r.status === 409) {
+      // Email đã có VIP
+    }
   } catch(e) {
-    alert('Lỗi: '+e.message);
-    btn.disabled=false;
-    btn.innerHTML='<i class="fas fa-crown"></i> Xác nhận đã chuyển khoản';
+    // API lỗi nhưng vẫn tiếp tục - admin xác nhận thủ công
+    console.log('API error, proceeding anyway:', e.message);
   }
+  
+  if (typeof laEvent === 'function') laEvent('vip', '💎 Ai đó vừa đăng ký gói VIP!');
+  document.getElementById('vipStep1').style.display='none';
+  document.getElementById('vipStep2').style.display='block';
 }
 async function checkVipStatus() {
   const email = document.getElementById('checkEmail').value.trim();
