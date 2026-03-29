@@ -198,19 +198,14 @@ async function submitUpsell() {
 
 // ===== CODE REVIEW =====
 async function callOpenRouter(messages, max_tokens) {
-  var r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+  var r = await fetch('/api/proxy', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer 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',
-      'HTTP-Referer': location.origin,
-      'X-Title': 'Clitus PC AI Tools'
-    },
-    body: JSON.stringify({ model: 'openai/gpt-4o-mini', messages: messages, max_tokens: max_tokens || 1500 })
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ messages: messages, max_tokens: max_tokens || 1500 })
   });
   var d = await r.json();
-  if (!r.ok) throw new Error(d.error?.message || 'AI error');
-  return d.choices[0].message.content;
+  if (!r.ok) throw new Error(d.error || 'AI error');
+  return d.content;
 }
 
 async function runCodeReview() {
