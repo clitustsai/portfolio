@@ -198,7 +198,7 @@ async function submitUpsell() {
 
 // ===== CODE REVIEW =====
 async function callOpenRouter(messages, max_tokens) {
-  var r = await fetch('/api/proxy', {
+  var r = await fetch('/ai-proxy', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ messages: messages, max_tokens: max_tokens || 1500 })

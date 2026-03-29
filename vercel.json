@@ -19,6 +19,7 @@
     { "source": "/api/tools/:path*",        "destination": "/api/ai.js" },
     { "source": "/api/tools",               "destination": "/api/ai.js" },
     { "source": "/api/proxy",               "destination": "/api/ai.js" },
+    { "source": "/ai-proxy",                "destination": "/ai-proxy.js" },
     { "source": "/api/subscription/:path*", "destination": "/api/subscription.js" },
     { "source": "/api/subscription",        "destination": "/api/subscription.js" },
     { "source": "/api/ads/:path*",          "destination": "/api/ads.js" },

@@ -741,7 +741,7 @@ function showAiResult(elId, text) {
 
 // ===== AI GIẢI BÀI TẬP =====
 async function callAI(messages, max_tokens) {
-  const r = await fetch('/api/proxy', {
+  const r = await fetch('/ai-proxy', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ messages, max_tokens: max_tokens || 1500 })
