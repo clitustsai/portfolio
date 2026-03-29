@@ -1,1 +1,53 @@
-!function(){"use strict";document.addEventListener("contextmenu",function(e){return e.preventDefault(),!1},!0),document.addEventListener("keydown",function(e){return e.ctrlKey&&("U"===e.key||"u"===e.key)||e.ctrlKey&&("S"===e.key||"s"===e.key)?(e.preventDefault(),!1):void 0},!0);var e=document.createElement("style");e.textContent="body{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}input,textarea{-webkit-user-select:text!important;-moz-user-select:text!important;user-select:text!important}",document.head.appendChild(e),document.addEventListener("dragstart",function(e){e.preventDefault()},!0),setTimeout(function(){},500)}();
+// DevTools protection - Clitus PC
+(function(){
+  // Disable right-click
+  document.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+
+  // Block F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+  document.addEventListener('keydown', function(e){
+    if(
+      e.key === 'F12' ||
+      e.keyCode === 123 ||
+      (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
+      (e.ctrlKey && e.key === 'U') ||
+      (e.ctrlKey && e.key === 'S')
+    ){
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      return false;
+    }
+  }, true); // capture phase
+
+  // Detect devtools open via size diff
+  var threshold = 160;
+  function check(){
+    var w = window.outerWidth - window.innerWidth;
+    var h = window.outerHeight - window.innerHeight;
+    if(w > threshold || h > threshold){
+      document.body.style.filter = 'blur(8px)';
+      document.body.style.pointerEvents = 'none';
+      if(!document.getElementById('_devwarn')){
+        var d = document.createElement('div');
+        d.id = '_devwarn';
+        d.style.cssText = 'position:fixed;inset:0;z-index:999999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.7);color:#fff;font-size:1.2rem;font-family:sans-serif;text-align:center;padding:2rem;';
+        d.innerHTML = '<div>🔒 Vui lòng đóng DevTools để tiếp tục sử dụng trang web.</div>';
+        document.body.appendChild(d);
+      }
+    } else {
+      document.body.style.filter = '';
+      document.body.style.pointerEvents = '';
+      var w2 = document.getElementById('_devwarn');
+      if(w2) w2.remove();
+    }
+  }
+  setInterval(check, 1000);
+
+  // Disable console
+  try {
+    var c = console;
+    ['log','warn','error','info','debug','table','dir'].forEach(function(m){
+      c[m] = function(){};
+    });
+  } catch(e){}
+})();
