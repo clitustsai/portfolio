@@ -1,7 +1,16 @@
 {
   "functions": {
     "api/ai.js": { "maxDuration": 30 },
-    "api/gpt.js": { "maxDuration": 30 }
+    "api/gpt.js": { "maxDuration": 30 },
+    "api/auth.js": { "maxDuration": 30 },
+    "api/blog.js": { "maxDuration": 30 },
+    "api/comments.js": { "maxDuration": 30 },
+    "api/messages.js": { "maxDuration": 30 },
+    "api/coins.js": { "maxDuration": 30 },
+    "api/chat.js": { "maxDuration": 30 },
+    "api/subscription.js": { "maxDuration": 30 },
+    "api/ads.js": { "maxDuration": 30 },
+    "api/live.js": { "maxDuration": 30 }
   },
   "rewrites": [
     { "source": "/api/google-login",        "destination": "/api/auth.js" },

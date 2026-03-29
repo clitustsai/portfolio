@@ -571,7 +571,7 @@ async function sendMsg(type, extra) {
       if (err.upgradeUrl) { if (confirm(err.error + '\n\nNâng cấp VIP ngay?')) location.href = err.upgradeUrl; }
       else alert(err.error || 'Gửi thất bại');
     }
-  } catch(e) { alert('Lỗi kết nối'); }
+  } catch(e) { if(typeof showToast==='function') showToast('❌ Lỗi kết nối', 'error'); else console.error(e); }
   sendBtn.disabled = false;
 }
 
