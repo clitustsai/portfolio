@@ -740,6 +740,17 @@ function showAiResult(elId, text) {
 }
 
 // ===== AI GIẢI BÀI TẬP =====
+async function callAI(messages, max_tokens) {
+  const r = await fetch('/api/proxy', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ messages, max_tokens: max_tokens || 1500 })
+  });
+  const d = await r.json();
+  if (!r.ok) throw new Error(d.error || 'AI error');
+  return d.content;
+}
+
 async function runHomework() {
   const question = document.getElementById('hw-question').value.trim();
   const subject = document.getElementById('hw-subject').value;
@@ -751,17 +762,11 @@ async function runHomework() {
   btn.disabled = true;
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang giải...';
   try {
-    const res = await fetch(API_BASE + '/tools/homework', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question, subject })
-    });
-    const data = await res.json();
-    if (!res.ok) { svToast('❌ ' + (data.error || 'Lỗi server'), 'error'); return; }
+    const answer = await callAI([{role:'user',content:'Giải bài tập ' + subject + ' sau, trình bày từng bước chi tiết bằng Tiếng Việt:\n' + question}], 1500);
     incSvUsage('hw');
     updateSvUsageUI();
     saveAiHistory('hw', question);
-    showAiResult('hw-result', data.answer || '');
+    showAiResult('hw-result', answer);
   } catch(e) {
     svToast('❌ Lỗi kết nối. Thử lại!', 'error');
   } finally {
@@ -783,17 +788,11 @@ async function runFixCode() {
   btn.disabled = true;
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang fix...';
   try {
-    const res = await fetch(API_BASE + '/tools/fix-code', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code, error, language: lang })
-    });
-    const data = await res.json();
-    if (!res.ok) { svToast('❌ ' + (data.error || 'Lỗi server'), 'error'); return; }
+    const result_text = await callAI([{role:'user',content:'Fix code ' + lang + ' sau, giải thích lỗi và đưa ra code đã sửa:\n\nCode:\n```\n' + code + '\n```\n' + (error ? 'Lỗi: ' + error : '')}], 1500);
     incSvUsage('fix');
     updateSvUsageUI();
     saveAiHistory('fix', code.slice(0, 80));
-    showAiResult('fix-result', data.result || '');
+    showAiResult('fix-result', result_text);
   } catch(e) {
     svToast('❌ Lỗi kết nối. Thử lại!', 'error');
   } finally {
@@ -814,17 +813,11 @@ async function runVideoScript() {
   btn.disabled = true;
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tạo...';
   try {
-    const res = await fetch(API_BASE + '/tools/video-script', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ topic, type })
-    });
-    const data = await res.json();
-    if (!res.ok) { svToast('❌ ' + (data.error || 'Lỗi server'), 'error'); return; }
+    const script = await callAI([{role:'user',content:'Tạo kịch bản video ' + type + ' chi tiết bằng Tiếng Việt cho chủ đề: ' + topic + '\nBao gồm: intro, nội dung chính, outro, storyboard ngắn gọn.'}], 2000);
     incSvUsage('vid');
     updateSvUsageUI();
     saveAiHistory('vid', topic);
-    showAiResult('vid-result', data.script || '');
+    showAiResult('vid-result', script);
   } catch(e) {
     svToast('❌ Lỗi kết nối. Thử lại!', 'error');
   } finally {
