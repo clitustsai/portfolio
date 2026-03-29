@@ -1,7 +1,7 @@
 {
   "functions": {
     "api/ai.js": { "maxDuration": 30 },
-    "ai-proxy.js": { "maxDuration": 30 }
+    "api/gpt.js": { "maxDuration": 30 }
   },
   "rewrites": [
     { "source": "/api/google-login",        "destination": "/api/auth.js" },
@@ -20,7 +20,7 @@
     { "source": "/api/tools/:path*",        "destination": "/api/ai.js" },
     { "source": "/api/tools",               "destination": "/api/ai.js" },
     { "source": "/api/proxy",               "destination": "/api/ai.js" },
-    { "source": "/ai-proxy",                "destination": "/ai-proxy.js" },
+    { "source": "/ai-proxy",                "destination": "/api/gpt.js" },
     { "source": "/api/subscription/:path*", "destination": "/api/subscription.js" },
     { "source": "/api/subscription",        "destination": "/api/subscription.js" },
     { "source": "/api/ads/:path*",          "destination": "/api/ads.js" },
