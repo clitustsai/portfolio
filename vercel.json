@@ -1,5 +1,4 @@
 {
-  "outputDirectory": ".",
   "functions": {
     "api/tools.js": { "maxDuration": 30 }
   },
@@ -20,6 +19,7 @@
     { "src": "/api/coins(.*)", "dest": "/api/coins.js" },
     { "src": "/api/user(.*)", "dest": "/api/auth.js" },
     { "src": "/api/health", "dest": "/api/health.js" },
-    { "handle": "filesystem" }
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/$1" }
   ]
 }
