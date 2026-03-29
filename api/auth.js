@@ -121,7 +121,7 @@ module.exports = async (req, res) => {
         const clientId = process.env.GOOGLE_CLIENT_ID;
         if (!clientId) return res.status(503).json({ error: 'Google OAuth chưa cấu hình' });
         const appUrl = process.env.APP_URL || `https://${req.headers.host}`;
-        const redirect = encodeURIComponent(`${appUrl}/api/google-callback`);
+        const redirect = encodeURIComponent(`${appUrl}/oauth-callback.html`);
         const url2 = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirect}&response_type=code&scope=openid%20email%20profile&prompt=select_account`;
         return res.redirect(url2);
     }
