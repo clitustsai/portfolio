@@ -197,6 +197,22 @@ async function submitUpsell() {
 }
 
 // ===== CODE REVIEW =====
+async function callOpenRouter(messages, max_tokens) {
+  var r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer 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',
+      'HTTP-Referer': location.origin,
+      'X-Title': 'Clitus PC AI Tools'
+    },
+    body: JSON.stringify({ model: 'openai/gpt-4o-mini', messages: messages, max_tokens: max_tokens || 1500 })
+  });
+  var d = await r.json();
+  if (!r.ok) throw new Error(d.error?.message || 'AI error');
+  return d.choices[0].message.content;
+}
+
 async function runCodeReview() {
   if (!isLoggedIn()) { openAuthModal('login'); return; }
   // Freemium check
@@ -221,24 +237,12 @@ async function runCodeReview() {
   }
   btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang phân tích...';
   try {
-    var res = await fetch(API_BASE + '/tools/code-review', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
-      body: JSON.stringify({ code: code, language: lang })
-    });
-    var data = await res.json();
-    if (!res.ok) {
-      if (res.status === 429) { showUpsellModal('AI Code Review'); return; }
-      if (res.status === 401) { openAuthModal('login'); return; }
-      errBox.textContent = '❌ ' + data.error; errBox.classList.add('show'); return;
-    }
-    if (!data.isVip) incUsage('cr');
-    updateUsageUI();
+    var prompt = 'Bạn là senior code reviewer. Phân tích code ' + (lang||'') + ' sau và trả về JSON:\n{"score":<0-100>,"summary":"<tóm tắt>","issues":[{"severity":"high|medium|low","line":"","issue":"","fix":""}],"strengths":[""],"suggestions":[""]}\nChỉ trả JSON.\n\nCode:\n```\n' + code.slice(0,3000) + '\n```';
+    var result = await callOpenRouter([{role:'user',content:prompt}], 1500);
+    var json = JSON.parse(result.replace(/```json\n?|\n?```/g,'').trim());
+    incUsage('cr'); updateUsageUI();
     if (typeof laEvent === 'function') laEvent('ai', 'Ai đó vừa dùng AI Code Review');
-    try { fetch(API_BASE + '/user/ai-history', { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+getToken()}, body:JSON.stringify({tool:'cr',input:code.slice(0,80)}) }); } catch(e){}
-    // Save history localStorage (fallback)
-    try { const hist=JSON.parse(localStorage.getItem('ai_history')||'[]'); hist.push({tool:'cr',input:code.slice(0,80),time:Date.now()}); if(hist.length>50)hist.splice(0,hist.length-50); localStorage.setItem('ai_history',JSON.stringify(hist)); } catch(e){}
-    renderCodeReview(data.result);
+    renderCodeReview(json);
     resultBox.classList.add('show');
     resultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   } catch(e) {
@@ -299,34 +303,20 @@ async function runCVGen() {
   }
   btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tạo CV...';
   try {
-    var res = await fetch(API_BASE + '/tools/cv-generate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
-      body: JSON.stringify({
-        name: name,
-        title: document.getElementById('cv-title').value.trim(),
-        email: document.getElementById('cv-email').value.trim(),
-        phone: document.getElementById('cv-phone').value.trim(),
-        summary: document.getElementById('cv-summary').value.trim(),
-        skills: document.getElementById('cv-skills').value.trim(),
-        experience: document.getElementById('cv-exp').value.trim(),
-        education: document.getElementById('cv-edu').value.trim(),
-        language: document.getElementById('cv-lang').value
-      })
-    });
-    var data = await res.json();
-    if (!res.ok) {
-      if (res.status === 429) { showUpsellModal('AI CV Generator'); return; }
-      if (res.status === 401) { openAuthModal('login'); return; }
-      errBox.textContent = '❌ ' + data.error; errBox.classList.add('show'); return;
-    }
-    if (!data.isVip) incUsage('cv');
-    updateUsageUI();
+    var langStr = document.getElementById('cv-lang').value === 'en' ? 'English' : 'Tiếng Việt';
+    var prompt = 'Tạo CV chuyên nghiệp bằng ' + langStr + ' dạng HTML đẹp cho:\nTên: ' + name +
+      '\nChức danh: ' + (document.getElementById('cv-title').value.trim()) +
+      '\nEmail: ' + (document.getElementById('cv-email').value.trim()) +
+      '\nSĐT: ' + (document.getElementById('cv-phone').value.trim()) +
+      '\nTóm tắt: ' + (document.getElementById('cv-summary').value.trim()) +
+      '\nKỹ năng: ' + (document.getElementById('cv-skills').value.trim()) +
+      '\nKinh nghiệm: ' + (document.getElementById('cv-exp').value.trim()) +
+      '\nHọc vấn: ' + (document.getElementById('cv-edu').value.trim()) +
+      '\nTrả về HTML body content với inline CSS đẹp, accent color #667eea.';
+    var html = await callOpenRouter([{role:'user',content:prompt}], 2000);
+    cvHTML = html.replace(/```html\n?|\n?```/g,'').trim();
+    incUsage('cv'); updateUsageUI();
     if (typeof laEvent === 'function') laEvent('ai', 'Ai đó vừa tạo CV bằng AI');
-    try { fetch(API_BASE + '/user/ai-history', { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+getToken()}, body:JSON.stringify({tool:'cv',input:name}) }); } catch(e){}
-    // Save history localStorage (fallback)
-    try { const hist=JSON.parse(localStorage.getItem('ai_history')||'[]'); hist.push({tool:'cv',input:name,time:Date.now()}); if(hist.length>50)hist.splice(0,hist.length-50); localStorage.setItem('ai_history',JSON.stringify(hist)); } catch(e){}
-    cvHTML = data.html || '';
     document.getElementById('cv-preview-body').innerHTML = cvHTML;
     resultBox.classList.add('show');
     resultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -467,25 +457,33 @@ async function runImageAI() {
   try {
     const lang = document.getElementById('img-lang').value;
     const question = document.getElementById('img-question').value.trim();
-    const res = await fetch(API_BASE + '/tools/image-analyze', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
-      body: JSON.stringify({ imageBase64: _imgBase64, mode, lang, question })
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      if (res.status === 429) { showUpsellModal('AI Image Analyzer'); return; }
-      if (res.status === 401) { openAuthModal('login'); return; }
-      errBox.textContent = '❌ ' + data.error; errBox.classList.add('show'); return;
-    }
-    if (!data.isVip) incUsage('img');
-    updateUsageUI();
+    const modePrompts = {
+      solve:'Giải bài tập trong ảnh, trình bày từng bước',
+      describe:'Mô tả chi tiết nội dung ảnh',
+      text:'Đọc và trích xuất toàn bộ văn bản (OCR)',
+      code:'Đọc và giải thích code trong ảnh',
+      translate:'Dịch toàn bộ văn bản sang Tiếng Việt',
+      identify:'Nhận diện và mô tả đối tượng',
+      nutrition:'Phân tích dinh dưỡng món ăn',
+      plant:'Nhận diện loại cây/hoa',
+      emotion:'Phân tích cảm xúc người trong ảnh',
+      scene:'Phân tích cảnh vật và bối cảnh'
+    };
+    const langStr = lang === 'en' ? 'in English' : 'bằng Tiếng Việt';
+    const userPrompt = (modePrompts[mode]||'Phân tích ảnh') + ' ' + langStr + (question ? '\nCâu hỏi: '+question : '');
+    const result = await callOpenRouter([{
+      role:'user',
+      content:[
+        {type:'text',text:userPrompt},
+        {type:'image_url',image_url:{url:_imgBase64,detail:'low'}}
+      ]
+    }], 1500);
+    incUsage('img'); updateUsageUI();
     if (typeof laEvent === 'function') laEvent('ai', 'Ai đó vừa dùng AI phân tích ảnh');
     const body = document.getElementById('img-result-body');
-    body.innerHTML = formatImgResult(data.result);
+    body.innerHTML = formatImgResult(result);
     resultBox.classList.add('show');
     resultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    try { fetch(API_BASE + '/user/ai-history', { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+getToken()}, body:JSON.stringify({tool:'img',input:'[image:'+mode+']'}) }); } catch(e){}
   } catch(e) {
     errBox.textContent = '❌ Lỗi kết nối. Vui lòng thử lại.'; errBox.classList.add('show');
   } finally {
