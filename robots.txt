@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /api/
-Disallow: /admin
+Disallow: /dist/
+Disallow: /server/
 
-Sitemap: https://portfolio-utbu.onrender.com/sitemap.xml
+Sitemap: https://portfolio-xi-gray-20.vercel.app/sitemap.xml

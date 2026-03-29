@@ -1,25 +1,7 @@
 {
-  "outputDirectory": ".",
   "functions": {
     "api/tools.js": { "maxDuration": 30 }
   },
-  "cleanUrls": false,
-  "trailingSlash": false,
-  "headers": [
-    {
-      "source": "/(.*\\.html)",
-      "headers": [
-        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" },
-        { "key": "Pragma", "value": "no-cache" }
-      ]
-    },
-    {
-      "source": "/",
-      "headers": [
-        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
-      ]
-    }
-  ],
   "rewrites": [
     { "source": "/api/google-login", "destination": "/api/auth.js" },
     { "source": "/api/google-callback", "destination": "/api/auth.js" },
@@ -41,8 +23,12 @@
     { "source": "/api/ads", "destination": "/api/ads.js" },
     { "source": "/api/pr-posts/:path*", "destination": "/api/ads.js" },
     { "source": "/api/pr-posts", "destination": "/api/ads.js" },
+    { "source": "/api/coins/:path*", "destination": "/api/coins.js" },
+    { "source": "/api/coins", "destination": "/api/coins.js" },
     { "source": "/api/live/:path*", "destination": "/api/live.js" },
     { "source": "/api/live", "destination": "/api/live.js" },
-    { "source": "/api/health", "destination": "/api/health.js" }
+    { "source": "/api/health", "destination": "/api/health.js" },
+    { "source": "/api/coins/:path*", "destination": "/api/live.js" },
+    { "source": "/api/user/:path*", "destination": "/api/auth.js" }
   ]
 }
