@@ -88,3 +88,19 @@
     });
   });
 })();
+
+// ===== HAND GESTURE CONTROLLER =====
+(function() {
+  function loadHandGesture() {
+    if (document.getElementById('hg-btn')) return;
+    var s = document.createElement('script');
+    s.src = '/hand-gesture.js';
+    s.defer = true;
+    document.head.appendChild(s);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadHandGesture);
+  } else {
+    loadHandGesture();
+  }
+})();
