@@ -6,7 +6,7 @@
 'use strict';
 
 const MEDIAPIPE_CDN = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm';
-const TASKS_VISION_URL = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.js';
+const TASKS_VISION_URL = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs';
 
 let detector = null, videoEl = null, canvasEl = null, ctx2d = null;
 let cursorEl = null, panelEl = null, btnEl = null;
@@ -94,13 +94,14 @@ function loadScript(src) {
 async function init() {
   setStatus('Đang tải MediaPipe...', '#f59e0b');
   try {
-    await loadScript(TASKS_VISION_URL);
+    // Dynamic import để lấy đúng exports
+    const vision = await import(TASKS_VISION_URL).catch(() => null);
+    const HandLandmarker = vision?.HandLandmarker || window.HandLandmarker;
+    const FilesetResolver = vision?.FilesetResolver || window.FilesetResolver;
+    if (!HandLandmarker || !FilesetResolver) throw new Error('Không load được MediaPipe Tasks Vision');
 
-    const { HandLandmarker, FilesetResolver } = window.mpTasksVision || window;
-    if (!HandLandmarker) throw new Error('MediaPipe Tasks Vision không load được');
-
-    const vision = await FilesetResolver.forVisionTasks(MEDIAPIPE_CDN);
-    detector = await HandLandmarker.createFromOptions(vision, {
+    const filesetResolver = await FilesetResolver.forVisionTasks(MEDIAPIPE_CDN);
+    detector = await HandLandmarker.createFromOptions(filesetResolver, {
       baseOptions: {
         modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task',
         delegate: 'GPU'
