@@ -1,8 +1,14 @@
 {
-  "outputDirectory": ".",
-  "functions": {
-    "api/tools.js": { "maxDuration": 30 }
-  },
+  "version": 2,
+  "builds": [
+    { "src": "api/*.js", "use": "@vercel/node" },
+    { "src": "*.html", "use": "@vercel/static" },
+    { "src": "*.css", "use": "@vercel/static" },
+    { "src": "*.js", "use": "@vercel/static" },
+    { "src": "dist/**", "use": "@vercel/static" },
+    { "src": "img/**", "use": "@vercel/static" },
+    { "src": "files/**", "use": "@vercel/static" }
+  ],
   "routes": [
     { "src": "/api/google-login", "dest": "/api/auth.js" },
     { "src": "/api/google-callback", "dest": "/api/auth.js" },
@@ -19,7 +25,6 @@
     { "src": "/api/live(.*)", "dest": "/api/live.js" },
     { "src": "/api/coins(.*)", "dest": "/api/coins.js" },
     { "src": "/api/user(.*)", "dest": "/api/auth.js" },
-    { "src": "/api/health", "dest": "/api/health.js" },
-    { "handle": "filesystem" }
+    { "src": "/api/health", "dest": "/api/health.js" }
   ]
 }
