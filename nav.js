@@ -47,6 +47,8 @@
         var open = hamburger.classList.toggle('open');
         navUl.classList.toggle('open', open);
         document.body.style.overflow = open ? 'hidden' : '';
+        var icon = hamburger.querySelector('i');
+        if (icon) { icon.className = open ? 'fas fa-times' : 'fas fa-bars'; }
         // Ẩn/hiện floating elements khi menu mở/đóng
         var floats = ['rec-toggle', 'rec-panel', 'cw-fab', '_bugBtn', 'pn-bell', 'fabGroup'];
         floats.forEach(function(id) {

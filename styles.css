@@ -987,31 +987,26 @@
 /* ===== HAMBURGER BUTTON ===== */
 .nav-hamburger {
     display: none;
-    flex-direction: column;
+    align-items: center;
     justify-content: center;
-    gap: 5px;
+    width: 40px;
+    height: 40px;
     cursor: pointer;
-    padding: 9px 10px;
-    background: rgba(102,126,234,0.1);
-    border: 1.5px solid rgba(102,126,234,0.2);
+    background: rgba(102,126,234,0.12);
+    border: 1.5px solid rgba(102,126,234,0.3);
     border-radius: 12px;
     z-index: 1100;
     transition: all 0.25s;
     flex-shrink: 0;
+    color: #a78bfa;
+    font-size: 1.15rem;
 }
-.nav-hamburger:hover { background: rgba(102,126,234,0.2); border-color: rgba(102,126,234,0.4); }
-.nav-hamburger span {
-    display: block;
-    width: 20px;
-    height: 2px;
-    background: #667eea;
-    border-radius: 4px;
-    transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
-    transform-origin: center;
-}
-.nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-.nav-hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
-.nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.nav-hamburger:hover { background: rgba(102,126,234,0.25); border-color: rgba(102,126,234,0.5); transform: scale(1.05); }
+.nav-hamburger i { transition: transform 0.3s ease, color 0.2s; }
+.nav-hamburger.open { background: rgba(102,126,234,0.2); border-color: #667eea; }
+.nav-hamburger.open i { transform: rotate(90deg); color: #667eea; }
+/* hide old spans */
+.nav-hamburger span { display: none; }
 
 /* ===== TABLET ===== */
 @media (max-width: 1024px) {
