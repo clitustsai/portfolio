@@ -1,154 +1,177 @@
 /* ============================================================
-   MOBILE FIX — Load sau cùng, override tất cả JS-injected CSS
-   Giải quyết vấn đề các nút đè lên nhau trên mobile
+   MOBILE FIX v3 — Bottom nav disabled, clean layout
    ============================================================ */
 
-/* ===== DESKTOP: ẩn bottom nav ===== */
-@media (min-width: 769px) {
-  #mobile-bottom-nav {
-    display: none !important;
-  }
+/* ===== HIDE BOTTOM NAV EVERYWHERE ===== */
+#mobile-bottom-nav {
+  display: none !important;
+}
+body {
+  padding-bottom: 0 !important;
 }
 
-/* ===== MOBILE: layout các floating elements ===== */
+/* ===== SHOW HAMBURGER ON MOBILE ===== */
 @media (max-width: 768px) {
-
-  /* Ẩn hamburger — đã có bottom nav */
   .nav-hamburger {
-    display: none !important;
+    display: flex !important;
   }
 
-  /* Ẩn chat-toggle cũ (duplicate với #cw-fab từ chat.js) */
-  .chat-toggle,
-  #chatToggle {
-    display: none !important;
-  }
-
-  /* Ẩn chat-widget cũ */
-  .chat-widget {
-    display: none !important;
-  }
-
-  /* Bottom nav — luôn ở dưới cùng */
-  #mobile-bottom-nav {
-    display: block !important;
-    position: fixed !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    z-index: 999999 !important;
-    height: 56px !important;
-    pointer-events: auto !important;
-  }
-
-  /* Body padding để nội dung không bị che */
-  body {
-    padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px)) !important;
-  }
-
-  /* ===== BÊN PHẢI (từ dưới lên) ===== */
-
-  /* Chat FAB — 68px từ bottom */
+  /* ===== FLOATING ELEMENTS — RIGHT SIDE ===== */
   #cw-fab {
     position: fixed !important;
-    bottom: 68px !important;
+    bottom: 20px !important;
     right: 12px !important;
     z-index: 9980 !important;
   }
-
-  /* Chat box — mở lên trên FAB */
   #cw-box {
     position: fixed !important;
-    bottom: 128px !important;
+    bottom: 80px !important;
     right: 8px !important;
     width: calc(100vw - 16px) !important;
-    max-height: calc(100vh - 200px) !important;
+    max-height: calc(100vh - 140px) !important;
     z-index: 9979 !important;
   }
-
-  /* Back to top — cùng hàng với chat FAB nhưng bên trái hơn */
-  #backToTop,
-  .back-to-top {
+  #backToTop, .back-to-top {
     position: fixed !important;
-    bottom: 68px !important;
-    right: 68px !important;
+    bottom: 20px !important;
+    right: 72px !important;
     z-index: 9975 !important;
+    width: 40px !important;
+    height: 40px !important;
   }
 
-  /* ===== BÊN TRÁI (từ dưới lên) ===== */
-
-  /* Bug report button — 68px từ bottom */
+  /* ===== FLOATING ELEMENTS — LEFT SIDE ===== */
   #_bugBtn {
     position: fixed !important;
-    bottom: 68px !important;
+    bottom: 20px !important;
     left: 12px !important;
     z-index: 9955 !important;
   }
-
-  /* Push notification bell — 120px từ bottom */
   #pn-bell {
     position: fixed !important;
-    bottom: 120px !important;
+    bottom: 72px !important;
     left: 12px !important;
     z-index: 9959 !important;
   }
-
-  /* FOMO toast wrap — 120px từ bottom, bên trái */
   #la-toast-wrap {
     position: fixed !important;
-    bottom: 120px !important;
+    bottom: 72px !important;
     left: 12px !important;
     z-index: 9969 !important;
     pointer-events: none !important;
   }
-  #la-toast-wrap .la-toast {
-    pointer-events: auto !important;
-  }
+  #la-toast-wrap .la-toast { pointer-events: auto !important; }
 
-  /* Music player — 180px từ bottom */
   .music-player {
     position: fixed !important;
-    bottom: 180px !important;
+    bottom: 130px !important;
     left: 12px !important;
     z-index: 9000 !important;
   }
 
-  /* ===== PUSH BANNER — trên bottom nav ===== */
+  /* Hand gesture button */
+  #hg-btn {
+    bottom: 130px !important;
+    left: 12px !important;
+  }
+
+  /* AI chat widget */
+  #aiChatWidget {
+    bottom: 20px !important;
+    right: 12px !important;
+  }
+  #aiChatBox {
+    width: calc(100vw - 24px) !important;
+    height: calc(100vh - 160px) !important;
+  }
+
+  /* ===== PUSH BANNER ===== */
   #pn-banner {
     position: fixed !important;
-    bottom: 56px !important;
-    bottom: calc(56px + env(safe-area-inset-bottom, 0px)) !important;
+    bottom: 0 !important;
     left: 0 !important;
     right: 0 !important;
     z-index: 9961 !important;
   }
 
-  /* ===== LIVE ACTIVITY BAR — trên cùng ===== */
-  #la-bar {
-    top: 0 !important;
-    z-index: 9970 !important;
+  /* ===== LIVE ACTIVITY BAR ===== */
+  #la-bar { top: 0 !important; z-index: 9970 !important; }
+
+  /* ===== HIDE ON MOBILE ===== */
+  #fabGroup { display: none !important; }
+
+  /* ===== RECOMMEND PANEL ===== */
+  #rec-panel { max-width: calc(100vw - 24px) !important; right: 12px !important; }
+
+  /* ===== HEADER FIX ===== */
+  header { position: sticky !important; top: 0 !important; z-index: 9990 !important; }
+  nav ul.open {
+    position: fixed !important;
+    top: 58px !important;
+    left: 0 !important;
+    right: 0 !important;
+    background: rgba(10,10,26,.97) !important;
+    backdrop-filter: blur(12px) !important;
+    flex-direction: column !important;
+    padding: 1rem !important;
+    gap: .5rem !important;
+    z-index: 9989 !important;
+    max-height: calc(100vh - 58px) !important;
+    overflow-y: auto !important;
   }
 
-  /* ===== ẨN TRÊN MOBILE ===== */
-  #fabGroup {
-    display: none !important;
+  /* ===== GENERAL MOBILE IMPROVEMENTS ===== */
+  .section-title, h2 { word-break: break-word; }
+  table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  pre, code { overflow-x: auto; max-width: 100%; }
+  iframe { max-width: 100%; }
+
+  /* Cards full width */
+  .card, .service-card, .project-card, .blog-card {
+    width: 100% !important;
+    max-width: 100% !important;
   }
 
-  /* Rec panel — ẩn hoàn toàn trên mobile */
-  #rec-panel,
-  #rec-toggle {
-    display: none !important;
-    visibility: hidden !important;
-    pointer-events: none !important;
+  /* Buttons full width on small screens */
+  .btn-group { flex-direction: column; gap: .5rem; }
+
+  /* Hide camera preview on very small screens */
+  #hg-video, #hg-canvas { width: 120px !important; height: 90px !important; }
+}
+
+/* ===== SMALL MOBILE ===== */
+@media (max-width: 480px) {
+  nav { padding: 0 .75rem !important; }
+  .logo-text { font-size: .95rem !important; }
+
+  /* Auth modal full screen */
+  .auth-modal-inner {
+    width: 100% !important;
+    min-height: 100dvh !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    padding: 1.25rem 1rem !important;
   }
+
+  /* Toast full width */
+  .toast-container { left: 8px !important; right: 8px !important; }
+
+  /* FAQ section */
+  #faq { padding: 2rem 1rem !important; }
+  #faq h2 { font-size: 1.2rem !important; }
+  #faq h3 { font-size: .9rem !important; }
 }
 
 /* ===== LANDSCAPE PHONE ===== */
 @media (max-height: 500px) and (orientation: landscape) {
-  #mobile-bottom-nav {
-    display: none !important;
-  }
-  body {
-    padding-bottom: 0 !important;
-  }
+  body { padding-bottom: 0 !important; }
+  .hero { grid-template-columns: 1fr 1fr !important; }
+  .hero-image img { width: 100px !important; height: 100px !important; }
 }
+
+/* ===== CAMERA PREVIEW POSITION (no bottom nav) ===== */
+#hg-video, #hg-canvas {
+  bottom: 80px !important;
+  left: 12px !important;
+}
+#hg-panel { bottom: 290px !important; }
