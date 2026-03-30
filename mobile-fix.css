@@ -13,7 +13,7 @@ body {
 /* ===== SHOW HAMBURGER ON MOBILE ===== */
 @media (max-width: 768px) {
   .nav-hamburger {
-    display: flex !important;
+    display: none !important;
   }
 
   /* ===== FLOATING ELEMENTS — RIGHT SIDE ===== */
