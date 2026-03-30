@@ -1345,5 +1345,33 @@ html[data-theme="dark"] .nav-dropdown-menu {
         border-radius: 12px; padding: 0.25rem 0.5rem;
     }
     .nav-dropdown-menu li a { font-size: 1rem; padding: 0.75rem 1rem; color: #e0e0ff; }
-    .nav-actions { gap: 0.35rem; }
-}
+@media (max-width: 768px) {
+  .nav-actions {
+    gap: 0.3rem !important;
+    flex-shrink: 0 !important;
+    max-width: calc(100vw - 120px) !important;
+    overflow: visible !important;
+  }
+  /* Thu nhỏ user dropdown button trên mobile */
+  .nav-actions .user-dropdown-btn,
+  .nav-actions [id*="userBtn"],
+  .nav-actions button:not(#navHamburger):not(.theme-toggle) {
+    max-width: 120px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    font-size: 0.78rem !important;
+    padding: 0.4rem 0.6rem !important;
+  }
+  /* Đảm bảo hamburger luôn hiện đầy đủ */
+  #navHamburger {
+    flex-shrink: 0 !important;
+    min-width: 40px !important;
+    width: 40px !important;
+  }
+  /* Header không clip */
+  header, nav {
+    overflow: visible !important;
+    width: 100% !important;
+  }
+}}
