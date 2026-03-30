@@ -1,10 +1,20 @@
 // DevTools protection - Clitus PC
 (function(){
+  // Admin bypass — nếu là admin thì không chặn
+  function isAdmin() {
+    try {
+      const user = JSON.parse(localStorage.getItem('user_info') || '{}');
+      return user.role === 'admin';
+    } catch(e) { return false; }
+  }
+  if (isAdmin()) return;
+
   // Disable right-click
   document.addEventListener('contextmenu', function(e){ e.preventDefault(); });
 
   // Block F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
   document.addEventListener('keydown', function(e){
+    if (isAdmin()) return;
     if(
       e.key === 'F12' ||
       e.keyCode === 123 ||
@@ -17,11 +27,12 @@
       e.stopImmediatePropagation();
       return false;
     }
-  }, true); // capture phase
+  }, true);
 
   // Detect devtools open via size diff
   var threshold = 160;
   function check(){
+    if (isAdmin()) return;
     var w = window.outerWidth - window.innerWidth;
     var h = window.outerHeight - window.innerHeight;
     if(w > threshold || h > threshold){
