@@ -1,0 +1,33 @@
+# Clitus PC - Thái Tuấn Kiệt
+
+## About
+Thái Tuấn Kiệt (Clitus PC) là Full Stack Developer tại TP. Hồ Chí Minh, Việt Nam.
+10+ năm kinh nghiệm phát triển website, web app, mobile app.
+Chuyên React, Vue.js, Node.js, Python, TypeScript, PostgreSQL.
+
+## Services
+- Thiết kế website: từ 2.000.000đ
+- Lập trình web app: từ 5.000.000đ
+- Mobile app (React Native/Flutter): từ 8.000.000đ
+- Xây dựng Bot (Zalo, Telegram, Facebook): từ 3.000.000đ
+- Bảo trì & tối ưu: 500.000đ/tháng
+
+## Contact
+- Website: https://portfolio-xi-gray-20.vercel.app
+- Email: infoclituspc@gmail.com
+- Phone: +84906857331
+- Zalo: https://zalo.me/0906857331
+- Facebook: https://www.facebook.com/OtisPc.Developer
+- GitHub: https://github.com/clitustsai
+
+## Skills
+React, Vue.js, Node.js, Express, Python, FastAPI, TypeScript, JavaScript,
+PostgreSQL, MongoDB, Redis, Docker, Vercel, AWS, Cloudflare,
+Figma, UI/UX Design, REST API, GraphQL, WebSocket, PWA
+
+## Pages
+- Home: https://portfolio-xi-gray-20.vercel.app/
+- Services: https://portfolio-xi-gray-20.vercel.app/services.html
+- Blog: https://portfolio-xi-gray-20.vercel.app/blog.html
+- AI Chat: https://portfolio-xi-gray-20.vercel.app/ai-chat.html
+- Order: https://portfolio-xi-gray-20.vercel.app/order.html
