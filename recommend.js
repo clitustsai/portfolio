@@ -130,9 +130,9 @@ async function buildRecs() {
     if (!token) {
       recs.push({ icon:'🔐', title:'Đăng nhập để mở đầy đủ', desc:'Bình luận, kiếm coin, dùng AI Tools miễn phí', badge:'free', url:'#', action: () => { if(typeof openAuthModal==='function') openAuthModal('login'); } });
     }
-    recs.push({ icon:'🤖', title:'Thử AI Code Review', desc:'Review code của bạn bằng GPT-4 — miễn phí 3 lượt/ngày', badge:'free', url:'tools.html' });
+    recs.push({ icon:'🤖', title:'Thử AI Chat', desc:'Chat với GPT-4o mini — miễn phí 10 lượt/ngày', badge:'free', url:'ai-chat.html' });
     recs.push({ icon:'🎮', title:'Arcade & Kiếm Coin', desc:'Chơi Snake, Clicker để kiếm coin mở AI Tools', badge:'new', url:'arcade.html' });
-    if (!isVip) recs.push({ icon:'👑', title:'VIP 99k/tháng', desc:'Không giới hạn AI tools + nội dung độc quyền', badge:'hot', url:'payment.html' });
+    if (!isVip) recs.push({ icon:'👑', title:'VIP 2.500.000đ/tháng', desc:'Không giới hạn AI tools + nội dung độc quyền', badge:'hot', url:'payment.html' });l' });
   }
 
   if (PAGE === 'tools') {
@@ -180,12 +180,12 @@ async function buildRecs() {
   if (PAGE === 'services') {
     recs.push({ icon:'💼', title:'Tạo Proposal tự động', desc:'AI tạo đề xuất dự án chuyên nghiệp trong 30 giây', badge:'new', url:'proposal.html' });
     recs.push({ icon:'🧾', title:'Tạo Invoice & gửi email', desc:'Hóa đơn đẹp, gửi email tự động cho khách hàng', badge:'free', url:'invoice.html' });
-    recs.push({ icon:'🤖', title:'AI Tools miễn phí', desc:'Code Review, CV, Image AI — 3 lượt/ngày free', badge:'free', url:'tools.html' });
+    recs.push({ icon:'🤖', title:'AI Chat', desc:'Code Review, CV, Image AI — 3 lượt/ngày free', badge:'free', url:'ai-chat.html' });
   }
 
   // Fallback nếu không có rec nào
   if (!recs.length) {
-    recs.push({ icon:'🤖', title:'AI Tools miễn phí', desc:'Code Review, CV Generator, Image AI', badge:'free', url:'tools.html' });
+    recs.push({ icon:'🤖', title:'AI Chat ', desc:'Code Review, CV Generator, Image AI', badge:'free', url:'ai-chat.html' });
     recs.push({ icon:'🎮', title:'Arcade & Coin', desc:'Chơi game kiếm coin mở AI Tools', badge:'new', url:'arcade.html' });
   }
 

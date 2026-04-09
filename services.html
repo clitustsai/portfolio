@@ -1,4 +1,4 @@
-﻿﻿<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
@@ -53,7 +53,12 @@
 <style>
 :root { --g1:#667eea; --g2:#764ba2; --g3:#f093fb; }
 *{box-sizing:border-box;}
-body { background: linear-gradient(135deg,#0f0c29,#302b63,#24243e); min-height:100vh; }
+body { background: linear-gradient(135deg,     #dslf
+  
+  
+  
+  
+  0f0c29,#302b63,#24243e); min-height:100vh; }
 
 /* ===== HERO ===== */
 .sv-hero { text-align:center; padding:3.5rem 1.5rem 2.5rem; color:#fff; position:relative; overflow:hidden; }
@@ -214,11 +219,20 @@ body { background: linear-gradient(135deg,#0f0c29,#302b63,#24243e); min-height:1
     </a>
     <ul id="navMenu">
       <li><a href="index.html">Trang Chủ</a></li>
+      <li><a href="index.html#about">Về Tôi</a></li>
       <li><a href="blog.html">Blog</a></li>
-      <li><a href="ai-chat.html">🤖 AI Chat</a></li>
-      <li><a href="arcade.html">🎮 Arcade</a></li>
-      <li><a href="services.html" class="active">🛍️ Dịch Vụ</a></li>
-      <li><a href="payment.html">💳 VIP</a></li>
+      <li class="nav-dropdown">
+        <a href="#" class="nav-dropdown-toggle">Công Cụ <i class="fas fa-chevron-down nav-chevron"></i></a>
+        <ul class="nav-dropdown-menu">
+          <li><a href="tools.html"><span class="dd-icon">🤖</span> AI Tools</a></li>
+          <li><a href="arcade.html"><span class="dd-icon">🎮</span> Arcade & Coins</a></li>
+          <li><a href="services.html"><span class="dd-icon">🛍️</span> Dịch Vụ</a></li>
+          <li><a href="roadmap.html"><span class="dd-icon">🗺️</span> Roadmap</a></li>
+          <li><a href="proposal.html"><span class="dd-icon">💼</span> Proposal</a></li>
+          <li><a href="invoice.html"><span class="dd-icon">🧾</span> Invoice</a></li>
+          <li><a href="payment.html"><span class="dd-icon">💳</span> Dịch Vụ & VIP</a></li>
+        </ul>
+      </li>
     </ul>
     <div class="nav-actions">
       <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
@@ -237,6 +251,7 @@ body { background: linear-gradient(135deg,#0f0c29,#302b63,#24243e); min-height:1
     <button class="sv-tab" onclick="switchSvTab('download',this)">📥 Tải Tài Nguyên</button>
     <button class="sv-tab" onclick="switchSvTab('affiliate',this)">📊 Affiliate</button>
     <button class="sv-tab" onclick="switchSvTab('ads',this)">📢 Quảng Cáo</button>
+    <button class="sv-tab" onclick="switchSvTab('ai',this)">🤖 AI Tools</button>
   </div>
 </div>
 
@@ -459,6 +474,99 @@ body { background: linear-gradient(135deg,#0f0c29,#302b63,#24243e); min-height:1
   </div>
 </div>
 
+<!-- ===== TAB: AI TOOLS ===== -->
+<div class="sv-section" id="sv-ai">
+  <div class="sec-title"><h2>🤖 AI Tools Nâng Cao</h2><p>Giải bài tập · Fix code · Tạo video · Powered by GPT-4.1</p></div>
+  <div class="ai-grid">
+
+    <!-- AI Giải Bài Tập -->
+    <div class="ai-tool-card">
+      <div class="ai-tool-header">
+        <div class="ai-tool-icon" style="background:linear-gradient(135deg,#667eea,#764ba2)">📚</div>
+        <div><h3>AI Giải Bài Tập</h3><p>Toán · Lý · Hóa · Văn · Anh (THCS + THPT)</p></div>
+      </div>
+      <div class="ai-tool-body">
+        <select class="ai-select" id="hw-subject">
+          <option value="math">📐 Toán học</option>
+          <option value="physics">⚡ Vật lý</option>
+          <option value="chemistry">🧪 Hóa học</option>
+          <option value="literature">📖 Ngữ văn</option>
+          <option value="english">🇬🇧 Tiếng Anh</option>
+          <option value="biology">🌿 Sinh học</option>
+          <option value="history">🏛️ Lịch sử</option>
+        </select>
+        <textarea class="ai-input" id="hw-question" rows="4" placeholder="Nhập bài tập hoặc câu hỏi của bạn vào đây...&#10;Ví dụ: Giải phương trình x² - 5x + 6 = 0"></textarea>
+        <div class="usage-bar">
+          <span class="usage-text">Lượt dùng hôm nay</span>
+          <span class="usage-count" id="hw-usage-text">3 lượt còn lại</span>
+        </div>
+        <button class="btn-ai-run btn-sv-primary" id="hw-btn" onclick="runHomework()">
+          <i class="fas fa-wand-magic-sparkles"></i> Giải Ngay
+        </button>
+        <div class="ai-result" id="hw-result"></div>
+      </div>
+    </div>
+
+    <!-- AI Fix Code -->
+    <div class="ai-tool-card">
+      <div class="ai-tool-header">
+        <div class="ai-tool-icon" style="background:linear-gradient(135deg,#11998e,#38ef7d)">🔧</div>
+        <div><h3>AI Fix Code</h3><p>Nhập lỗi → nhận code đã sửa + giải thích</p></div>
+      </div>
+      <div class="ai-tool-body">
+        <select class="ai-select" id="fix-lang">
+          <option value="javascript">JavaScript</option>
+          <option value="python">Python</option>
+          <option value="typescript">TypeScript</option>
+          <option value="java">Java</option>
+          <option value="cpp">C/C++</option>
+          <option value="php">PHP</option>
+          <option value="css">CSS</option>
+          <option value="sql">SQL</option>
+        </select>
+        <textarea class="ai-input" id="fix-code" rows="5" placeholder="Dán code bị lỗi vào đây...&#10;&#10;// Ví dụ:&#10;function add(a, b {&#10;  return a + b&#10;}"></textarea>
+        <textarea class="ai-input" id="fix-error" rows="2" style="margin-top:.6rem;min-height:60px" placeholder="Thông báo lỗi (nếu có): SyntaxError: Unexpected token..."></textarea>
+        <div class="usage-bar">
+          <span class="usage-text">Lượt dùng hôm nay</span>
+          <span class="usage-count" id="fix-usage-text">3 lượt còn lại</span>
+        </div>
+        <button class="btn-ai-run btn-sv-primary" id="fix-btn" onclick="runFixCode()">
+          <i class="fas fa-bug"></i> Fix Code
+        </button>
+        <div class="ai-result" id="fix-result"></div>
+      </div>
+    </div>
+
+    <!-- AI Video Templates -->
+    <div class="ai-tool-card">
+      <div class="ai-tool-header">
+        <div class="ai-tool-icon" style="background:linear-gradient(135deg,#f093fb,#f5576c)">🎬</div>
+        <div><h3>AI Video Script</h3><p>Tạo kịch bản video + storyboard chi tiết</p></div>
+      </div>
+      <div class="ai-tool-body">
+        <select class="ai-select" id="vid-type">
+          <option value="youtube">🎥 YouTube Video</option>
+          <option value="tiktok">📱 TikTok / Reels</option>
+          <option value="intro">🎬 Intro / Outro</option>
+          <option value="ads">📢 Video Quảng Cáo</option>
+          <option value="tutorial">📚 Tutorial / Hướng dẫn</option>
+          <option value="vlog">🌟 Vlog cá nhân</option>
+        </select>
+        <textarea class="ai-input" id="vid-topic" rows="3" placeholder="Chủ đề video của bạn...&#10;Ví dụ: Review điện thoại Samsung Galaxy S25, thời lượng 5 phút, phong cách trẻ trung"></textarea>
+        <div class="usage-bar">
+          <span class="usage-text">Lượt dùng hôm nay</span>
+          <span class="usage-count" id="vid-usage-text">3 lượt còn lại</span>
+        </div>
+        <button class="btn-ai-run btn-sv-primary" id="vid-btn" onclick="runVideoScript()">
+          <i class="fas fa-film"></i> Tạo Kịch Bản
+        </button>
+        <div class="ai-result" id="vid-result"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <!-- ===== MODALS ===== -->
 <!-- Order Modal -->
 <div class="sv-modal" id="orderModal">
@@ -563,7 +671,7 @@ body { background: linear-gradient(135deg,#0f0c29,#302b63,#24243e); min-height:1
 
 <footer style="text-align:center;color:rgba(255,255,255,.5);padding:2.5rem 1rem;font-size:.85rem;">
   © 2026 Clitus PC · <a href="index.html" style="color:#a5f3fc;font-weight:700;">Portfolio</a> ·
-  <a href="ai-chat.html" style="color:#c4b5fd;font-weight:700;">AI Chat</a> ·
+  <a href="tools.html" style="color:#c4b5fd;font-weight:700;">AI Tools</a> ·
   <a href="payment.html" style="color:#f9a8d4;font-weight:700;">VIP</a>
 </footer>
 
@@ -646,17 +754,6 @@ function showAiResult(elId, text) {
 }
 
 // ===== AI GIẢI BÀI TẬP =====
-async function callAI(messages, max_tokens) {
-  const r = await fetch('/ai-proxy', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ messages, max_tokens: max_tokens || 1500 })
-  });
-  const d = await r.json();
-  if (!r.ok) throw new Error(d.error || 'AI error');
-  return d.content;
-}
-
 async function runHomework() {
   const question = document.getElementById('hw-question').value.trim();
   const subject = document.getElementById('hw-subject').value;
@@ -668,11 +765,17 @@ async function runHomework() {
   btn.disabled = true;
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang giải...';
   try {
-    const answer = await callAI([{role:'user',content:'Giải bài tập ' + subject + ' sau, trình bày từng bước chi tiết bằng Tiếng Việt:\n' + question}], 1500);
+    const res = await fetch(API_BASE + '/tools/homework', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question, subject })
+    });
+    const data = await res.json();
+    if (!res.ok) { svToast('❌ ' + (data.error || 'Lỗi server'), 'error'); return; }
     incSvUsage('hw');
     updateSvUsageUI();
     saveAiHistory('hw', question);
-    showAiResult('hw-result', answer);
+    showAiResult('hw-result', data.answer || '');
   } catch(e) {
     svToast('❌ Lỗi kết nối. Thử lại!', 'error');
   } finally {
@@ -694,11 +797,17 @@ async function runFixCode() {
   btn.disabled = true;
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang fix...';
   try {
-    const result_text = await callAI([{role:'user',content:'Fix code ' + lang + ' sau, giải thích lỗi và đưa ra code đã sửa:\n\nCode:\n```\n' + code + '\n```\n' + (error ? 'Lỗi: ' + error : '')}], 1500);
+    const res = await fetch(API_BASE + '/tools/fix-code', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code, error, language: lang })
+    });
+    const data = await res.json();
+    if (!res.ok) { svToast('❌ ' + (data.error || 'Lỗi server'), 'error'); return; }
     incSvUsage('fix');
     updateSvUsageUI();
     saveAiHistory('fix', code.slice(0, 80));
-    showAiResult('fix-result', result_text);
+    showAiResult('fix-result', data.result || '');
   } catch(e) {
     svToast('❌ Lỗi kết nối. Thử lại!', 'error');
   } finally {
@@ -719,11 +828,17 @@ async function runVideoScript() {
   btn.disabled = true;
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tạo...';
   try {
-    const script = await callAI([{role:'user',content:'Tạo kịch bản video ' + type + ' chi tiết bằng Tiếng Việt cho chủ đề: ' + topic + '\nBao gồm: intro, nội dung chính, outro, storyboard ngắn gọn.'}], 2000);
+    const res = await fetch(API_BASE + '/tools/video-script', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ topic, type })
+    });
+    const data = await res.json();
+    if (!res.ok) { svToast('❌ ' + (data.error || 'Lỗi server'), 'error'); return; }
     incSvUsage('vid');
     updateSvUsageUI();
     saveAiHistory('vid', topic);
-    showAiResult('vid-result', script);
+    showAiResult('vid-result', data.script || '');
   } catch(e) {
     svToast('❌ Lỗi kết nối. Thử lại!', 'error');
   } finally {

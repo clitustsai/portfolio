@@ -4,6 +4,7 @@
 Thái Tuấn Kiệt (Clitus PC) là Full Stack Developer tại TP. Hồ Chí Minh, Việt Nam.
 10+ năm kinh nghiệm phát triển website, web app, mobile app.
 Chuyên React, Vue.js, Node.js, Python, TypeScript, PostgreSQL.
+Nhận dự án freelance toàn quốc, hỗ trợ online 24/7.
 
 ## Services
 - Thiết kế website: từ 2.000.000đ
@@ -11,6 +12,17 @@ Chuyên React, Vue.js, Node.js, Python, TypeScript, PostgreSQL.
 - Mobile app (React Native/Flutter): từ 8.000.000đ
 - Xây dựng Bot (Zalo, Telegram, Facebook): từ 3.000.000đ
 - Bảo trì & tối ưu: 500.000đ/tháng
+- Landing page bán hàng: từ 1.500.000đ
+- Website thương mại điện tử: từ 10.000.000đ
+- API & Backend: từ 3.000.000đ
+- SEO & tối ưu tốc độ: từ 1.000.000đ
+
+## Why Choose Clitus PC
+- Kinh nghiệm 10+ năm thực chiến
+- Giao hàng đúng hạn, cam kết chất lượng
+- Hỗ trợ sau bàn giao 3-6 tháng
+- Giá cạnh tranh, phù hợp startup và SME
+- Làm việc trực tiếp với developer, không qua trung gian
 
 ## Contact
 - Website: https://portfolio-xi-gray-20.vercel.app
@@ -18,12 +30,22 @@ Chuyên React, Vue.js, Node.js, Python, TypeScript, PostgreSQL.
 - Phone: +84906857331
 - Zalo: https://zalo.me/0906857331
 - Facebook: https://www.facebook.com/OtisPc.Developer
-- GitHub: https://github.com/clitustsai
+- GitHub: https://github.com/clitusai
+- LinkedIn: https://www.linkedin.com/in/clitus-tsai-3871aa3b7
 
 ## Skills
-React, Vue.js, Node.js, Express, Python, FastAPI, TypeScript, JavaScript,
-PostgreSQL, MongoDB, Redis, Docker, Vercel, AWS, Cloudflare,
-Figma, UI/UX Design, REST API, GraphQL, WebSocket, PWA
+React, Vue.js, Next.js, Nuxt.js, Node.js, Express, Python, FastAPI, TypeScript, JavaScript,
+PostgreSQL, MySQL, MongoDB, Redis, Docker, Vercel, AWS, Cloudflare,
+Figma, UI/UX Design, REST API, GraphQL, WebSocket, PWA, Supabase
+
+## Keywords
+lập trình web TP.HCM, thiết kế website Hồ Chí Minh, freelance developer Vietnam,
+web developer HCMC, thuê lập trình viên, làm website giá rẻ, Clitus PC, clitusai,
+lập trình viên freelance, thuê dev làm web, làm app điện thoại, tạo website bán hàng,
+web developer Việt Nam, lập trình web giá rẻ, thiết kế web chuyên nghiệp,
+full stack developer Vietnam, nodejs developer Vietnam, react developer Vietnam,
+làm website công ty, website giới thiệu dịch vụ, web app theo yêu cầu,
+bot zalo telegram, chatbot AI, tích hợp AI vào website
 
 ## Pages
 - Home: https://portfolio-xi-gray-20.vercel.app/
@@ -31,3 +53,5 @@ Figma, UI/UX Design, REST API, GraphQL, WebSocket, PWA
 - Blog: https://portfolio-xi-gray-20.vercel.app/blog.html
 - AI Chat: https://portfolio-xi-gray-20.vercel.app/ai-chat.html
 - Order: https://portfolio-xi-gray-20.vercel.app/order.html
+- About: https://portfolio-xi-gray-20.vercel.app/about.html
+- Tools: https://portfolio-xi-gray-20.vercel.app/tools.html

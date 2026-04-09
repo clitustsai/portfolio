@@ -1,4 +1,4 @@
-﻿﻿<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
@@ -270,11 +270,21 @@
     </a>
     <ul id="navMenu">
       <li><a href="index.html">Trang Chủ</a></li>
+      <li><a href="index.html#about">Về Tôi</a></li>
       <li><a href="blog.html">Blog</a></li>
-      <li><a href="ai-chat.html">🤖 AI Chat</a></li>
-      <li><a href="arcade.html">🎮 Arcade</a></li>
-      <li><a href="services.html">🛍️ Dịch Vụ</a></li>
-      <li><a href="payment.html" class="active">💳 VIP</a></li>
+      <li class="nav-dropdown">
+        <a href="#" class="nav-dropdown-toggle">Công Cụ <i class="fas fa-chevron-down nav-chevron"></i></a>
+        <ul class="nav-dropdown-menu">
+          <li><a href="tools.html"><span class="dd-icon">🤖</span> AI Tools</a></li>
+          <li><a href="arcade.html"><span class="dd-icon">🎮</span> Arcade & Coins</a></li>
+          <li><a href="services.html"><span class="dd-icon">🛍️</span> Dịch Vụ</a></li>
+          <li><a href="roadmap.html"><span class="dd-icon">🗺️</span> Roadmap</a></li>
+          <li><a href="proposal.html"><span class="dd-icon">💼</span> Proposal</a></li>
+          <li><a href="invoice.html"><span class="dd-icon">🧾</span> Invoice</a></li>
+          <li><a href="payment.html" class="active"><span class="dd-icon">💳</span> Dịch Vụ & VIP</a></li>
+          <li><a href="ads.html"><span class="dd-icon">📢</span> Ad Marketplace</a></li>
+        </ul>
+      </li>
     </ul>
     <div class="nav-actions">
       <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
@@ -573,7 +583,7 @@
 
 <script>
 // VIP Modal functions — defined early so inline onclick works
-var API_BASE = (location.hostname==='localhost'||location.hostname==='127.0.0.1')
+const API_BASE = (location.hostname==='localhost'||location.hostname==='127.0.0.1')
   ? 'http://localhost:3001/api' : `${location.origin}/api`;
 
 function openVipModal() {
@@ -593,30 +603,21 @@ async function submitVip() {
   if(!name||!email) { alert('Vui lòng nhập họ tên và email!'); return; }
   const btn = document.getElementById('vipSubmitBtn');
   btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
-  
-  // Lưu thông tin đăng ký
-  const regData = { name, email, ref, time: new Date().toISOString(), plan: 'vip' };
-  localStorage.setItem('vip_pending', JSON.stringify(regData));
-  
-  // Thử gọi API, nếu lỗi vẫn hiện thành công (admin xác nhận qua Zalo)
   try {
     const r = await fetch(`${API_BASE}/subscription/register`, {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ name, email, transferRef: ref })
     });
-    const text = await r.text();
-    const d = text ? JSON.parse(text) : {};
-    if(r.status === 409) {
-      // Email đã có VIP
-    }
+    const d = await r.json();
+    if(!r.ok && r.status!==409) throw new Error(d.error);
+    if (typeof laEvent === 'function') laEvent('vip', '💎 Ai đó vừa đăng ký gói VIP!');
+    document.getElementById('vipStep1').style.display='none';
+    document.getElementById('vipStep2').style.display='block';
   } catch(e) {
-    // API lỗi nhưng vẫn tiếp tục - admin xác nhận thủ công
-    console.log('API error, proceeding anyway:', e.message);
+    alert('Lỗi: '+e.message);
+    btn.disabled=false;
+    btn.innerHTML='<i class="fas fa-crown"></i> Xác nhận đã chuyển khoản';
   }
-  
-  if (typeof laEvent === 'function') laEvent('vip', '💎 Ai đó vừa đăng ký gói VIP!');
-  document.getElementById('vipStep1').style.display='none';
-  document.getElementById('vipStep2').style.display='block';
 }
 async function checkVipStatus() {
   const email = document.getElementById('checkEmail').value.trim();

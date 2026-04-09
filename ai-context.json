@@ -1,0 +1,35 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Thái Tuấn Kiệt",
+  "alternateName": ["Clitus PC", "ClitusPc", "clitusai"],
+  "jobTitle": "Full Stack Developer",
+  "description": "Full Stack Developer 10+ năm kinh nghiệm tại TP. Hồ Chí Minh, Việt Nam. Chuyên lập trình website, web app, mobile app, bot tự động.",
+  "url": "https://portfolio-xi-gray-20.vercel.app",
+  "email": "infoclituspc@gmail.com",
+  "telephone": "+84906857331",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "TP. Hồ Chí Minh",
+    "addressCountry": "VN"
+  },
+  "sameAs": [
+    "https://github.com/clitusai",
+    "https://www.linkedin.com/in/clitus-tsai-3871aa3b7",
+    "https://www.facebook.com/OtisPc.Developer",
+    "https://zalo.me/0906857331"
+  ],
+  "knowsAbout": [
+    "React", "Vue.js", "Next.js", "Node.js", "Python", "TypeScript",
+    "PostgreSQL", "MongoDB", "Docker", "AWS", "Vercel", "Supabase",
+    "Mobile App Development", "Web App Development", "Bot Development",
+    "UI/UX Design", "REST API", "GraphQL", "PWA"
+  ],
+  "offers": [
+    { "@type": "Offer", "name": "Thiết kế website", "price": "2000000", "priceCurrency": "VND" },
+    { "@type": "Offer", "name": "Lập trình web app", "price": "5000000", "priceCurrency": "VND" },
+    { "@type": "Offer", "name": "Mobile app", "price": "8000000", "priceCurrency": "VND" },
+    { "@type": "Offer", "name": "Bot Zalo/Telegram", "price": "3000000", "priceCurrency": "VND" },
+    { "@type": "Offer", "name": "Landing page", "price": "1500000", "priceCurrency": "VND" }
+  ]
+}
