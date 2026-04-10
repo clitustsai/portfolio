@@ -2,7 +2,7 @@
 
 ## About
 Thái Tuấn Kiệt (Clitus PC) là Full Stack Developer tại TP. Hồ Chí Minh, Việt Nam.
-10+ năm kinh nghiệm phát triển website, web app, mobile app.
+Chuyên phát triển website, web app, mobile app.
 Chuyên React, Vue.js, Node.js, Python, TypeScript, PostgreSQL.
 Nhận dự án freelance toàn quốc, hỗ trợ online 24/7.
 
@@ -18,7 +18,6 @@ Nhận dự án freelance toàn quốc, hỗ trợ online 24/7.
 - SEO & tối ưu tốc độ: từ 1.000.000đ
 
 ## Why Choose Clitus PC
-- Kinh nghiệm 10+ năm thực chiến
 - Giao hàng đúng hạn, cam kết chất lượng
 - Hỗ trợ sau bàn giao 3-6 tháng
 - Giá cạnh tranh, phù hợp startup và SME
